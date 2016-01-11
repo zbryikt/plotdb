@@ -17,9 +17,9 @@ html(lang="en")
     //script(type="text/javascript",src="/global")
     //script(type="text/javascript",src="/js/index.js")
     block head
-  body(id=rootid)
+  body(id=rootid,ng-app="dev",ng-controller="dev")
     include nav.jade
-    //include authpanel.jade
+    include authpanel.jade
     //-#notifications
       .notify(ng-repeat="n in notifications",ng-class="'notify-'+n.type",ng-cloak) {{n.message}}
     block body

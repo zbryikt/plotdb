@@ -7,8 +7,62 @@ block vars
   - var thumbtype = "image/jpg"
   - var url = "http://plotdb.io/"
 block head
+  script(type="text/javascript",src="/js/charts/base.js")
+  script(type="text/javascript",src="/js/dev.js")
 block body
+  #landing
+    .title PlotDB
+    .subtitle Once You Have Data, Visualize Is on Us
   #root
     br
-    h3 Hello World!
-    p 測試一下
+    br
+    div(style="text-align:center;") Just pick one your favorite visualization to start ...
+    include chart-modal.jade
+    br
+    //-
+      .panel.panel-default(style="display:inline-block"): .panel-body
+        big 我的資料 #[small(style="color:#777;"): small: i 67.5KB / 407 rows]
+        br
+        .label.label-info.label-light 姓名
+        span &nbsp;
+        .label.label-info.label-light 年齡
+        span &nbsp;
+        .label.label-info.label-light 屆別
+        span &nbsp;
+        .label.label-info.label-light 黨籍
+      span &nbsp; &nbsp;
+      .btn.btn-default.btn-sm 切換
+      hr(style="margin-top:0")
+      h3 Applicable Charts
+
+    .charts
+      .chart(ng-repeat="chart in charts",style="display:inline-block",ng-click="load(chart)")
+        .chart-img(ng-attr-style="background-image:url(/assets/img/tmp-{{chart.key}}.png)")
+        .chart-desc
+          .title {{chart.name}}
+          .desc {{chart.desc || 'check it yourself!'}}
+          .dimension
+            div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Dimensions
+            .label.label-default.label-light Radius
+            span &nbsp;
+            .label.label-success.label-light X-axis
+            span &nbsp;
+            .label.label-default.label-light Y-axis
+          .property
+            div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Best use with
+            .label.label-default.label-light Geo-related
+            span &nbsp;
+            .label.label-default.label-light Population
+      .chart.flexend
+  #footer: .inner
+    .row
+      .col-sm-4
+        span About
+        span Privacy Policy
+        span FAQ
+        span Contact
+      .col-sm-4
+        span
+          | PlotDB is a visualization catalogue with thousnads of instant avaliable and customizable chart, provided with source code for all your control.
+      .col-sm-4
+        div(style="width:80px;height:80px;border-radius:3px;border:1px solid #ccc;box-shadow:0 1px 2px rgba(0,0,0,0.3);background:#ddd")

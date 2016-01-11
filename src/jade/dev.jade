@@ -1,0 +1,33 @@
+    .panel.panel-default(style="display:inline-block"): .panel-body
+      big 我的資料 #[small(style="color:#777;"): small: i 67.5KB / 407 rows]
+      br
+      .label.label-info.label-light 姓名
+      span &nbsp;
+      .label.label-info.label-light 年齡
+      span &nbsp;
+      .label.label-info.label-light 屆別
+      span &nbsp;
+      .label.label-info.label-light 黨籍
+    span &nbsp; &nbsp;
+    .btn.btn-default.btn-sm 切換
+    hr(style="margin-top:0")
+    h3 Applicable Charts
+    .charts
+      .chart(ng-repeat="chart in charts",style="display:inline-block",ng-click="load(chart)")
+        .chart-img
+        .chart-desc
+          .title Bubble Chart
+          .desc bubble chart empower area visualization to compare data across different size of region
+          .dimension
+            .label.label-default.label-light Radius
+            span &nbsp;
+            .label.label-success.label-light X-axis
+            span &nbsp;
+            .label.label-default.label-light Y-axis
+          .property
+            div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Best use with
+            .label.label-default.label-light Geo-related
+            span &nbsp;
+            .label.label-default.label-light Population
+      .chart(style="flex:999 999 auto")
+

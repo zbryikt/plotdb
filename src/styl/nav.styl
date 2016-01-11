@@ -8,9 +8,12 @@
   position: fixed
   transition all 0.3s ease-out
   border-bottom: 1px solid #999
+  background: #eee
+  color: #444
   nav.navbar-default
     transition all 0.3s ease-out
   z-index: index(order, 'nav-top')
+  opacity: 0.9
   &.dim
     height: 50px
     @media (max-width: 682px)
@@ -23,13 +26,13 @@
   background: none
   border: none
   color: #444
-  max-width: 1024px
+  max-width: 1200px
   margin: 10px auto
   .navbar-brand, .navbar-nav > li > a
     color: #444
     letter-spacing: 1px
     &:hover
-      color: #999
+      color: #942
       text-shadow: 0 0 5px rgba(255,255,128,0.7)
   .navbar-brand
     padding-top: 9px

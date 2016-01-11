@@ -1,0 +1,24 @@
+#authpanel.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        .closebtn(data-dismiss="modal",style="border-radius:50%;background:#222;") &times;
+        h4.modal-title.text-center Login to PlotDB
+      .moda-body(style="padding:20px")
+        form.form
+          .form-group
+            input.form-control(type="text",placeholder="Email")
+          .form-group
+            input.form-control(type="text",placeholder="Password")
+          .btn.btn-block.btn-success.btn-lg LOGIN
+          a.pull-right(href="#",style="margin-top:12px;font-size:12px;") forget password? &#xbb;
+          .checkbox: label #[input(type="checkbox")] remember me
+        hr
+        .row
+          .col-xs-6
+            .btn.btn-primary.btn-block(style="font-size:12px") Login with Facebook
+          .col-xs-6
+            .btn.btn-default.btn-block(style="font-size:12px") Login with Google
+      .modal-footer.text-center
+        span Already a member? #[a(href="#") Sign In &#xbb;]
+

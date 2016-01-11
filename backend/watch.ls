@@ -84,6 +84,14 @@ base = do
     if type == \other => return
 
     if type == \jade =>
+      if /src\/charts/.exec(src) => 
+        des = src.replace(/src\/charts/, \static/charts).replace(/\.jade/,".htm")
+        if newer(des, src) => return
+        desdir = path.dirname(des)
+        mkdir-recurse desdir
+        fs.write-file-sync des, jade.render (fs.read-file-sync src .toString!),{filename: src}
+        console.log "[BUILD]   #src --> #des"
+        return
       try
         jade-tree.parse src
         srcs = jade-tree.find-root src
@@ -107,6 +115,20 @@ base = do
             console.log e.message
 
     if type == \ls =>
+      if /src\/charts/.exec(src) =>
+        des = src.replace(/src\/charts/, \static/charts).replace(/\.ls$/, \.js)
+        if newer(des, src) => return
+        mkdir-recurse path.dirname(des)
+        try
+          fs.write-file-sync(
+            des,
+            uglify-js.minify(lsc.compile(fs.read-file-sync(src)toString!,{bare:true}),{fromString:true}).code
+          )
+          console.log "[BUILD] #src --> #des"
+        catch
+          console.log "[BUILD] #src failed: "
+          console.log e.message
+        return
       if !/src\/ls/.exec(src) => return
       des = src.replace(\src/ls, \static/js).replace /\.ls$/, ".js"
       if newer(des, src) => return
@@ -123,6 +145,25 @@ base = do
       return
 
     if type == \styl =>
+      if /src\/charts/.exec(src) =>
+        des = src.replace(/src\/charts/, \static/charts).replace(/\.styl$/, ".css")
+        if newer(des, src) => return
+        stylus fs.read-file-sync(src)toString!
+          .set \filename, src
+          .define 'index', (a, b) ->
+            a = (a.string or a.val).split(' ')
+            return new stylus.nodes.Unit(a.indexOf b.val)
+          .render (e, css) ->
+            if e =>
+              console.log "[BUILD]   #src failed: "
+              console.log "  >>>", e.name
+              console.log "  >>>", e.message
+            else =>
+              mkdir-recurse path.dirname(des)
+              css = uglify-css.processString css, uglyComments: true
+              fs.write-file-sync des, css
+
+        return
       try
         styl-tree.parse src
         srcs = styl-tree.find-root src

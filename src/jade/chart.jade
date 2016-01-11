@@ -1,0 +1,79 @@
+extends base.jade
+block vars
+  - var rootid = "iconview"
+  - var title = 'plotdb'
+  - var description = "plotdb"
+  - var thumbnail = "http://plotdb.io/assets/img/thumbnail.jpg"
+  - var thumbtype = "image/jpg"
+  - var url = "http://plotdb.io/"
+block head
+  script(type="text/javascript",src="/js/charts/base.js")
+  script(type="text/javascript",src="/js/dev.js")
+  link(rel="stylesheet",type="text/css",href="/assets/codemirror/5.10/lib/codemirror.css")
+  script(type="text/javascript",src="/assets/codemirror/5.10/lib/codemirror.js")
+  script(type="text/javascript",src="/assets/codemirror/5.10/mode/javascript/javascript.js")
+block body
+  - var tabs = [{name: 'code', type: 'javascript', size: '37KB', line: '125'}, {name: 'stylesheet', type:'css', size: '500B', line: '10'}, {name: 'document',type: 'html', size: '20B', line: '3'}, {name: 'binding', type: '', dimension: '5'}, {name: 'data', type: '', dataset: '3'}]
+  div &nbsp;
+  #root
+    #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
+      #code-tabs
+        for i in tabs
+          .tab(ng-class="{'active':vis=='"+i.name+"'}",ng-click="vis='"+i.name+"'")
+            div #[span #{i.name}] #[small #{i.type}]
+            .desc 
+              span &nbsp;
+              if i.size
+                span #{i.size}
+              if i.line
+                span #{i.line} lines
+              if i.dimension
+                span #{i.dimension} dimensions
+              if i.dataset
+                span #{i.dataset} datasets
+
+      #code-editor
+      #code-ctrl
+        .btn.btn-default Apply
+        span &nbsp;
+        .btn.btn-default Close
+      script.
+        var myCodeMirror = CodeMirror(document.getElementById("code-editor"), {
+          value: "function myScript(){return 100;}\n",
+          mode: "javascript",
+          lineNumbers: true,
+        });
+
+    span sample data / collapse code
+    #binding-panel
+      .row
+        .col-sm-4
+          label Data Fields
+          .data-fields
+            .data-file
+              .title Population2015.csv
+              .desc 456KB, 72 rows
+              .data-field(style="background:#f99") Population #[small Number]
+              .data-field(style="background:#f99") Date #[small Date]
+            .data-file
+              .title Agriculture.csv
+              .desc 73KB, 15 rows
+              .data-field Ratio #[small Percent]
+              .data-field Name #[small String]
+            .data-file
+              .title travel.csv
+              .desc 1KB, 10 rows
+              .data-field(style="background:#9f9") Hospital #[small String]
+        .col-sm-8
+          label Dimensions
+          .dimensions
+            .dimension 
+              .title Name
+              .desc accept: Number, String, Date
+            .dimension 
+              .title Value
+              .desc accept: Number, String, Date
+            .dimension.flexend
+
+    #visualization-canvas
+      iframe(src="http://localhost:9990/pie/",style="width:100%;height:100%;border:none;overflow:hidden",scrolling="no")

@@ -1,0 +1,216 @@
+
+.label.label-light
+  font-weight: 200
+
+.charts
+  flexbox()
+  flex-wrap wrap
+.chart
+  border: 1px solid #ddd
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1)
+  border-radius: 0
+  background: #fff
+  margin: 10px
+  width: 320px
+  height: 400px
+  padding: 5px
+  flex(1 1 320px)
+  .chart-img
+    width: 100%
+    height: 200px
+    border: 1px solid #f9f9f9
+    background: url(/assets/img/tmp-bar.png)
+    background-size: cover
+  .chart-desc
+    margin: 0 5px
+    .title
+      margin: 5px 0 2px
+      font-size: 1em
+      font-family: century gothic
+      font-weight: bold
+    .desc
+      margin: 0
+      font-size: 1em
+.flexend
+  opacity: 0
+  flex(999 999 auto)
+
+#chart-modal
+  display: none
+  position: fixed
+  top: 60px
+  left: 0
+  width: 100%
+  height: 100%
+  z-index: index(order, 'chart-modal')
+  background: rgba(0,0,0,0.8)
+  padding: 20px 20px 80px 20px
+  .inner
+    width: 80%
+    max-width: 1024px
+    background: #fff
+    height: 100%
+    margin: auto
+    border: 1px solid #999
+
+
+.data-fields
+  .data-field
+    font-size: 14px
+    padding: 8px 12px
+    background: #fb5
+    border-radius: 3px
+    margin: 5px
+    color: #421
+    small
+      float: right
+      font-size: 12px
+      line-height: 16px
+      margin-top: 6px
+      opacity: 0.8
+
+#binding-panel
+  width: 100%
+  border-radius: 3px
+  box-shadow: 0 1px 1px rgba(0,0,0,0.3)
+  padding: 20px
+  background: #fff
+  border: 1px solid #ddd
+  margin: 10px 0
+
+.data-file
+  border-radius: 3px
+  border: 1px solid #ddd
+  padding: 5px
+  margin: 5px
+  float: left
+  width: 200px
+  .title
+    margin-left: 8px
+    font-size: 0.95em
+  .desc
+    margin-left: 8px
+    color: #aaa
+    font-size: 0.8em
+
+.dimensions
+  flexbox()
+  flex-wrap wrap
+  .dimension
+    width: 240px
+    height: 160px
+    background: #fff
+    border-radius: 3px
+    box-shadow: 0 1px 1px rgba(0,0,0,0.3)
+    border: 1px solid #ccc
+    display: block
+    flex(1 1 240px)
+    margin: 5px
+    padding: 10px
+    .title
+      font-weight: bold
+      font-size: 1.2em
+    .desc
+      color: #999
+      font-size: 0.95em
+
+#code-panel
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1)
+  border-radius: 3px
+  border: 1px solid #ccc
+  background: #fff
+  position: relative
+  #code-ctrl
+    position: absolute
+    z-index: index(order, 'code-ctrl')
+    bottom: 0
+    left: 0
+    width: 100%
+    height: 48px
+    padding: 6px
+    background: #fff
+    border-top: 1px solid #ddd
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.1)
+    text-align: right
+  #code-editor
+    width: 100%
+    height: 600px
+    .CodeMirror
+      z-index: index(order, 'codemirror')
+      width: 100%
+      height: 100%
+  #code-tabs 
+    border-bottom: 1px solid #ddd
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1)
+    z-index: index(order, 'code-tabs')
+    position: relative
+    .tab
+      display: inline-block
+      width: 160px
+      padding: 10px
+      background: #fff
+      border: 1px solid #ccc
+      border-bottom: 0
+      margin: -1px 0 0 -1px
+      cursor: pointer
+      .desc
+        span:after
+          content: ", "
+          display: inline
+        span:last-of-type, span:first-of-type
+          &:after
+            content: ""
+          
+      &.active
+        position: relative
+        &:before
+          content: " "
+          display: block
+          position: absolute
+          top: 0
+          left: 0
+          width: 100%
+          height: 2px
+          background: #f00
+        &:after
+          content: " "
+          display: block
+          width: 10px
+          height: 10px
+          position: absolute
+          bottom: -5px
+          left: 10px
+          transform(rotate(45deg))
+          border-right: 1px solid #ddd
+          border-bottom: 1px solid #ddd
+          background: #fff
+          box-shadow: 1px 1px 1px rgba(0,0,0,0.1)
+      div:nth-of-type(1)
+        span
+          font-weight: bold
+        small
+          color: #777
+          opacity: 0.8
+          font-size: 10px
+          font-weight: light
+      div:nth-of-type(2)
+        font-size: 12px
+        color: #444
+
+#code-panel.mini 
+  height: 60px
+  .CodeMirror, #code-ctrl
+    display: none
+  #code-tabs .tab.active
+    top: 0
+    &:after
+      display: none
+
+#visualization-canvas
+  width: 100%
+  height: 500px
+  border-radius: 3px
+  background: #fff
+  box-shadow: 0 1px 1px rgba(0,0,0,0.2)
+  border: 1px solid #ddd
+  margin: 10px 0
