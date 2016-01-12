@@ -1,0 +1,18 @@
+doctype html
+//- basic libraries: jquery(1.10.2), d3js(3.3.11), angularjs(1.2.3), bootstrap(3.0)/semantic-ui(0.9.3/0.9.5)
+- var version = "26"
+- var assets = "/assets"
+- var thumbnail = "thumbnail.png"
+- var thumbtype = "image/png"
+- var thumb_width = "1200"
+- var thumb_height = "630"
+- var favicon = assets + "/img/favicon.png"
+- var rootid = ""
+html(lang="en")
+  block vars
+  head(prefix="og: http://ogp.me/ns#")
+    include library.jade
+    script(type="text/javascript",src="/js/chart-base.js")
+    script(type="text/javascript",src="/js/chart-render.js")
+  body
+

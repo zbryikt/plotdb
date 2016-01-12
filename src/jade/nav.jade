@@ -10,11 +10,11 @@
 
         ul.nav.navbar-nav.pull-right
           //-li(ng-show="!user.data"): a#nav-login(href="#",ng-click="auth.show=!!!auth.show")
-          li(ng-show="!user.data"): a#nav-login(href="#",ng-click="authshow()")
+          li(ng-show="!user.data"): a#nav-login(href="#",ng-click="auth.show = !!!auth.show")
             i.fa.fa-sign-in
             | &nbsp; 
             span LOGIN / SIGNUP
-          //-li#nav-profile.dropdown(ng-show="user.data")
+          li#nav-profile.dropdown(ng-show="user.data")
             .btn(data-toggle="dropdown")
               .avatar(ng-attr-style="background-image:url({{user.data.avatar || '/assets/img/avatar.png'}})")
               span.caret

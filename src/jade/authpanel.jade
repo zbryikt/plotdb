@@ -7,10 +7,10 @@
       .moda-body(style="padding:20px")
         form.form
           .form-group
-            input.form-control(type="text",placeholder="Email")
+            input.form-control(type="text",placeholder="Email",ng-model="auth.email")
           .form-group
-            input.form-control(type="text",placeholder="Password")
-          .btn.btn-block.btn-success.btn-lg LOGIN
+            input.form-control(type="password",placeholder="Password",ng-model="auth.passwd")
+          .btn.btn-block.btn-success.btn-lg(ng-click="auth.login()") LOGIN
           a.pull-right(href="#",style="margin-top:12px;font-size:12px;") forget password? &#xbb;
           .checkbox: label #[input(type="checkbox")] remember me
         hr
