@@ -54,14 +54,17 @@
     border: 1px solid #999
 
 
-.data-fields
+.data-fields, .dimension
   .data-field
     font-size: 14px
     padding: 8px 12px
     background: #fb5
     border-radius: 3px
     margin: 5px
+    cursor: move
     color: #421
+    z-index: index(order, 'data-field')
+    position: relative
     small
       float: right
       font-size: 12px
@@ -107,6 +110,8 @@
     flex(1 1 240px)
     margin: 5px
     padding: 10px
+    z-index: index(order, 'chart-dimension')
+    position: relative
     .title
       font-weight: bold
       font-size: 1.2em

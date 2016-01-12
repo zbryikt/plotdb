@@ -26,6 +26,9 @@ module.exports = plotdb.chart.create({
   }
 });
 """
+      setdim: (data, event,dim) ->
+        console.log data, event
+        dim.fields = [data]
       render: ->
         payload = {} <<< $scope.chart{doc,style,code}
         visualizer = document.getElementById(\visualizer)
@@ -70,3 +73,21 @@ module.exports = plotdb.chart.create({
         if !ret => continue
         require = ret.1
         $scope.chart.dimensions.push {name, type, require}
+    $scope.data = [
+      { 
+        name: \Population2015.csv, size: \456KB, rows: \72, color: \#f99, key: 1
+        fields: [
+          * name: \population, type: \Number, file: 1
+          * name: \date, type: \Date, file: 1
+        ]
+      },
+      { 
+        name: \Agriculture.csv, size: \73KB, rows: \15, color: \#9f9, key: 2
+        fields: [
+          * name: \ratio, type: \Percent, file: 2
+          * name: \area, type: \Number, file: 2
+          * name: \revenue, type: \Number, file: 2
+        ]
+      },
+    ]
+

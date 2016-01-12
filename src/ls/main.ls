@@ -1,4 +1,4 @@
-angular.module \plotDB, <[backend ui.codemirror]>
+angular.module \plotDB, <[backend ui.codemirror ngDraggable]>
   ..service 'plNotify', <[$rootScope $timeout]> ++ ($rootScope, $timeout) -> @ <<< do
     queue: []
     send: (type, message) -> 
