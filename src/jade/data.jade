@@ -1,0 +1,118 @@
+extends base.jade
+block vars
+  - var rootid = "iconview"
+  - var title = 'plotdb'
+  - var description = "plotdb"
+  - var thumbnail = "http://plotdb.io/assets/img/thumbnail.jpg"
+  - var thumbtype = "image/jpg"
+  - var url = "http://plotdb.io/"
+block head
+  script(type="text/javascript",src="/js/charts/base.js")
+  script(type="text/javascript",src="/js/chart.js")
+  script(type="text/javascript",src="/js/data.js")
+block body
+  span &nbsp;
+  div(ng-controller="dataEditor")
+
+    #fromLinkModal.modal.fade(style="margin-top: 100px")
+      .modal-dialog
+        .modal-content
+          .modal-body
+            label 貼上 CSV 的網址：
+            .input-group
+              input.form-control(type="text",style="border: 1px solid #ccc",ng-model="linkURL")
+              span.input-group-btn
+                button.btn.btn-default.dropdown-toggle(
+                data-toggle="dropdown",type="button",style="border: 1px solid #ccc;border-radius:0")
+                  span 編碼 :
+                  small {{CSVEncoding}}&nbsp;
+                  span.caret
+                ul.dropdown-menu.dropdown-meu-right
+                  li(ng-class="{'active':CSVEncoding=='ISO-8859-1'}")
+                    a(ng-click="CSVEncoding='ISO-8859-1'") ISO-8859-1
+                  li(ng-class="{'active':CSVEncoding=='Big5'}"): a(ng-click="CSVEncoding='BIG5'") BIG5
+                  li(ng-class="{'active':CSVEncoding=='GB2312'}"): a(ng-click="CSVEncoding='GB2312'") GB2312
+                  li(ng-class="{'active':CSVEncoding=='UTF-8'}"): a(ng-click="CSVEncoding='UTF-8'") UTF-8
+                button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="readLink()") 讀取
+
+    #fromCSVModal.modal.fade(style="margin-top: 100px")
+      .modal-dialog
+        .modal-content
+          .modal-body
+            label 上傳 CSV 檔：
+            .input-group
+              input#CSVFile.form-control(type="file",style="border: 1px solid #ccc")
+              span.input-group-btn
+                button.btn.btn-default.dropdown-toggle(
+                data-toggle="dropdown",type="button",style="border: 1px solid #ccc;border-radius:0")
+                  span 編碼 :
+                  small {{CSVEncoding}}&nbsp;
+                  span.caret
+                ul.dropdown-menu.dropdown-meu-right
+                  li(ng-class="{'active':CSVEncoding=='ISO-8859-1'}")
+                    a(ng-click="CSVEncoding='ISO-8859-1'") ISO-8859-1
+                  li(ng-class="{'active':CSVEncoding=='Big5'}"): a(ng-click="CSVEncoding='BIG5'") BIG5
+                  li(ng-class="{'active':CSVEncoding=='GB2312'}"): a(ng-click="CSVEncoding='GB2312'") GB2312
+                  li(ng-class="{'active':CSVEncoding=='UTF-8'}"): a(ng-click="CSVEncoding='UTF-8'") UTF-8
+                button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="readCSV()") 讀取
+
+    #fromSpreadsheetModal.modal.fade(style="margin-top: 100px")
+      .modal-dialog
+        .modal-content
+          .modal-body
+            label 貼上 Google Spreadsheet 的網址：
+            .input-group
+              input.form-control(type="text",style="border: 1px solid #ccc",ng-model="spreadsheetURL")
+              span.input-group-btn
+                button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="readSpreadsheet()") 讀取
+
+
+    #root(style="max-width:1200px;margin-left:auto;margin-right:auto")
+      .panel.panel-default
+        .panel-heading
+          b Create Dataset
+          .pull-right
+            .btn.btn-default.btn-xs(ng-click="uploadFromCSV()")
+              i.fa.fa-upload
+              span &nbsp; upload 
+            span &nbsp;
+            .btn.btn-default.btn-xs(ng-click="uploadFromLink()")
+              i.fa.fa-cloud
+              span &nbsp; from link 
+            span &nbsp;
+            .btn.btn-default.btn-xs(ng-click="uploadFromSpreadsheet()")
+              i.fa.fa-table
+              span &nbsp; google sheet 
+        .panel-body
+          textarea.form-control(rows="6",ng-model="editor.raw",placeholder="paste or drag your data here...",style="margin-bottom:13px;font-family:monospace")
+          .input-group.pull-left(style="width:200px")
+            input.form-control.input-sm(type="input",ng-model="editor.name",placeholder="Dataset Name")
+            span.input-group-btn
+              .btn.btn-default.btn-sm(ng-disabled="!editor.name || !editor.data",ng-click="editor.save()") Save
+          span &nbsp;
+          .btn.btn-sm.btn-default(ng-disabled="!editor.name || !editor.data",ng-click="editor.save(true)") Save Locally
+          span(style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px",ng-show="editor.data && editor.rows")
+            | {{editor.rows}} rows, {{editor.sizetext}}
+          .btn.btn-default.btn-sm.pull-right Vis without Save
+
+      br
+      h4 
+        span Datasets 
+        .input-group.pull-right(style="width:200px")
+          input.form-control.input-sm(type="input",placeholder="search...")
+          span.input-group-btn
+            .btn.btn-default.btn-sm: i.fa.fa-search
+      hr
+      .data-fields
+        .data-file(ng-repeat="file in datasets")
+          .closebtn(ng-click="removedata(file)") &times;
+          .title {{file.name}}
+          .desc {{file.size}}, {{file.rows}} rows
+          .data-field(ng-repeat="field in file.fields",ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field") {{field.name}} #[small {{field.type}}]
+        .data-file.data-file-new
+          .title add new dataset ...
+        br.clearfix
+      br
+      br
+      br
+    include footer.jade

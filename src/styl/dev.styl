@@ -58,7 +58,7 @@
   .data-field
     font-size: 14px
     padding: 8px 12px
-    background: #fb5
+    background: #ade
     border-radius: 3px
     margin: 5px
     cursor: move
@@ -88,6 +88,20 @@
   margin: 5px
   float: left
   width: 200px
+  .closebtn
+    border-radius: 50%
+    background: #444
+    color: #fff
+    width: 14px
+    height: 14px
+    font-size: 10px
+    padding: 0
+    line-height: 14px
+    text-align: center
+    float:right
+    margin: -2px -2px 0 0
+    cursor: pointer
+
   .title
     margin-left: 8px
     font-size: 0.95em
@@ -118,6 +132,17 @@
     .desc
       color: #999
       font-size: 0.95em
+    &.drag-enter
+      &:after
+        content: "Drag Here"
+        display: block
+        width: 100%
+        border-radius: 3px
+        border: 1px dashed #ccc
+        color: #ccc
+        padding: 5px
+        margin: 5px 0
+        
 
 #code-panel
   box-shadow: 0 1px 1px rgba(0,0,0,0.1)
@@ -215,6 +240,12 @@
         color: #444
     .tab.cat
       width: 45px
+
+.data-file-new
+  text-align: center
+  color: #ccc
+  cursor: pointer
+  border-style: dashed
 
 #code-panel.mini 
   height: 60px

@@ -13,7 +13,7 @@ block head
 block body
   - var tabs = [{name: 'code', type: 'javascript', size: '37KB', line: '125', src: true}, {name: 'stylesheet', type:'css', size: '500B', line: '10', src: true}, {name: 'document',type: 'html', size: '20B', line: '3', src: true}, {name: 'binding', type: '', dimension: '5'}, {name: 'data', type: '', dataset: '3'}]
   div &nbsp;
-  #root(ng-controller="chartEditor")
+  #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
       #code-tabs
         .tab.cat.shown(ng-click="showsrc=!!!showsrc")
@@ -59,24 +59,14 @@ block body
           label Data Fields
           .data-fields
             .data-file(ng-repeat="file in data")
+              .closebtn(ng-click="removedata(file)") &times;
               .title {{file.name}}
               .desc {{file.size}}, {{file.rows}} rows
-              .data-field(ng-repeat="field in file.fields",ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field") {{field.name}} #[small {{field.type}}]
-          //-  
-            .data-file
-              .title Population2015.csv
-              .desc 456KB, 72 rows
-              .data-field(style="background:#f99",ng-drag="true",ng-drag-data="1") Population #[small Number]
-              .data-field(style="background:#f99",ng-drag="true",ng-drag-data="2") Date #[small Date]
-            .data-file
-              .title Agriculture.csv
-              .desc 73KB, 15 rows
-              .data-field(ng-drag="true") Ratio #[small Percent]
-              .data-field(ng-drag="true") Name #[small String]
-            .data-file
-              .title travel.csv
-              .desc 1KB, 10 rows
-              .data-field(style="background:#9f9",ng-drag="true") Hospital #[small String]
+              .data-field(ng-repeat="field in file.fields",ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field",ng-center-anchor="true") {{field.name}} #[small {{field.type}}]
+            .data-file.data-file-new
+              .title connect other dataset...
+            .data-file.data-file-new
+              .title use offline data... 
         .col-sm-8
           label Dimensions
           .dimensions
@@ -86,3 +76,4 @@ block body
               .data-field(ng-repeat="field in dim.fields") {{field.name}}
             .dimension.flexend
 
+  include footer.jade

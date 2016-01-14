@@ -26,7 +26,7 @@ module.exports = plotdb.chart.create({
   }
 });
 """
-      setdim: (data, event,dim) ->
+      setdim: (data, event, dim) ->
         console.log data, event
         dim.fields = [data]
       render: ->
@@ -73,6 +73,8 @@ module.exports = plotdb.chart.create({
         if !ret => continue
         require = ret.1
         $scope.chart.dimensions.push {name, type, require}
+    $scope.removedata = (file)->
+      $scope.data.splice $scope.data.indexOf(file), 1
     $scope.data = [
       { 
         name: \Population2015.csv, size: \456KB, rows: \72, color: \#f99, key: 1
@@ -90,4 +92,3 @@ module.exports = plotdb.chart.create({
         ]
       },
     ]
-
