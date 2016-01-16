@@ -23,14 +23,29 @@ angular.module \plotDB
     ret = do
       datasets: [] ++ sampleData
       name: -> "/datasets/#it"
+      local: do
+        rows: 0
+        size: 0
       init: ->
+        @local.rows = 0
+        @local.size = 0
         try
           list = JSON.parse(localStorage.getItem("/list/datasets") or null) or []
           for item in list =>
             data = JSON.parse(localStorage.getItem(@name(item)) or null)
-            if data => @datasets.push data
+            if data => 
+              @local.rows += data.rows
+              @local.size += data.size
+              @datasets.push data
+          @local.sizetext = @verbose-size @local.size
         catch
           console.log e.toString!
+      find: (field) ->
+        file = @datasets.filter(-> it.key == field.file ).0
+        if !file => return null
+        field = file.fields.filter(->it.name == field.name).0
+        return field
+
       save: (data, is-local=true) ->
         #TODO save to server, check for name collision
         idx = @datasets.map(->it.name).indexOf(data.name)
@@ -52,9 +67,13 @@ angular.module \plotDB
         list.splice idx, 1
         localStorage.setItem \/list/datasets, JSON.stringify(list)
         localStorage.setItem(@name(data.name), null)
+      verbose-size: (size) ->
+        if size < 1000 => "#{size}bytes"
+        else if size < 1048576 => "#{parseInt(size / 102.4)/10}KB"
+        else "#{parseInt(size / 104857.6)/10}MB"
     ret.init!
     ret
-  ..controller \dataEditor, <[$scope $timeout $http dataService]> ++ ($scope, $timeout, $http, data-service) ->
+  ..controller \dataCreateCtrl, <[$scope $timeout $http dataService]> ++ ($scope, $timeout, $http, data-service) ->
     $scope.editor = do
       raw: ""
       handler: null
@@ -64,9 +83,7 @@ angular.module \plotDB
         @data = Papa.parse($scope.editor.raw, {header:true}).data
         @rows = @data.length
         @size = @raw.length
-        @sizetext = if @size < 1000 => "#{@size}bytes"
-        else if @size < 1048576 => "#{parseInt(@size / 102.4)/10}KB"
-        else "#{parseInt(@size / 104857.6)/10}MB"
+        @sizetext = data-service.verbose-size @size
 
       build: (is-local)-> do
         name: @name, size: @size, rows: @rows, color: \#ccc, key: $scope.datasets.length,
@@ -82,7 +99,6 @@ angular.module \plotDB
       if $scope.handler => $timeout.cancel $scope.handler
       $scope.handler = $timeout((-> $scope.editor.parse!), 1000)
     $scope.datasets = data-service.datasets
-    $scope.removedata = (file)-> data-service.delete file
 
     $scope.CSVEncoding = "UTF-8"
     $scope.uploadFromCSV = -> setTimeout((->$(\#fromCSVModal).modal \show),0)
@@ -128,3 +144,7 @@ angular.module \plotDB
         $scope.editor.raw = lines.join(\\n)
         setTimeout((->$(\#fromSpreadsheetModal).modal(\hide)),0)
       .error -> cb []
+  ..controller \dataEditor, <[$scope $timeout $http dataService]> ++ ($scope, $timeout, $http, data-service) ->
+  ..controller \dataFiles, <[$scope dataService]> ++ ($scope, data-service) ->
+    $scope.datasets = data-service.datasets
+    $scope.removedata = (file) -> data-service.delete file

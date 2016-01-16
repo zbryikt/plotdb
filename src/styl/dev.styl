@@ -1,3 +1,4 @@
+@import 'basic'
 
 .label.label-light
   font-weight: 200
@@ -6,6 +7,7 @@
   flexbox()
   flex-wrap wrap
 .chart
+  display: inline-block
   border: 1px solid #ddd
   box-shadow: 0 1px 2px rgba(0,0,0,0.1)
   border-radius: 0
@@ -88,6 +90,10 @@
   margin: 5px
   float: left
   width: 200px
+  no-selection()
+  &.active
+    box-shadow: inset 0 0 3px 1px rgba(0,0,0,0.1)
+    background: #f9f9f9
   .closebtn
     border-radius: 50%
     background: #444
@@ -126,6 +132,13 @@
     padding: 10px
     z-index: index(order, 'chart-dimension')
     position: relative
+    .require
+      display: block
+      position: absolute
+      top: 3px
+      right: 8px
+      font-size: 1.2em
+      color: #f99
     .title
       font-weight: bold
       font-size: 1.2em
@@ -150,42 +163,19 @@
   border: 1px solid #ccc
   background: #fff
   position: relative
-  overflow: hidden
   width: 100%
-  height: 658px
-  #code-ctrl
-    position: absolute
-    z-index: index(order, 'code-ctrl')
-    bottom: 0
-    left: 0
-    width: 100%
-    height: 48px
-    padding: 6px
-    background: #fff
-    border-top: 1px solid #ddd
-    box-shadow: 0 -1px 3px rgba(0,0,0,0.1)
-    text-align: right
-  #code-editor
-    width: 40%
-    overflow: hidden
-    height: 600px
-    position: relative
-    border-right: 1px solid #ddd
-    .inner
-      width: 100%
-      height: 100%
-    .CodeMirror
-      z-index: index(order, 'codemirror')
-      width: 100%
-      height: 100%
+  //-overflow: hidden
+  //-height: 658px
+
   #code-tabs 
     border-bottom: 1px solid #ddd
     box-shadow: 0 1px 3px rgba(0,0,0,0.1)
     z-index: index(order, 'code-tabs')
     position: relative
     .tab
+      no-selection()
       display: inline-block
-      width: 140px
+      width: 120px
       padding: 10px
       background: #fff
       border: 1px solid #ccc
@@ -241,6 +231,48 @@
     .tab.cat
       width: 45px
 
+#code-header
+  position: absolute
+  z-index: index(order, 'code-ctrl')
+  top: 0
+  left: 0
+  width: 100%
+  height: 32px
+  padding: 6px
+  background: rgba(255,255,255,0.95)
+  border-bottom: 1px solid #ddd
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1)
+#code-ctrl
+  position: absolute
+  z-index: index(order, 'code-ctrl')
+  bottom: 0
+  left: 0
+  width: 100%
+  height: 48px
+  padding: 6px
+  background: #fff
+  border-top: 1px solid #ddd
+  box-shadow: 0 -1px 3px rgba(0,0,0,0.1)
+  text-align: right
+
+#code-editor
+  width: 100%
+  overflow: hidden
+  height: 500px
+  position: relative
+  //-border-right: 1px solid #ddd
+  border: 1px solid #ddd
+  margin-top: 15px
+  panel()
+  .inner
+    width: 100%
+    height: 100%
+    padding: 32px 0 48px 0
+  .CodeMirror
+    z-index: index(order, 'codemirror')
+    width: 100%
+    height: 100%
+
 .data-file-new
   text-align: center
   color: #ccc
@@ -267,3 +299,41 @@
   //box-shadow: 0 1px 1px rgba(0,0,0,0.2)
   //border: 1px solid #ddd
   //margin: 10px 0
+
+.plpanel
+  panel()
+  width: 100%
+  margin: 15px 0 10px
+  height: 500px
+
+#config-panel
+  padding: 10px
+
+#visualization-canvas2
+  margin: 15px 0 10px
+  height: 500px
+  width: 100%
+  overflow: hidden
+
+.chart-config .input-group span
+  width: 90px
+  padding-left: 2px
+  padding-right: 2px
+  font-size: 12px
+.chart-config
+  margin-bottom: 5px
+.chart-config .input-group
+  width: 100%
+
+#project-action
+  width: 100%
+  flexbox()
+  .btn
+    flex(1 1 auto)
+  .dropdown .btn
+    border-top-left-radius: 0
+    border-bottom-left-radius: 0
+
+#data-create-modal
+  clear: both
+  padding-top: 20px

@@ -1,0 +1,11 @@
+.data-fields(ng-controller="dataFiles")
+  .data-file(ng-repeat="file in datasets",style="cursor:pointer")
+    //.closebtn(ng-click="removedata(file)") &times;
+    .title {{file.name}}
+    .desc {{file.size}}, {{file.rows}} rows
+    //.data-field(ng-repeat="field in file.fields",ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field") {{field.name}} #[small {{field.type}}]
+  .data-file.data-file-new
+    .title(style="line-height:2.5em") add new dataset ...
+  br.clearfix
+
+

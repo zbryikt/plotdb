@@ -6,9 +6,17 @@
           | PlotDB
       div
         ul.nav.navbar-nav
-          li#nav-chart: a(href="/chart.html") CHARTS
-          li#nav-data: a(href="/data.html") DATA
-          li#nav-tmpdata: a(href="/") 36KB, 72 Rows
+          li#nav-chart.dropdown
+            a.dropdown-toggle(href="#",data-toggle="dropdown") CHARTS #[span.caret]
+            ul.dropdown-menu
+              li: a(href="/list.html") Explore
+              li: a(href="/chart.html") Design
+              li.divider
+              li: a(href="/mychart.html") My Charts
+
+          li#nav-data: a(href="/data/") DATA
+          li#nav-theme: a(href="/theme.html") THEME
+          li#nav-tmpdata: a(href="/") {{dataService.local.sizetext}}, {{dataService.local.rows}} Rows
 
         ul.nav.navbar-nav.pull-right
           //-li(ng-show="!user.data"): a#nav-login(href="#",ng-click="auth.show=!!!auth.show")

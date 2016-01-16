@@ -10,8 +10,10 @@ block head
   script(type="text/javascript",src="/js/charts/base.js")
   script(type="text/javascript",src="/js/dev.js")
   script(type="text/javascript",src="/js/chart.js")
+  script(type="text/javascript",src="/js/chart-sample.js")
+  script(type="text/javascript",src="/js/data.js")
 block body
-  - var tabs = [{name: 'code', type: 'javascript', size: '37KB', line: '125', src: true}, {name: 'stylesheet', type:'css', size: '500B', line: '10', src: true}, {name: 'document',type: 'html', size: '20B', line: '3', src: true}, {name: 'binding', type: '', dimension: '5'}, {name: 'data', type: '', dataset: '3'}]
+  - var tabs = [{name: 'preview', dimension: 2 }, {name: 'code', type: 'javascript', size: '37KB', line: '125', src: true}, {name: 'stylesheet', type:'css', size: '500B', line: '10', src: true}, {name: 'document',type: 'html', size: '20B', line: '3', src: true}, {name: 'assets', type: '', files: '3', src: true}]
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
@@ -34,46 +36,104 @@ block body
                 span #{i.dimension} dimensions
               if i.dataset
                 span #{i.dataset} datasets
-      #code-editor
-        #code-editor-code.inner(ui-codemirror,ui-codemirror-opts="chart.code.option",ng-model="chart.code.content",ng-show="vis=='code'")
-        #code-editor-style.inner(ui-codemirror,ui-codemirror-opts="chart.style.option",ng-model="chart.style.content",ng-show="vis=='stylesheet'")
-        #code-editor-doc.inner(ui-codemirror,ui-codemirror-opts="chart.doc.option",ng-model="chart.doc.content",ng-show="vis=='document'")
-        #code-ctrl
-          .btn.btn-default(ng-click="chart.render()") Apply
-          span &nbsp;
-          .btn.btn-default Close
-      script.
-        /*var myCodeMirror = CodeMirror(document.getElementById("code-editor-inner"), {
-          value: "function myScript(){return 100;}\n",
-          mode: "javascript",
-          lineNumbers: true,
-        });*/
-      #visualization-canvas
-        iframe#visualizer(src="http://localhost/render.html",style="width:100%;height:100%;border:none;overflow:hidden",scrolling="no")
-        //-iframe(src="http://localhost:9990/pie/",style="width:100%;height:100%;border:none;overflow:hidden",scrolling="no")
+              if i.files
+                span #{i.files} files
 
-    span sample data / collapse code
+    .row
+      .col-sm-3
+        #config-panel.plpanel 
+          label Project
+          .chart-config
+            .input-group
+              span.input-group-addon name
+              input.form-control(type="text",ng-model="name",placeholder="Project Name")
+          #project-action.btn-group(style="width:100%")
+            .btn.btn-default(ng-disabled="!name", ng-click="save()") Save
+            .btn.btn-default(ng-disabled="!name", ng-click="load()") Load
+            .dropdown
+              .btn.btn-default.dropdown-toggle(data-toggle="dropdown") Download #[span.caret]
+              ul.dropdown-menu
+                li: a(href="#") PNG
+                li: a(href="#") SVG
+          hr
+          label Config
+          .chart-config(ng-repeat="c in chart.configs")
+            .input-group
+              span.input-group-addon {{c.name}}
+              input.form-control(type="text",ng-attr-placeholder="{{c.defval}}",ng-model="c.value")
+      .col-sm-9(style="padding-left:0")
+        #code-editor(ng-show="vis!='preview'")
+          #code-header {{vis}}
+          #code-editor-code.inner(ui-codemirror,ui-codemirror-opts="chart.code.option",ng-model="chart.code.content",ng-show="vis=='code'")
+          #code-editor-style.inner(ui-codemirror,ui-codemirror-opts="chart.style.option",ng-model="chart.style.content",ng-show="vis=='stylesheet'")
+          #code-editor-doc.inner(ui-codemirror,ui-codemirror-opts="chart.doc.option",ng-model="chart.doc.content",ng-show="vis=='document'")
+          #code-ctrl
+            .btn.btn-default(ng-click="chart.render();vis='preview'") Save and Preview
+            span &nbsp;
+            .btn.btn-default(ng-click="chart.render()") Save
+            span &nbsp;
+            .btn.btn-default Close
+
+        #visualization-canvas2.plpanel(ng-show="vis=='preview'")
+          iframe#visualizer(src="http://localhost/render.html",style="width:100%;height:100%;border:none;overflow:hidden",scrolling="no")
+
+    //-.row(ng-show="vis=='preview'")
+      .col-sm-3
+        #config-panel.plpanel 
+          label Project
+          .chart-config
+            .input-group
+              span.input-group-addon name
+              input.form-control(type="text",ng-model="name",placeholder="Project Name")
+          #project-action.btn-group(style="width:100%")
+            .btn.btn-default(ng-click="save()") Save
+            .btn.btn-default(ng-click="load()") Load
+            .dropdown
+              .btn.btn-default.dropdown-toggle(data-toggle="dropdown") Download #[span.caret]
+              ul.dropdown-menu
+                li: a(href="#") PNG
+                li: a(href="#") SVG
+          hr
+          label Config
+          .chart-config(ng-repeat="c in chart.configs")
+            .input-group
+              span.input-group-addon {{c.name}}
+              input.form-control(type="text",ng-attr-placeholder="{{c.defval}}",ng-model="c.value")
+
     #binding-panel
+      .row
+        .col-sm-12
+          label Datasets
+          .data-fields(ng-controller="dataFiles")
+            .data-file(ng-repeat="file in datasets",style="cursor:pointer",
+            ng-click="file.toggle=!!!file.toggle",ng-class="{'active':file.toggle}")
+              .title {{file.name}}
+              .desc {{file.size}}, {{file.rows}} rows
+            .data-file.data-file-new
+              .title(style="line-height:2.5em",ng-click="datacreate()") add new dataset ...
+            br.clearfix
+          #data-create-modal(ng-show="showDataCreateModal")
+            include data/create.jade
+      hr
       .row
         .col-sm-4
           label Data Fields
-          .data-fields
-            .data-file(ng-repeat="file in data")
-              .closebtn(ng-click="removedata(file)") &times;
+          .data-fields(ng-controller="dataFiles")
+            .data-file(ng-repeat="file in datasets",ng-show="file.toggle")
+              .closebtn(ng-click="file.toggle=!!!file.toggle") &times;
               .title {{file.name}}
               .desc {{file.size}}, {{file.rows}} rows
-              .data-field(ng-repeat="field in file.fields",ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field",ng-center-anchor="true") {{field.name}} #[small {{field.type}}]
-            .data-file.data-file-new
-              .title connect other dataset...
-            .data-file.data-file-new
-              .title use offline data... 
+              .data-field(ng-repeat="field in file.fields",ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field") {{field.name}} #[small {{field.type}}]
+            br.clearfix
+
         .col-sm-8
           label Dimensions
           .dimensions
-            .dimension(ng-repeat="dim in chart.dimensions",ng-drop="true",ng-drop-success="chart.setdim($data,$event,dim)")
+            .dimension(ng-repeat="dim in chart.dimensions",ng-drop="true",
+            ng-drop-success="chart.setdim($data,$event,dim)")
+              .require(ng-show="dim.require"): i.fa.fa-asterisk
               .title {{dim.name}}
               .desc accept: #[span(ng-repeat="name in dim.type") {{name}}] #[span(ng-show="!dim.type.length") Any]
               .data-field(ng-repeat="field in dim.fields") {{field.name}}
             .dimension.flexend
-
   include footer.jade

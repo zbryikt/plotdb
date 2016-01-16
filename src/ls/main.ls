@@ -5,11 +5,12 @@ angular.module \plotDB, <[backend ui.codemirror ngDraggable]>
       @queue.push node = {type, message}
       $timeout (~> @queue.splice @queue.indexOf(node), 1), 2900
 
-  ..controller \plMain, <[$scope $http $interval global plNotify]> ++ ($scope, $http, $interval, global, plNotify) ->
+  ..controller \plMain, <[$scope $http $interval global plNotify dataService]> ++ ($scope, $http, $interval, global, plNotify, data-service) ->
     $scope.track-event = (cat, act, label, value) -> ga \send, \event, cat, act, label, value
     $scope.notifications = plNotify.queue
     $scope.nexturl = if /nexturl=([^&]+)/exec((window.location.search or "")) => that.1 else window.location.href
     $scope.user = data: global.user
+    $scope.data-service = data-service
     $scope.auth = do
       email: ''
       passwd: ''
