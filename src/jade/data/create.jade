@@ -76,6 +76,6 @@ div(ng-controller="dataEditCtrl")
       span &nbsp;
       .btn.btn-sm.btn-default(ng-disabled="!name || !data.parsed",ng-click="save(true)") Save Locally
       span(style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px",ng-show="data.parsed && data.rows")
-        | {{data.rows}} rows, {{data.size}}
+        | {{data.rows}} rows, {{data.size|size}}
       .btn.btn-default.btn-sm.pull-right Vis without Save
 

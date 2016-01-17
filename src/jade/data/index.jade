@@ -12,19 +12,18 @@ block head
   script(type="text/javascript",src="/js/data.js")
 block body
   span &nbsp;
-  div(ng-controller="dataEditor")
-    #root(style="max-width:1200px;margin-left:auto;margin-right:auto")
-      include /data/create.jade
-      br
-      h4 
-        span Datasets 
-        .input-group.pull-right(style="width:200px")
-          input.form-control.input-sm(type="input",placeholder="search...")
-          span.input-group-btn
-            .btn.btn-default.btn-sm: i.fa.fa-search
-      hr
-      include /data/files.jade
-      br
-      br
-      br
-    include /footer.jade
+  #root(style="max-width:1200px;margin-left:auto;margin-right:auto")
+    include /data/create.jade
+    br
+    h4 
+      span Datasets 
+      .input-group.pull-right(style="width:200px")
+        input.form-control.input-sm(type="input",placeholder="search...")
+        span.input-group-btn
+          .btn.btn-default.btn-sm: i.fa.fa-search
+    hr
+    include /data/files.jade
+    br
+    br
+    br
+  include /footer.jade

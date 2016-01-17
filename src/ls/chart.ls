@@ -6,9 +6,9 @@ angular.module \plotDB
       init: ->
         $scope.chart.code.content = sampleChart.code.content
       setdim: (field = {}, event, dim) ->
-        dataset = data-service.datasets.filter(->it.key == field.file).0
+        dataset = data-service.find field
         if !dataset => return
-        field.data = dataset.[]data.map(->it[field.name])
+        data-service.field.update field
         dim.fields = [field]
         @render!
       render: ->
@@ -138,12 +138,14 @@ angular.module \plotDB
       c.dimensions = chart.dimension
       datasets = {}
       for item in data-service.datasets => 
-        datasets[item.key] = item
+        datasets[item.id] = item
         item.toggle = false
       for k,dim of chart.dimension =>
-        for f in dim.[]fields
+        fields = dim.fields
+        dim.fields = []
+        for f in fields
           $scope.chart.setdim f, {}, dim
-          if datasets[f.file] => datasets[f.file].toggle = true
+          if datasets[f.dataset] => datasets[f.dataset].toggle = true
       c.render!
     $scope.datacreate = -> 
       $scope.showDataCreateModal = !!!$scope.showDataCreateModal
