@@ -15,16 +15,15 @@ block head
 block body
   div &nbsp;
   #root(ng-controller="mychart",style="max-width:1200px;margin-left:auto;margin-right:auto")
-    .chart(ng-repeat="chart in mycharts")
+    .chart(ng-repeat="chart in mycharts",ng-click="goto(chart)")
       .chart-img(ng-attr-style="background-image:url(/assets/img/tmp-{{chart.key}}.png)")
       .chart-desc
         .title {{chart.name}}
         .desc {{chart.desc || 'check it yourself!'}}
         .dimension
           div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Dimensions
-          span {{chart}}
-          span(ng-repeat="dim in chart.dimensions")
-            .label.label-default.label-light {{dim.name}}]
+          span(ng-repeat="dim in chart.dimension")
+            .label.label-default.label-light {{dim.name}}
             span &nbsp;
         .property
           div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Best use with

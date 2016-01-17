@@ -13,7 +13,6 @@ angular.module \plotDB
         @render!
       render: ->
         data = []
-        console.log @dimensions
         for k,dim0 of @{}dimensions
           if dim0.fields and dim0.fields.length and dim0.fields.0.data and dim0.fields.0.data.length => break
           dim0 = null
@@ -121,8 +120,11 @@ angular.module \plotDB
       list = JSON.parse(localStorage.getItem("/list/charts")) or []
       if list.indexOf($scope.name) < 0 => 
         list.push $scope.name
-        localStorage.setItem("/list/charts", JSON.stringify(list))
-      localStorage.setItem("/charts/#{$scope.name}", JSON.stringify(chart))
+        localStorage.setItem("/list/charts", angular.toJson(list.filter(->it)))
+      localStorage.setItem("/charts/#{$scope.name}", angular.toJson(chart))
+      setTimeout ( ->
+        data = JSON.parse(localStorage.getItem("/charts/#{$scope.name}"))
+      ), 1000
       #TODO save
     $scope.load = (name) ->
       if !(name?) => name = $scope.name
@@ -138,17 +140,25 @@ angular.module \plotDB
       for item in data-service.datasets => 
         datasets[item.key] = item
         item.toggle = false
-      for dim in chart.dimension =>
-        for f in item.[]fields
+      for k,dim of chart.dimension =>
+        for f in dim.[]fields
           $scope.chart.setdim f, {}, dim
           if datasets[f.file] => datasets[f.file].toggle = true
       c.render!
     $scope.datacreate = -> 
       $scope.showDataCreateModal = !!!$scope.showDataCreateModal
+    if window.location.search =>
+      ret = /[?&]name=([^&#]+)/.exec(that)
+      if ret =>
+        $scope.name = ret.1
+        $scope.load $scope.name
   ..controller \mychart, <[$scope dataService]> ++ ($scope, data-service) ->
     # My Charts
     $scope.mycharts = []
     list = JSON.parse(localStorage.getItem("/list/charts")) or []
     $scope.mycharts = list.map ->
       chart = JSON.parse(localStorage.getItem("/charts/#it"))
+    .filter(->it)
 
+    $scope.goto = (chart) ->
+      window.location.href = "/chart.html?name=#{chart.name}"

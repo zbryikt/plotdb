@@ -1,81 +1,81 @@
-div(ng-controller="dataCreateCtrl")
-  #fromLinkModal.modal.fade(style="margin-top: 100px")
+div(ng-controller="dataEditCtrl")
+  #data-edit-link-modal.modal.fade(style="margin-top: 100px")
     .modal-dialog
       .modal-content
         .modal-body
-          label 貼上 CSV 的網址：
+          label Upload CSV by Link:
           .input-group
-            input.form-control(type="text",style="border: 1px solid #ccc",ng-model="linkURL")
+            input.form-control(type="text",style="border: 1px solid #ccc",ng-model="parser.link.url")
             span.input-group-btn
               button.btn.btn-default.dropdown-toggle(
               data-toggle="dropdown",type="button",style="border: 1px solid #ccc;border-radius:0")
-                span 編碼 :
-                small {{CSVEncoding}}&nbsp;
+                span Encoding
+                small {{parser.encoding}}&nbsp;
                 span.caret
               ul.dropdown-menu.dropdown-meu-right
-                li(ng-class="{'active':CSVEncoding=='ISO-8859-1'}")
-                  a(ng-click="CSVEncoding='ISO-8859-1'") ISO-8859-1
-                li(ng-class="{'active':CSVEncoding=='Big5'}"): a(ng-click="CSVEncoding='BIG5'") BIG5
-                li(ng-class="{'active':CSVEncoding=='GB2312'}"): a(ng-click="CSVEncoding='GB2312'") GB2312
-                li(ng-class="{'active':CSVEncoding=='UTF-8'}"): a(ng-click="CSVEncoding='UTF-8'") UTF-8
-              button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="readLink()") 讀取
+                li(ng-class="{'active':parser.encoding=='ISO-8859-1'}")
+                  a(ng-click="parser.encoding='ISO-8859-1'") ISO-8859-1
+                li(ng-class="{'active':parser.encoding=='Big5'}"): a(ng-click="parser.encoding='BIG5'") BIG5
+                li(ng-class="{'active':parser.encoding=='GB2312'}"): a(ng-click="parser.encoding='GB2312'") GB2312
+                li(ng-class="{'active':parser.encoding=='UTF-8'}"): a(ng-click="parser.encoding='UTF-8'") UTF-8
+              button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="readLink()") Read
 
-  #fromCSVModal.modal.fade(style="margin-top: 100px")
+  #data-edit-csv-modal.modal.fade(style="margin-top: 100px")
     .modal-dialog
       .modal-content
         .modal-body
-          label 上傳 CSV 檔：
+          label Upload CSV file:
           .input-group
-            input#CSVFile.form-control(type="file",style="border: 1px solid #ccc")
+            input#data-edit-csv-file.form-control(type="file",style="border: 1px solid #ccc")
             span.input-group-btn
               button.btn.btn-default.dropdown-toggle(
               data-toggle="dropdown",type="button",style="border: 1px solid #ccc;border-radius:0")
-                span 編碼 :
-                small {{CSVEncoding}}&nbsp;
+                span Encoding :
+                small {{parser.encoding}}&nbsp;
                 span.caret
               ul.dropdown-menu.dropdown-meu-right
-                li(ng-class="{'active':CSVEncoding=='ISO-8859-1'}")
-                  a(ng-click="CSVEncoding='ISO-8859-1'") ISO-8859-1
-                li(ng-class="{'active':CSVEncoding=='Big5'}"): a(ng-click="CSVEncoding='BIG5'") BIG5
-                li(ng-class="{'active':CSVEncoding=='GB2312'}"): a(ng-click="CSVEncoding='GB2312'") GB2312
-                li(ng-class="{'active':CSVEncoding=='UTF-8'}"): a(ng-click="CSVEncoding='UTF-8'") UTF-8
-              button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="readCSV()") 讀取
+                li(ng-class="{'active':parser.encoding=='ISO-8859-1'}")
+                  a(ng-click="parser.encoding='ISO-8859-1'") ISO-8859-1
+                li(ng-class="{'active':parser.encoding=='Big5'}"): a(ng-click="parser.encoding='BIG5'") BIG5
+                li(ng-class="{'active':parser.encoding=='GB2312'}"): a(ng-click="parser.encoding='GB2312'") GB2312
+                li(ng-class="{'active':parser.encoding=='UTF-8'}"): a(ng-click="parser.encoding='UTF-8'") UTF-8
+              button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="parser.csv.read()") Read
 
-  #fromSpreadsheetModal.modal.fade(style="margin-top: 100px")
+  #data-edit-gsheet-modal.modal.fade(style="margin-top: 100px")
     .modal-dialog
       .modal-content
         .modal-body
-          label 貼上 Google Spreadsheet 的網址：
+          label From Google Spreadsheet URL:
           .input-group
-            input.form-control(type="text",style="border: 1px solid #ccc",ng-model="spreadsheetURL")
+            input.form-control(type="text",style="border: 1px solid #ccc",ng-model="parser.gsheet.url")
             span.input-group-btn
-              button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="readSpreadsheet()") 讀取
+              button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="parser.gsheet.read()") Read
 
 
   .panel.panel-default
     .panel-heading
-      b Create Dataset
+      b #[span(ng-if="dataset") Edit]#[span(ng-if="!dataset") Create] Dataset
       .pull-right
-        .btn.btn-default.btn-xs(ng-click="uploadFromCSV()")
+        .btn.btn-default.btn-xs(ng-click="parser.csv.toggle()")
           i.fa.fa-upload
           span &nbsp; upload 
         span &nbsp;
-        .btn.btn-default.btn-xs(ng-click="uploadFromLink()")
+        .btn.btn-default.btn-xs(ng-click="parser.link.toggle()")
           i.fa.fa-cloud
           span &nbsp; from link 
         span &nbsp;
-        .btn.btn-default.btn-xs(ng-click="uploadFromSpreadsheet()")
+        .btn.btn-default.btn-xs(ng-click="parser.gsheet.toggle()")
           i.fa.fa-table
           span &nbsp; google sheet 
     .panel-body
-      textarea.form-control(rows="6",ng-model="editor.raw",placeholder="paste or drag your data here...",style="margin-bottom:13px;font-family:monospace")
+      textarea.form-control(rows="6",ng-model="data.raw",placeholder="paste or drag your data here...",style="margin-bottom:13px;font-family:monospace")
       .input-group.pull-left(style="width:200px")
-        input.form-control.input-sm(type="input",ng-model="editor.name",placeholder="Dataset Name")
+        input.form-control.input-sm(type="input",ng-model="name",placeholder="Dataset Name")
         span.input-group-btn
-          .btn.btn-default.btn-sm(ng-disabled="!editor.name || !editor.data",ng-click="editor.save()") Save
+          .btn.btn-default.btn-sm(ng-disabled="!name || !data.parsed",ng-click="save()") Save
       span &nbsp;
-      .btn.btn-sm.btn-default(ng-disabled="!editor.name || !editor.data",ng-click="editor.save(true)") Save Locally
-      span(style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px",ng-show="editor.data && editor.rows")
-        | {{editor.rows}} rows, {{editor.sizetext}}
+      .btn.btn-sm.btn-default(ng-disabled="!name || !data.parsed",ng-click="save(true)") Save Locally
+      span(style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px",ng-show="data.parsed && data.rows")
+        | {{data.rows}} rows, {{data.size}}
       .btn.btn-default.btn-sm.pull-right Vis without Save
 
