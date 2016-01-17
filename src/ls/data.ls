@@ -63,16 +63,19 @@ angular.module \plotDB
       datasets: [] ++ sampleData.map(-> new Dataset(it))
       name: -> "/datasets/#it"
       local: rows: 0, size: 0
+      local-size: ->
+        for item in @datasets => 
+          if item.type.name == \local => 
+            @local.rows += item.rows
+            @local.size += item.size
       init: ->
         @local <<< {rows: 0, size: 0}
         try
           list = JSON.parse(localStorage.getItem("/list/datasets") or null) or []
           for item in list =>
             data = JSON.parse(localStorage.getItem(item) or null)
-            if data => 
-              @local.rows += data.rows
-              @local.size += data.size
-              @datasets.push new Dataset(data)
+            @datasets.push new Dataset(data)
+          @local-size!
         catch
           console.log e.toString!
 
@@ -82,6 +85,14 @@ angular.module \plotDB
           dataset.sync!
           f.data = dataset.[]data.map(->it[f.name])
         find-dataset: (f) -> dataset = data-service.find f
+        #TODO better interface
+        settype: (data, field) ->
+          data = data.map(->it[field.name])
+          types = <[Date Boolean Percent Number]>
+          for type in types =>
+            if !data.map(-> plotdb[type]test it).filter(->!it).length => 
+              field.type = type
+              break
 
       find: (item) -> 
         #TODO: complete implement finder
@@ -134,6 +145,8 @@ angular.module \plotDB
         permission: switch: <[public]>, list: []
         data: $scope.data.parsed
         fields: [[k,v] for k,v of $scope.data.parsed.0].map(-> {name: it.0, type: \String})
+      for item in config.fields =>
+        data-service.field.settype $scope.data.parsed, item
       $scope.dataset = new dataService.Dataset config
       $scope.dataset.save!
 
