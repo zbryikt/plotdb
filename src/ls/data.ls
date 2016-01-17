@@ -7,8 +7,8 @@ angular.module \plotDB
         name: "Gold Price(2000)", size: \481, rows: 12, color: \#f99
         type: name: \sample
         fields: [
-          * name: "Date", type: \Date, dataset: "/dataset/sample/:goldprice2000"
-          * name: "Price", type: \Number, dataset: "/dataset/sample/:goldprice2000"
+          * name: "date", type: \Date, dataset: "/dataset/sample/:goldprice2000"
+          * name: "price", type: \Number, dataset: "/dataset/sample/:goldprice2000"
         ]
         data: [{"date":"2000-01-01","price":"284.590"},{"date":"2000-02-01","price":"300.855"},{"date":"2000-03-01","price":"286.704"},{"date":"2000-04-01","price":"279.961"},{"date":"2000-05-01","price":"275.293"},{"date":"2000-06-01","price":"285.368"},{"date":"2000-07-01","price":"282.152"},{"date":"2000-08-01","price":"274.523"},{"date":"2000-09-01","price":"273.676"},{"date":"2000-10-01","price":"270.405"},{"date":"2000-11-01","price":"265.989"},{"date":"2000-12-01","price":"271.892"}]
       },
@@ -70,7 +70,6 @@ angular.module \plotDB
           for item in list =>
             data = JSON.parse(localStorage.getItem(item) or null)
             if data => 
-              console.log data
               @local.rows += data.rows
               @local.size += data.size
               @datasets.push new Dataset(data)
@@ -85,7 +84,6 @@ angular.module \plotDB
         find-dataset: (f) -> dataset = data-service.find f
 
       find: (item) -> 
-        console.log item
         #TODO: complete implement finder
         if item.dataset => id = item.dataset else id = item
         @datasets.filter(->it.id == id).0

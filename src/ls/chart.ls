@@ -22,13 +22,14 @@ angular.module \plotDB
             for k,dim of @dimensions
               f = dim.[]fields.0
               ret[dim.name] = if f => f.[]data[i] else null
+              #TODO need correct type matching
+              if dim.type.filter(->it == \Number).length => ret[dim.name] = parseFloat(ret[dim.name])
             data.push ret
-        config = {}
-        config <<< @configs
-        #for  in @configs => config[item.name] = item.value
+        config = {} <<< @configs
         payload = {data,config} <<< $scope.chart{doc,style,code}
         visualizer = document.getElementById(\visualizer)
-        visualizer.contentWindow.postMessage payload, \http://localhost/
+        #TODO correct referrer
+        visualizer.contentWindow.postMessage {type: \render, payload}, \http://localhost/
       doc: do
         option: do
           mode: \xml
@@ -102,28 +103,42 @@ angular.module \plotDB
       $scope.chart.render!
 
     $scope.$watch 'chart.configs', (-> $scope.chart.render!), true
-    $scope.save = ->
+    window.addEventListener \message, (({data}) ->
+      if !data or data.type!=\snapshot => return
+      #TODO need sanity check
+      $scope.chart.thumbnail = data.payload
+      $scope.save $scope.chart.isType
+    ), false
+    $scope.save = (as-type = false) ->
       c = $scope.chart
-
+      if !c.thumbnail => visualizer.contentWindow.postMessage {type: \snapshot}, \http://localhost/
+      c.isType = as-type
       #TODO assets
       dimension = {}
       for k,v of c.dimensions => 
         dimension[k] = {} <<< v
         for item in dimension[k].[]fields => delete item.data
+      if as-type => for k,v of dimension => v.fields = []
       chart = do
         doc: c.doc.content
         style: c.style.content
         code: c.code.content
         config: c.configs
         dimension: dimension
+        thumbnail: c.thumbnail
+        isType: c.isType
       chart.name = $scope.name
-      list = JSON.parse(localStorage.getItem("/list/charts")) or []
+      chart.desc = $scope.desc
+
+      type = if as-type => "charttype" else "charts"
+
+      list = JSON.parse(localStorage.getItem("/list/#type")) or []
       if list.indexOf($scope.name) < 0 => 
         list.push $scope.name
-        localStorage.setItem("/list/charts", angular.toJson(list.filter(->it)))
-      localStorage.setItem("/charts/#{$scope.name}", angular.toJson(chart))
+        localStorage.setItem("/list/#type", angular.toJson(list.filter(->it)))
+      localStorage.setItem("/#type/#{$scope.name}", angular.toJson(chart))
       setTimeout ( ->
-        data = JSON.parse(localStorage.getItem("/charts/#{$scope.name}"))
+        data = JSON.parse(localStorage.getItem("/#type/#{$scope.name}"))
       ), 1000
       #TODO save
     $scope.load = (name) ->

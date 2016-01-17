@@ -61,47 +61,12 @@ angular.module \plotDB, <[backend ui.codemirror ngDraggable]>
     #if ga? => $scope.$watch 'user.data', (-> ga \set, \dimension1, $scope.user.data.key), true
 
     /* temporarily code for mockup */
-    $scope.charts = [
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-      * name: "Bar Chart", desc: "Bar chart is best for unordered numeric data which ranges widely.", key: \bar
-      * name: "Pie Chart", desc: "Pie chart sometimes considered bad but is still great in proportional data", key: \pie
-    ]
+    $scope.charts = []
+    list = JSON.parse(localStorage.getItem("/list/charttype"))
+    for item in list =>
+      chart = JSON.parse(localStorage.getItem("/charttype/#item"))
+      $scope.charts.push chart
+    if $scope.charts.length < 10 =>
+      for i from 0 til 100 => $scope.charts.push {} <<< chart
+    $scope.load = (chart) ->
+      window.location.href = "/chart.html?name=#{chart.name}"

@@ -58,7 +58,7 @@ block body
 
     .charts
       .chart(ng-repeat="chart in charts",style="display:inline-block",ng-click="load(chart)")
-        .chart-img(ng-attr-style="background-image:url(/assets/img/tmp-{{chart.key}}.png)")
+        .chart-img(ng-attr-style="background-image:url({{chart.thumbnail}})")
         .chart-desc
           .title {{chart.name}}
           .desc {{chart.desc || 'check it yourself!'}}

@@ -58,22 +58,28 @@ block body
 
     .charts
       .chart(ng-repeat="chart in charts",ng-click="load(chart)")
-        .chart-img(ng-attr-style="background-image:url(/assets/img/tmp-{{chart.key}}.png)")
+        .chart-img(ng-attr-style="background-image:url({{chart.thumbnail}})")
         .chart-desc
           .title {{chart.name}}
           .desc {{chart.desc || 'check it yourself!'}}
           .dimension
             div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Dimensions
-            .label.label-default.label-light Radius
-            span &nbsp;
-            .label.label-success.label-light X-axis
-            span &nbsp;
-            .label.label-default.label-light Y-axis
+            span(ng-repeat="dim in chart.dimension")
+              .label.label-default.label-light {{dim.name}}
+              span &nbsp;
+            //-
+              .label.label-default.label-light Radius
+              span &nbsp;
+              .label.label-success.label-light X-axis
+              span &nbsp;
+              .label.label-default.label-light Y-axis
           .property
             div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Best use with
-            .label.label-default.label-light Geo-related
-            span &nbsp;
-            .label.label-default.label-light Population
+            .label.label-default.label-light General Data
+            //-
+              .label.label-default.label-light Geo-related
+              span &nbsp;
+              .label.label-default.label-light Population
       .chart.flexend
     br
     .text-center: a(href="list.html") I want MORE! &nbsp; #[i.fa.fa-pie-chart]

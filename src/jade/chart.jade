@@ -49,7 +49,6 @@ block body
               input.form-control(type="text",ng-model="name",placeholder="Project Name")
           #project-action.btn-group(style="width:100%")
             .btn.btn-default(ng-disabled="!name", ng-click="save()") Save
-            .btn.btn-default(ng-disabled="!name", ng-click="load()") Load
             .dropdown
               .btn.btn-default.dropdown-toggle(data-toggle="dropdown") Download #[span.caret]
               ul.dropdown-menu
@@ -136,4 +135,14 @@ block body
               .desc accept: #[span(ng-repeat="name in dim.type") {{name}}] #[span(ng-show="!dim.type.length") Any]
               .data-field(ng-repeat="field in dim.fields") {{field.name}}
             .dimension.flexend
+    .row
+      .col-sm-12
+        .panel.panel-default
+          .panel-heading: label Deploy as Template
+          .panel-body
+            p You can deploy this chart as a new template for others to use.
+
+            label Description
+            textarea.form-control(ng-model="desc",rows="5",style="margin-bottom:5px",placeholder="write something about this template..")
+            .btn.btn-default(ng-click="save(true)") Deploy As Template
   include footer.jade

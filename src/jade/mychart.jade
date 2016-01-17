@@ -16,7 +16,7 @@ block body
   div &nbsp;
   #root(ng-controller="mychart",style="max-width:1200px;margin-left:auto;margin-right:auto")
     .chart(ng-repeat="chart in mycharts",ng-click="goto(chart)")
-      .chart-img(ng-attr-style="background-image:url(/assets/img/tmp-{{chart.key}}.png)")
+      .chart-img(ng-attr-style="background-image:url({{chart.thumbnail}})")
       .chart-desc
         .title {{chart.name}}
         .desc {{chart.desc || 'check it yourself!'}}
@@ -27,9 +27,10 @@ block body
             span &nbsp;
         .property
           div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Best use with
-          .label.label-default.label-light Geo-related
-          span &nbsp;
-          .label.label-default.label-light Population
+          .label.label-default.label-light General Data
+          //-.label.label-default.label-light Geo-related
+            span &nbsp;
+            .label.label-default.label-light Population
     .chart.flexend
   br
   .text-center: a(href="list.html") I want MORE! &nbsp; #[i.fa.fa-pie-chart]
