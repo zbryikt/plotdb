@@ -179,33 +179,6 @@ angular.module \plotDB
             $(\#data-edit-link-modal).modal \hide
           #TODO error handling
 
-    /*$scope.editor = do
-      raw: ""
-      handler: null
-      data: null
-      parse: ->
-        $scope.handler = null
-        @data = Papa.parse($scope.editor.raw, {header:true}).data
-        @rows = @data.length
-        @size = @raw.length
-        @sizetext = data-service.verbose-size @size
-
-      build: (is-local)-> do
-        name: @name, size: @size, rows: @rows, color: \#ccc, key: $scope.datasets.length,
-        data: @data, is-local: is-local,
-        fields: [[k,v] for k,v of @data.0].map(-> {name: it.0, type: \String, file: $scope.datasets.length})
-      save: (is-local = true) ->
-        payload = @build is-local
-        data-service.save payload, is-local
-
-    */
-
-    /*$scope.$watch 'editor.raw', -> 
-      $scope.editor.data = null
-      if $scope.handler => $timeout.cancel $scope.handler
-      $scope.handler = $timeout((-> $scope.editor.parse!), 1000)
-    $scope.datasets = data-service.datasets*/
-
   ..controller \dataEditor, <[$scope $timeout $http dataService]> ++ ($scope, $timeout, $http, data-service) ->
   ..controller \dataFiles, <[$scope dataService]> ++ ($scope, data-service) ->
     $scope.datasets = data-service.datasets
