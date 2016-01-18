@@ -24,7 +24,7 @@ angular.module \plotDB
       },
     ]
   ..filter \size, -> ->
-    if it < 1000 => "#{it}bytes"
+    if it < 1000 => "#{it}B"
     else if it < 1048576 => "#{parseInt(it / 102.4)/10}KB"
     else "#{parseInt(it / 104857.6)/10}MB"
   ..service \plUtil, <[$rootScope]> ++ ($rootScope) ->

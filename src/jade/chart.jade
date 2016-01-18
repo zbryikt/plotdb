@@ -13,7 +13,8 @@ block head
   script(type="text/javascript",src="/js/chart-sample.js")
   script(type="text/javascript",src="/js/data.js")
 block body
-  - var tabs = [{name: 'preview', dimension: 2 }, {name: 'code', type: 'javascript', size: '37KB', line: '125', src: true}, {name: 'stylesheet', type:'css', size: '500B', line: '10', src: true}, {name: 'document',type: 'html', size: '20B', line: '3', src: true}, {name: 'assets', type: '', files: '3', src: true}]
+  - var tabs = [{name: 'preview', dimension: 2 }, {name: 'assets', type: '', files: '3', src: true}]
+  //-- var tabs = [{name: 'preview', dimension: 2 }, {name: 'code', type: 'javascript', size: '37KB', line: '125', src: true}, {name: 'stylesheet', type:'css', size: '500B', line: '10', src: true}, {name: 'document',type: 'html', size: '20B', line: '3', src: true}, {name: 'assets', type: '', files: '3', src: true}]
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
@@ -23,21 +24,31 @@ block body
           .desc.text-right
             i.glyphicon.glyphicon-chevron-right(ng-show="!showsrc")
             i.glyphicon.glyphicon-chevron-left(ng-show="showsrc")
+
         for i in tabs
           .tab(ng-class="{'active':vis=='"+i.name+"','shown':"+!(i.src)+" || showsrc}",ng-click="vis='"+i.name+"'")
             div #[span #{i.name}] #[small #{i.type}]
             .desc 
               span &nbsp;
-              if i.size
-                span #{i.size}
-              if i.line
-                span #{i.line} lines
               if i.dimension
                 span #{i.dimension} dimensions
               if i.dataset
                 span #{i.dataset} datasets
               if i.files
                 span #{i.files} files
+
+        .tab(ng-class="{'active':vis=='code','shown':showsrc}",ng-click="vis='code'")
+          div #[span code] #[small javascript]
+          .desc {{chart.code.size|size}}, {{chart.code.lines}} lines
+        .tab(ng-class="{'active':vis=='stylesheet','shown':showsrc}",ng-click="vis='stylesheet'")
+          div #[span stylesheet] #[small css]
+          .desc {{chart.style.size|size}}, {{chart.style.lines}} lines
+        .tab(ng-class="{'active':vis=='document','shown':showsrc}",ng-click="vis='document'")
+          div #[span document] #[small html]
+          .desc {{chart.doc.size|size}}, {{chart.doc.lines}} lines
+        .tab(ng-class="{'active':vis=='assets','shown':showsrc}",ng-click="vis='assets'")
+          div #[span assets] #[small]
+          .desc no files
 
     .row
       .col-sm-3

@@ -48,17 +48,31 @@ angular.module \plotDB
           lineWrapping: true
           lineNumbers: true
         content: "function() {}"
+    $scope.switch-panel = ->
+      old = $scope.vis
+      if $scope.vis == 'preview' and $scope.oldvis => $scope.vis = $scope.oldvis
+      else if $scope.vis == 'preview' => $scope.vis = 'code'
+      else $scope.vis = 'preview'
+      if old != 'preview' => $scope.oldvis = old
     $scope.codemirrored = (editor) ->
-      toggle = -> setTimeout (->$scope.$apply -> $scope.vis = 'preview'), 10
+      toggle = -> setTimeout (->$scope.$apply -> $scope.swtich-panel!), 10
       editor.setOption \extraKeys, do
         "Cmd-Enter": toggle
         "Alt-Enter": toggle
     document.body.addEventListener \keydown, (e) -> 
       console.log ((e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13))
-      if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) => $scope.$apply -> 
-        $scope.vis = if $scope.vis == 'code' => 'preview' else 'code'
+      if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) => $scope.$apply -> $scope.switch-panel!
     $scope.chart.init!
     setTimeout (->$scope.chart.render!), 1000
+    countline = ->
+      for item in <[code style doc]>
+        $scope.chart[item].lines = $scope.chart[item].content.split(\\n).length
+        $scope.chart[item].size = $scope.chart[item].content.length
+    $scope.$watch 'chart.doc.content', countline
+    $scope.$watch 'chart.style.content', countline
+    $scope.$watch 'chart.code.content', countline
+    $scope.$watch 'chart.doc.content', -> $scope.chart.render!
+    $scope.$watch 'chart.style.content', -> $scope.chart.render!
     $scope.$watch 'chart.code.content', (code) ->
       [lines,maps,confs] = [code.split(\\n),[],[]]
       [new-dim,new-conf] = [{},{}]
