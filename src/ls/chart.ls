@@ -104,10 +104,13 @@ angular.module \plotDB
 
     $scope.$watch 'chart.configs', (-> $scope.chart.render!), true
     window.addEventListener \message, (({data}) ->
-      if !data or data.type!=\snapshot => return
-      #TODO need sanity check
-      $scope.chart.thumbnail = data.payload
-      $scope.save $scope.chart.isType
+      if !data => return
+      if data.type == \error =>
+        $scope.codeError = data.payload
+      else if data.type == \snapshot =>
+        #TODO need sanity check
+        $scope.chart.thumbnail = data.payload
+        $scope.save $scope.chart.isType
     ), false
     $scope.save = (as-type = false) ->
       c = $scope.chart
