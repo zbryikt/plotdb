@@ -48,6 +48,15 @@ angular.module \plotDB
           lineWrapping: true
           lineNumbers: true
         content: "function() {}"
+    $scope.codemirrored = (editor) ->
+      toggle = -> setTimeout (->$scope.$apply -> $scope.vis = 'preview'), 10
+      editor.setOption \extraKeys, do
+        "Cmd-Enter": toggle
+        "Alt-Enter": toggle
+    document.body.addEventListener \keydown, (e) -> 
+      console.log ((e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13))
+      if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) => $scope.$apply -> 
+        $scope.vis = if $scope.vis == 'code' => 'preview' else 'code'
     $scope.chart.init!
     setTimeout (->$scope.chart.render!), 1000
     $scope.$watch 'chart.code.content', (code) ->
@@ -107,6 +116,7 @@ angular.module \plotDB
       if !data => return
       if data.type == \error =>
         $scope.codeError = data.payload
+      else if data.type == \alt-enter => $scope.$apply -> $scope.vis = 'code'
       else if data.type == \snapshot =>
         #TODO need sanity check
         $scope.chart.thumbnail = data.payload

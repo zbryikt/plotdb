@@ -46,3 +46,7 @@ render = (payload) ->
 
 window.addEventListener \message, dispatcher, false
 
+window.addEventListener \keydown, (e) ->
+  if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) =>
+    #TODO correct referrer
+    window.parent.postMessage {type: \alt-enter}, \http://localhost/

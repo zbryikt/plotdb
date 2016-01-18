@@ -65,16 +65,16 @@ block body
 
         #code-editor(ng-show="vis!='preview'")
           #code-header {{vis}}
-          #code-editor-code.inner(ui-codemirror,ui-codemirror-opts="chart.code.option",ng-model="chart.code.content",ng-show="vis=='code'")
-          #code-editor-style.inner(ui-codemirror,ui-codemirror-opts="chart.style.option",ng-model="chart.style.content",ng-show="vis=='stylesheet'")
-          #code-editor-doc.inner(ui-codemirror,ui-codemirror-opts="chart.doc.option",ng-model="chart.doc.content",ng-show="vis=='document'")
+          #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="chart.code.option",ng-model="chart.code.content",ng-show="vis=='code'")
+          #code-editor-style.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="chart.style.option",ng-model="chart.style.content",ng-show="vis=='stylesheet'")
+          #code-editor-doc.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="chart.doc.option",ng-model="chart.doc.content",ng-show="vis=='document'")
           #code-ctrl
             .btn.btn-default(ng-click="chart.render()") Save
             span &nbsp;
-            .btn.btn-default(ng-click="chart.render();vis='preview'") Preview
+            .btn.btn-default(ng-click="chart.render();vis='preview'") Preview #[small.hint Alt-Enter]
 
         #visualization-canvas2.plpanel(ng-show="vis=='preview'")
-          .btn.btn-default(ng-click="vis='code'") Open Code
+          .btn.btn-default(ng-click="vis='code'") Open Code #[small.hint Alt-Enter]
           iframe#visualizer(src="http://localhost/render.html",style="width:100%;height:100%;border:none;overflow:hidden",scrolling="no")
 
     //-.row(ng-show="vis=='preview'")
