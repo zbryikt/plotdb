@@ -20,8 +20,17 @@ plotdb <<< do
     name: \Palette
     level: 5
     test: -> 
-      return if it and typeof(it) == typeof([]) and it.length and 
-      it.filter(->!!!/(rgba?|hsla?)\([0-9.,]+\)|#[0-9a-f]{3,6}|[a-z0-9]+/.exec it).length == 0 => true else false
+      re = /^((rgb|hsl)\((\s*[0-9.]+\s*,){2}\s*[0-9.]+\s*\)|(rgb|hsl)a\((\s*[0-9.]+\s*,){3}\s*[0-9.]+\s*\)|\#[0-9a-f]{3}|\#[0-9a-f]{6}|[a-zA-Z][a-zA-Z0-9]*)$/
+      if typeof(it) == typeof("") =>
+        if it.charAt(0) != '[' => it = it.split(\,)
+        else 
+          try
+            it = JSON.parse(it)
+          catch
+            return false
+      if it and typeof(it) == typeof([]) and it.length =>
+        return if !it.filter(->!!!re.exec(it.trim!)).length => true else false
+      return false
     parse: -> 
       if !it => return it
       if typeof(it) == typeof({}) and it.length => return it
@@ -29,7 +38,7 @@ plotdb <<< do
         try
           return JSON.parse(it)
         catch
-          return it.split(\,)
+          return it.split(\,).map(->it.trim!)
       return it 
     default: <[#1d3263 #226c87 #f8d672 #e48e11 #e03215 #ab2321]>
   Boolean:
