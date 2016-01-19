@@ -10,6 +10,7 @@ block head
   //-script(type="text/javascript",src="/js/charts/base.js")
   //-script(type="text/javascript",src="/js/dev.js")
   script(type="text/javascript",src="/js/data.js")
+  script(type="text/javascript",src="/js/chart.js")
 block body
   #landing
     .title PlotDB
@@ -75,7 +76,8 @@ block body
               .label.label-default.label-light Y-axis
           .property
             div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Best use with
-            .label.label-default.label-light General Data
+            span(style="color:#ddd;",ng-if="!chart.tags") n/a
+            .label.label-default.label-light(ng-repeat="tag in chart.tags|tags",style="margin-right:3px") {{tag}}
             //-
               .label.label-default.label-light Geo-related
               span &nbsp;

@@ -1,4 +1,5 @@
 angular.module \plotDB
+  ..filter \tags, -> -> (it or "").split(\,)
   ..controller \chartEditor, <[$scope dataService sampleChart]> ++ ($scope, data-service, sampleChart) ->
     $scope.vis = \preview
     $scope.showsrc = true
@@ -25,6 +26,7 @@ angular.module \plotDB
               #TODO need correct type matching
               if dim.type.filter(->it == \Number).length => ret[dim.name] = parseFloat(ret[dim.name])
             data.push ret
+        console.log ">", data
         config = {} <<< @configs
         payload = {data,config} <<< $scope.chart{doc,style,code}
         visualizer = document.getElementById(\visualizer)
@@ -60,7 +62,6 @@ angular.module \plotDB
         "Cmd-Enter": toggle
         "Alt-Enter": toggle
     document.body.addEventListener \keydown, (e) -> 
-      console.log ((e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13))
       if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) => $scope.$apply -> $scope.switch-panel!
     $scope.chart.init!
     setTimeout (->$scope.chart.render!), 1000
@@ -156,6 +157,7 @@ angular.module \plotDB
         isType: c.isType
       chart.name = $scope.name
       chart.desc = $scope.desc
+      chart.tags = $scope.tags
 
       type = if as-type => "charttype" else "charts"
 
@@ -168,16 +170,20 @@ angular.module \plotDB
         data = JSON.parse(localStorage.getItem("/#type/#{$scope.name}"))
       ), 1000
       #TODO save
-    $scope.load = (name) ->
+    $scope.load = (name, fromtype = false) ->
       if !(name?) => name = $scope.name
       if !name => return
-      chart = JSON.parse(localStorage.getItem("/charts/#name"))
+      type = if fromtype => "charttype" else "charts"
+      chart = JSON.parse(localStorage.getItem("/#type/#name"))
+      console.log type, chart, name
       c = $scope.chart
       c.code.content = chart.code
       c.doc.content = chart.doc
       c.style.content = chart.style
       c.configs = chart.config
       c.dimensions = chart.dimension
+      $scope.desc = chart.desc
+      $scope.tags = chart.tags
       datasets = {}
       for item in data-service.datasets => 
         datasets[item.id] = item
@@ -195,7 +201,9 @@ angular.module \plotDB
       ret = /[?&]name=([^&#]+)/.exec(that)
       if ret =>
         $scope.name = ret.1
-        $scope.load $scope.name
+        ret = /[?&]type=([^&#]+)/.exec(window.location.search)
+        fromtype = if ret and ret.1 == "true" => true else false
+        $scope.load $scope.name, fromtype
   ..controller \mychart, <[$scope dataService]> ++ ($scope, data-service) ->
     # My Charts
     $scope.mycharts = []

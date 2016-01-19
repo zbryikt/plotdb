@@ -156,5 +156,7 @@ block body
 
             label Description
             textarea.form-control(ng-model="desc",rows="5",style="margin-bottom:5px",placeholder="write something about this template..")
+            label What kind of data best fits into this chart?
+            input.form-control(ng-model="tags",style="margin-bottom:5px",placeholder="comma separated values, like 'population,economics'")
             .btn.btn-default(ng-click="save(true)") Deploy As Template
   include footer.jade
