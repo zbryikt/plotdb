@@ -1,6 +1,8 @@
 angular.module \plotDB
   ..filter \tags, -> -> (it or "").split(\,)
-  ..controller \chartEditor, <[$scope dataService sampleChart]> ++ ($scope, data-service, sampleChart) ->
+  ..controller \chartEditor,
+  <[$scope $timeout dataService sampleChart]> ++
+  ($scope, $timeout, data-service, sampleChart) ->
     $scope.vis = \preview
     $scope.showsrc = true
     $scope.chart = do
@@ -20,13 +22,12 @@ angular.module \plotDB
         if dim0 =>
           for i from 0 til dim0.fields.0.data.length
             ret = {}
-            for k,dim of @dimensions
+            for name,dim of @dimensions
               f = dim.[]fields.0
-              ret[dim.name] = if f => f.[]data[i] else null
+              ret[name] = if f => f.[]data[i] else null
               #TODO need correct type matching
-              if dim.type.filter(->it == \Number).length => ret[dim.name] = parseFloat(ret[dim.name])
+              if dim.type.filter(->it.name == \Number).length => ret[name] = parseFloat(ret[name])
             data.push ret
-        console.log ">", data
         config = {} <<< @configs
         payload = {data,config} <<< $scope.chart{doc,style,code}
         visualizer = document.getElementById(\visualizer)
@@ -57,7 +58,7 @@ angular.module \plotDB
       else $scope.vis = 'preview'
       if old != 'preview' => $scope.oldvis = old
     $scope.codemirrored = (editor) ->
-      toggle = -> setTimeout (->$scope.$apply -> $scope.swtich-panel!), 10
+      toggle = -> #setTimeout (->$scope.$apply -> $scope.switch-panel!), 10
       editor.setOption \extraKeys, do
         "Cmd-Enter": toggle
         "Alt-Enter": toggle
@@ -75,6 +76,8 @@ angular.module \plotDB
     $scope.$watch 'chart.doc.content', -> $scope.chart.render!
     $scope.$watch 'chart.style.content', -> $scope.chart.render!
     $scope.$watch 'chart.code.content', (code) ->
+      visualizer.contentWindow.postMessage {type: \parse, payload: code}, \http://localhost/
+      /*
       [lines,maps,confs] = [code.split(\\n),[],[]]
       [new-dim,new-conf] = [{},{}]
       start = 0
@@ -125,6 +128,7 @@ angular.module \plotDB
           v <<< new-conf[k]
           if v.value == v.defval => v.value = oldv
       $scope.chart.render!
+      */
 
     $scope.$watch 'chart.configs', (-> $scope.chart.render!), true
     window.addEventListener \message, (({data}) ->
@@ -136,6 +140,13 @@ angular.module \plotDB
         #TODO need sanity check
         $scope.chart.thumbnail = data.payload
         $scope.save $scope.chart.isType
+      else if data.type == \parse =>
+        {config,mapping} = JSON.parse(data.payload)
+        for k,v of $scope.chart.{}configs => if config[k] => config[k].value = v.value
+        for k,v of config => if !config[k].value => config[k].value = config[k].default
+        for k,v of $scope.chart.{}dimensions => if mapping[k] => mapping[k].fields = v.fields
+        $scope.chart <<< {dimensions: mapping, configs: config}
+        $scope.chart.render!
     ), false
     $scope.save = (as-type = false) ->
       c = $scope.chart
@@ -175,7 +186,6 @@ angular.module \plotDB
       if !name => return
       type = if fromtype => "charttype" else "charts"
       chart = JSON.parse(localStorage.getItem("/#type/#name"))
-      console.log type, chart, name
       c = $scope.chart
       c.code.content = chart.code
       c.doc.content = chart.doc

@@ -52,25 +52,30 @@ block body
 
     .row
       .col-sm-3
-        #config-panel.plpanel 
-          label Project
-          .chart-config
-            .input-group
-              span.input-group-addon name
-              input.form-control(type="text",ng-model="name",placeholder="Project Name")
-          #project-action.btn-group(style="width:100%")
-            .btn.btn-default(ng-disabled="!name", ng-click="save()") Save
-            .dropdown
-              .btn.btn-default.dropdown-toggle(data-toggle="dropdown") Download #[span.caret]
-              ul.dropdown-menu
-                li: a(href="#") PNG
-                li: a(href="#") SVG
-          hr
-          label Config
-          .chart-config(ng-repeat="c in chart.configs")
-            .input-group
-              span.input-group-addon {{c.name}}
-              input.form-control(type="text",ng-attr-placeholder="{{c.defval}}",ng-model="c.value")
+        #config-panel.plpanel
+          #project-configs
+            label Project
+            .chart-config
+              .input-group
+                span.input-group-addon name
+                input.form-control(type="text",ng-model="name",placeholder="Project Name")
+            #project-action.btn-group(style="width:100%")
+              .btn.btn-default(ng-disabled="!name", ng-click="save()") Save
+              .dropdown
+                .btn.btn-default.dropdown-toggle(data-toggle="dropdown") Download #[span.caret]
+                ul.dropdown-menu
+                  li: a(href="#") PNG
+                  li: a(href="#") SVG
+          #chart-configs: .ib
+            label Config
+            .chart-config(ng-repeat="(name,v) in chart.configs")
+              .input-group(ng-if="v.type[0].name!='Boolean'")
+                span.input-group-addon {{name}}
+                input.form-control(type="text",ng-attr-placeholder="{{v.default}}",ng-model="v.value")
+              .btn-group(ng-if="v.type[0].name=='Boolean'")
+                span.input-group-addon {{name}}
+                .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
+
       .col-sm-9(style="padding-left:0;position:relative")
         #code-error(ng-show="codeError") {{codeError}}
 
@@ -140,11 +145,11 @@ block body
         .col-sm-8
           label Dimensions
           .dimensions
-            .dimension(ng-repeat="dim in chart.dimensions",ng-drop="true",
+            .dimension(ng-repeat="(name,dim) in chart.dimensions",ng-drop="true",
             ng-drop-success="chart.setdim($data,$event,dim)")
               .require(ng-show="dim.require"): i.fa.fa-asterisk
-              .title {{dim.name}}
-              .desc accept: #[span(ng-repeat="name in dim.type") {{name}}] #[span(ng-show="!dim.type.length") Any]
+              .title {{name}}
+              .desc accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]
               .data-field(ng-repeat="field in dim.fields") {{field.name}}
             .dimension.flexend
     .row
