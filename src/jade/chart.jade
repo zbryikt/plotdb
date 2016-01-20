@@ -150,7 +150,7 @@ block body
               .require(ng-show="dim.require"): i.fa.fa-asterisk
               .title {{name}}
               .desc accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]
-              .data-field(ng-repeat="field in dim.fields") {{field.name}}
+              .data-field(ng-repeat="field in dim.fields") {{field.name}} #[small {{field.type}}]
             .dimension.flexend
     .row
       .col-sm-12
