@@ -132,16 +132,16 @@ block body
             include data/create.jade
       hr
       .row
-        .col-sm-4
+        .col-sm-4(style="position:relative")
           label Data Fields
           .data-fields(ng-controller="dataFiles")
-            .data-file(ng-repeat="file in datasets",ng-show="file.toggle")
+            .data-file(ng-repeat="file in datasets",ng-show="file.toggle",style="position:relative;z-index:10")
               .closebtn(ng-click="file.toggle=!!!file.toggle") &times;
               .title {{file.name}}
               .desc {{file.size}}, {{file.rows}} rows
               .data-field(ng-repeat="field in file.fields",ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field") {{field.name}} #[small {{field.type}}]
             br.clearfix
-
+          img(src="/assets/img/drag.png",style="position:absolute;right:10px;z-index:0")
         .col-sm-8
           label Dimensions
           .dimensions
