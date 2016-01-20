@@ -3,6 +3,7 @@ angular.module \plotDB
   ..controller \chartEditor,
   <[$scope $timeout dataService sampleChart]> ++
   ($scope, $timeout, data-service, sampleChart) ->
+    $scope.plotdomain = \http://localhost/
     $scope.vis = \preview
     $scope.showsrc = true
     $scope.chart = do
@@ -31,8 +32,7 @@ angular.module \plotDB
         config = {} <<< @configs
         payload = {data,config} <<< $scope.chart{doc,style,code}
         visualizer = document.getElementById(\visualizer)
-        #TODO correct referrer
-        visualizer.contentWindow.postMessage {type: \render, payload}, \http://localhost/
+        visualizer.contentWindow.postMessage {type: \render, payload}, $scope.plotdomain
       doc: do
         option: do
           mode: \xml
@@ -65,7 +65,6 @@ angular.module \plotDB
     document.body.addEventListener \keydown, (e) -> 
       if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) => $scope.$apply -> $scope.switch-panel!
     $scope.chart.init!
-    setTimeout (->$scope.chart.render!), 1000
     countline = ->
       for item in <[code style doc]>
         $scope.chart[item].lines = $scope.chart[item].content.split(\\n).length
@@ -76,65 +75,12 @@ angular.module \plotDB
     $scope.$watch 'chart.doc.content', -> $scope.chart.render!
     $scope.$watch 'chart.style.content', -> $scope.chart.render!
     $scope.$watch 'chart.code.content', (code) ->
-      visualizer.contentWindow.postMessage {type: \parse, payload: code}, \http://localhost/
-      /*
-      [lines,maps,confs] = [code.split(\\n),[],[]]
-      [new-dim,new-conf] = [{},{}]
-      start = 0
-      for line in lines =>
-        if /^\s*}\s*,\s*$/.exec(line) and start == 1 => break
-        if start == 1 => maps.push line
-        if /^\s*mapping\s*:\s*{\s*$/.exec(line) => start = 1
-      start = 0
-      for line in lines =>
-        if /^\s*}\s*,\s*$/.exec(line) and start == 1 => break
-        if start == 1 => confs.push line
-        if /^\s*config\s*:\s*{\s*$/.exec(line) => start = 1
-      for map in maps =>
-        ret = /(\S+)\s*:\s*{/.exec(map)
-        if !ret => continue
-        name = ret.1
-        ret = /type\s*:\s*\[([^\]]*)\]/.exec(map)
-        if !ret => continue
-        type = ret.1.split(\,).map(->it.replace(/plotdb\./,"").trim!).filter(->it)
-        ret = /require: (true|false)/.exec(map)
-        if !ret => continue
-        require = if ret.1 == "true" => true else false
-        new-dim[name] = {name, type, require}
-      for conf in confs =>
-        ret = /(\S+)\s*:\s*{/.exec(conf)
-        if !ret => continue
-        name = ret.1
-        ret = /type\s*:\s*\[([^\]]*)\]/.exec(conf)
-        if !ret => continue
-        type = ret.1.split(\,).map(->it.replace(/plotdb\./,"").trim!).filter(->it)
-        # TODO proper parse all possible values 
-        ret = /default: ("[^"]+"|'[^']+'|null|\d+)/.exec(conf)
-        if !ret => continue
-        defval = ret.1
-        new-conf[name] = {name, type, defval, value: defval}
-      for k,v of new-dim =>
-        if !($scope.chart.{}dimensions[k]?) => $scope.chart.{}dimensions[k] = v
-      for k,v of $scope.chart.{}dimensions =>
-        # TODO: if type mismatch -> remove fields
-        if !(new-dim[k]?) => delete $scope.chart.dimensions[k]
-        else $scope.chart.dimensions[k] <<< new-dim[k]
-      for k,v of new-conf =>
-        if !($scope.chart.{}configs[k]?) => $scope.chart.{}configs[k] = v
-      for k,v of $scope.chart.{}configs =>
-        if !(new-conf[k]?) => delete $scope.chart.configs[k]
-        else 
-          oldv = v.value
-          v <<< new-conf[k]
-          if v.value == v.defval => v.value = oldv
-      $scope.chart.render!
-      */
+      visualizer.contentWindow.postMessage {type: \parse, payload: code}, $scope.plotdomain
 
     $scope.$watch 'chart.configs', (-> $scope.chart.render!), true
     window.addEventListener \message, (({data}) ->
-      if !data => return
-      if data.type == \error =>
-        $scope.codeError = data.payload
+      if !data or typeof(data) != typeof({}) => return
+      if data.type == \error => $scope.$apply -> $scope.codeError = data.payload
       else if data.type == \alt-enter => $scope.$apply -> $scope.vis = 'code'
       else if data.type == \snapshot =>
         #TODO need sanity check
@@ -147,10 +93,12 @@ angular.module \plotDB
         for k,v of $scope.chart.{}dimensions => if mapping[k] => mapping[k].fields = v.fields
         $scope.chart <<< {dimensions: mapping, configs: config}
         $scope.chart.render!
+      else if data.type == \loaded =>
+        visualizer.contentWindow.postMessage {type: \parse, payload: $scope.chart.{}code.content}, $scope.plotdomain
     ), false
     $scope.save = (as-type = false) ->
       c = $scope.chart
-      if !c.thumbnail => visualizer.contentWindow.postMessage {type: \snapshot}, \http://localhost/
+      if !c.thumbnail => visualizer.contentWindow.postMessage {type: \snapshot}, $scope.plotdomain
       c.isType = as-type
       #TODO assets
       dimension = {}

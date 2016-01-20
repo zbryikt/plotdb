@@ -7,6 +7,7 @@ angular.module \plotDB
         content: ""
       code: do
         content: """
+module = {};
 module.exports = plotdb.chart.create({
   name: "New Chart",
   title: "New Chart",

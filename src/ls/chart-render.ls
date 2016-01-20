@@ -1,16 +1,29 @@
 <- $ document .ready
 
+plotdomain = \http://localhost/
 dispatcher = (evt) ->
   if evt.data.type == \snapshot => snapshot!
   else if evt.data.type == \render => render evt.data.payload
   else if evt.data.type == \parse => parse evt.data.payload
+
+error-handling = (e) ->
+  if !e => payload = "plot failed with unknown error"
+  else if typeof(e) != typeof({}) => payload = "#e"
+  else if !e.stack => payload = e.toString!
+  else payload = e.stack
+  if payload.length > 1024 => payload = payload.substring(0,1024) + "..."
+  lines = payload.split(\\n)
+  if lines.length > 4 => payload = lines.splice(0,4).join(\\n)
+  window.parent.postMessage {type: \error, payload}, plotdomain
 
 parse = (payload) ->
   try
     eval(payload)
     chart = module.exports
     payload = JSON.stringify({} <<< chart{mapping, config})
-    window.parent.postMessage {type: \parse, payload}, \http://localhost/
+    window.parent.postMessage {type: \parse, payload}, plotdomain
+  catch e
+    error-handling e
 
 snapshot = ->
   canvas = document.createElement \canvas
@@ -18,8 +31,7 @@ snapshot = ->
   svg = document.getElementById \container .innerHTML
   canvg canvas, svg
   result = canvas.toDataURL!
-  #TODO correct referrer
-  window.parent.postMessage {type: \snapshot, payload: result}, \http://localhost/
+  window.parent.postMessage {type: \snapshot, payload: result}, plotdomain
 
 render = (payload) ->
   code = payload.code.content
@@ -49,21 +61,14 @@ render = (payload) ->
     chart.bind root, data, config
     chart.resize root, data, config
     chart.render root, data, config
-    window.parent.postMessage {type: \error, payload: ""}, \http://localhost/
+    window.parent.postMessage {type: \error, payload: ""}, plotdomain
   catch e
-    if !e => payload = "plot failed with unknown error"
-    else if typeof(e) != typeof({}) => payload = "#e"
-    else if !e.stack => payload = e.toString!
-    else payload = e.stack
-    if payload.length > 1024 => payload = payload.substring(0,1024) + "..."
-    lines = payload.split(\\n)
-    if lines.length > 4 => payload = lines.splice(0,4).join(\\n)
-    #TODO correct referrer
-    window.parent.postMessage {type: \error, payload}, \http://localhost/
+    error-handling e
 
 window.addEventListener \message, dispatcher, false
 
 window.addEventListener \keydown, (e) ->
   if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) =>
-    #TODO correct referrer
-    window.parent.postMessage {type: \alt-enter}, \http://localhost/
+    window.parent.postMessage {type: \alt-enter}, plotdomain
+
+window.parent.postMessage {type: \loaded}, plotdomain
