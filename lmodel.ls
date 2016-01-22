@@ -61,26 +61,28 @@ base.permission = new model do
       #TODO check item.0 ?
     return [false]
     
-charttype-config = do
+chart-config = do
   name: \charttype
   base: do
     name: {max: 100, min: 1, required: true, type: model.type.string}
+    desc: {max: 200, min: 1, required: false, type: model.type.string}
+    tags: {max: 200, min: 1, required: false, type: model.type.string}
     doc: {type: base.file}
     style: {type: base.file}
     code: {type: base.file}
     theme: {required: false, type: model.type.key({type:base.theme})}
-    owner: {required: true, type: model.type.key({type:base.user})}
+    #owner: {required: true, type: model.type.key({type:base.user})}
     assets: {required: false, type: model.type.array({type: base.file})}
     config: {require: false}
     dimension: {require: false}
     permission: {required: false, type: base.permission}
     thumbnail: {required: false, type: model.type.string}
-    is-template: {required: false, type: model.type.boolean}
+    is-type: {required: false, type: model.type.boolean}
 
-base.charttype = new model charttype-config
-base.chartobj = new model do
-  name: \chartobj
-  base: charttype-config.base
+base.charttype = new model chart-config
+base.chart = new model do
+  name: \chart
+  base: chart-config.base
 
 module.exports = (storeOuter) ->
   store := storeOuter

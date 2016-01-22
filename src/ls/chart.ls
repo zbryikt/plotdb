@@ -1,8 +1,8 @@
 angular.module \plotDB
   ..filter \tags, -> -> (it or "").split(\,)
   ..controller \chartEditor,
-  <[$scope $timeout dataService sampleChart]> ++
-  ($scope, $timeout, data-service, sampleChart) ->
+  <[$scope $http $timeout dataService sampleChart]> ++
+  ($scope, $http, $timeout, data-service, sampleChart) ->
     $scope.plotdomain = \http://localhost/
     $scope.vis = \preview
     $scope.showsrc = true
@@ -107,9 +107,10 @@ angular.module \plotDB
         for item in dimension[k].[]fields => delete item.data
       if as-type => for k,v of dimension => v.fields = []
       chart = do
-        doc: c.doc.content
-        style: c.style.content
-        code: c.code.content
+        key: c.key
+        doc: {name: 'document', type: 'html', content: c.doc.content}
+        style: {name: 'stylesheet', type: 'css', content: c.style.content}
+        code: {name: 'code', type: 'javascript', content: c.code.content}
         config: c.configs
         dimension: dimension
         thumbnail: c.thumbnail
@@ -117,58 +118,86 @@ angular.module \plotDB
       chart.name = $scope.name
       chart.desc = $scope.desc
       chart.tags = $scope.tags
+      chart.owner = null
 
-      type = if as-type => "charttype" else "charts"
-
-      list = JSON.parse(localStorage.getItem("/list/#type")) or []
-      if list.indexOf($scope.name) < 0 => 
-        list.push $scope.name
-        localStorage.setItem("/list/#type", angular.toJson(list.filter(->it)))
-      localStorage.setItem("/#type/#{$scope.name}", angular.toJson(chart))
-      setTimeout ( ->
-        data = JSON.parse(localStorage.getItem("/#type/#{$scope.name}"))
-      ), 1000
+      type = if as-type => "charttype" else "chart"
+      if false => #local
+        list = JSON.parse(localStorage.getItem("/list/#type")) or []
+        if list.indexOf($scope.name) < 0 => 
+          list.push $scope.name
+          localStorage.setItem("/list/#type", angular.toJson(list.filter(->it)))
+        localStorage.setItem("/#type/#{$scope.name}", angular.toJson(chart))
+      config = if chart.key => 
+        {url: "/d/#type/#{chart.key}", method: \PUT, data: chart} 
+      else {url: "/d/#type", method: \POST, data: chart}
+      console.log config
+      $http config
+      .success (ret) ->
+        console.log "success", ret
+        c.key = ret.key
+      .error (d) ->
+        console.log "error", ret
+      
       #TODO save
-    $scope.load = (name, fromtype = false) ->
-      if !(name?) => name = $scope.name
-      if !name => return
-      type = if fromtype => "charttype" else "charts"
-      chart = JSON.parse(localStorage.getItem("/#type/#name"))
-      c = $scope.chart
-      c.code.content = chart.code
-      c.doc.content = chart.doc
-      c.style.content = chart.style
-      c.configs = chart.config
-      c.dimensions = chart.dimension
-      $scope.desc = chart.desc
-      $scope.tags = chart.tags
-      datasets = {}
-      for item in data-service.datasets => 
-        datasets[item.key] = item
-        item.toggle = false
-      for k,dim of chart.dimension =>
-        fields = dim.fields
-        dim.fields = []
-        for f in fields
-          $scope.chart.setdim f, {}, dim
-          if datasets[f.dataset] => datasets[f.dataset].toggle = true
-      c.render!
+    $scope.load = (key, fromtype = false) ->
+      #if !(key?) => key = $scope.name
+      if !key => return
+      type = if fromtype => "charttype" else "chart"
+      parse = (chart) ->
+        console.log chart
+        c = $scope.chart
+        c.code.content = chart.code.content
+        c.doc.content = chart.doc.content
+        c.style.content = chart.style.content
+        c.configs = chart.config
+        c.dimensions = chart.dimension
+        $scope.desc = chart.desc
+        $scope.tags = chart.tags
+        datasets = {}
+        for item in data-service.datasets => 
+          datasets[item.key] = item
+          item.toggle = false
+        for k,dim of chart.dimension =>
+          fields = dim.fields
+          dim.fields = []
+          for f in fields
+            $scope.chart.setdim f, {}, dim
+            if datasets[f.dataset] => datasets[f.dataset].toggle = true
+        c.render!
+
+      #chart = JSON.parse(localStorage.getItem("/#type/#name"))
+      chart = JSON.parse(localStorage.getItem("#key"))
+      p = if !chart => new Promise (res, rej) ->
+        $http do
+          url: "/d/chart/#key"
+          method: \GET
+        .success (d) -> res d
+        .error (d) -> console.log "ERROR Loading chart: ", d
+      else => new Promise (res, rej) -> res chart
+      p.then (ret) -> parse ret
+
     $scope.datacreate = -> 
       $scope.showDataCreateModal = !!!$scope.showDataCreateModal
     if window.location.search =>
-      ret = /[?&]name=([^&#]+)/.exec(that)
+      ret = /[?&]key=([^&#]+)/.exec(that)
       if ret =>
-        $scope.name = ret.1
+        key = ret.1
         ret = /[?&]type=([^&#]+)/.exec(window.location.search)
         fromtype = if ret and ret.1 == "true" => true else false
-        $scope.load $scope.name, fromtype
-  ..controller \mychart, <[$scope dataService]> ++ ($scope, data-service) ->
+        $scope.load key, fromtype
+  ..controller \mychart, <[$scope $http dataService]> ++ ($scope, $http, data-service) ->
     # My Charts
     $scope.mycharts = []
-    list = JSON.parse(localStorage.getItem("/list/charts")) or []
+    list = JSON.parse(localStorage.getItem("/list/chart")) or []
     $scope.mycharts = list.map ->
-      chart = JSON.parse(localStorage.getItem("/charts/#it"))
+      chart = JSON.parse(localStorage.getItem("/chart/#it"))
     .filter(->it)
+    $http do
+      url: \/d/chart/
+      method: \GET
+    .success (ret) -> 
+      console.log ret
+      $scope.mycharts ++= ret
 
     $scope.goto = (chart) ->
-      window.location.href = "/chart.html?name=#{chart.name}"
+      window.location.href = "/chart.html?key=#{chart.key}"
