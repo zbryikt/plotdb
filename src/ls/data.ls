@@ -3,7 +3,7 @@ angular.module \plotDB
   ..service \sampleData, <[$rootScope]> ++ ($rootScope) ->
     [
       {
-        id: "/dataset/sample/:goldprice2000"
+        key: "/dataset/sample/:goldprice2000"
         name: "Gold Price(2000)", size: \481, rows: 12, color: \#f99
         type: name: \sample
         fields: [
@@ -13,7 +13,7 @@ angular.module \plotDB
         data: [{"date":"2000-01-01","price":"284.590"},{"date":"2000-02-01","price":"300.855"},{"date":"2000-03-01","price":"286.704"},{"date":"2000-04-01","price":"279.961"},{"date":"2000-05-01","price":"275.293"},{"date":"2000-06-01","price":"285.368"},{"date":"2000-07-01","price":"282.152"},{"date":"2000-08-01","price":"274.523"},{"date":"2000-09-01","price":"273.676"},{"date":"2000-10-01","price":"270.405"},{"date":"2000-11-01","price":"265.989"},{"date":"2000-12-01","price":"271.892"}]
       },
       { 
-        id: "/dataset/sample/:population2000"
+        key: "/dataset/sample/:population2000"
         name: "World Population(2000)", size: 12355, rows: 287, color: \#f99
         type: name: \sample
         fields: [
@@ -35,27 +35,28 @@ angular.module \plotDB
           else if it < 1048576 => "#{parseInt(it / 102.4)/10}KB"
           else "#{parseInt(it / 104857.6)/10}MB"
 
-  ..service \dataService, <[$rootScope sampleData plUtil]> ++ ($rootScope, sampleData, plUtil) ->
+  ..service \dataService, <[$rootScope $http sampleData plUtil]> ++ ($rootScope, $http, sampleData, plUtil) ->
     Dataset = (config) ->
       @ <<< config
       @size = angular.toJson(config.data).length
       @rows = config.data.length
+      if @key => for item in @fields => item.dataset = @key
       @
 
     Dataset.prototype = do
-      id: 0, name: null, owner: null, size: 0, rows: 0
+      key: 0, name: null, owner: null, size: 0, rows: 0, datatype: \csv
       type: {}, fields: {}
       permission: {switch: [], list: []}
 
-      save: -> @id = data-service.save @
+      save: -> data-service.save @ .then ~> @key = it.key
       clone: -> 
         obj = new Dataset @
-        obj.id = null
+        obj.key = null
       delete: ->
       update: ->
       sync: ->
         #TODO other than local data
-        @ <<< JSON.parse(localStorage.getItem @id)
+        @ <<< JSON.parse(localStorage.getItem @key)
 
 
     data-service = do
@@ -76,6 +77,12 @@ angular.module \plotDB
             data = JSON.parse(localStorage.getItem(item) or null)
             @datasets.push new Dataset(data)
           @local-size!
+          $http do
+            url: \/d/dataset/
+            method: \GET
+          .success (ret) ~>
+            for dataset in ret => @datasets.push new Dataset(dataset)
+          .error (d) ->
         catch
           console.log e.toString!
 
@@ -88,7 +95,7 @@ angular.module \plotDB
         #TODO better interface
         settype: (data, field) ->
           data = data.map(->it[field.name])
-          types = <[Date Boolean Percent Number]>
+          types = <[Boolean Percent Number Date String]>
           for type in types =>
             if !data.map(-> plotdb[type]test it).filter(->!it).length => 
               field.type = type
@@ -96,41 +103,52 @@ angular.module \plotDB
 
       find: (item) -> 
         #TODO: complete implement finder
-        if item.dataset => id = item.dataset else id = item
-        @datasets.filter(->it.id == id).0
+        if item.dataset => key = item.dataset else key = item
+        @datasets.filter(->it.key == key).0
 
-      gen-id: (dataset) -> # TODO: preserve id once generated
+      gen-key: (dataset) -> # TODO: preserve key once generated
         for i from 0 til 1000
-          id = "/dataset/#{dataset.type.name}/#{Math.random!toString(36)substring 2}"
-          if !@find(id) => return id
+          key = "/dataset/#{dataset.type.name}/#{Math.random!toString(36)substring 2}"
+          if !@find(key) => return key
         null
 
-      save: (dataset) ->
-        if !dataset.id and dataset.type.name == \local => dataset.id = @gen-id dataset
-        #TODO save to server, check for name collision
-        if !dataset.id => return console.log "failed to gen id"
-        for field in dataset.fields => field.dataset = dataset.id
-        idx = @datasets.map(->it.id).indexOf(dataset.id)
-        if idx >= 0 => @datasets.splice idx, 1
+      save: (dataset) -> new Promise (res, rej) ~>
+        if !dataset.key and dataset.type.name == \local => 
+          dataset.key = @gen-key dataset
+          #TODO save to server, check for name collision
+          if !dataset.key => return console.log "failed to gen key"
+        key = @datasets.map(->it.key).indexOf(dataset.key)
+        if key >= 0 => @datasets.splice key, 1
         if dataset.type.name == \local =>
-          localStorage.setItem dataset.id, angular.toJson(dataset)
+          localStorage.setItem dataset.key, angular.toJson(dataset)
           list = JSON.parse(localStorage.getItem("/list/datasets") or null) or []
-          if list.indexOf(dataset.id) < 0 => list.push dataset.id
+          if list.indexOf(dataset.key) < 0 => list.push dataset.key
           localStorage.setItem("/list/datasets", angular.toJson(list))
-        @datasets.push dataset
-        return dataset.id
+          for field in dataset.fields => field.dataset = dataset.key
+          @datasets.push dataset
+          return res dataset
+        else =>
+          $http { url: \/d/dataset/, method: \POST, data: dataset }
+          .success (d) ~> 
+            dataset.key = d.key
+            for field in dataset.fields => field.dataset = dataset.key
+            @datasets.push dataset
+            res dataset
+          .error (d) -> 
+            console.log "[ERROR] ", d
+            rej!
 
       delete: (dataset) ->
-        idx = @datasets.map(->it.id).indexOf(dataset.id) 
-        if idx < 0 => return
-        @datasets.splice idx, 1
+        key = @datasets.map(->it.key).indexOf(dataset.key) 
+        if key < 0 => return
+        @datasets.splice key, 1
         list = JSON.parse(localStorage.getItem(\/list/datasets))
         if !list => return
-        idx = list.indexOf dataset.id
-        if idx < 0 => return
-        list.splice idx, 1
+        key = list.indexOf dataset.key
+        if key < 0 => return
+        list.splice key, 1
         localStorage.setItem \/list/datasets, JSON.stringify(list)
-        localStorage.setItem(dataset.id, null)
+        localStorage.setItem(dataset.key, null)
     data-service.init!
     data-service
   ..controller \dataEditCtrl,
@@ -140,10 +158,12 @@ angular.module \plotDB
     $scope.save = (locally = false) ->
       config = do
         name: $scope.name
-        type: name: \local
+        type: name: (if locally => \local else \server)
         owner: null
         permission: switch: <[public]>, list: []
         data: $scope.data.parsed
+        #TODO support more types
+        datatype: \csv
         fields: [[k,v] for k,v of $scope.data.parsed.0].map(-> {name: it.0, type: \String})
       for item in config.fields =>
         data-service.field.settype $scope.data.parsed, item

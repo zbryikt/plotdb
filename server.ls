@@ -1,5 +1,6 @@
 require! <[LiveScript fs ./secret ./backend/model]>
 require! './backend/main': {backend, aux}
+require! './api/dataset': dataset-controller
 
 config = {debug: true, name: \servlet}
 config <<< secret
@@ -26,4 +27,4 @@ backend.app.get \/sample.js, aux.type.json, (req, res) -> res.render 'sample/ind
 backend.app.get \/, (req, res) -> res.render 'index.jade'
 
 backend.start ->
-
+  dataset-controller backend, config

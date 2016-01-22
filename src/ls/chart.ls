@@ -144,7 +144,7 @@ angular.module \plotDB
       $scope.tags = chart.tags
       datasets = {}
       for item in data-service.datasets => 
-        datasets[item.id] = item
+        datasets[item.key] = item
         item.toggle = false
       for k,dim of chart.dimension =>
         fields = dim.fields

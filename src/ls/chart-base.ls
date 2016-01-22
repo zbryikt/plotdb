@@ -1,9 +1,9 @@
 plotdb = {}
 plotdb <<< do
-  Number: name: \Number, test: (-> !isNaN(+it)), level: 2, parse: -> parseFloat(it)
+  Number: name: \Number, test: (-> !isNaN(+it)), level: 3, parse: -> parseFloat(it)
   String: name: \String, test: (-> true), level: 1, parse: -> it
   Date: 
-    name: \Date, level: 3
+    name: \Date, level: 2
     test: -> 
       d = new Date(it)
       return if !(d instanceof Date) or isNaN(d.getTime!) => false else true

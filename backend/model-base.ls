@@ -97,7 +97,7 @@ model.type = {} <<< do
       return [false]
 
   email: new model do
-    link: -> [!(it and typeof(it)==typeof("") and /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+/.exec(it))]
+    lint: -> [!(it and typeof(it)==typeof("") and /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+/.exec(it))]
 
   number: new model do
     lint: -> [!(typeof(it) == typeof(0))]

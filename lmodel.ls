@@ -20,10 +20,17 @@ base.user = new model do
       <[password usepasswd username _id]>.map -> delete obj[it]
       res obj
 
-base.data = new model do
-  name: \data
-  base: do
-    name: {max: 100, min: 1required: true, type: model.type.string}
+base.dataset = new model do
+  name: \dataset
+  types: <[csv]>
+  lint: ->
+    if !it => return [true]
+    if typeof(it) != 'object' => return [true]
+    if !it.name or typeof(it.name) != 'string' => return [true, null, \name]
+    if !(it.datatype in base.dataset.config.types) => return [true, null, \type]
+    #TODO lint data by type
+    #TODO lint permission
+    return [false]
 
 base.file = new model do
   name: \file
@@ -40,7 +47,21 @@ base.theme = new model do
     style: {type: base.file}
     code: {type: base.file}
 
-base.charttype = new model do
+base.permission = new model do
+  name: \permission
+  switches: <[private public list token]>
+  lint: -> 
+    if typeof(it) != 'object'  => return [true]
+    if (it.switch?) and !Array.isArray(it.switch) => return [true]
+    if (it.value?) and !Array.isArray(it.value) => return [true]
+    for item in it.switch => if !(item in base.permission.config.switches) => return [true]
+    for item in it.value =>
+      if !Array.isArray(item) or item.length< 2 => return [true]
+      if !(item.1 in base.permission.switches) => return [true]
+      #TODO check item.0 ?
+    return [false]
+    
+charttype-config = do
   name: \charttype
   base: do
     name: {max: 100, min: 1, required: true, type: model.type.string}
@@ -49,16 +70,17 @@ base.charttype = new model do
     code: {type: base.file}
     theme: {required: false, type: model.type.key({type:base.theme})}
     owner: {required: true, type: model.type.key({type:base.user})}
+    assets: {required: false, type: model.type.array({type: base.file})}
+    config: {require: false}
+    dimension: {require: false}
+    permission: {required: false, type: base.permission}
+    thumbnail: {required: false, type: model.type.string}
+    is-template: {required: false, type: model.type.boolean}
 
+base.charttype = new model charttype-config
 base.chartobj = new model do
   name: \chartobj
-  base: do
-    name: {max: 100, min: 1, required: true, type: model.type.string}
-    doc: {type: base.file}
-    style: {type: base.file}
-    code: {type: base.file}
-    theme: {type: base.theme}
-    type: {type: base.charttype}
+  base: charttype-config.base
 
 module.exports = (storeOuter) ->
   store := storeOuter
