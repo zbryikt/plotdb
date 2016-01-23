@@ -1,0 +1,1 @@
+var x$;x$=angular.module("plotDB"),x$.controller("test",["$scope","IOService"].concat(function(o,e){return o.io=e}));

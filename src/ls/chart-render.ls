@@ -20,7 +20,7 @@ parse = (payload) ->
   try
     eval(payload)
     chart = module.exports
-    payload = JSON.stringify({} <<< chart{mapping, config})
+    payload = JSON.stringify({} <<< chart{dimension, config})
     window.parent.postMessage {type: \parse, payload}, plotdomain
   catch e
     error-handling e

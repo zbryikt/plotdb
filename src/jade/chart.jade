@@ -9,12 +9,11 @@ block vars
 block head
   script(type="text/javascript",src="/js/charts/base.js")
   script(type="text/javascript",src="/js/dev.js")
-  script(type="text/javascript",src="/js/chart.js")
+  script(type="text/javascript",src="/js/io.js")
   script(type="text/javascript",src="/js/chart-sample.js")
+  script(type="text/javascript",src="/js/chart.js")
   script(type="text/javascript",src="/js/data.js")
 block body
-  - var tabs = [{name: 'preview', dimension: 2 }, {name: 'assets', type: '', files: '3', src: true}]
-  //-- var tabs = [{name: 'preview', dimension: 2 }, {name: 'code', type: 'javascript', size: '37KB', line: '125', src: true}, {name: 'stylesheet', type:'css', size: '500B', line: '10', src: true}, {name: 'document',type: 'html', size: '20B', line: '3', src: true}, {name: 'assets', type: '', files: '3', src: true}]
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
@@ -24,19 +23,9 @@ block body
           .desc.text-right
             i.glyphicon.glyphicon-chevron-right(ng-show="!showsrc")
             i.glyphicon.glyphicon-chevron-left(ng-show="showsrc")
-
-        for i in tabs
-          .tab(ng-class="{'active':vis=='"+i.name+"','shown':"+!(i.src)+" || showsrc}",ng-click="vis='"+i.name+"'")
-            div #[span #{i.name}] #[small #{i.type}]
-            .desc 
-              span &nbsp;
-              if i.dimension
-                span #{i.dimension} dimensions
-              if i.dataset
-                span #{i.dataset} datasets
-              if i.files
-                span #{i.files} files
-
+        .tab.shown(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'")
+          div #[span preview]
+          .desc {{chart.dimension|length}} dimensions
         .tab(ng-class="{'active':vis=='code','shown':showsrc}",ng-click="vis='code'")
           div #[span code] #[small javascript]
           .desc {{chart.code.size|size}}, {{chart.code.lines}} lines
@@ -62,13 +51,13 @@ block body
             #project-action.btn-group(style="width:100%")
               .btn.btn-default(ng-disabled="!name", ng-click="save()") Save
               .dropdown
-                .btn.btn-default.dropdown-toggle(data-toggle="dropdown") Download #[span.caret]
+                .btn.btn-default.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-download] #[span.caret]
                 ul.dropdown-menu
                   li: a(href="#") PNG
                   li: a(href="#") SVG
           #chart-configs: .ib
             label Config
-            .chart-config(ng-repeat="(name,v) in chart.configs")
+            .chart-config(ng-repeat="(name,v) in chart.config")
               .input-group(ng-if="v.type[0].name!='Boolean'")
                 span.input-group-addon {{name}}
                 input.form-control(type="text",ng-attr-placeholder="{{v.default}}",ng-model="v.value")
@@ -77,7 +66,7 @@ block body
                 .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
 
       .col-sm-9(style="padding-left:0;position:relative")
-        #code-error(ng-show="codeError") {{codeError}}
+        #code-error(ng-show="error") {{error}}
 
         #code-editor(ng-show="vis!='preview'")
           #code-header {{vis}}
@@ -91,30 +80,8 @@ block body
 
         #visualization-canvas2.plpanel(ng-show="vis=='preview'")
           .btn.btn-default(ng-click="vis='code'") Open Code #[small.hint Alt-Enter]
-          iframe#visualizer(src="http://localhost/render.html",style="width:100%;height:100%;border:none;overflow:hidden",scrolling="no")
-
-    //-.row(ng-show="vis=='preview'")
-      .col-sm-3
-        #config-panel.plpanel 
-          label Project
-          .chart-config
-            .input-group
-              span.input-group-addon name
-              input.form-control(type="text",ng-model="name",placeholder="Project Name")
-          #project-action.btn-group(style="width:100%")
-            .btn.btn-default(ng-click="save()") Save
-            .btn.btn-default(ng-click="load()") Load
-            .dropdown
-              .btn.btn-default.dropdown-toggle(data-toggle="dropdown") Download #[span.caret]
-              ul.dropdown-menu
-                li: a(href="#") PNG
-                li: a(href="#") SVG
-          hr
-          label Config
-          .chart-config(ng-repeat="c in chart.configs")
-            .input-group
-              span.input-group-addon {{c.name}}
-              input.form-control(type="text",ng-attr-placeholder="{{c.defval}}",ng-model="c.value")
+          iframe#chart-renderer(src="http://localhost/render.html",
+          style="width:100%;height:100%;border:none;overflow:hidden",scrolling="no")
 
     #binding-panel
       .row
@@ -126,7 +93,8 @@ block body
               .title {{file.name}}
               .desc {{file.size}}, {{file.rows}} rows
             .data-file.data-file-new
-              .title(style="line-height:2.5em",ng-click="datacreate()") add new dataset ...
+              .title(style="line-height:2.5em",
+              ng-click="showDataCreateModal=!!!showDataCreateModal") add new dataset ...
             br.clearfix
           #data-create-modal(ng-show="showDataCreateModal")
             include data/create.jade
@@ -145,8 +113,8 @@ block body
         .col-sm-8
           label Dimensions
           .dimensions
-            .dimension(ng-repeat="(name,dim) in chart.dimensions",ng-drop="true",
-            ng-drop-success="chart.setdim($data,$event,dim)")
+            .dimension(ng-repeat="(name,dim) in chart.dimension",ng-drop="true",
+            ng-drop-success="dimension.bind($event,dim,$data)")
               .require(ng-show="dim.require"): i.fa.fa-asterisk
               .title {{name}}
               .desc accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]

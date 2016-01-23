@@ -14,7 +14,7 @@ module.exports = plotdb.chart.create({
   desc: "No Description",
   author: "Your Name",
   sample: [0,1,2,3,4,5,6,7,8,9].map(function(it){return {value: it};}),
-  mapping: {
+  dimension: {
     value: { type: [plotdb.Number], require: true },
     name: { type: [], require: false }
   },
