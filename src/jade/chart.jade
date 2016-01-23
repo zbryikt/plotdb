@@ -47,9 +47,9 @@ block body
             .chart-config
               .input-group
                 span.input-group-addon name
-                input.form-control(type="text",ng-model="name",placeholder="Project Name")
+                input.form-control(type="text",ng-model="chart.name",placeholder="Project Name")
             #project-action.btn-group(style="width:100%")
-              .btn.btn-default(ng-disabled="!name", ng-click="save()") Save
+              .btn.btn-default(ng-disabled="!chart.name", ng-click="save()") Save
               .dropdown
                 .btn.btn-default.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-download] #[span.caret]
                 ul.dropdown-menu
@@ -128,8 +128,8 @@ block body
             p You can deploy this chart as a new template for others to use.
 
             label Description
-            textarea.form-control(ng-model="desc",rows="5",style="margin-bottom:5px",placeholder="write something about this template..")
+            textarea.form-control(ng-model="chart.desc",rows="5",style="margin-bottom:5px",placeholder="write something about this template..")
             label What kind of data best fits into this chart?
-            input.form-control(ng-model="tags",style="margin-bottom:5px",placeholder="comma separated values, like 'population,economics'")
+            input.form-control(ng-model="chart.tags",style="margin-bottom:5px",placeholder="comma separated values, like 'population,economics'")
             .btn.btn-default(ng-click="save(true)") Deploy As Template
   include footer.jade

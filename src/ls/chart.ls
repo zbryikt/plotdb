@@ -12,7 +12,7 @@ angular.module \plotDB
       code: {name: 'code', type: 'javascript', content: sampleChart.code.content}
       config: {}
       dimension: {}
-      assets: {}
+      assets: []
       thumbnail: null
       isType: false
       save: -> ret.save @ .then ~> @ <<< it
@@ -38,7 +38,7 @@ angular.module \plotDB
       create: -> new Chart it
       save: (item) -> IOService.save item
       load: (type, key) -> IOService.load type, key
-      list: (filter = {}) -> IOService.list {type: \chart, location: \any}
+      list: (type = {name: \chart, location: \any}, filter = {}) -> IOService.list type
       sample: sampleChart
     ret.init!
     ret
@@ -62,8 +62,14 @@ angular.module \plotDB
         window: document.getElementById(\chart-renderer).contentWindow
 
     $scope <<< do # Functions
-      save: -> chartService.save $scope.chart .then -> $scope.chart <<< it #TODO notification
-      load: (type, key) -> chartService.load type, key .then -> $scope.chart <<< it
+      save: (astype = false) -> 
+        if astype and @chart.type.name == \chart =>
+          @chart.type.name = \charttype
+          @chart.key = null
+        @canvas.window.postMessage {type: \snapshot}, @plotdomain
+        #@chart.save!then ~> @chart <<< it #TODO notification
+      load: (type, key) -> 
+        chartService.load type, key .then ~> @chart <<< it
       dimension: bind: (event, dimension, field = {}) ->
         dataset = data-service.find field
         if !dataset => return
@@ -91,10 +97,11 @@ angular.module \plotDB
             @lastvis = temp
       check-param: ->
         if !window.location.search => return
-        ret = /[?&]k=([^&#|]+)\|([^&#]+)/.exec(window.location.search)
+        ret = /[?&]k=([^&#|]+)\|([^&#|]+)\|([^&#|]+)/.exec(window.location.search)
         if !ret => return
-        [location,key] = ret[1,2]
-        $scope.load {name: \chart, location}, key
+        [location,type,key] = ret[1,2,3]
+        if type != \charttype => type = \chart
+        $scope.load {name: type, location}, key
       monitor: ->
         @$watch 'chart.doc.content', ~> @countline!
         @$watch 'chart.style.content', ~> @countline!
@@ -111,8 +118,8 @@ angular.module \plotDB
         else if data.type == \alt-enter => $scope.$apply -> $scope.vis = 'code'
         else if data.type == \snapshot =>
           #TODO need sanity check
-          $scope.chart.thumbnail = data.payload
-          $scope.chart.save!
+          @chart.thumbnail = data.payload
+          @chart.save!then (ret) -> $scope.$apply -> $scope.chart <<< ret
         else if data.type == \parse =>
           {config,dimension} = JSON.parse(data.payload)
           for k,v of @chart.dimension => if dimension[k]? => dimension[k].fields = v.fields
@@ -129,19 +136,11 @@ angular.module \plotDB
         @check-param!
     $scope.init!
 
-  ..controller \mychart, <[$scope $http dataService]> ++ ($scope, $http, data-service) ->
-    # My Charts
-    $scope.mycharts = []
-    list = JSON.parse(localStorage.getItem("/list/chart")) or []
-    $scope.mycharts = list.map ->
-      chart = JSON.parse(localStorage.getItem("/chart/#it"))
-    .filter(->it)
-    $http do
-      url: \/d/chart/
-      method: \GET
-    .success (ret) -> 
-      console.log ret
-      $scope.mycharts ++= ret
-
+  ..controller \mychart,
+  <[$scope $http dataService chartService]> ++
+  ($scope, $http, data-service, chartService) ->
+    (ret) <- chartService.list!then
+    <- $scope.$apply
+    $scope.mycharts = ret
     $scope.goto = (chart) ->
-      window.location.href = "/chart.html?key=#{chart.key}"
+      window.location.href = "/chart.html?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"

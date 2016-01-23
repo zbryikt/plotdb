@@ -31,7 +31,8 @@ model.prototype <<< do
 model.prototype.rest = (api, config) ->
   api.post "/#{@name}/", (req, res) ~>
     data = req.body
-    if @lint(req.body).0 => return aux.r400 res
+    ret = @lint(req.body)
+    if ret.0 => return aux.r400 res, ret
     data = @clean data
     data.save!then (ret) -> res.send ret
   api.get "/#{@name}/:id", (req, res) ~>
@@ -42,7 +43,8 @@ model.prototype.rest = (api, config) ->
       ..catch -> return aux.r403 res
   api.put "/#{@name}/:id", (req, res) ~>
     data = req.body
-    if @lint(req.body).0 => return aux.r400 res
+    ret = @lint(req.body)
+    if ret.0 => return aux.r400 res, ret
     data = @clean data
     data.save!then (ret) -> res.send ret
   api.delete "/#{@name}/:id", (req, res) ~>
