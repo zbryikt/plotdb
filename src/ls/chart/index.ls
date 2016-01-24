@@ -45,7 +45,7 @@ angular.module \plotDB
 
   ..controller \chartEditor,
   <[$scope $http $timeout dataService chartService]> ++
-  ($scope, $http, $timeout, data-service, chartService) ->
+  ($scope, $http, $timeout, data-service, chart-service) ->
     $scope <<< do # Variables
       showsrc: true
       vis: \preview
@@ -56,7 +56,7 @@ angular.module \plotDB
         code:  lineWrapping: true, lineNumbers: true mode: \javascript
         style: lineWrapping: true, lineNumbers: true, mode: \css
         doc:   lineWrapping: true, lineNumbers: true, mode: \xml
-      chart: chartService.create!
+      chart: chart-service.create!
       canvas: do
         node: document.getElementById(\chart-renderer)
         window: document.getElementById(\chart-renderer).contentWindow
@@ -69,7 +69,7 @@ angular.module \plotDB
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
         #@chart.save!then ~> @chart <<< it #TODO notification
       load: (type, key) -> 
-        chartService.load type, key .then ~> @chart <<< it
+        chart-service.load type, key .then ~> @chart <<< it
       dimension: bind: (event, dimension, field = {}) ->
         dataset = data-service.find field
         if !dataset => return
@@ -138,9 +138,15 @@ angular.module \plotDB
 
   ..controller \mychart,
   <[$scope $http dataService chartService]> ++
-  ($scope, $http, data-service, chartService) ->
-    (ret) <- chartService.list!then
+  ($scope, $http, data-service, chart-service) ->
+    (ret) <- chart-service.list!then
     <- $scope.$apply
     $scope.mycharts = ret
     $scope.goto = (chart) ->
       window.location.href = "/chart.html?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
+  ..controller \chartList,
+  <[$scope $http dataService chartService]> ++
+  ($scope, $http, data-service, chart-service) ->
+    $scope.charttypes = []
+    (ret) <- chart-service.list {name: \charttype, location: \any} .then
+    $scope.charttypes = ret

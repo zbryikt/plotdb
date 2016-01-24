@@ -9,13 +9,13 @@
           li#nav-chart.dropdown
             a.dropdown-toggle(href="#",data-toggle="dropdown") CHARTS #[span.caret]
             ul.dropdown-menu
-              li: a(href="/list.html") Explore
-              li: a(href="/chart.html") Design
+              li: a(href="/explore/") Explore
+              li: a(href="/chart/") Design
               li.divider
-              li: a(href="/mychart.html") My Charts
+              li: a(href="/chart/me.html") My Charts
 
           li#nav-data: a(href="/data/") DATA
-          li#nav-theme: a(href="/theme.html") THEME
+          li#nav-theme: a(href="/theme/") THEME
           li#nav-tmpdata: a(href="/") {{dataService.local.size|size}}, {{dataService.local.rows}} Rows
 
         ul.nav.navbar-nav.pull-right

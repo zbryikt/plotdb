@@ -2,6 +2,7 @@ require! <[LiveScript fs ./secret ./backend/model]>
 require! './backend/main': {backend, aux}
 require! './api/dataset': dataset-controller
 require! './api/chart': chart-controller
+require! './api/theme': theme-controller
 
 config = {debug: true, name: \servlet}
 config <<< secret
@@ -30,3 +31,4 @@ backend.app.get \/, (req, res) -> res.render 'index.jade'
 backend.start ->
   dataset-controller backend, config
   chart-controller backend, config
+  theme-controller backend, config
