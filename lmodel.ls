@@ -3,26 +3,10 @@ require! <[bluebird ./backend/model]>
 store = null
 base = {}
 
-base.user = new model do
-  name: \user
-  base: do
-    username: {required: true, type: model.type.email}
-    password: {type: model.type.string}
-    usepasswd: {type: model.type.boolean}
-    displayname: {max: 30, min: 3, required: true, type: model.type.string}
-    desc: {max: 1000, type: model.type.string}
-    create_date: {type: model.type.date}
-    public_email: {type: model.type.boolean}
-    avatar: {max: 300, type: model.type.string}
-  expand: (data) ->
-    if typeof(data) == typeof({}) => return new bluebird (res, rej) -> res data
-    new bluebird (res, rej) -> store.read \user, data .then (obj) ->
-      <[password usepasswd username _id]>.map -> delete obj[it]
-      res obj
-
 base.dataset = new model do
   name: \dataset
   types: <[csv]>
+  default-fields: true
   lint: ->
     if !it => return [true]
     if typeof(it) != 'object' => return [true]
@@ -41,28 +25,16 @@ base.file = new model do
 
 base.theme = new model do
   name: \theme
+  default-fields: true
   base: do
     name: {max: 100, min: 1, required: true, type: model.type.string}
     doc: {type: base.file}
     style: {type: base.file}
     code: {type: base.file}
 
-base.permission = new model do
-  name: \permission
-  switches: <[private public list token]>
-  lint: -> 
-    if typeof(it) != 'object'  => return [true]
-    if (it.switch?) and !Array.isArray(it.switch) => return [true]
-    if (it.value?) and !Array.isArray(it.value) => return [true]
-    for item in it.switch => if !(item in base.permission.config.switches) => return [true]
-    for item in it.value =>
-      if !Array.isArray(item) or item.length< 2 => return [true]
-      if !(item.1 in base.permission.switches) => return [true]
-      #TODO check item.0 ?
-    return [false]
-    
 chart-config = do
   name: \charttype
+  default-fields: true
   base: do
     name: {max: 100, min: 1, required: true, type: model.type.string}
     desc: {max: 200, min: 1, required: false, type: model.type.string}
@@ -71,11 +43,10 @@ chart-config = do
     style: {type: base.file}
     code: {type: base.file}
     theme: {required: false, type: model.type.key({type:base.theme})}
-    #owner: {required: true, type: model.type.key({type:base.user})}
     assets: {required: false, type: model.type.array({type: base.file})}
     config: {require: false}
     dimension: {require: false}
-    permission: {required: false, type: base.permission}
+    permission: {required: false, type: model.type.permission}
     thumbnail: {required: false, type: model.type.string}
     is-type: {required: false, type: model.type.boolean}
 

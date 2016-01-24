@@ -7,6 +7,9 @@ require! './DAL': DAL
 # model.driver.use "your desire driver"
 # yourModel = new model { ... } 
 
+# to use rest api model must have:
+#  - key / owner / permission ( check model.ls comments )
+
 store = null
 model.driver = do
   instance: null
@@ -28,10 +31,16 @@ model.prototype <<< do
   list: (key, values) -> store.list @name, key, values
   delete: (key) -> store.delete @name, key
 
+#TODO permissions check
 model.prototype.rest = (api, config) ->
+  if !@config.base.owner or !@config.base.key =>
+    console.log "[WARNING] init RestAPI: #{@name} model doesn't have owner and key fields."
+    console.log "[WARNING] use 'default-fields' to enable owner/key fields for RestAPI"
+    return
   api.post "/#{@name}/", (req, res) ~>
     data = req.body
-    ret = @lint(req.body)
+    data <<< {owner: req.user.key, key: null}
+    ret = @lint(data)
     if ret.0 => return aux.r400 res, ret
     data = @clean data
     data.save!then (ret) -> res.send ret
@@ -43,14 +52,26 @@ model.prototype.rest = (api, config) ->
       ..catch -> return aux.r403 res
   api.put "/#{@name}/:id", (req, res) ~>
     data = req.body
-    ret = @lint(req.body)
-    if ret.0 => return aux.r400 res, ret
-    data = @clean data
-    data.save!then (ret) -> res.send ret
+    if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
+    @read req.params.id
+      ..then (ret) ->
+        if !ret => return aux.r404 res
+        data = req.body
+        if ret.owner != req.user.id => return aux.r403 res
+        data <<< owner: req.user.id, key: req.params.id
+        ret = @lint(data)
+        if ret.0 => return aux.r400 res, ret
+        data = @clean data
+        data.save!then (ret) -> res.send ret
+      ..catch -> return aux.r403 res
+
   api.delete "/#{@name}/:id", (req, res) ~>
     @read req.params.id
       ..then (ret) -> 
         if !ret => return aux.r404 res
+        if ret.owner != req.user.id => return aux.r403 res
+        @delete req.params.id
       ..catch -> return aux.r403 res
+    #TODO complete this
 
 module.exports = model

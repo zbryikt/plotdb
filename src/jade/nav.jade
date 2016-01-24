@@ -16,9 +16,9 @@
 
           li#nav-data: a(href="/data/") DATA
           li#nav-theme: a(href="/theme/") THEME
-          li#nav-tmpdata: a(href="/") {{dataService.local.size|size}}, {{dataService.local.rows}} Rows
 
         ul.nav.navbar-nav.pull-right
+          li#nav-localdata: a(href="/") {{dataService.local.size|size}}, {{dataService.local.rows}} Rows
           li(ng-show="!user.data"): a#nav-login(href="#",ng-click="auth.show = !!!auth.show")
             i.fa.fa-sign-in
             | &nbsp; 
