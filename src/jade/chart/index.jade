@@ -116,7 +116,10 @@ block body
               .require(ng-show="dim.require"): i.fa.fa-asterisk
               .title {{name}}
               .desc accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]
-              .data-field(ng-repeat="field in dim.fields") {{field.name}} #[small {{field.type}}]
+              .data-field(ng-repeat="field in dim.fields")
+                | {{field.name}} 
+                small {{field.type}}
+                .pull-right: i.fa.fa-close(ng-click="dimension.unbind($event, dim, field)")
             .dimension.flexend
     .row
       .col-sm-12

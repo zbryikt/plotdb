@@ -1,3 +1,28 @@
+sched = do
+  timeout: do
+    list: []
+    func: window.setTimeout
+    set: (func, delta) -> @func.call null, func, delta
+  interval: do
+    list: []
+    func: window.setInterval
+    set: (func, delta) -> @func.call null, func, delta
+  clear: ->
+    for item in @timeout.list => clearTimeout item
+    for item in @interval.list => clearInterval item
+
+# Chrome refuse to use setInterval in dictionary like ...sched.interval
+
+window.setTimeout = (func, delta) ->
+  ret = sched.timeout.set func, delta
+  sched.timeout.list.push ret
+  ret
+
+window.setInterval = (func, delta) ->
+  ret = sched.interval.set func, delta
+  sched.interval.list.push ret
+  ret
+
 <- $ document .ready
 
 plotdomain = \http://localhost/
@@ -39,6 +64,7 @@ render = (payload) ->
   doc = payload.doc.content
   data = payload.data
   config = payload.config or {}
+  sched.clear!
   try
     $(document.body).html("<style type='text/css'>#style</style><div id='container'>#doc</div>")
     window.module = {}

@@ -68,11 +68,21 @@
     z-index: index(order, 'data-field')
     position: relative
     small
-      float: right
+      //-float: right
       font-size: 12px
       line-height: 16px
-      margin-top: 6px
       opacity: 0.8
+      position: absolute
+      right: 25px
+      top: 50%
+      margin-top: -6px
+    .fa-close
+      position: absolute
+      right: 5px
+      top: 50%
+      margin-top: -6px
+      color: #444
+      cursor: pointer
 
 #binding-panel
   width: 100%

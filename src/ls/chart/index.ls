@@ -1,7 +1,9 @@
 angular.module \plotDB
   ..filter \tags, -> -> (it or "").split(\,)
   ..filter \length, -> -> [k for k of it].length
-  ..service \chartService, <[$rootScope sampleChart IOService]> ++ ($rootScope, sampleChart, IOService) ->
+  ..service \chartService,
+  <[$rootScope sampleChart IOService]> ++
+  ($rootScope, sampleChart, IOService) ->
     Chart = (config = {}) -> @ <<< config
     Chart.prototype = do
       name: \untitled
@@ -10,6 +12,7 @@ angular.module \plotDB
       doc: {name: 'document', type: 'html', content: sampleChart.doc.content}
       style: {name: 'stylesheet', type: 'css', content: sampleChart.style.content}
       code: {name: 'code', type: 'javascript', content: sampleChart.code.content}
+      permission: {switch: [], value: []}
       config: {}
       dimension: {}
       assets: []
@@ -44,8 +47,8 @@ angular.module \plotDB
     ret
 
   ..controller \chartEditor,
-  <[$scope $http $timeout dataService chartService]> ++
-  ($scope, $http, $timeout, data-service, chart-service) ->
+  <[$scope $http $timeout dataService chartService plNotify]> ++
+  ($scope, $http, $timeout, data-service, chart-service, plNotify) ->
     $scope <<< do # Variables
       showsrc: true
       vis: \preview
@@ -67,15 +70,19 @@ angular.module \plotDB
           @chart.type.name = \charttype
           @chart.key = null
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
-        #@chart.save!then ~> @chart <<< it #TODO notification
       load: (type, key) -> 
         chart-service.load type, key .then ~> @chart <<< it
-      dimension: bind: (event, dimension, field = {}) ->
-        dataset = data-service.find field
-        if !dataset => return
-        data-service.field.update field
-        dimension.fields = [field]
-        $scope.render!
+      dimension: do
+        bind: (event, dimension, field = {}) ->
+          dataset = data-service.find field
+          if !dataset => return
+          data-service.field.update field
+          dimension.fields = [field]
+          $scope.render!
+        unbind: (event, dimension, field = {}) ->
+          idx = dimension.fields.index-of(field)
+          if idx < 0 => return
+          dimension.fields.splice idx, 1
       render: ->
         @chart.update-data!
         for k,v of @chart => if typeof(v) != \function => @chart[k] = v
@@ -88,13 +95,20 @@ angular.module \plotDB
     $scope <<< do # Behaviors
       hid-handler: ->
         # Switch Panel by Alt-Enter
+        switch-panel = ~>
+          temp = @vis
+          if @vis == \preview and @lastvis => @vis = @lastvis
+          else if @vis == \preview => @vis = \code
+          else @vis = \preview
+          @lastvis = temp
+        $scope.codemirrored = (editor) ->
+          toggle = -> setTimeout (-> switch-panel!), 0
+          editor.setOption \extraKeys, do
+            "Cmd-Enter": toggle # so event will pass through to global handler
+            "Alt-Enter": toggle
         document.body.addEventListener \keydown, (e) -> 
-          if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) => $scope.$apply -> 
-            temp = @vis
-            if @vis == \preview and @lastvis => @vis = @lastvis
-            else if @vis == \preview => @vis = \code
-            else @vis = \preview
-            @lastvis = temp
+          if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) => $scope.$apply -> switch-panel!
+
       check-param: ->
         if !window.location.search => return
         ret = /[?&]k=([^&#|]+)\|([^&#|]+)\|([^&#|]+)/.exec(window.location.search)
@@ -119,7 +133,9 @@ angular.module \plotDB
         else if data.type == \snapshot =>
           #TODO need sanity check
           @chart.thumbnail = data.payload
-          @chart.save!then (ret) -> $scope.$apply -> $scope.chart <<< ret
+          @chart.save!then (ret) -> 
+            $scope.$apply -> $scope.chart <<< ret
+            plNotify.send \success, "chart saved"
         else if data.type == \parse =>
           {config,dimension} = JSON.parse(data.payload)
           for k,v of @chart.dimension => if dimension[k]? => dimension[k].fields = v.fields
@@ -143,7 +159,7 @@ angular.module \plotDB
     <- $scope.$apply
     $scope.mycharts = ret
     $scope.goto = (chart) ->
-      window.location.href = "/chart.html?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
+      window.location.href = "/chart/?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
   ..controller \chartList,
   <[$scope $http dataService chartService]> ++
   ($scope, $http, data-service, chart-service) ->

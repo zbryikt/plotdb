@@ -36,7 +36,7 @@ model = ((config)->
   else if typeof(deffields) == \object =>
     {user,key,permission} = deffields{user,key,permission}
   if user => @config.{}base.owner = {required: true, type: model.type.key({type: user})}
-  if key => @config.{}base.key = {required: true, type: key}
+  if key => @config.{}base.key = {required: false, type: key}
   if permission => @config.base.permission = {required: true, type: permission}
   @
 ) <<< prototype: do

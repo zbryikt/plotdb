@@ -29,7 +29,7 @@ html(lang="en")
   body(id=rootid,ng-app="plotDB",ng-controller="plSite")
     include nav.jade
     include authpanel.jade
-    //-#notifications
+    #notifications
       .notify(ng-repeat="n in notifications",ng-class="'notify-'+n.type",ng-cloak) {{n.message}}
     block body
     script.

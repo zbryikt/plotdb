@@ -13,33 +13,40 @@ block head
   script(type="text/javascript",src="/js/data.js")
 block body
   #landing
-    .title PlotDB
-    .subtitle Once You Have Data, Visualize Is on Us
+    .title P#[small LOT]DB
+    .subtitle data on you, vis by us.
   #root
     br
     br
-    div(style="text-align:center;") Just pick one your favorite visualization to start ...
+    div(style="position:absolute;right:220px;width:240px;height:180px;border:1px dashed #000;transform:rotate(-5deg);background:#fff;margin-top:-50px;box-shadow:-4px 4px 4px rgba(0,0,0,0.2)")
+    h4.text-center "Hey I want to vis like this, but I can't code ..."
+    h3.text-center No, You don't need.
     br
     hr
+    h3.text-center Why PlotDB ?
+    hr
     br
-    .row.text-center
+    .row.text-center(style="max-width:1024px;margin:auto")
       .col-sm-4
         i.fa.fa-globe(style="font-size:64px")
-        h4 Save Data Locally
-        span You can manipulate your data without uploading. #[br] keep data privately!
+        h3 Keep Data Locally
+        span use your data #[b without uploading]. #[br] Privacy First!
       .col-sm-4
         i.fa.fa-link(style="font-size:64px")
         br
-        h4 Infinite Creativity
-        span Too many visualizations to use. #[br] with simply data mapping. 
+        h3 Infinite Creativity
+        span more than common charts. #[b Much more]. #[br] Plot Like Shopping!
       .col-sm-4
         i.fa.fa-heart(style="font-size:64px")
         br
-        h4 Customizations
-        span Source codes provided for every single chart. #[br] Customize as whatever you want!
+        h3 Full Control
+        span #[b source code] and #[b stylesheet] in your hand. #[br] Customize as You Can!
     br
     hr
     include /chart/modal.jade
+    br
+    h2.text-center Pick One and Go!
+    br
     br
     //-
       .panel.panel-default(style="display:inline-block"): .panel-body
@@ -84,12 +91,12 @@ block body
               .label.label-default.label-light Population
       .chart.flexend
     br
-    .text-center: a(href="list.html") I want MORE! &nbsp; #[i.fa.fa-pie-chart]
+    .text-center: a.btn.btn-lg.btn-success(href="list.html"): big give me more!
     br
     hr
     br
-    h2.text-center Examples
-    h6.text-center Take a look who are using plotDB and how they use plotDB
+    h2.text-center Showcases
+    .text-center Let's see who and how they uses PlotDB.
     br
     for i in [1,2,3,4,5]
       div(style="max-width:1200px;margin:auto")

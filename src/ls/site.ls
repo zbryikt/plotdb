@@ -1,4 +1,9 @@
 angular.module \plotDB
+  ..service 'plNotify', <[$rootScope $timeout]> ++ ($rootScope, $timeout) -> @ <<< do
+    queue: []
+    send: (type, message) ->
+      @queue.push node = {type, message}
+      $timeout (~> @queue.splice @queue.indexOf(node), 1), 2900
   ..controller \plSite, <[$scope $http $interval global plNotify dataService]> ++ ($scope, $http, $interval, global, plNotify, data-service) ->
     $scope.track-event = (cat, act, label, value) -> ga \send, \event, cat, act, label, value
     $scope.notifications = plNotify.queue
@@ -61,7 +66,7 @@ angular.module \plotDB
       chart = JSON.parse(localStorage.getItem("/charttype/#item"))
       $scope.charts.push chart
     if $scope.charts.length < 10 =>
-      for i from 0 til 100 => $scope.charts.push {} <<< chart
+      for i from 0 til 40 => $scope.charts.push {} <<< chart
     $scope.load = (chart) ->
       window.location.href = "/chart.html?name=#{chart.name}"
 

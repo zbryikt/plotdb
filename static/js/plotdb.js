@@ -1,1 +1,1 @@
-function import$(e,r){var t={}.hasOwnProperty;for(var u in r)t.call(r,u)&&(e[u]=r[u]);return e}var x$;x$=angular.module("plotDB",["backend","ui.codemirror","ngDraggable"]),x$.service("plNotify",["$rootScope","$timeout"].concat(function(e,r){return import$(this,{queue:[],send:function(e,t){var u,n=this;return this.queue.push(u={type:e,message:t}),r(function(){return n.queue.splice(n.queue.indexOf(u),1)},2900)}})}));
+angular.module("plotDB",["backend","ui.codemirror","ngDraggable"]);

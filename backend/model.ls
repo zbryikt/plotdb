@@ -54,11 +54,11 @@ model.prototype.rest = (api, config) ->
     data = req.body
     if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
     @read req.params.id
-      ..then (ret) ->
+      ..then (ret) ~>
         if !ret => return aux.r404 res
         data = req.body
-        if ret.owner != req.user.id => return aux.r403 res
-        data <<< owner: req.user.id, key: req.params.id
+        if ret.owner != req.user.key => return aux.r403 res
+        data <<< owner: req.user.key, key: req.params.id
         ret = @lint(data)
         if ret.0 => return aux.r400 res, ret
         data = @clean data
@@ -67,9 +67,9 @@ model.prototype.rest = (api, config) ->
 
   api.delete "/#{@name}/:id", (req, res) ~>
     @read req.params.id
-      ..then (ret) -> 
+      ..then (ret) ~> 
         if !ret => return aux.r404 res
-        if ret.owner != req.user.id => return aux.r403 res
+        if ret.owner != req.user.key => return aux.r403 res
         @delete req.params.id
       ..catch -> return aux.r403 res
     #TODO complete this
