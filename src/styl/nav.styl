@@ -20,28 +20,61 @@
   color: #444
   z-index: index(order, 'nav-top')
 
-#nav-top.dim
-  height: 50px
-
 #nav-top nav.navbar-default
   transition all 0.3s ease-out
   background: none
   border: none
   color: #444
   max-width: 1200px
-  margin: 10px auto
+  margin: 0 auto
 
 #nav-top nav.navbar-default
+  .navbar-nav > li > a
+    padding-top: 20px
+    padding-bottom: 20px
+    transition(padding 0.5s ease-in-out)
+  .navbar-nav > li > div
+    padding-top: 17px
+    padding-bottom: 17px
+    transition(padding 0.5s ease-in-out)
+  .navbar-brand
+    padding: 13px 10px 8px
+    height: 56px
+    transition padding 0.5s ease-in-out, height 0.5s ease-in-out
+  #nav-localdata > a
+    padding-top: 7px
+    padding-bottom: 6px
+    transition(padding 0.5s ease-in-out)
   .navbar-brand, .navbar-nav > li > a
     color: #444
     letter-spacing: 1px
   .navbar-nav > li > a:hover
-    color: #942
-    text-shadow: 0 0 5px rgba(255,255,128,0.7)
-  .navbar-brand
-    padding-top: 9px
+    color: #ed1d78
+    //-text-shadow: 0 0 5px rgba(255,255,128,0.7)
+  .navbar-nav > li.open > a
+    background: #ed1d78
+    color: #fff
+
+#nav-top.dim
+  height: 50px
+  background: rgba(255,255,255,0.9)
+
+#nav-top.dim nav.navbar-default
   .navbar-nav > li > a
-    padding-top: 10px
+    padding-top: 15px
+    padding-bottom: 15px
+  .navbar-nav > li > div
+    padding-top: 13px
+    padding-bottom: 13px
+  .navbar-brand
+    padding: 8px 10px 3px
+    height: 46px
+  #nav-localdata > a
+    padding-top: 3px
+    padding-bottom: 0px
+    &:before
+      padding: 0 3px
+
 
 #nav-top li.dropdown
   cursor: pointer
@@ -80,13 +113,13 @@
 #nav-login i.fa
   display: none
 
-#nav-top nav.navbar-default .navbar-nav li#nav-localdata > a
+#nav-top nav.navbar-default li#nav-localdata > a
   border: 1px solid #ccc
   font-size: 12px
   border-radius: 3px
   padding-bottom: 7px
   padding-top: 6px
-  margin-top: 3px
+  margin: 14px 0
   background: #fff
   position: relative
   &:before
@@ -102,11 +135,6 @@
     padding: 1px 3px
     border: 1px solid #666
     border-radius: 3px
-
-#nav-top.dim
-  background: rgba(255,255,255,0.9)
-  nav.navbar-default
-    margin: 5px auto
 
 @media (max-width: 800px)
   #nav-top
