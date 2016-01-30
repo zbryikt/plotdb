@@ -19,8 +19,10 @@ plotdb <<< do
   Palette: do
     name: \Palette
     level: 5
+    re: /^((rgb|hsl)\((\s*[0-9.]+\s*,){2}\s*[0-9.]+\s*\)|(rgb|hsl)a\((\s*[0-9.]+\s*,){3}\s*[0-9.]+\s*\)|\#[0-9a-f]{3}|\#[0-9a-f]{6}|[a-zA-Z][a-zA-Z0-9]*)$/
     test: -> 
-      re = /^((rgb|hsl)\((\s*[0-9.]+\s*,){2}\s*[0-9.]+\s*\)|(rgb|hsl)a\((\s*[0-9.]+\s*,){3}\s*[0-9.]+\s*\)|\#[0-9a-f]{3}|\#[0-9a-f]{6}|[a-zA-Z][a-zA-Z0-9]*)$/
+      console.log it
+      if !it => return true
       if typeof(it) == typeof("") =>
         if it.charAt(0) != '[' => it = it.split(\,)
         else 
@@ -28,19 +30,22 @@ plotdb <<< do
             it = JSON.parse(it)
           catch
             return false
-      if it and typeof(it) == typeof([]) and it.length =>
-        return if !it.filter(->!!!re.exec(it.trim!)).length => true else false
+      else if Array.isArray(it) =>
+        return if !it.filter(~>!!!@re.exec(it.trim!)).length => true else false
+      else if typeof(it) == \object =>
+        if !(it.colors?) => return true
+        if it.colors.filter(->!it.hex).length => return true
       return false
     parse: -> 
       if !it => return it
-      if typeof(it) == typeof({}) and it.length => return it
+      if Array.isArray(it) => return it
       if typeof(it) == typeof("") =>
         try
           return JSON.parse(it)
         catch
-          return it.split(\,).map(->it.trim!)
+          return it.split(\,).map(->{hex: it.trim!})
       return it 
-    default: <[#1d3263 #226c87 #f8d672 #e48e11 #e03215 #ab2321]>
+    default: <[#1d3263 #226c87 #f8d672 #e48e11 #e03215 #ab2321]>.map(->{hex:it})
   Boolean:
     name: \Boolean, level: 2,
     test: -> !!/^(true|false|1|0|yes|no)$/.exec(it)

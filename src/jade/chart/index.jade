@@ -14,6 +14,7 @@ block head
 block body
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
+    include /widget/palette-edit-modal.jade
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
       #code-tabs
         .tab.cat.shown(ng-click="showsrc=!!!showsrc")
@@ -59,10 +60,10 @@ block body
               .input-group(ng-if="v.type[0].name!='Boolean' && v.type[0].name!='Palette'")
                 span.input-group-addon {{name}}
                 input.form-control(type="text",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value",style="text-align:center")
-              .btn-group(ng-if="v.type[0].name=='Palette'")
+              .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);")
                 span.input-group-addon {{name}}
                 div(style="display:table-cell;float:left;width:100%;height:100%;border:1px solid #ccc;padding:5px;text-align:center;cursor:pointer;border-top-right-radius:3px;border-bottom-right-radius:3px;")
-                  div(ng-repeat="c in v.value",ng-attr-style="background:{{c}};width:{{90/v.value.length}}%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:24px;user-select:none;-webkit-user-select:none") &nbsp;
+                  div(ng-repeat="c in v.value.colors",ng-attr-style="background:{{c.hex}};width:{{90/v.value.colors.length}}%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:24px;user-select:none;-webkit-user-select:none") &nbsp;
               .btn-group(ng-if="v.type[0].name=='Boolean'")
                 span.input-group-addon {{name}}
                 .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}

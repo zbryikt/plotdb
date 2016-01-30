@@ -93,6 +93,23 @@ angular.module \plotDB
         @chart[it].size = @chart[it].content.length
 
     $scope <<< do # Behaviors
+      paledit: do #TODO should be moved to standalone controller
+        ldcp: null, item: null
+        init: ->
+          @ldcp = new ldColorPicker null, {}, $('#palette-editor .editor .ldColorPicker').0
+          @ldcp.on \change, ~> setTimeout ( ~> $scope.$apply ~> @update! ), 0
+        update: -> if @item => @item.value = @ldcp.get-palette!
+        toggled: false
+        toggle: ->
+          @toggled = !!!@toggled
+          if !@toggled => @update!
+        edit: (item) ->
+          @item = item
+          #TODO remove this later
+          if Array.isArray(item.value) => item.value = {colors: item.value.map(->{hex:it})}
+          @ldcp.set-palette item.value
+          @toggled = true
+
       hid-handler: ->
         # Switch Panel by Alt-Enter
         switch-panel = ~>
@@ -150,9 +167,8 @@ angular.module \plotDB
         @hid-handler!
         @monitor!
         @check-param!
+        @paledit.init!
     $scope.init!
-    #$scope.$watch 'ldcp', (-> console.log ">", it), true
-    #$interval (-> console.log $scope.ldcp), 1000
 
   ..controller \mychart,
   <[$scope $http dataService chartService]> ++
