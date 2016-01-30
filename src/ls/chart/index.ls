@@ -47,8 +47,8 @@ angular.module \plotDB
     ret
 
   ..controller \chartEditor,
-  <[$scope $http $timeout dataService chartService plNotify]> ++
-  ($scope, $http, $timeout, data-service, chart-service, plNotify) ->
+  <[$scope $http $timeout $interval dataService chartService plNotify]> ++
+  ($scope, $http, $timeout, $interval, data-service, chart-service, plNotify) ->
     $scope <<< do # Variables
       showsrc: true
       vis: \preview
@@ -151,6 +151,8 @@ angular.module \plotDB
         @monitor!
         @check-param!
     $scope.init!
+    #$scope.$watch 'ldcp', (-> console.log ">", it), true
+    #$interval (-> console.log $scope.ldcp), 1000
 
   ..controller \mychart,
   <[$scope $http dataService chartService]> ++

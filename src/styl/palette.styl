@@ -1,0 +1,107 @@
+@import 'basic'
+@import 'vars'
+
+#palview .row
+  margin: 0
+.palette
+  display: inline-block
+  margin: 10px 20px 20px 20px
+  text-align: right
+  a
+    color: #222
+  .name, .func
+    display: inline-block
+    no-selection()
+  .name
+    float: left
+  .func
+    color: #777
+    font-size: 14px
+    i.glyphicon, i.fa
+      vertical-align: text-top
+      margin-right: 5px
+  .name, .tag
+    text-align: left
+    width: 83%
+    font-family: calibri, Arial, sans-serif
+    font-size: 14px
+    ellipsis()
+  .tag
+    display: none
+    font-size: 12px
+    text-align: right
+  .glyphicon, .fa
+    cursor: pointer
+  @media (max-width: 1024px)
+    width: 43%
+    .name
+      width: 50%
+  @media (max-width: 682px)
+    width: 90%
+    margin: 5px 10px 15px 10px
+  @media (min-width: 1024px)
+    width: 215px
+  @media (min-width: 1200px)
+    width: 290px
+
+.palette .func .fav, .palette-func .like
+  display: inline-block
+  &.active
+    color: #f26
+  i.glyphicon, i.fa
+    margin-right: 1px
+  span
+    font-size: 12px
+    font-family: calibri, Arial, sans-serif
+    font-weight: bold
+
+.palette.sm
+  width: 210px
+.palette.xs
+  width: 100px
+  .palette-color
+    height: 24px
+  .func
+    display: none
+
+.palette.select
+  width: 140px
+  margin: 0
+  .palette-color
+    width: 100%
+    height: 24px
+  .name
+    font-family: calibri, Arial, sans-serif
+    font-size: 12px
+
+ 
+.palette-color
+  border-radius: 3px
+  overflow: hidden
+  width: 100%
+  height: 44px
+  @media (max-width: 682px)
+    height: 30px
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3)
+  .color
+    position: relative
+    cursor: pointer
+    transition(width 0.3s ease-in-out)
+  .color i
+    color: #000
+    opacity: 0.5
+    margin: 4px
+  .color.dark i
+    color: #fff
+  .semantic
+    position: absolute
+
+.color
+  height: 100%
+  display: inline-block
+
+
+.palette.ref
+  width: 210px
+  text-align: left
+

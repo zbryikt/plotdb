@@ -21,19 +21,19 @@ block body
           .desc.text-right
             i.glyphicon.glyphicon-chevron-right(ng-show="!showsrc")
             i.glyphicon.glyphicon-chevron-left(ng-show="showsrc")
-        .tab.shown(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'")
+        .tab.shown(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'",ng-cloak)
           div #[span preview]
           .desc {{chart.dimension|length}} dimensions
-        .tab(ng-class="{'active':vis=='code','shown':showsrc}",ng-click="vis='code'")
+        .tab(ng-class="{'active':vis=='code','shown':showsrc}",ng-click="vis='code'",ng-cloak)
           div #[span code] #[small javascript]
           .desc {{chart.code.size|size}}, {{chart.code.lines}} lines
-        .tab(ng-class="{'active':vis=='stylesheet','shown':showsrc}",ng-click="vis='stylesheet'")
+        .tab(ng-class="{'active':vis=='stylesheet','shown':showsrc}",ng-click="vis='stylesheet'",ng-cloak)
           div #[span stylesheet] #[small css]
           .desc {{chart.style.size|size}}, {{chart.style.lines}} lines
-        .tab(ng-class="{'active':vis=='document','shown':showsrc}",ng-click="vis='document'")
+        .tab(ng-class="{'active':vis=='document','shown':showsrc}",ng-click="vis='document'",ng-cloak)
           div #[span document] #[small html]
           .desc {{chart.doc.size|size}}, {{chart.doc.lines}} lines
-        .tab(ng-class="{'active':vis=='assets','shown':showsrc}",ng-click="vis='assets'")
+        .tab(ng-class="{'active':vis=='assets','shown':showsrc}",ng-click="vis='assets'",ng-cloak)
           div #[span assets] #[small]
           .desc no files
 
@@ -56,9 +56,13 @@ block body
           #chart-configs: .ib
             label Config
             .chart-config(ng-repeat="(name,v) in chart.config")
-              .input-group(ng-if="v.type[0].name!='Boolean'")
+              .input-group(ng-if="v.type[0].name!='Boolean' && v.type[0].name!='Palette'")
                 span.input-group-addon {{name}}
-                input.form-control(type="text",ng-attr-placeholder="{{v.default}}",ng-model="v.value")
+                input.form-control(type="text",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value",style="text-align:center")
+              .btn-group(ng-if="v.type[0].name=='Palette'")
+                span.input-group-addon {{name}}
+                div(style="display:table-cell;float:left;width:100%;height:100%;border:1px solid #ccc;padding:5px;text-align:center;cursor:pointer;border-top-right-radius:3px;border-bottom-right-radius:3px;")
+                  div(ng-repeat="c in v.value",ng-attr-style="background:{{c}};width:{{90/v.value.length}}%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:24px;user-select:none;-webkit-user-select:none") &nbsp;
               .btn-group(ng-if="v.type[0].name=='Boolean'")
                 span.input-group-addon {{name}}
                 .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}

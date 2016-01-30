@@ -68,5 +68,5 @@ angular.module \plotDB
     if $scope.charts.length < 10 =>
       for i from 0 til 40 => $scope.charts.push {} <<< chart
     $scope.load = (chart) ->
-      window.location.href = "/chart.html?name=#{chart.name}"
+      window.location.href = "/chart/?k=#{chart.{}type.name or 'local'}|charttype|#{chart.key}"
 
