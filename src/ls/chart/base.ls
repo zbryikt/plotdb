@@ -21,7 +21,6 @@ plotdb <<< do
     level: 5
     re: /^((rgb|hsl)\((\s*[0-9.]+\s*,){2}\s*[0-9.]+\s*\)|(rgb|hsl)a\((\s*[0-9.]+\s*,){3}\s*[0-9.]+\s*\)|\#[0-9a-f]{3}|\#[0-9a-f]{6}|[a-zA-Z][a-zA-Z0-9]*)$/
     test: -> 
-      console.log it
       if !it => return true
       if typeof(it) == typeof("") =>
         if it.charAt(0) != '[' => it = it.split(\,)

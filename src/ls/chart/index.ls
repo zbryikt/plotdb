@@ -59,6 +59,7 @@ angular.module \plotDB
         code:  lineWrapping: true, lineNumbers: true mode: \javascript
         style: lineWrapping: true, lineNumbers: true, mode: \css
         doc:   lineWrapping: true, lineNumbers: true, mode: \xml
+        objs: []
       chart: chart-service.create!
       canvas: do
         node: document.getElementById(\chart-renderer)
@@ -71,7 +72,7 @@ angular.module \plotDB
           @chart.key = null
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
       load: (type, key) -> 
-        chart-service.load type, key .then ~> @chart <<< it
+        chart-service.load type, key .then (ret) ~> $scope.$apply ~> @chart <<< ret
       dimension: do
         bind: (event, dimension, field = {}) ->
           dataset = data-service.find field
@@ -113,18 +114,17 @@ angular.module \plotDB
       hid-handler: ->
         # Switch Panel by Alt-Enter
         switch-panel = ~>
+          <~ setTimeout _, 0
+          <~ $scope.$apply _
           temp = @vis
           if @vis == \preview and @lastvis => @vis = @lastvis
           else if @vis == \preview => @vis = \code
           else @vis = \preview
           @lastvis = temp
-        $scope.codemirrored = (editor) ->
-          toggle = -> setTimeout (-> switch-panel!), 0
-          editor.setOption \extraKeys, do
-            "Cmd-Enter": toggle # so event will pass through to global handler
-            "Alt-Enter": toggle
+        $scope.codemirrored = (editor) -> $scope.codemirror.objs.push editor
         document.body.addEventListener \keydown, (e) -> 
-          if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) => $scope.$apply -> switch-panel!
+          if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) =>
+            $scope.$apply -> switch-panel!
 
       check-param: ->
         if !window.location.search => return
@@ -134,6 +134,9 @@ angular.module \plotDB
         if type != \charttype => type = \chart
         $scope.load {name: type, location}, key
       monitor: ->
+        @$watch 'vis', ~> 
+          # codemirror won't update if it's not visible. so wait a little
+          setTimeout (~> @codemirror.objs.map -> it.refresh!), 0
         @$watch 'chart.doc.content', ~> @countline!
         @$watch 'chart.style.content', ~> @countline!
         @$watch 'chart.code.content', ~> @countline!
@@ -151,8 +154,8 @@ angular.module \plotDB
           #TODO need sanity check
           @chart.thumbnail = data.payload
           @chart.save!then (ret) -> 
-            $scope.$apply -> $scope.chart <<< ret
             plNotify.send \success, "chart saved"
+            $scope.$apply -> $scope.chart <<< ret
         else if data.type == \parse =>
           {config,dimension} = JSON.parse(data.payload)
           for k,v of @chart.dimension => if dimension[k]? => dimension[k].fields = v.fields
