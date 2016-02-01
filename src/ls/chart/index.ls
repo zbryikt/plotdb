@@ -84,7 +84,8 @@ angular.module \plotDB
           idx = dimension.fields.index-of(field)
           if idx < 0 => return
           dimension.fields.splice idx, 1
-      render: (rebind = true)->
+      reset: -> @render!
+      render: (rebind = true) ->
         @chart.update-data!
         for k,v of @chart => if typeof(v) != \function => @chart[k] = v
         @canvas.window.postMessage {type: \render, payload: @chart, rebind}, @plotdomain
@@ -94,6 +95,9 @@ angular.module \plotDB
         @chart[it].size = @chart[it].content.length
 
     $scope <<< do # Behaviors
+      fullscreen: do
+        toggle: -> @toggled = !!!@toggled
+        toggled: false
       coloredit: do
         config: (v, idx) -> do
           class: \no-palette

@@ -15,6 +15,7 @@ block body
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
     include /widget/palette-edit-modal.jade
+    #fullscreen-dimmer(ng-class="{'fullscreen':fullscreen.toggled}")
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
       #code-tabs
         .tab.cat.shown(ng-click="showsrc=!!!showsrc")
@@ -78,18 +79,29 @@ block body
       .col-sm-9(style="padding-left:0;position:relative")
         #code-error(ng-show="error") {{error}}
 
-        #code-editor(ng-show="vis!='preview'")
+        #code-editor(ng-show="vis!='preview'",ng-class="{'fullscreen':fullscreen.toggled}")
           #code-header {{vis}}
           #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ng-show="vis=='code'",ui-refrehs="vis")
           #code-editor-style.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="chart.style.content",ng-show="vis=='stylesheet'",ui-refrehs="vis")
           #code-editor-doc.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="chart.doc.content",ng-show="vis=='document'",ui-refrehs="vis")
           #code-ctrl
-            .btn.btn-default(ng-click="chart.render()") Save
-            span &nbsp;
-            .btn.btn-default(ng-click="chart.render();vis='preview'") Preview #[small.hint Alt-Enter]
+            .btn-group
+              .btn.btn-default(ng-click="reset()") Reset
+              .btn.btn-default(ng-click="fullscreen.toggle()")
+                span(ng-cloak,ng-if="fullscreen.toggled") Leave
+                span(ng-cloak,ng-if="!fullscreen.toggled") Enter
+                span  Full Screen
+              .btn.btn-default(ng-click="chart.render();vis='preview'") Preview #[small.hint Alt-Enter]
 
-        #visualization-canvas2.plpanel(ng-show="vis=='preview'")
-          .btn.btn-default(ng-click="vis='code'") Open Code #[small.hint Alt-Enter]
+        #visualization-canvas2.plpanel(ng-show="vis=='preview'",ng-class="{'fullscreen':fullscreen.toggled}")
+          .btn-group
+            .btn.btn-default.btn-sm(ng-click="reset()") Reset
+            .btn.btn-default.btn-sm(ng-click="fullscreen.toggle()")
+              span(ng-cloak,ng-if="fullscreen.toggled") Leave
+              span(ng-cloak,ng-if="!fullscreen.toggled") Enter
+              span  Full Screen
+            .btn.btn-default.btn-sm(ng-click="vis='code'") Open Code #[small.hint Alt-Enter]
+
           iframe#chart-renderer(src="http://localhost/render.html",
           style="width:100%;height:100%;border:none;overflow:hidden",scrolling="no")
 
