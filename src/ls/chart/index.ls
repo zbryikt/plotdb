@@ -95,10 +95,11 @@ angular.module \plotDB
 
     $scope <<< do # Behaviors
       coloredit: do
-        config: -> do
+        config: (v, idx) -> do
           class: \no-palette
-          context: "context#it"
+          context: "context#idx"
           exclusive: true
+          palette: [v.value]
       paledit: do #TODO should be moved to standalone controller
         ldcp: null, item: null
         init: ->
