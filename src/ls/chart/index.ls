@@ -56,7 +56,7 @@ angular.module \plotDB
       plotdomain: \http://localhost/
       error: null
       codemirror: do
-        code:  lineWrapping: true, lineNumbers: true mode: \javascript
+        code:  lineWrapping: true, lineNumbers: true, mode: \javascript
         style: lineWrapping: true, lineNumbers: true, mode: \css
         doc:   lineWrapping: true, lineNumbers: true, mode: \xml
         objs: []
@@ -134,9 +134,17 @@ angular.module \plotDB
         if type != \charttype => type = \chart
         $scope.load {name: type, location}, key
       monitor: ->
-        @$watch 'vis', ~> 
+        @$watch 'vis', (vis) ~>
           # codemirror won't update if it's not visible. so wait a little
-          setTimeout (~> @codemirror.objs.map -> it.refresh!), 0
+          # refresh will reset cursor which scroll to the top.
+          # so we only want to refresh once.
+          setTimeout (~>
+            @codemirror.objs.map (cm) ->
+              ret = [[k,v] for k,v of $scope.codemirror].filter(->it.1.mode == cm.options.mode).0
+              if ret and !ret.1.refreshed and vis.starts-with(ret.0) =>
+                cm.refresh!
+                ret.1.refreshed = true # make it happened only once.
+          ), 0
         @$watch 'chart.doc.content', ~> @countline!
         @$watch 'chart.style.content', ~> @countline!
         @$watch 'chart.code.content', ~> @countline!

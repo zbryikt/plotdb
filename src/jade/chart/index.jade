@@ -80,9 +80,9 @@ block body
 
         #code-editor(ng-show="vis!='preview'")
           #code-header {{vis}}
-          #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="chart.code.option",ng-model="chart.code.content",ng-show="vis=='code'")
-          #code-editor-style.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="chart.style.option",ng-model="chart.style.content",ng-show="vis=='stylesheet'")
-          #code-editor-doc.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="chart.doc.option",ng-model="chart.doc.content",ng-show="vis=='document'")
+          #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ng-show="vis=='code'",ui-refrehs="vis")
+          #code-editor-style.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="chart.style.content",ng-show="vis=='stylesheet'",ui-refrehs="vis")
+          #code-editor-doc.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="chart.doc.content",ng-show="vis=='document'",ui-refrehs="vis")
           #code-ctrl
             .btn.btn-default(ng-click="chart.render()") Save
             span &nbsp;
