@@ -58,21 +58,21 @@ block body
             label Config
             .chart-config(ng-repeat="(name,v) in chart.config")
               .input-group(ng-if="v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color'")
-                span.input-group-addon {{name}}
+                span.input-group-addon {{v.name || name}}
                 input.form-control(type="text",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value",style="text-align:center")
               //TODO coloredit
               .btn-group(ng-if="v.type[0].name=='Color'",ng-click="coloredit.edit(v);")
-                span.input-group-addon {{name}}
+                span.input-group-addon {{v.name || name}}
                 div(style="display:table-cell;float:left;width:100%;height:100%;border:1px solid #ccc;padding:5px;text-align:center;cursor:pointer;border-top-right-radius:3px;border-bottom-right-radius:3px;")
                   div(ng-attr-style="background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:24px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v,$index)") &nbsp;
               //- Palette
               .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);")
-                span.input-group-addon {{name}}
+                span.input-group-addon {{v.name || name}}
                 div(style="display:table-cell;float:left;width:100%;height:100%;border:1px solid #ccc;padding:5px;text-align:center;cursor:pointer;border-top-right-radius:3px;border-bottom-right-radius:3px;")
                   div(ng-repeat="c in v.value.colors",ng-attr-style="background:{{c.hex}};width:{{90/v.value.colors.length}}%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:24px;user-select:none;-webkit-user-select:none") &nbsp;
               //- Boolean
               .btn-group(ng-if="v.type[0].name=='Boolean'")
-                span.input-group-addon {{name}}
+                span.input-group-addon {{v.name || name}}
                 .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
 
       .col-sm-9(style="padding-left:0;position:relative")
