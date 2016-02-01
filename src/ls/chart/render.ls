@@ -70,6 +70,7 @@ render = (payload, rebind = true) ->
       $(document.body).html("<style type='text/css'>#style</style><div id='container'>#doc</div>")
       window.module = {}
       eval(code)
+      window.module = module
     root = document.getElementById \container
     chart = module.exports
     for k,v of config => 

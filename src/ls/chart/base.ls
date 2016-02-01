@@ -48,7 +48,8 @@ plotdb <<< do
         catch
           return it.split(\,).map(->{hex: it.trim!})
       return it 
-    default: <[#1d3263 #226c87 #f8d672 #e48e11 #e03215 #ab2321]>.map(->{hex:it})
+    default: {colors: <[#1d3263 #226c87 #f8d672 #e48e11 #e03215 #ab2321]>.map(->{hex:it})}
+    plotdb:  {colors: <[#ed1d78 #c59b6d #8cc63f #28aae2]>.map(->{hex:it})}
   Boolean:
     name: \Boolean, level: 2,
     test: -> !!/^(true|false|1|0|yes|no)$/.exec(it)
