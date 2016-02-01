@@ -178,6 +178,16 @@ angular.module \plotDB
           $scope.render!
         else if data.type == \loaded =>
           @canvas.window.postMessage {type: \parse, payload: @chart.code.content}, @plotdomain
+        else if data.type == \click =>
+          if document.dispatchEvent
+            event = document.createEvent \MouseEvents
+            event.initEvent \click, true, true
+            event.synthetic = true
+            document.dispatchEvent event
+          else
+            event = document.createEventObject!
+            event.synthetic = true
+            document.fireEvent("onclick", event)
       init: ->
         @communicate!
         @hid-handler!

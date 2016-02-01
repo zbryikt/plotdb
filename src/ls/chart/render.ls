@@ -1,3 +1,5 @@
+plotdomain = \http://localhost/
+
 sched = do
   timeout: do
     list: []
@@ -12,7 +14,6 @@ sched = do
     for item in @interval.list => clearInterval item
 
 # Chrome refuse to use setInterval in dictionary like ...sched.interval
-
 window.setTimeout = (func, delta) ->
   ret = sched.timeout.set func, delta
   sched.timeout.list.push ret
@@ -23,9 +24,12 @@ window.setInterval = (func, delta) ->
   sched.interval.list.push ret
   ret
 
+# bubbling up click outside renderer. for ColorPicker
+window.addEventListener \click, ->
+  window.parent.postMessage {type: \click, payload: ""}, plotdomain
+
 <- $ document .ready
 
-plotdomain = \http://localhost/
 dispatcher = (evt) ->
   if evt.data.type == \snapshot => snapshot!
   else if evt.data.type == \render => render evt.data.payload, evt.data.rebind
