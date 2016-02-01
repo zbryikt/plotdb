@@ -66,6 +66,8 @@ render = (payload, rebind = true) ->
   config = payload.config or {}
   sched.clear!
   try
+    ret = /<\s*script[^>]*>.*<\s*\/\s*script\s*>/g.exec(doc.toLowerCase!)
+    if ret => throw new Error("script tag is now allowed in document.")
     if rebind =>
       $(document.body).html("<style type='text/css'>#style</style><div id='container'>#doc</div>")
       window.module = {}
