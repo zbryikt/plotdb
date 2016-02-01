@@ -160,9 +160,10 @@ model.type <<< do
     switches: <[private public list token]>
     permtype: <[read write admin]>
     lint: ->
-      if typeof(it) != \object => return [true]
-      if (it.switch?) and !Array.isArray(it.switch) => return [true]
-      if (it.value?) and !Array.isArray(it.value) => return [true]
+      if !it => return [true, null, \ISNULL]
+      if typeof(it) != \object => return [true, null, \NOTOBJ]
+      if !(it.switch?) or !Array.isArray(it.switch) => return [true, null, \switch]
+      if !(it.value?) or !Array.isArray(it.value) => return [true, null, \value]
       for item in it.switch =>
         if !(item in model.type.permission.config.switches) => return [true, item.switch, \switch]
       for item in it.value =>

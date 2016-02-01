@@ -84,10 +84,10 @@ angular.module \plotDB
           idx = dimension.fields.index-of(field)
           if idx < 0 => return
           dimension.fields.splice idx, 1
-      render: ->
+      render: (rebind = true)->
         @chart.update-data!
         for k,v of @chart => if typeof(v) != \function => @chart[k] = v
-        @canvas.window.postMessage {type: \render, payload: @chart}, @plotdomain
+        @canvas.window.postMessage {type: \render, payload: @chart, rebind}, @plotdomain
       countline: ->
         <~ <[code style doc]>.map
         @chart[it].lines = @chart[it].content.split(\\n).length
@@ -144,7 +144,7 @@ angular.module \plotDB
         @$watch 'chart.style.content', ~> @render!
         @$watch 'chart.code.content', (code) ~>
           @canvas.window.postMessage {type: \parse, payload: code}, @plotdomain
-        @$watch 'chart.config', (~> @render!), true
+        @$watch 'chart.config', (~> @render false), true
       communicate: -> # talk with canvas window
         ({data}) <~ window.addEventListener \message, _, false
         if !data or typeof(data) != \object => return

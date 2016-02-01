@@ -5,5 +5,5 @@ module.exports = (backend, config) ->
   lmodel := lmodel store
   lmodel.dataset.rest backend.router.api
   backend.router.api.get "/dataset/", (req, res) ->
-    (ret) <- lmodel.dataset.list \owner, \null .then
+    (ret) <- lmodel.dataset.list \owner, [req.user.key] .then
     res.send JSON.stringify(ret)

@@ -28,7 +28,7 @@ window.setInterval = (func, delta) ->
 plotdomain = \http://localhost/
 dispatcher = (evt) ->
   if evt.data.type == \snapshot => snapshot!
-  else if evt.data.type == \render => render evt.data.payload
+  else if evt.data.type == \render => render evt.data.payload, evt.data.rebind
   else if evt.data.type == \parse => parse evt.data.payload
 
 error-handling = (e) ->
@@ -58,7 +58,7 @@ snapshot = ->
   result = canvas.toDataURL!
   window.parent.postMessage {type: \snapshot, payload: result}, plotdomain
 
-render = (payload) ->
+render = (payload, rebind = true) ->
   code = payload.code.content
   style = payload.style.content
   doc = payload.doc.content
@@ -66,9 +66,10 @@ render = (payload) ->
   config = payload.config or {}
   sched.clear!
   try
-    $(document.body).html("<style type='text/css'>#style</style><div id='container'>#doc</div>")
-    window.module = {}
-    eval(code)
+    if rebind =>
+      $(document.body).html("<style type='text/css'>#style</style><div id='container'>#doc</div>")
+      window.module = {}
+      eval(code)
     root = document.getElementById \container
     chart = module.exports
     for k,v of config => 
@@ -83,8 +84,9 @@ render = (payload) ->
           console.log "#{e.stack}"
     for k,v of chart.config => 
       config[k] = if !(config[k]?) or !(config[k].value?) => v.default else config[k].value
-    if chart.init => chart.init root, data, config
-    chart.bind root, data, config
+    if rebind =>
+      if chart.init => chart.init root, data, config
+      chart.bind root, data, config
     chart.resize root, data, config
     chart.render root, data, config
     window.parent.postMessage {type: \error, payload: ""}, plotdomain

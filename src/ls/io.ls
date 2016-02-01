@@ -3,7 +3,7 @@ angular.module \plotDB
     aux = do
       localkey: -> "#{Math.random!.toString(36)}".substring(2)
       save-locally: (item, res, rej) ->
-        list = JSON.parse(localStorage.getItem("/db/list/#{item.type.name}"))
+        list = JSON.parse(localStorage.getItem("/db/list/#{item.type.name}")) or []
         if !item.key
           for i from 0 til 10 =>
             key = @localkey!
@@ -29,8 +29,20 @@ angular.module \plotDB
         $http config
           .success (ret) -> res ret
           .error (d) -> rej [true, d.toString!]
+      delete-locally: (typ, key, res, rej) ->
+        list = JSON.parse(localStorage.getItem("/db/list/#{type.name}")) or []
+        if !(key in list) => return rej [true, "no such item"]
+        list = list.filter(-> it != key)
+        localStorage.setItem("/db/list/#{type.name}", angular.toJson(list))
+        res!
+      delete-remotely: (type, key, res, rej) ->
+        config = {url: "/d/#{type.name}/#{key}", method: \DELETE}
+        $http config
+          .success (ret) -> res ret
+          .error (d="") -> rej [true, d.toString!]
+
       list-locally: (type, res, rej) ->
-        list = JSON.parse(localStorage.getItem("/db/list/#{type.name}/")) or []
+        list = JSON.parse(localStorage.getItem("/db/list/#{type.name}")) or []
         ret = []
         for item in list =>
           obj = JSON.parse(localStorage.getItem("/db/#{type.name}/#item"))
@@ -60,11 +72,16 @@ angular.module \plotDB
       list: (type, filter = {}) -> new Promise (res, rej) ~>
         if aux.verify-type({type}) => return rej [true, "type incorrect"]
         if type.location == \local => return aux.list-locally type, res, rej
-        else if type.location == \server => return aux.list-locally type, res, rej
+        else if type.location == \server => return aux.list-remotely type, res, rej
         else if type.location == \any =>
           Promise.all [
             new Promise (res, rej) -> aux.list-locally type, res, rej
             new Promise (res, rej) -> aux.list-remotely type, res, rej
           ] .then (ret) -> res ret.0 ++ ret.1
+        else return rej [true, "not support type"]
+      delete: (type, key) -> new Promise (res, rej) ~>
+        if !type or !key => return rej [true, "param not sufficient"]
+        if type.location == \local => return aux.delete-locally type, key, res, rej
+        else if type.location == \server => return aux.delete-remotely type, key, res, rej
         else return rej [true, "not support type"]
 

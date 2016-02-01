@@ -15,7 +15,11 @@ plotdb <<< do
       test: -> v and v.length and (it in v)
       values: v
   Percent: name: \Percent, level: 3, test: -> !!/[0-9.]+%/.exec(it)
-  Color: name: \Color, level: 4, test: -> !!!/(rgba?|hsla?)\([0-9.,]+\)|#[0-9a-f]{3,6}|[a-z0-9]+/.exec(it.trim!)
+  Color: do
+    name: \Color
+    level: 4
+    test: -> !!!/(rgba?|hsla?)\([0-9.,]+\)|#[0-9a-f]{3,6}|[a-z0-9]+/.exec(it.trim!)
+    default: \#dc4521
   Palette: do
     name: \Palette
     level: 5
