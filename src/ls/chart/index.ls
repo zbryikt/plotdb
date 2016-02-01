@@ -94,6 +94,11 @@ angular.module \plotDB
         @chart[it].size = @chart[it].content.length
 
     $scope <<< do # Behaviors
+      coloredit: do
+        config: -> do
+          class: \no-palette
+          context: "context#it"
+          exclusive: true
       paledit: do #TODO should be moved to standalone controller
         ldcp: null, item: null
         init: ->
