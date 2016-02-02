@@ -101,7 +101,7 @@ render = (payload, rebind = true) ->
       promise = Promise.resolve!
     (module) <- promise.then
     root = document.getElementById \container
-    chart = module.exports
+    chart = window.module.exports
     for k,v of config => 
       for type in v.type =>
         type = plotdb[type.name]
