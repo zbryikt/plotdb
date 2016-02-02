@@ -71,6 +71,7 @@ model.prototype.rest = (api, config) ->
         if !ret => return aux.r404 res
         if ret.owner != req.user.key => return aux.r403 res
         @delete req.params.id
+        res.send!
       ..catch -> return aux.r403 res
     #TODO complete this
 
