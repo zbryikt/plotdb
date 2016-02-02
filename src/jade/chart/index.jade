@@ -15,43 +15,51 @@ block body
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
 
-    #permission-modal(ng-show="sharePanel.toggled",style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999"): .ib(style="width:800px;height:600px;background:#fff;border-radius:3px;box-shadow:0 4px 4px rgba(0,0,0,0.5);padding:10px;margin:70px auto 0")
+    #permission-modal(ng-show="sharePanel.toggled",style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999"): .ib(style="width:640px;height:490px;background:#fff;border-radius:3px;box-shadow:0 4px 4px rgba(0,0,0,0.5);padding:10px;margin:70px auto 0")
       .closebtn(ng-click="sharePanel.toggle()")
       h3(style="margin:0;padding:8px 0 8px 10px;border-bottom:1px solid #eee") Share
       br
       .text-center(style="margin-bottom: 8px"): .btn-group
         .btn.btn-default(ng-click="sharePanel.setPrivate()",ng-class="{'active':!sharePanel.isPublic}") Private
         .btn.btn-default(ng-click="sharePanel.setPublic()",ng-class="{'active':sharePanel.isPublic}") Public
-      .text-center(ng-show="!sharePanel.isPublic") Only users with permissions can see this chart.
+      .text-center(ng-show="!sharePanel.isPublic") Only users with permission can see this chart.
       .text-center(ng-show="sharePanel.isPublic") Every one can see this chart.
       hr
       .row
-        .col-sm-6
+        .col-sm-10.col-sm-offset-1
           label Link
+          .pull-right: a(href="",target="_blank") 
+            i.fa.fa-external-link(style="vertical-align:middle")
+            span(style="font-size:12px;margin-left:5px;") Open in New Window
           input.form-control(type="text",value="http://blah")
-        .col-sm-6
+          br
           label Embed Code
-          textarea.form-control(rows="1")
+          textarea.form-control(rows="5")
+      br
       hr(style="margin-bottom:10px")
-      .row
-        .col-sm-8.col-sm-offset-2
-          label(style="margin-bottom:10px") Granted List
-          each i in [1,2,3,4,5]
-            .perm(style="line-height:20px;margin-bottom:10px;border-bottom:1px dashed #f9f9f9")
-              div(style="display:inline-block;vertical-align:middle;line-height:12px;padding:1px;font-size:12px;width:15px;height:15px;border-radius:50%;background:#f00;color:#fff;text-align:center;margin-right:10px") &times;
-              div(style="width:20px;height:20px;border-radius:50%;background:#999;border:2px solid #444;display:inline-block;vertical-align:middle;margin-right:7px;")
-              span(style="line-height:20px;") tkirby@gmail.com
-              .pull-right
-                each v in [['eye','View','#444'],['edit','Edit','#ddd'],['cogs','Admin','#ddd']]
-                  div(style="display:inline-block;vertical-align:middle;line-height:20px;margin:0 10px;text-align:center;color:#444")
-                    //-i.fa(class="fa-"+v[0],style="font-size:20px;line-height:0")
-                    div(style="font-size:12px;font-family:open sans condensed;line-height:0;font-weight:bold;color:"+v[2])= v[1]
-      hr
-      .input-group(style="width:250px;float:left;margin-right:10px")
-        input.form-control.input-sm
-        span.input-group-btn
-          .btn.btn-default.btn-sm #[i.fa.fa-plus] User 
-      .btn.btn-default.btn-sm #[i.fa.fa-plus] Link
+      .pull-right
+        .btn.btn-default(ng-click="sharePanel.toggle()") Close
+      //- Simplify this for now
+      //-
+        .row
+          .col-sm-8.col-sm-offset-2
+            label(style="margin-bottom:10px") Granted List
+            each i in [1,2,3,4,5]
+              .perm(style="line-height:20px;margin-bottom:10px;border-bottom:1px dashed #f9f9f9")
+                div(style="display:inline-block;vertical-align:middle;line-height:12px;padding:1px;font-size:12px;width:15px;height:15px;border-radius:50%;background:#f00;color:#fff;text-align:center;margin-right:10px") &times;
+                div(style="width:20px;height:20px;border-radius:50%;background:#999;border:2px solid #444;display:inline-block;vertical-align:middle;margin-right:7px;")
+                span(style="line-height:20px;") tkirby@gmail.com
+                .pull-right
+                  each v in [['eye','View','#444'],['edit','Edit','#ddd'],['cogs','Admin','#ddd']]
+                    div(style="display:inline-block;vertical-align:middle;line-height:20px;margin:0 10px;text-align:center;color:#444")
+                      //-i.fa(class="fa-"+v[0],style="font-size:20px;line-height:0")
+                      div(style="font-size:12px;font-family:open sans condensed;line-height:0;font-weight:bold;color:"+v[2])= v[1]
+        hr
+        .input-group(style="width:250px;float:left;margin-right:10px")
+          input.form-control.input-sm
+          span.input-group-btn
+            .btn.btn-default.btn-sm #[i.fa.fa-plus] User 
+        .btn.btn-default.btn-sm #[i.fa.fa-plus] Link
 
 
     include /widget/palette-edit-modal.jade
