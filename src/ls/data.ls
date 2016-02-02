@@ -49,13 +49,11 @@ angular.module \plotDB
           else "#{parseInt(it / 104857.6)/10}MB"
 
   ..service \dataService,
-  <[$rootScope $http IOService sampleData plUtil plNotify]> ++
-  ($rootScope, $http, IOService, sampleData, plUtil, plNotify) ->
+  <[$rootScope $http IOService sampleData plUtil plNotify eventBus]> ++
+  ($rootScope, $http, IOService, sampleData, plUtil, plNotify, eventBus) ->
     Dataset = (config) ->
       @ <<< config
-      @size = angular.toJson(config.data).length
-      @rows = config.data.length
-      if @key => for item in @fields => item.dataset = @key
+      @update!
       @
 
     Dataset.prototype = do
@@ -63,16 +61,24 @@ angular.module \plotDB
       type: {location: \local, name: \dataset}, fields: {}
       permission: {switch: [], value: []}
 
-      save: -> data-service.save @ .then ~> $rootScope.$apply ~>
+      save: -> data-service.save @ .then (ret) ~> $rootScope.$apply ~>
         plNotify.send \success, "Dataset saved"
-        @key = it.key
+        @key = ret.key
       clone: -> 
         obj = new Dataset @
         obj.key = null
       delete: -> data-service.delete @ .then ~> $rootScope.$apply ~>
         plNotify.send \success, "Dataset deleted"
        
-      update: ->
+      update: (data = null) ->
+        if data => @data = data
+        if !@data => @data = []
+        @fields = [[k,v] for k,v of @data.0].map(-> {name: it.0, type: \String})
+        for item in @fields => data-service.field.settype @data, item
+        @size = angular.toJson(@data).length
+        @rows = @data.length
+        if @key => for item in @fields => item.dataset = @key
+
       sync: ->
         #TODO other than local data
         @ <<< JSON.parse(localStorage.getItem @key)
@@ -131,34 +137,42 @@ angular.module \plotDB
       save: (dataset) -> 
         (ret) <~ IOService.save dataset .then
         dataset.key = ret.key
-        if @datasets.map(->it.key).indexOf(ret.key) < 0 => @datasets.push dataset
+        idx = @datasets.map(->it.key).indexOf(ret.key)
+        if idx < 0 => @datasets.push dataset
+        else @datasets.splice idx, 1, dataset
+        dataset
 
       delete: (dataset) -> 
         (ret) <~ IOService.delete dataset.type, dataset.key .then
         idx = @datasets.map(->it.key).indexOf(dataset.key)
         if idx >= 0 => @datasets.splice idx, 1
+        eventBus.fire \dataset.delete, dataset.key
         ret
 
     data-service.init!
     data-service
   ..controller \dataEditCtrl,
-  <[$scope $timeout $http dataService plUtil]> ++ ($scope, $timeout, $http, data-service, plUtil) ->
+  <[$scope $timeout $http dataService plUtil eventBus]> ++
+  ($scope, $timeout, $http, data-service, plUtil, eventBus) ->
     $scope.name = null
     $scope.dataset = null #TODO preload dataset for editing feature
     $scope.save = (locally = false) ->
-      config = do
-        name: $scope.name
-        type: location: (if locally => \local else \server), name: \dataset
-        owner: null
-        permission: switch: <[public]>, value: []
-        data: $scope.data.parsed
-        #TODO support more types
-        datatype: \csv
-        fields: [[k,v] for k,v of $scope.data.parsed.0].map(-> {name: it.0, type: \String})
-      for item in config.fields =>
-        data-service.field.settype $scope.data.parsed, item
-      $scope.dataset = new dataService.Dataset config
+      if !$scope.dataset =>
+        config = do
+          name: $scope.name
+          type: location: (if locally => \local else \server), name: \dataset
+          owner: null
+          permission: switch: <[public]>, value: []
+          #TODO support more types
+          datatype: \csv
+        $scope.dataset = new dataService.Dataset config
+      $scope.dataset.update $scope.data.parsed
       $scope.dataset.save!
+    $scope.load-dataset = (dataset) ->
+      $scope.dataset = dataset
+      $scope.name = dataset.name
+      fields = dataset.fields.map -> it.name
+      $scope.data.raw = ([fields.join(",")] ++ dataset.data.map((obj)->fields.map(->obj[it]).join(\,))).join(\\n)
 
     $scope.data = do
       init: -> $scope.$watch 'data.raw', (->$scope.data.parse!)
@@ -218,13 +232,18 @@ angular.module \plotDB
             $scope.data.raw = d.trim!
             $(\#data-edit-link-modal).modal \hide
           #TODO error handling
+    eventBus.listen \dataset.delete, (key) -> if $scope.dataset.key == key => $scope.dataset = null
+    eventBus.listen \dataset.edit, (dataset) -> 
+      #TODO: support more type ( currently CSV structure only )
+      $scope.load-dataset dataset
 
   ..controller \dataFiles,
-  <[$scope dataService plNotify]> ++
-  ($scope, data-service, plNotify) ->
+  <[$scope dataService plNotify eventBus]> ++
+  ($scope, data-service, plNotify, eventBus) ->
     $scope.datasets = data-service.datasets
     (ret) <- data-service.list!then
     $scope.datasets = ret
-    $scope.remove = (file) -> 
-      console.log file
-      file.delete!then ~> $scope.datasets = $scope.datasets.filter(->it.key != file.key)
+    $scope.edit = (dataset) -> eventBus.fire \dataset.edit, dataset
+    $scope.remove = (dataset) -> 
+      dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)
+      

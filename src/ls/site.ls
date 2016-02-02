@@ -1,4 +1,21 @@
 angular.module \plotDB
+  ..service 'eventBus', <[$rootScope]> ++ ($rootScope) -> 
+    ret = @ <<< do
+      queues: {}
+      handlers: {}
+      process: (name=null)->
+        if !name => list = [[k,v] for k,v of @queues]
+        else list = [[name, @queues[name]]
+        ([k,v]) <- list.map
+        if !v.length => return
+        for func in (@handlers[k] or []) => for payload in v => func payload
+      listen: (name, cb) ->
+        @handlers[][name].push cb
+        @process name
+      fire: (name, payload) ->
+        @queues[][name].push payload
+        @process name
+
   ..service 'plNotify', <[$rootScope $timeout]> ++ ($rootScope, $timeout) -> @ <<< do
     queue: []
     send: (type, message) ->

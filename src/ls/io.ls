@@ -29,7 +29,7 @@ angular.module \plotDB
         $http config
           .success (ret) -> res ret
           .error (d) -> rej [true, d.toString!]
-      delete-locally: (typ, key, res, rej) ->
+      delete-locally: (type, key, res, rej) ->
         list = JSON.parse(localStorage.getItem("/db/list/#{type.name}")) or []
         if !(key in list) => return rej [true, "no such item"]
         list = list.filter(-> it != key)
