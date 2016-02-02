@@ -68,7 +68,7 @@ div(ng-controller="dataEditCtrl")
           i.fa.fa-table
           span &nbsp; google sheet 
     .panel-body
-      textarea.form-control(rows="6",ng-model="data.raw",placeholder="paste or drag your data here...",style="margin-bottom:13px;font-family:monospace")
+      textarea.form-control(rows="6",ng-model="data.raw",placeholder="paste or drag your data here...",style="margin-bottom:13px;font-family:monospace;max-width:100%")
       .input-group.pull-left(style="width:200px")
         input.form-control.input-sm(type="input",ng-model="name",placeholder="Dataset Name")
         span.input-group-btn
