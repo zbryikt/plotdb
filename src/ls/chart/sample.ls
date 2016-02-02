@@ -15,11 +15,11 @@ module.exports = plotdb.chart.create({
   author: "Your Name",
   sample: [0,1,2,3,4,5,6,7,8,9].map(function(it){return {value: it};}),
   dimension: {
-    value: { type: [plotdb.Number], require: true },
-    name: { type: [], require: false }
+    value: { type: [plotdb.Number], require: true, desc: "size of circle" },
+    name: { type: [], require: false, desc: "tag of circle" }
   },
   config: {
-    padding: { type: [plotdb.Number], default: 10 }
+    padding: { type: [plotdb.Number], default: 10, rebindOnChange: true }
   },
   bind: function(root, data, config) {
     this.svg = d3.select(root).append("svg").attr({

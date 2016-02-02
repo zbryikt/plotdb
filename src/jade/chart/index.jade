@@ -138,11 +138,13 @@ block body
         .col-sm-8
           label Dimensions
           .dimensions
-            .dimension(ng-repeat="(name,dim) in chart.dimension",ng-drop="true",
+            .dimension(ng-cloak,ng-repeat="(name,dim) in chart.dimension",ng-drop="true",
             ng-drop-success="dimension.bind($event,dim,$data)")
               .require(ng-show="dim.require"): i.fa.fa-asterisk
               .title {{name}}
-              .desc accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]
+              .desc
+                span(ng-show="dim.desc") {{dim.desc}} #[br]
+                i accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]
               .data-field(ng-repeat="field in dim.fields")
                 | {{field.name}} 
                 small {{field.type}}
