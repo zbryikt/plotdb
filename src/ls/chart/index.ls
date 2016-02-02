@@ -95,6 +95,11 @@ angular.module \plotDB
         @chart[it].size = @chart[it].content.length
 
     $scope <<< do # Behaviors
+      share-panel: do
+        toggle: -> @toggled = !!!@toggled
+        toggled: false
+        set-private: -> @is-public = false
+        set-public: -> @is-public = true
       fullscreen: do
         toggle: -> @toggled = !!!@toggled
         toggled: false

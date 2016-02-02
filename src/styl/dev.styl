@@ -150,6 +150,7 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.1)
     z-index: index(order, 'code-tabs')
     position: relative
+    overflow: hidden
     .tab
       no-selection()
       display: inline-block
@@ -160,9 +161,9 @@
       border-bottom: 0
       margin: -1px 0 0 -1px
       cursor: pointer
-      display: none
-      &.shown
-        display: inline-block
+      //-display: none
+      //-&.shown
+      //  display: inline-block
       .desc
         span:after
           content: ", "
@@ -208,6 +209,28 @@
         color: #444
     .tab.cat
       width: 45px
+    .tab
+      z-index: index(order, 'code-tabs-view')
+      position: relative
+    .tab.action
+      text-align: center
+      padding: 8px 0 4px
+      width: 60px
+      color: #444
+      i.fa
+        font-size: 25px
+        display: block
+      span
+        font-size: 12px
+        //font-family: 'open sans condensed',verdana,arial,sans-serif
+        font-weight: bold
+    .tab.src
+      left: -500px
+      transition(all 0.5s ease-in-out)
+      z-index: index(order, 'code-tabs-src')
+    .tab.src.shown
+      position: relative
+      left: 0
 
 #code-header
   position: absolute

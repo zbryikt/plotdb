@@ -1,6 +1,6 @@
 .data-fields(ng-controller="dataFiles")
   .data-file(ng-repeat="file in datasets")
-    .closebtn(ng-click="remove(file)") &times;
+    .closebtn(ng-click="remove(file)")
     .title {{file.name}}
     .desc {{file.size}}, {{file.rows}} rows
     .data-field(ng-repeat="field in file.fields",ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field") {{field.name}} #[small {{field.type}}]

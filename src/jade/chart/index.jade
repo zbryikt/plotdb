@@ -14,6 +14,46 @@ block head
 block body
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
+
+    #permission-modal(ng-show="sharePanel.toggled",style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999"): .ib(style="width:800px;height:600px;background:#fff;border-radius:3px;box-shadow:0 4px 4px rgba(0,0,0,0.5);padding:10px;margin:70px auto 0")
+      .closebtn(ng-click="sharePanel.toggle()")
+      h3(style="margin:0;padding:8px 0 8px 10px;border-bottom:1px solid #eee") Share
+      br
+      .text-center(style="margin-bottom: 8px"): .btn-group
+        .btn.btn-default(ng-click="sharePanel.setPrivate()",ng-class="{'active':!sharePanel.isPublic}") Private
+        .btn.btn-default(ng-click="sharePanel.setPublic()",ng-class="{'active':sharePanel.isPublic}") Public
+      .text-center(ng-show="!sharePanel.isPublic") Only users with permissions can see this chart.
+      .text-center(ng-show="sharePanel.isPublic") Every one can see this chart.
+      hr
+      .row
+        .col-sm-6
+          label Link
+          input.form-control(type="text",value="http://blah")
+        .col-sm-6
+          label Embed Code
+          textarea.form-control(rows="1")
+      hr(style="margin-bottom:10px")
+      .row
+        .col-sm-8.col-sm-offset-2
+          label(style="margin-bottom:10px") Granted List
+          each i in [1,2,3,4,5]
+            .perm(style="line-height:20px;margin-bottom:10px;border-bottom:1px dashed #f9f9f9")
+              div(style="display:inline-block;vertical-align:middle;line-height:12px;padding:1px;font-size:12px;width:15px;height:15px;border-radius:50%;background:#f00;color:#fff;text-align:center;margin-right:10px") &times;
+              div(style="width:20px;height:20px;border-radius:50%;background:#999;border:2px solid #444;display:inline-block;vertical-align:middle;margin-right:7px;")
+              span(style="line-height:20px;") tkirby@gmail.com
+              .pull-right
+                each v in [['eye','View','#444'],['edit','Edit','#ddd'],['cogs','Admin','#ddd']]
+                  div(style="display:inline-block;vertical-align:middle;line-height:20px;margin:0 10px;text-align:center;color:#444")
+                    //-i.fa(class="fa-"+v[0],style="font-size:20px;line-height:0")
+                    div(style="font-size:12px;font-family:open sans condensed;line-height:0;font-weight:bold;color:"+v[2])= v[1]
+      hr
+      .input-group(style="width:250px;float:left;margin-right:10px")
+        input.form-control.input-sm
+        span.input-group-btn
+          .btn.btn-default.btn-sm #[i.fa.fa-plus] User 
+      .btn.btn-default.btn-sm #[i.fa.fa-plus] Link
+
+
     include /widget/palette-edit-modal.jade
     #fullscreen-dimmer(ng-class="{'fullscreen':fullscreen.toggled}")
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
@@ -26,25 +66,30 @@ block body
         .tab.shown(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'",ng-cloak)
           div #[span preview]
           .desc {{chart.dimension|length}} dimensions
-        .tab(ng-class="{'active':vis=='code','shown':showsrc}",ng-click="vis='code'",ng-cloak)
+        .tab.src(ng-class="{'active':vis=='code','shown':showsrc}",ng-click="vis='code'",ng-cloak)
           div #[span code] #[small javascript]
           .desc {{chart.code.size|size}}, {{chart.code.lines}} lines
-        .tab(ng-class="{'active':vis=='stylesheet','shown':showsrc}",ng-click="vis='stylesheet'",ng-cloak)
+        .tab.src(ng-class="{'active':vis=='stylesheet','shown':showsrc}",ng-click="vis='stylesheet'",ng-cloak)
           div #[span stylesheet] #[small css]
           .desc {{chart.style.size|size}}, {{chart.style.lines}} lines
-        .tab(ng-class="{'active':vis=='document','shown':showsrc}",ng-click="vis='document'",ng-cloak)
+        .tab.src(ng-class="{'active':vis=='document','shown':showsrc}",ng-click="vis='document'",ng-cloak)
           div #[span document] #[small html]
           .desc {{chart.doc.size|size}}, {{chart.doc.lines}} lines
-        .tab(ng-class="{'active':vis=='assets','shown':showsrc}",ng-click="vis='assets'",ng-cloak)
+        .tab.src(ng-class="{'active':vis=='assets','shown':showsrc}",ng-click="vis='assets'",ng-cloak)
           div #[span assets] #[small]
           .desc no files
+        .pull-right
+          //-.tab.action #[i.fa.fa-link] #[span link]
+          //-.tab.action #[i.fa.fa-code] #[span embed]
+          .tab.action(ng-click="sharePanel.toggle()") #[i.fa.fa-user] #[span share]
+
 
     .row
       .col-sm-3
         #config-panel.plpanel
           #project-configs
             label Project
-            .pull-right(style="cursor:pointer;font-family:open sans condensed;font-weight:bold")
+            //-.pull-right(style="cursor:pointer;font-family:open sans condensed;font-weight:bold")
               small #[i.fa.fa-link] Link
               span &nbsp; &nbsp;
               small #[i.fa.fa-film] Embed
@@ -129,7 +174,7 @@ block body
           label Data Fields
           .data-fields(ng-controller="dataFiles")
             .data-file(ng-repeat="file in datasets",ng-show="file.toggle",style="position:relative;z-index:10")
-              .closebtn(ng-click="file.toggle=!!!file.toggle") &times;
+              .closebtn(ng-click="file.toggle=!!!file.toggle")
               .title {{file.name}}
               .desc {{file.size}}, {{file.rows}} rows
               .data-field(ng-repeat="field in file.fields",ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field") {{field.name}} #[small {{field.type}}]
