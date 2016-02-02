@@ -81,9 +81,8 @@ block body
                 .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
 
       .col-sm-9(style="padding-left:0;position:relative")
-        #code-error(ng-show="error") {{error}}
-
         #code-editor(ng-show="vis!='preview'",ng-class="{'fullscreen':fullscreen.toggled}")
+          #code-error(ng-show="error",ng-class="{'fullscreen':fullscreen.toggled}") {{error}}
           #code-header {{vis}}
           #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ng-show="vis=='code'",ui-refrehs="vis")
           #code-editor-style.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="chart.style.content",ng-show="vis=='stylesheet'",ui-refrehs="vis")

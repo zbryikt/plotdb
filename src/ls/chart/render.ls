@@ -35,6 +35,27 @@ dispatcher = (evt) ->
   else if evt.data.type == \render => render evt.data.payload, evt.data.rebind
   else if evt.data.type == \parse => parse evt.data.payload
 
+window.addEventListener \error, (e) ->
+  stack = e.error.stack
+  if stack.indexOf(window.codeURL) =>
+    stack = stack.split window.codeURL .join "line "
+    msg = "#{e.message} at line #{e.lineno - 1}."
+    if e.message.indexOf(stack) < 0 => msg += " Callstack: \n#stack"
+  error-handling window.error-message = msg
+
+proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
+  window.error-message = ""
+  module = if updateModule => \module else \moduleLocal
+  code := "(function() { #code; window.#module = module; })();"
+  window.codeURL = codeURL = URL.createObjectURL new Blob [code], {type: "text/javascript"}
+  codeNode = document.createElement("script")
+  codeNode.src = codeURL
+  codeNode.onload = ->
+    URL.revokeObjectURL codeURL
+    res window[module]
+    document.body.removeChild codeNode
+  document.body.appendChild codeNode
+
 error-handling = (e) ->
   if !e => payload = "plot failed with unknown error"
   else if typeof(e) != typeof({}) => payload = "#e"
@@ -47,7 +68,7 @@ error-handling = (e) ->
 
 parse = (payload) ->
   try
-    eval(payload)
+    (module) <- proper-eval payload, false .then
     chart = module.exports
     payload = JSON.stringify({} <<< chart{dimension, config})
     window.parent.postMessage {type: \parse, payload}, plotdomain
@@ -75,9 +96,10 @@ render = (payload, rebind = true) ->
       if ret => throw new Error("script tag is now allowed in document.")
     if rebind =>
       $(document.body).html("<style type='text/css'>#style</style><div id='container'>#doc</div>")
-      window.module = {}
-      eval(code)
-      window.module = module
+      promise = proper-eval code
+    else
+      promise = Promise.resolve!
+    (module) <- promise.then
     root = document.getElementById \container
     chart = module.exports
     for k,v of config => 
@@ -97,7 +119,7 @@ render = (payload, rebind = true) ->
       chart.bind root, data, config
     chart.resize root, data, config
     chart.render root, data, config
-    window.parent.postMessage {type: \error, payload: ""}, plotdomain
+    window.parent.postMessage {type: \error, payload: window.error-message or ""}, plotdomain
   catch e
     error-handling e
 
