@@ -8,6 +8,7 @@ block vars
   - var url = "http://plotdb.io/"
 block head
   script(type="text/javascript",src="/js/io.js")
+  script(type="text/javascript",src="/js/chart/base.js")
   script(type="text/javascript",src="/js/chart/sample.js")
   script(type="text/javascript",src="/js/chart/index.js")
   script(type="text/javascript",src="/js/data.js")
@@ -15,7 +16,7 @@ block body
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
 
-    #permission-modal(ng-show="sharePanel.toggled",style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999"): .ib(style="width:640px;height:490px;background:#fff;border-radius:3px;box-shadow:0 4px 4px rgba(0,0,0,0.5);padding:10px;margin:70px auto 0")
+    #permission-modal(ng-cloak,ng-show="sharePanel.toggled",style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999"): .ib(style="width:640px;height:490px;background:#fff;border-radius:3px;box-shadow:0 4px 4px rgba(0,0,0,0.5);padding:10px;margin:70px auto 0")
       .closebtn(ng-click="sharePanel.toggle()")
       h3(style="margin:0;padding:8px 0 8px 10px;border-bottom:1px solid #eee") Share
       br

@@ -75,9 +75,7 @@ angular.module \plotDB
         chart-service.load type, key .then (ret) ~> $scope.$apply ~> @chart <<< ret
       dimension: do
         bind: (event, dimension, field = {}) ->
-          dataset = data-service.find field
-          if !dataset => return
-          data-service.field.update field
+          <~ field.update!then
           dimension.fields = [field]
           $scope.render!
         unbind: (event, dimension, field = {}) ->
@@ -88,7 +86,8 @@ angular.module \plotDB
       render: (rebind = true) ->
         @chart.update-data!
         for k,v of @chart => if typeof(v) != \function => @chart[k] = v
-        @canvas.window.postMessage {type: \render, payload: @chart, rebind}, @plotdomain
+        payload = JSON.parse(angular.toJson(@chart))
+        @canvas.window.postMessage {type: \render, payload, rebind}, @plotdomain
       countline: ->
         <~ <[code style doc]>.map
         @chart[it].lines = @chart[it].content.split(\\n).length

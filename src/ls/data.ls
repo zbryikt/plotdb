@@ -77,7 +77,8 @@ angular.module \plotDB
     Field.prototype = do
       dataset: type: {}, key: null, ref: null
       name: null, type: null
-      toJson: -> angular.toJson(@{name, type} <<< {dataset: @dataset{type, key}})
+      #toJson: -> angular.toJson(@{name, type} <<< {dataset: @dataset{type, key}})
+      #TODO this might be called individually. should propagate to dataset?
       update: ->
         (dataset) <~ @get-dataset!then
         @data = dataset.[]data.map(~>it[@name])
@@ -100,8 +101,10 @@ angular.module \plotDB
     Dataset = ->
       @fields = [new Field(f.name, @, f) for f in @fields or []]
       @save = ->
+        @fields.map(->delete it.data)
         <~ Dataset.prototype.save.call(@).then
-        @fields.map ~> it.dataset <<< @{type,name}
+        @fields.map ~> it.dataset <<< @{type,key}
+        @update!
       @load = ->
         <~ Dataset.prototype.load.call(@).then
         Dataset.call @
