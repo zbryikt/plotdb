@@ -1,15 +1,17 @@
 angular.module \plotDB
   ..service \IOService, <[$rootScope $http]> ++ ($rootScope, $http) ->
     aux = do
+      usedkey: {}
       localkey: -> "#{Math.random!.toString(36)}".substring(2)
       save-locally: (item, res, rej) ->
         list = JSON.parse(localStorage.getItem("/db/list/#{item.type.name}")) or []
         if !item.key
-          for i from 0 til 10 =>
+          for i from 0 to 10 =>
             key = @localkey!
-            if !(key in list) => continue
+            if i == 10 or (!(key in list) and !@usedkey[key]) => break
           if i == 10 => return rej [true, "generate local key failed"]
           item.key = key
+          @usedkey[key] = true
         if item.key and !(item.key in list) => list.push item.key
         localStorage.setItem("/db/list/#{item.type.name}", angular.toJson(list))
         localStorage.setItem("/db/#{item.type.name}/#{item.key}", angular.toJson(item))

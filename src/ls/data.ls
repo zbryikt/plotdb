@@ -49,8 +49,86 @@ angular.module \plotDB
           else "#{parseInt(it / 104857.6)/10}MB"
 
   ..service \dataService,
-  <[$rootScope $http IOService sampleData plUtil plNotify eventBus]> ++
-  ($rootScope, $http, IOService, sampleData, plUtil, plNotify, eventBus) ->
+  <[$rootScope $http IOService sampleData baseService plUtil plNotify eventBus]> ++
+  ($rootScope, $http, IOService, sampleData, baseService, plUtil, plNotify, eventBus) ->
+    name = \dataset
+    service = do
+      sample: sampleData
+      init: -> 
+        @list!then ~> @localinfo.update!
+      localinfo: do
+        rows: 0
+        size: 0
+        update: ->
+          @ <<< {rows: 0, size: 0}
+          for item in service.items => if item.type.location == \local => 
+            @rows += item.rows
+            @size += item.size
+    # we can construct directly from a json(field), or from a dataset
+    Field = (name, dataset = null, field = null) -> 
+      if !field and dataset => field = dataset.fields.filter(->it.name == name).0
+      if field => @ <<< field
+      # use _ as a little trick to prevent things to be stringify
+      @ <<< {name, _: ->}
+      if dataset => 
+        @ <<< {dataset: {type:dataset.type, key: dataset.key}}
+        @_.dataset = dataset
+      @
+    Field.prototype = do
+      dataset: type: {}, key: null, ref: null
+      name: null, type: null
+      toJson: -> angular.toJson(@{name, type} <<< {dataset: @dataset{type, key}})
+      update: ->
+        (dataset) <~ @get-dataset!then
+        @data = dataset.[]data.map(~>it[@name])
+        @settype!
+      get-dataset: ->
+        if @_.dataset => return Promise.resolve(that)
+        if !@dataset.type or !dataset.key => return Promise.reject(null)
+        (ret) <~ dataService.load @dataset.type, @dataset.key .then
+        @dataset <<< {ref: ret} <<< ret{type, key}
+        @dataset.ref
+      settype: ->
+        types = <[Boolean Percent Number Date String]> ++ [null]
+        for type in types =>
+          if !type => return @type = \String
+          if !@data.map(-> plotdb[type]test it).filter(->!it).length => 
+            @type = type
+            break
+
+    #TODO: Dataset: save: update field dataset type and key
+    Dataset = ->
+      @fields = [new Field(f.name, @, f) for f in @fields or []]
+      @save = ->
+        <~ Dataset.prototype.save.call(@).then
+        @fields.map ~> it.dataset <<< @{type,name}
+      @load = ->
+        <~ Dataset.prototype.load.call(@).then
+        Dataset.call @
+      @
+
+    Dataset.prototype = do
+      bind: (field) -> #TODO connect dataset and standalone field
+      update: (data = null) ->
+        if data => @data = data
+        if !@data => @data = []
+        #TODO support more type
+        # CSV dataset use first row as field name
+        names = [k for k of @data.0]
+        for i from 0 til names.length
+          if @fields[i] => that else @fields.push new Field(names[i], @)
+          @fields[i].update!
+
+        #@fields = [[k,v] for k,v of @data.0].map(-> {name: it.0, type: \String})
+        #for item in @fields => data-service.field.settype @data, item
+        @size = angular.toJson(@data).length
+        @rows = @data.length
+        #if @key => for item in @fields => item.dataset = @key
+    dataService = baseService.derive name, service, Dataset
+    dataService
+      
+
+    /*
     Dataset = (config) ->
       @ <<< config
       @update!
@@ -69,7 +147,7 @@ angular.module \plotDB
         obj.key = null
       delete: -> data-service.delete @ .then ~> $rootScope.$apply ~>
         plNotify.send \success, "Dataset deleted"
-       
+
       update: (data = null) ->
         if data => @data = data
         if !@data => @data = []
@@ -84,10 +162,10 @@ angular.module \plotDB
         @ <<< JSON.parse(localStorage.getItem @key)
 
 
+
     data-service = do
       Dataset: Dataset
       datasets: null #[] ++ sampleData.map(-> new Dataset(it))
-      name: -> "/datasets/#it"
       local: rows: 0, size: 0
       local-size: ->
         @local <<< {rows: 0, size: 0}
@@ -106,8 +184,8 @@ angular.module \plotDB
           [0,ret.length + sampleData.length] ++ (ret ++ sampleData).map(->new Dataset it)
         )
         @datasets
-      init: -> @list!then ~> @local-size!
 
+      init: -> @list!then ~> @local-size!
       field: do
         update: (f) ->
           dataset = @find-dataset f
@@ -122,7 +200,6 @@ angular.module \plotDB
             if !data.map(-> plotdb[type]test it).filter(->!it).length => 
               field.type = type
               break
-
       find: (item) -> 
         #TODO: complete implement finder
         if item.dataset => key = item.dataset else key = item
@@ -151,21 +228,23 @@ angular.module \plotDB
 
     data-service.init!
     data-service
+    */
   ..controller \dataEditCtrl,
   <[$scope $timeout $http dataService plUtil eventBus]> ++
   ($scope, $timeout, $http, data-service, plUtil, eventBus) ->
     $scope.name = null
-    $scope.dataset = null #TODO preload dataset for editing feature
+    $scope.dataset = null
     $scope.save = (locally = false) ->
+      $scope.data.parse true
       if !$scope.dataset =>
         config = do
           name: $scope.name
           type: location: (if locally => \local else \server), name: \dataset
           owner: null
           permission: switch: <[public]>, value: []
-          #TODO support more types
-          datatype: \csv
-        $scope.dataset = new dataService.Dataset config
+          datatype: \csv #TODO support more types
+        $scope.dataset = new dataService.dataset config
+      $scope.dataset.name = $scope.name
       $scope.dataset.update $scope.data.parsed
       $scope.dataset.save!
     $scope.load-dataset = (dataset) ->
@@ -176,18 +255,22 @@ angular.module \plotDB
 
     $scope.data = do
       init: -> $scope.$watch 'data.raw', (->$scope.data.parse!)
+      reset: (data = "") ->
+        $scope.dataset = null
+        $scope.data.raw = data
       raw: ""
       rows: 0
       size: 0
       parsed: null
-      parse: ->
-        if @handler => $timeout.cancel @handler
-        @handler = $timeout (~>
-          @handler = null
+      parse: (force = false) ->
+        _ = ~>
+          if !force => @handler = null
           @parsed = Papa.parse(@raw, {header:true}).data
           @rows = @parsed.length
           @size = @raw.length
-        ), 1000
+        if force => return _!
+        if @handler => $timeout.cancel @handler
+        @handler = $timeout (~> _! ), (if force => 0 else 1000)
     $scope.data.init!
     $scope.parser = do
       encoding: \UTF-8
@@ -197,7 +280,7 @@ angular.module \plotDB
           file = $(\#data-edit-csv-file).0.files.0
           reader = new FileReader!
           reader.onload = (e) ->
-            $scope.$apply -> $scope.data.raw = e.target.result.trim!
+            $scope.$apply -> $scope.data.reset e.target.result.trim!
             $(\#data-edit-csv-modal).modal \hide
           reader.onerror = (e) ->
           reader.readAsText(file, $scope.parser.encoding)
@@ -219,7 +302,7 @@ angular.module \plotDB
             lines = [fields.join(\,)] ++ data.feed.entry.map((it) ->
               [(it["gsx$#key"] or {$t:""}).$t for key in fields].join(\,)
             )
-            $scope.data.raw = lines.join(\\n)
+            $scope.$apply -> $scope.data.reset lines.join(\\n)
             setTimeout((->$(\#data-edit-gsheet-modal).modal(\hide)),0)
           #TODO error handling
 
@@ -229,7 +312,7 @@ angular.module \plotDB
         read: ->
           $http url: "http://crossorigin.me/#{$scope.parser.link.url}", method: \GET
           .success (d) ->
-            $scope.data.raw = d.trim!
+            $scope.$apply -> $scope.data.reset d.trim!
             $(\#data-edit-link-modal).modal \hide
           #TODO error handling
     eventBus.listen \dataset.delete, (key) -> if $scope.dataset.key == key => $scope.dataset = null
@@ -246,4 +329,3 @@ angular.module \plotDB
     $scope.edit = (dataset) -> eventBus.fire \dataset.edit, dataset
     $scope.remove = (dataset) -> 
       dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)
-      
