@@ -146,6 +146,9 @@ angular.module \plotDB
               ret = [[k,v] for k,v of $scope.codemirror].filter(->it.1.mode == cm.options.mode).0
               if ret and !ret.1.refreshed and vis.starts-with(ret.0) =>
                 cm.refresh!
+                #WORKAROUND: one refresh only brings partial content
+                # use use another refresh to remedy this
+                setTimeout (~> cm.refresh!), 0
                 ret.1.refreshed = true # make it happened only once.
           ), 0
         @$watch 'chart.doc.content', ~> @countline!
