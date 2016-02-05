@@ -7,42 +7,48 @@ angular.module \plotDB
 
       save: (item) -> 
         (ret) <~ IOService.save item .then
-        $rootScope.$apply-async ~>
-          item.key = ret.key
-          idx = @items.map(->it.key).indexOf(ret.key)
-          if idx < 0 => @items.push item
-          else @items.splice idx, 1, item
-        item
+        (res, rej) <~ new Promise _
+        <~ $rootScope.$apply-async
+        item.key = ret.key
+        idx = @[]items.map(->it.key).indexOf(ret.key)
+        if idx < 0 => @[]items.push item
+        else @items.splice idx, 1, item
+        res item
 
       load: (type, key, refresh = false) -> 
-        item = @items.filter(->it.type.location == type.location and it.type.name == type.name and it.key == key).0
+        filter = ->
+          it.type.location == type.location and it.type.name == type.name and it.key == key
+        item = @[]items.filter(filter).0
         if item => return Promise.resolve(item)
         (ret) <~ IOService.load type, key .then
-        $rootScope.$apply-async ~>
-          item := @items.filter(->it.type.location == type.location and it.type.name == type.name and it.key == key).0
-          if item => item <<< ret
-          else @items.push ret
-        item
+        (res, rej) <~ new Promise _
+        <~ $rootScope.$apply-async
+        item := @items.filter(filter).0
+        if item => item <<< ret
+        else @items.push item := ret
+        res item
 
       delete: (item) -> 
         (ret) <~ IOService.delete item.type, item.key .then
-        $rootScope.$apply-async ~>
-          idx = @items.map(->it.key).indexOf(item.key)
-          if idx >= 0 => @items.splice idx, 1
-        ret
+        (res, rej) <~ new Promise _
+        <~ $rootScope.$apply-async
+        idx = @[]items.map(->it.key).indexOf(item.key)
+        if idx >= 0 => @items.splice idx, 1
+        res ret
 
       list: (type, filter = {}, force = false) -> 
         if !type => type = {location: \any, name: @type}
         if @items and !force => return Promise.resolve(@items)
         if !@items => @items = []
         (ret) <~ IOService.list type .then
-        $rootScope.$apply-async ~>
-          @items.splice 0, @items.length
-          @items.concat(ret.map(~>new @Object(it))).concat((@sample or []).map(~> new @Object(it)))
-          Array.prototype.splice.apply(
-            @items
-            [0, ret.length + @sample.length] ++ (ret ++ @sample).map(~>new @Object it)
-          )
+        (res, rej) <~ new Promise _
+        <~ $rootScope.$apply-async
+        @items.splice 0, @items.length
+        @items.concat(ret.map(~>new @Object(it))).concat((@sample or []).map(~> new @Object(it)))
+        Array.prototype.splice.apply(
+          @items
+          [0, ret.length + @sample.length] ++ (ret ++ @sample).map(~>new @Object it)
+        )
         @items
 
     baseObject = (config) -> @ <<< config

@@ -2,28 +2,25 @@ angular.module \plotDB
   ..filter \tags, -> -> (it or "").split(\,)
   ..filter \length, -> -> [k for k of it].length
   ..service \chartService,
-  <[$rootScope sampleChart IOService]> ++
-  ($rootScope, sampleChart, IOService) ->
-    Chart = (config = {}) -> @ <<< config
-    Chart.prototype = do
+  <[$rootScope sampleChart IOService baseService]> ++
+  ($rootScope, sampleChart, IOService, baseService) ->
+    service = sample: [sampleChart]
+    object = ->
+    object.prototype = do
       name: \untitled
-      desc: null, tags: null, owner: null, key: null,
-      type: {name: \chart, location: \server}
+      desc: null, tags: null,
       doc: {name: 'document', type: 'html', content: sampleChart.doc.content}
       style: {name: 'stylesheet', type: 'css', content: sampleChart.style.content}
       code: {name: 'code', type: 'javascript', content: sampleChart.code.content}
-      permission: {switch: [], value: []}
       config: {}
       dimension: {}
       assets: []
       thumbnail: null
       isType: false
-      save: -> ret.save @ .then ~> @ <<< it
-      sync: -> ret.load @type, @key .then ~> @ <<< it
       update-data: ->
         @data = []
         #TODO fields data load by demand
-        len = Math.max.apply null, 
+        len = Math.max.apply null,
           [v for k,v of @dimension]
             .reduce(((a,b) -> (a) ++ (b.fields or [])),[])
             .filter(->it.data)
@@ -36,15 +33,8 @@ angular.module \plotDB
             if v.type.filter(->it.name == \Number).length => ret[name] = parseFloat(ret[name])
           @data.push ret
 
-    ret = do
-      init: ->
-      create: -> new Chart it
-      save: (item) -> IOService.save item
-      load: (type, key) -> IOService.load type, key
-      list: (type = {name: \chart, location: \any}, filter = {}) -> IOService.list type
-      sample: sampleChart
-    ret.init!
-    ret
+    chartService = baseService.derive \chart ,service, object
+    chartService
 
   ..controller \chartEditor,
   <[$scope $http $timeout $interval dataService chartService plNotify]> ++
@@ -60,7 +50,7 @@ angular.module \plotDB
         style: lineWrapping: true, lineNumbers: true, mode: \css
         doc:   lineWrapping: true, lineNumbers: true, mode: \xml
         objs: []
-      chart: chart-service.create!
+      chart: new chart-service.chart!
       canvas: do
         node: document.getElementById(\chart-renderer)
         window: document.getElementById(\chart-renderer).contentWindow
@@ -71,8 +61,7 @@ angular.module \plotDB
           @chart.type.name = \charttype
           @chart.key = null
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
-      load: (type, key) -> 
-        chart-service.load type, key .then (ret) ~> $scope.$apply ~> @chart <<< ret
+      load: (type, key) -> chart-service.load type, key .then (ret) ~> @chart <<< ret
       dimension: do
         bind: (event, dimension, field = {}) ->
           <~ field.update!then
