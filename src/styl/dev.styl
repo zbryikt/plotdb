@@ -9,28 +9,40 @@
   flex-wrap wrap
 .chart
   display: inline-block
-  border: 1px solid #ddd
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1)
-  border-radius: 0
-  background: #fff
+  border: 1px solid #ccc
+  box-shadow: 0 3px 3px rgba(0,0,0,0.1)
+  border-radius: 3px
   margin: 10px
-  width: 320px
-  height: 400px
-  padding: 5px
+  width: 360px
+  height: 310px
+  //padding: 5px
   flex(1 1 320px)
+  background: #faf9f8
   .chart-img
+    border-radius: 0
+    border-top-left-radius: 3px
+    border-top-right-radius: 3px
     width: 100%
-    height: 200px
-    border: 1px solid #f9f9f9
-    background: url(/assets/img/tmp-bar.png)
-    background-size: cover
+    height: 240px
+    border-bottom: 1px solid #ddd
+    cursor: pointer
+    padding: 5px
+    background: #fff
+    .ib
+      width: 100%
+      height: 100%
+      background: #fff no-repeat center center
+      background-size: cover
   .chart-desc
-    margin: 0 5px
+    margin: 5px 10px
+    //-margin: 0 5px
     .title
       margin: 5px 0 2px
-      font-size: 1em
-      font-family: century gothic
+      font-size: 1.2em
+      font-family: arial black
       font-weight: bold
+      text-shadow: 0 1px 1px rgba(0,0,0,0.1)
+      cursor: pointer
     .desc
       margin: 0
       font-size: 1em
@@ -309,6 +321,7 @@
 
 #config-panel
   position: relative
+  background: #fff
 
 #project-configs
   position: relative
@@ -398,6 +411,13 @@
     padding-left: 2px
     padding-right: 2px
     font-size: 12px
+    background: #ffffff
+    background: -moz-linear-gradient(top,  #ffffff 0%, #f4f4f4 100%)
+    background: -webkit-linear-gradient(top,  #ffffff 0%,#f4f4f4 100%)
+    background: linear-gradient(to bottom,  #ffffff 0%,#f4f4f4 100%)
+    filter: "progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f4f4f4',GradientType=0 )"
+
+
 .chart-config
   margin-bottom: 5px
 .chart-config .input-group

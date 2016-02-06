@@ -49,7 +49,7 @@ angular.module \plotDB
           @items
           [0, ret.length + @sample.length] ++ (ret ++ @sample).map(~>new @Object it)
         )
-        @items
+        res @items
 
     baseObject = (config) -> @ <<< config
 

@@ -3,11 +3,11 @@ angular.module \plotDB
     ret = @ <<< do
       queues: {}
       handlers: {}
-      process: (name=null)->
+      process: (name=null) ->
         if !name => list = [[k,v] for k,v of @queues]
-        else list = [[name, @queues[name]]
-        ([k,v]) <- list.map
-        if !v.length => return
+        else list = [[name, @queues[][name]]]
+        ([k,v]) <~ list.map
+        if !v or v.length => return
         for func in (@handlers[k] or []) => for payload in v => func payload
       listen: (name, cb) ->
         @handlers[][name].push cb
@@ -21,7 +21,9 @@ angular.module \plotDB
     send: (type, message) ->
       @queue.push node = {type, message}
       $timeout (~> @queue.splice @queue.indexOf(node), 1), 2900
-  ..controller \plSite, <[$scope $http $interval global plNotify dataService]> ++ ($scope, $http, $interval, global, plNotify, data-service) ->
+  ..controller \plSite,
+  <[$scope $http $interval global plNotify dataService]> ++
+  ($scope, $http, $interval, global, plNotify, data-service) ->
     $scope.track-event = (cat, act, label, value) -> ga \send, \event, cat, act, label, value
     $scope.notifications = plNotify.queue
     $scope.nexturl = if /nexturl=([^&]+)/exec((window.location.search or "")) => that.1 else window.location.href
@@ -82,8 +84,8 @@ angular.module \plotDB
     for item in list =>
       chart = JSON.parse(localStorage.getItem("/charttype/#item"))
       $scope.charts.push chart
-    if $scope.charts.length < 10 =>
-      for i from 0 til 40 => $scope.charts.push {} <<< chart
+    #if $scope.charts.length < 10 =>
+    #  for i from 0 til 40 => $scope.charts.push {} <<< chart
     $scope.load = (chart) ->
       window.location.href = "/chart/?k=#{chart.{}type.name or 'local'}|charttype|#{chart.key}"
 

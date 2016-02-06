@@ -12,15 +12,22 @@ block head
   script(type="text/javascript",src="/js/chart/index.js")
   script(type="text/javascript",src="/js/data.js")
 block body
-  #landing
-    .title P#[small LOT]DB
-    .subtitle data on you, vis by us.
-  #root
+  //-#landing(style="background-image:url(/assets/img/test/landing.png);background-size:cover")
+  #landing(style="text-align: center")
+    img(src="/assets/img/test/logo.png",style="margin-top:100px")
+    //-
+      .title P#[small LOT]DB
+      .subtitle data on you, vis by us.
+
+  #product-description(style="background:#fff")
     br
     br
     div(style="position:absolute;right:220px;width:240px;height:180px;border:1px dashed #000;transform:rotate(-5deg);background:#fff;margin-top:-50px;box-shadow:-4px 4px 4px rgba(0,0,0,0.2)")
-    h4.text-center "Hey I want to vis like this, but I can't code ..."
+    h4.text-center You don't need to be coder to do visualization.
     h3.text-center No, You don't need.
+    //-
+      h4.text-center "Hey I want to vis like this, but I can't code ..."
+      h3.text-center No, You don't need.
     br
     hr
     h3.text-center Why PlotDB ?
@@ -42,6 +49,9 @@ block body
         h3 Full Control
         span #[b source code] and #[b stylesheet] in your hand. #[br] Customize as You Can!
     br
+
+  #root
+
     hr
     include /chart/modal.jade
     br
@@ -66,11 +76,13 @@ block body
 
     .charts
       .chart(ng-repeat="chart in charts",ng-click="load(chart)")
-        .chart-img(ng-attr-style="background-image:url({{chart.thumbnail}})")
+        .chart-img
+          .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
+          //-.ib
         .chart-desc
           .title {{chart.name}}
           .desc {{chart.desc || 'check it yourself!'}}
-          .dimension
+          //-.dimension
             div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Dimensions
             span(ng-repeat="dim in chart.dimension")
               .label.label-default.label-light {{dim.name}}
@@ -81,10 +93,10 @@ block body
               .label.label-success.label-light X-axis
               span &nbsp;
               .label.label-default.label-light Y-axis
-          .property
-            div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Best use with
-            span(style="color:#ddd;",ng-if="!chart.tags") n/a
-            .label.label-default.label-light(ng-repeat="tag in chart.tags|tags",style="margin-right:3px") {{tag}}
+          //-.property
+            div(style="margin:15px 0 5px;border-bottom:1px solid #ddd") #[i.fa.fa-tag] Best use with
+            span(style="color:#ccc;",ng-if="!chart.tags") n/a
+            .label.label-default.label-light(ng-repeat="tag in chart.tags|tags",style="margin-right:3px;font-size:0.9em;background:#fff;color:#777;box-shadow:0 1px 1px rgba(0,0,0,0.1)") {{tag}}
             //-
               .label.label-default.label-light Geo-related
               span &nbsp;
@@ -98,7 +110,7 @@ block body
     h2.text-center Showcases
     .text-center Let's see who and how they uses PlotDB.
     br
-    for i in [1,2,3,4,5]
+    //-for i in [1,2,3,4,5]
       div(style="max-width:1200px;margin:auto")
         .row
           .col-sm-7
