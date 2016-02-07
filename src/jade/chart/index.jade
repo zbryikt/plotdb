@@ -64,7 +64,7 @@ block body
 
 
     include /widget/palette-edit-modal.jade
-    #fullscreen-dimmer(ng-class="{'fullscreen':fullscreen.toggled}")
+    #fullscreen-dimmer(ng-class="{'fullscreen':editor.fullscreen.toggled}")
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
       #code-tabs
         .tab.cat.shown(ng-click="showsrc=!!!showsrc")
@@ -135,27 +135,28 @@ block body
                 .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
 
       .col-sm-9(style="padding-left:0;position:relative")
-        #code-editor(ng-show="vis!='preview'",ng-class="{'fullscreen':fullscreen.toggled}")
-          #code-error(ng-show="error",ng-class="{'fullscreen':fullscreen.toggled}") {{error}}
+        #code-editor(ng-show="vis!='preview'",ng-class="editor.class")
+          #code-error(ng-show="error",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error}}
           #code-header {{vis}}
           #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ng-show="vis=='code'",ui-refrehs="vis")
           #code-editor-style.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="chart.style.content",ng-show="vis=='stylesheet'",ui-refrehs="vis")
           #code-editor-doc.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="chart.doc.content",ng-show="vis=='document'",ui-refrehs="vis")
           #code-ctrl
             .btn-group
+              .btn.btn-default(ng-click="editor.color.toggle()") Editor Style
               .btn.btn-default(ng-click="reset()") Reset
-              .btn.btn-default(ng-click="fullscreen.toggle()")
-                span(ng-cloak,ng-if="fullscreen.toggled") Leave
-                span(ng-cloak,ng-if="!fullscreen.toggled") Enter
+              .btn.btn-default(ng-click="editor.fullscreen.toggle()")
+                span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave
+                span(ng-cloak,ng-if="!editor.fullscreen.toggled") Enter
                 span  Full Screen
               .btn.btn-default(ng-click="chart.render();vis='preview'") Preview #[small.hint Alt-Enter]
 
-        #visualization-canvas2.plpanel(ng-show="vis=='preview'",ng-class="{'fullscreen':fullscreen.toggled}")
+        #visualization-canvas2.plpanel(ng-show="vis=='preview'",ng-class="{'fullscreen':editor.fullscreen.toggled}")
           .btn-group
             .btn.btn-default.btn-sm(ng-click="reset()") Reset
-            .btn.btn-default.btn-sm(ng-click="fullscreen.toggle()")
-              span(ng-cloak,ng-if="fullscreen.toggled") Leave
-              span(ng-cloak,ng-if="!fullscreen.toggled") Enter
+            .btn.btn-default.btn-sm(ng-click="editor.fullscreen.toggle()")
+              span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave
+              span(ng-cloak,ng-if="!editor.fullscreen.toggled") Enter
               span  Full Screen
             .btn.btn-default.btn-sm(ng-click="vis='code'") Open Code #[small.hint Alt-Enter]
 

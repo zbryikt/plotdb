@@ -49,11 +49,13 @@ proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
   code := "(function() { #code; window.#module = module; })();"
   window.codeURL = codeURL = URL.createObjectURL new Blob [code], {type: "text/javascript"}
   codeNode = document.createElement("script")
-  codeNode.src = codeURL
   codeNode.onload = ->
     URL.revokeObjectURL codeURL
     res window[module]
-    document.body.removeChild codeNode
+    try
+      document.body.removeChild codeNode
+    catch e
+  codeNode.src = codeURL
   document.body.appendChild codeNode
 
 error-handling = (e) ->
@@ -99,27 +101,28 @@ render = (payload, rebind = true) ->
       promise = proper-eval code
     else
       promise = Promise.resolve!
-    (module) <- promise.then
-    root = document.getElementById \container
-    chart = window.module.exports
-    for k,v of config => 
-      for type in v.type =>
-        type = plotdb[type.name]
-        try
-          if type.test and type.parse and type.test(v.value) =>
-            v.value = type.parse v.value
-            break
-        catch e
-          console.log "plotdb type parsing error: #{type.name}"
-          console.log "#{e.stack}"
-    for k,v of chart.config => 
-      config[k] = if !(config[k]?) or !(config[k].value?) => v.default else config[k].value
-    if rebind =>
-      if chart.init => chart.init root, data, config
-      chart.bind root, data, config
-    chart.resize root, data, config
-    chart.render root, data, config
-    window.parent.postMessage {type: \error, payload: window.error-message or ""}, plotdomain
+    promise .then (module) ->
+      root = document.getElementById \container
+      chart = window.module.exports
+      for k,v of config =>
+        for type in v.type =>
+          type = plotdb[type.name]
+          try
+            if type.test and type.parse and type.test(v.value) =>
+              v.value = type.parse v.value
+              break
+          catch e
+            console.log "plotdb type parsing error: #{type.name}"
+            console.log "#{e.stack}"
+      for k,v of chart.config =>
+        config[k] = if !(config[k]?) or !(config[k].value?) => v.default else config[k].value
+      if rebind =>
+        if chart.init => chart.init root, data, config
+        chart.bind root, data, config
+      chart.resize root, data, config
+      chart.render root, data, config
+      window.parent.postMessage {type: \error, payload: window.error-message or ""}, plotdomain
+    .catch (e) -> return error-handling e
   catch e
     error-handling e
 

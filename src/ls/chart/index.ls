@@ -77,20 +77,42 @@ angular.module \plotDB
         for k,v of @chart => if typeof(v) != \function => @chart[k] = v
         payload = JSON.parse(angular.toJson(@chart))
         @canvas.window.postMessage {type: \render, payload, rebind}, @plotdomain
+      render-async: (rebind = true)  ->
+        if @render-async.handler => $timeout.cancel @render-async.handler
+        @render-async.handler = $timeout (~>
+          @render-async.handler = null
+          @render rebind
+        ), 500
       countline: ->
         <~ <[code style doc]>.map
         @chart[it].lines = @chart[it].content.split(\\n).length
         @chart[it].size = @chart[it].content.length
 
     $scope <<< do # Behaviors
+      editor: do
+        class: ""
+        update: ->
+          @class = [
+            if @fullscreen.toggled => \fullscreen else ""
+            @color.modes[@color.idx]
+          ].join(" ")
+        fullscreen: do
+          toggle: ->
+            @toggled = !!!@toggled
+            $scope.editor.update!
+          toggled: false
+        color: do
+          modes: <[normal dark]>
+          idx: 0
+          toggle: ->
+            @idx = (@idx + 1) % (@modes.length)
+            console.log @idx
+            $scope.editor.update!
       share-panel: do
         toggle: -> @toggled = !!!@toggled
         toggled: false
         set-private: -> @is-public = false
         set-public: -> @is-public = true
-      fullscreen: do
-        toggle: -> @toggled = !!!@toggled
-        toggled: false
       coloredit: do
         config: (v, idx) -> do
           class: \no-palette
@@ -156,11 +178,15 @@ angular.module \plotDB
         @$watch 'chart.doc.content', ~> @countline!
         @$watch 'chart.style.content', ~> @countline!
         @$watch 'chart.code.content', ~> @countline!
-        @$watch 'chart.doc.content', ~> @render!
-        @$watch 'chart.style.content', ~> @render!
+        @$watch 'chart.doc.content', ~> @render-async!
+        @$watch 'chart.style.content', ~> @render-async!
         @$watch 'chart.code.content', (code) ~>
-          @canvas.window.postMessage {type: \parse, payload: code}, @plotdomain
-        @$watch 'chart.config', (~> @render false), true
+          if @communicate.parse-handler => $timeout.cancel @communicate.parse-handler
+          @communicate.parse-handler = $timeout (~>
+            @communicate.parse-handler = null
+            @canvas.window.postMessage {type: \parse, payload: code}, @plotdomain
+          ), 500
+        @$watch 'chart.config', (~> @render-async false), true
       communicate: -> # talk with canvas window
         ({data}) <~ window.addEventListener \message, _, false
         if !data or typeof(data) != \object => return
