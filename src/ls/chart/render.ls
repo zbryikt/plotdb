@@ -80,7 +80,7 @@ parse = (payload) ->
 snapshot = ->
   canvas = document.createElement \canvas
   document.body.appendChild(canvas)
-  svg = document.getElementById \container .innerHTML
+  svg = document.querySelector '#container svg' .outerHTML
   canvg canvas, svg
   result = canvas.toDataURL!
   window.parent.postMessage {type: \snapshot, payload: result}, plotdomain
