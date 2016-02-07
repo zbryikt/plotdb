@@ -1,3 +1,13 @@
+mainbg = #181818
+mainfg = #d8d8d8
+linebg = #282828
+linefg = #565858
+barbg = #383838
+barfg = #b8b8b8
+buttonbg = #484848
+buttonborder = #585858
+buttonfg = #b8b8b8
+
 d1 = #222
 d2 = #292929
 d3 = #333
@@ -5,8 +15,8 @@ d3 = #333
 #code-editor.dark
   border: 1px solid d2
   .CodeMirror
-    background: d3
-    color: #fff
+    background: mainbg
+    color: mainfg
     .cm-string
       color: #f99
     .cm-number
@@ -18,16 +28,18 @@ d3 = #333
     .cm-property
       color: #9cf
   #code-header
-    background: d1
+    background: barbg
     border-bottom: 1px solid d2
-    color: #eee
+    color: barfg
   #code-ctrl
-    background: d1
+    background: barbg
+    color: barfg
     border-top: 1px solid d2
   .CodeMirror-linenumber
-    color: #999
+    color: linefg
   .CodeMirror-linenumbers
-    background: d1
+    background: linebg
   .btn
-    background: d3
-    color: #fff
+    background: buttonbg
+    color: buttonfg
+    border: 1px solid buttonborder
