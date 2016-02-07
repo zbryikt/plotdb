@@ -17,6 +17,14 @@ angular.module \plotDB
       assets: []
       thumbnail: null
       isType: false
+      add-file: (name, type, content = null) ->
+        file = {name, type, content}
+        @assets.push file
+        file
+      remove-file: (file) ->
+        idx = @assets.indexOf(file)
+        if idx < 0 => return
+        @assets.splice idx, 1
       update-data: ->
         @data = []
         #TODO fields data load by demand
@@ -106,7 +114,6 @@ angular.module \plotDB
           idx: 0
           toggle: ->
             @idx = (@idx + 1) % (@modes.length)
-            console.log @idx
             $scope.editor.update!
       share-panel: do
         toggle: -> @toggled = !!!@toggled
@@ -158,7 +165,28 @@ angular.module \plotDB
         [location,type,key] = ret[1,2,3]
         if type != \charttype => type = \chart
         $scope.load {name: type, location}, key
+      assets: do
+        read: (fobj) -> new Promise (res, rej) ~>
+          name = if /([^/]+\.?[^/.]*)$/.exec(fobj.name) => that.1 else \unnamed
+          type = \unknown
+          file = $scope.chart.add-file name, type, null
+          fr = new FileReader!
+          fr.onload = ->
+            result = fr.result
+            idx = result.indexOf(\;)
+            type = result.substring(5,idx)
+            content = result.substring(idx + 8)
+            file <<< {type, content}
+            $scope.$apply-async -> file <<< {type, content}
+            res file
+          fr.readAsDataURL fobj
+        handle: (files) -> for file in files => @read file
+        node: null
+        init: ->
+          @node = $('#code-editor-assets input')
+            ..on \change, ~> @handle @node.0.files
       monitor: ->
+        @assets.init!
         @$watch 'vis', (vis) ~>
           # codemirror won't update if it's not visible. so wait a little
           # refresh will reset cursor which scroll to the top.

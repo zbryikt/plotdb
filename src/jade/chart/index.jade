@@ -86,7 +86,9 @@ block body
           .desc {{chart.doc.size|size}}, {{chart.doc.lines}} lines
         .tab.src(ng-class="{'active':vis=='assets','shown':showsrc}",ng-click="vis='assets'",ng-cloak)
           div #[span assets] #[small]
-          .desc no files
+          .desc
+            span(ng-cloak,ng-if="!chart.assets.length") no file
+            span(ng-cloak,ng-if="chart.assets.length") {{chart.assets.length}} files
         .pull-right
           //-.tab.action #[i.fa.fa-link] #[span link]
           //-.tab.action #[i.fa.fa-code] #[span embed]
@@ -141,6 +143,12 @@ block body
           #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ng-show="vis=='code'",ui-refrehs="vis")
           #code-editor-style.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="chart.style.content",ng-show="vis=='stylesheet'",ui-refrehs="vis")
           #code-editor-doc.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="chart.doc.content",ng-show="vis=='document'",ui-refrehs="vis")
+          #code-editor-assets.inner(ng-show="vis=='assets'")
+            .file.uploader Upload ... #[input(type="file",multiple)]
+            .file(ng-repeat="f in chart.assets")
+              .closebtn.outer(ng-click="chart.removeFile(f)")
+              .title {{f.name}}
+              .type #[i {{f.type}}] #[small.pull-right {{(f.content || "").length|size}}]
           #code-ctrl
             .btn-group
               .btn.btn-default(ng-click="editor.color.toggle()") Editor Style

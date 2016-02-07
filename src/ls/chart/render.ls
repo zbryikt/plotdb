@@ -90,6 +90,7 @@ render = (payload, rebind = true) ->
   style = payload.style.content
   doc = payload.doc.content
   data = payload.data
+  assets = payload.assets
   config = payload.config or {}
   sched.clear!
   try
@@ -116,6 +117,14 @@ render = (payload, rebind = true) ->
             console.log "#{e.stack}"
       for k,v of chart.config =>
         config[k] = if !(config[k]?) or !(config[k].value?) => v.default else config[k].value
+      chart.assets = assetsmap = {}
+      for file in assets =>
+        raw = atob(file.content)
+        array = new Uint8Array(raw.length)
+        for idx from 0 til raw.length => array[idx] = raw.charCodeAt idx
+        file.blob = new Blob([array],{type: file.type})
+        file.url = URL.createObjectURL(file.blob)
+        assetsmap[file.name] = file
       if rebind =>
         if chart.init => chart.init root, data, config
         chart.bind root, data, config

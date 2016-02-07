@@ -9,3 +9,25 @@
   box-shadow: 0 4px 4px rgba(0,0,0,0.2)
   padding: 8px 16px
 
+.closebtn
+  position: relative
+  border-radius: 50%
+  background: #444
+  color: #fff
+  width: 15px
+  height: 15px
+  font-size: 12px
+  padding: 0
+  line-height: 14px
+  text-align: center
+  float:right
+  margin: -2px -2px 0 0
+  cursor: pointer
+  &:after
+    content: "\0000d7"
+    display: inline
+
+.closebtn.outer
+  position: absolute
+  top: -4px
+  right: -4px
