@@ -371,8 +371,12 @@
   left: 5%
   width: 90%
   height: 90%
-  z-index: index(order, 'fullscreen-edit')
   margin: 0
+
+#code-editor.fullscreen
+  z-index: index(order, 'fullscreen-edit')
+#visualization-canvas2.fullscreen
+  z-index: index(order, 'fullscreen-preview')
 
 #fullscreen-dimmer
   display: none
