@@ -1,7 +1,11 @@
+@import 'basic'
+@import 'vars'
+
 #notifications
   position: fixed
   bottom: 10px
   left: 10px
+  z-index: index(order, 'notifications')
 .notify
   border-radius: 2px
   background: rgba(0,0,0,0.7)
