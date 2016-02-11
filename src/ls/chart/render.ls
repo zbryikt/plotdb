@@ -20,7 +20,7 @@ window.addEventListener \error, (e) ->
     msg = "#{e.message} at line #{e.lineno - 1}."
     if e.message.indexOf(stack) < 0 => msg += " Callstack: \n#stack"
   else msg = "#{e.message} at line #{e.lineno - 1}."
-  error-handling msg
+  error-handling msg, e.lineno - 1
 
 proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
   window.error-message = ""
@@ -37,7 +37,7 @@ proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
   codeNode.src = codeURL
   document.body.appendChild codeNode
 
-error-handling = (e) ->
+error-handling = (e, lineno = 0) ->
   if !e => msg = "plot failed with unknown error"
   else if typeof(e) != typeof({}) => msg = "#e"
   else if !e.stack => msg = e.toString!
@@ -45,8 +45,9 @@ error-handling = (e) ->
 
   re-bloburl = /blob:http%3A\/\/[^:]+:/
   if re-bloburl.exec(msg) => msg = msg.split re-bloburl .join "line "
-  ret = /line (\d+):\d+/.exec(msg)
-  lineno = if ret => parseInt(ret.1) else 0
+  if !lineno =>
+    ret = /line (\d+):\d+/.exec(msg)
+    lineno = if ret => parseInt(ret.1) else 0
 
   if msg.length > 1024 => msg = msg.substring(0,1024) + "..."
   lines = msg.split(\\n)
