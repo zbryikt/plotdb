@@ -56,9 +56,10 @@ angular.module \plotDB
       plotdomain: \http://localhost/
       error: {msg: null, lineno: 0}
       codemirror: do
-        code:  lineWrapping: true, lineNumbers: true, mode: \javascript
-        style: lineWrapping: true, lineNumbers: true, mode: \css
-        doc:   lineWrapping: true, lineNumbers: true, mode: \xml
+        #NOTE viewportMargin = Infinity might cause performance issue when file is large.
+        code:  lineWrapping: true, lineNumbers: true, viewportMargin: Infinity, mode: \javascript
+        style: lineWrapping: true, lineNumbers: true, viewportMargin: Infinity, mode: \css
+        doc:   lineWrapping: true, lineNumbers: true, viewportMargin: Infinity, mode: \xml
         objs: []
       chart: new chart-service.chart!
       canvas: do
