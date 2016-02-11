@@ -84,7 +84,11 @@ angular.module \plotDB
         @chart.update-data!
         for k,v of @chart => if typeof(v) != \function => @chart[k] = v
         payload = JSON.parse(angular.toJson(@chart))
-        @canvas.window.postMessage {type: \render, payload, rebind}, @plotdomain
+        # trigger a full reload of renderer in case any previous code ( such as timeout recursive )
+        # and actually render it once loaded
+        $scope.render <<< {payload, rebind}
+        if !rebind => @canvas.window.postMessage {type: \render, payload, rebind}, @plotdomain
+        else @canvas.window.postMessage {type: \reload}, @plotdomain
       render-async: (rebind = true)  ->
         if @render-async.handler => $timeout.cancel @render-async.handler
         @render-async.handler = $timeout (~>
@@ -234,7 +238,13 @@ angular.module \plotDB
           @chart <<< {config, dimension}
           $scope.render!
         else if data.type == \loaded =>
-          @canvas.window.postMessage {type: \parse, payload: @chart.code.content}, @plotdomain
+          if $scope.render.payload =>
+            payload = $scope.render.payload
+            rebind = $scope.render.rebind
+            @canvas.window.postMessage {type: \render, payload, rebind}, @plotdomain
+            $scope.render.payload = null
+          else
+            @canvas.window.postMessage {type: \parse, payload: @chart.code.content}, @plotdomain
         else if data.type == \click =>
           if document.dispatchEvent
             event = document.createEvent \MouseEvents

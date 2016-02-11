@@ -136,7 +136,7 @@ block body
                 span.input-group-addon {{v.name || name}}
                 .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
 
-      .col-sm-9(style="padding-left:0;position:relative")
+      .col-sm-9(style="padding-left:0;position:relative"): .ib(style="position:relative")
         #code-error(ng-show="error",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error}}
         #code-editor(ng-show="vis!='preview'",ng-class="editor.class")
           #code-header {{vis}}
@@ -159,7 +159,7 @@ block body
                 span  Full Screen
               .btn.btn-default(ng-click="chart.render();vis='preview'") Preview #[small.hint Alt-Enter]
 
-        #visualization-canvas2.plpanel(ng-show="vis=='preview'",ng-class="{'fullscreen':editor.fullscreen.toggled}")
+        #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled}")
           .btn-group
             .btn.btn-default(ng-click="reset()") Reset
             .btn.btn-default(ng-click="editor.fullscreen.toggle()")

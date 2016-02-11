@@ -1,29 +1,5 @@
 plotdomain = \http://localhost/
 
-sched = do
-  timeout: do
-    list: []
-    func: window.setTimeout
-    set: (func, delta) -> @func.call null, func, delta
-  interval: do
-    list: []
-    func: window.setInterval
-    set: (func, delta) -> @func.call null, func, delta
-  clear: ->
-    for item in @timeout.list => clearTimeout item
-    for item in @interval.list => clearInterval item
-
-# Chrome refuse to use setInterval in dictionary like ...sched.interval
-window.setTimeout = (func, delta) ->
-  ret = sched.timeout.set func, delta
-  sched.timeout.list.push ret
-  ret
-
-window.setInterval = (func, delta) ->
-  ret = sched.interval.set func, delta
-  sched.interval.list.push ret
-  ret
-
 # bubbling up click outside renderer. for ColorPicker
 window.addEventListener \click, ->
   window.parent.postMessage {type: \click, payload: ""}, plotdomain
@@ -34,6 +10,7 @@ dispatcher = (evt) ->
   if evt.data.type == \snapshot => snapshot!
   else if evt.data.type == \render => render evt.data.payload, evt.data.rebind
   else if evt.data.type == \parse => parse evt.data.payload
+  else if evt.data.type == \reload => window.location.reload!
 
 window.addEventListener \error, (e) ->
   stack = e.error.stack
@@ -107,14 +84,15 @@ render = (payload, rebind = true) ->
     if false and "script tag disallow" =>
       ret = /<\s*script[^>]*>.*<\s*\/\s*script\s*>/g.exec(doc.toLowerCase!)
       if ret => throw new Error("script tag is now allowed in document.")
-    if rebind =>
+    if rebind or !window.module =>
       $(document.body).html("<style type='text/css'>#style</style><div id='container'>#doc</div>")
       promise = proper-eval code
-    else
-      promise = Promise.resolve!
-    promise .then (module) ->
+    else promise = Promise.resolve window.module
+    promise.then (module) ->
+      window.module = module
       root = document.getElementById \container
-      chart = window.module.exports
+      chart = module.exports
+      if !data and chart.sample => data = chart.sample
       for k,v of config =>
         for type in v.type =>
           type = plotdb[type.name]
@@ -136,11 +114,14 @@ render = (payload, rebind = true) ->
         file.url = URL.createObjectURL(file.blob)
         file.datauri = [ "data:", file.type, ";base64,", file.content ].join("")
         assetsmap[file.name] = file
-      if rebind =>
-        if chart.init => chart.init root, data, config
-        chart.bind root, data, config
-      chart.resize root, data, config
-      chart.render root, data, config
+      chart <<< {config}
+      if rebind or !(chart.root and chart.data) => chart <<< {root, data}
+      if rebind or !module.inited =>
+        if chart.init => chart.init!
+        module.inited = true
+        chart.bind!
+      chart.resize!
+      chart.render!
       window.parent.postMessage {type: \error, payload: window.error-message or ""}, plotdomain
     .catch (e) -> return error-handling e
   catch e
