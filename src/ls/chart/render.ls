@@ -78,12 +78,22 @@ parse = (payload) ->
     error-handling e
 
 snapshot = ->
-  canvas = document.createElement \canvas
-  document.body.appendChild(canvas)
+  d3.selectAll('#container svg').each ->
+    {width, height} = @getBoundingClientRect!
+    d3.select(@).attr do
+      "xmlns": "http://www.w3.org/2000/svg"
+      "xmlns:xlink": "http://www.w3.org/1999/xlink"
+      "width": width
+      "height": height
+  svgnode = document.querySelector '#container svg'
+  {width, height} = svgnode.getBoundingClientRect!
   svg = document.querySelector '#container svg' .outerHTML
-  canvg canvas, svg
-  result = canvas.toDataURL!
-  window.parent.postMessage {type: \snapshot, payload: result}, plotdomain
+  img = new Image!
+  img.onload = ->
+    canvas = document.createElement("canvas") <<< {width, height}
+    canvas.getContext \2d .drawImage img, 0, 0
+    window.parent.postMessage {type: \snapshot, payload: canvas.toDataURL!}, plotdomain
+  img.src = "data:image/svg+xml;base64," + btoa(svg)
 
 render = (payload, rebind = true) ->
   code = payload.code.content
@@ -124,6 +134,7 @@ render = (payload, rebind = true) ->
         for idx from 0 til raw.length => array[idx] = raw.charCodeAt idx
         file.blob = new Blob([array],{type: file.type})
         file.url = URL.createObjectURL(file.blob)
+        file.datauri = [ "data:", file.type, ";base64,", file.content ].join("")
         assetsmap[file.name] = file
       if rebind =>
         if chart.init => chart.init root, data, config
