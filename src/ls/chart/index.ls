@@ -5,7 +5,7 @@ angular.module \plotDB
   <[$rootScope sampleChart IOService baseService]> ++
   ($rootScope, sampleChart, IOService, baseService) ->
     service = do
-      sample: [sampleChart]
+      sample: []
       link: (chart) -> "/chart/?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
     object = ->
     object.prototype = do
@@ -72,6 +72,14 @@ angular.module \plotDB
           @chart.key = null
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
       load: (type, key) -> chart-service.load type, key .then (ret) ~> @chart <<< ret
+      delete: ->
+        if !@chart.key => return
+        (ret) <~ @chart.delete!then
+        plNotify.send \success, "chart deleted"
+        @chart = new chartService.chart!
+        #TODO check future URL correctness
+        setTimeout (-> window.location.href = "/chart/me.html"), 1000
+
       dimension: do
         bind: (event, dimension, field = {}) ->
           <~ field.update!then
@@ -274,7 +282,7 @@ angular.module \plotDB
     (ret) <- chart-service.list!then
     <- $scope.$apply
     $scope.mycharts = ret
-    $scope.goto = (chart) -> chartService.link chart
+    $scope.goto = (chart) -> window.location.href = chartService.link chart
   ..controller \chartList,
   <[$scope $http dataService chartService]> ++
   ($scope, $http, data-service, chart-service) ->

@@ -48,7 +48,7 @@ angular.module \plotDB
         ret = []
         for item in list =>
           obj = JSON.parse(localStorage.getItem("/db/#{type.name}/#item"))
-          if obj => ret.push obj
+          if obj and obj.key => ret.push obj
         res ret
       list-remotely: (type, res, rej) ->
         $http url: "/d/#{type.name}", method: \GET

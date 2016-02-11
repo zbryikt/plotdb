@@ -225,4 +225,11 @@ block body
             label What kind of data best fits into this chart?
             input.form-control(ng-model="chart.tags",style="margin-bottom:5px",placeholder="comma separated values, like 'population,economics'")
             .btn.btn-default(ng-click="save(true)") Deploy As Template
+    .row(ng-show="chart.key")
+      .col-sm-12
+        .panel.panel-default
+          .panel-heading: label Danger Zone
+          .panel-body
+            p.text-center Permanently delete this chart. Are you sure?
+            .text-center: .btn.btn-danger(ng-click="delete()") Yes, Delete it
   include /footer.jade
