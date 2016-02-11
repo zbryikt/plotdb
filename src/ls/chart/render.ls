@@ -143,6 +143,16 @@ render = (payload, rebind = true) ->
     error-handling e
 
 window.addEventListener \message, dispatcher, false
+resize-handler = null
+window.addEventListener \resize, ->
+  if resize-handler => clearTimeout resize-handler
+  resize-handler := setTimeout (->
+    resize-handler := null
+    if !window.module or !window.module.exports => return
+    chart = window.module.exports
+    chart.resize!
+    chart.render!
+  ), 700
 
 window.addEventListener \keydown, (e) ->
   if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) =>
