@@ -120,6 +120,7 @@ angular.module \plotDB
         names = [k for k of @data.0]
         for i from 0 til names.length
           if @fields[i] => that else @fields.push new Field(names[i], @)
+          @fields[i].name = names[i]
           @fields[i].update!
 
         #@fields = [[k,v] for k,v of @data.0].map(-> {name: it.0, type: \String})
@@ -129,109 +130,7 @@ angular.module \plotDB
         #if @key => for item in @fields => item.dataset = @key
     dataService = baseService.derive name, service, Dataset
     dataService
-      
 
-    /*
-    Dataset = (config) ->
-      @ <<< config
-      @update!
-      @
-
-    Dataset.prototype = do
-      key: 0, name: null, owner: null, size: 0, rows: 0, datatype: \csv
-      type: {location: \local, name: \dataset}, fields: {}
-      permission: {switch: [], value: []}
-
-      save: -> data-service.save @ .then (ret) ~> $rootScope.$apply ~>
-        plNotify.send \success, "Dataset saved"
-        @key = ret.key
-      clone: -> 
-        obj = new Dataset @
-        obj.key = null
-      delete: -> data-service.delete @ .then ~> $rootScope.$apply ~>
-        plNotify.send \success, "Dataset deleted"
-
-      update: (data = null) ->
-        if data => @data = data
-        if !@data => @data = []
-        @fields = [[k,v] for k,v of @data.0].map(-> {name: it.0, type: \String})
-        for item in @fields => data-service.field.settype @data, item
-        @size = angular.toJson(@data).length
-        @rows = @data.length
-        if @key => for item in @fields => item.dataset = @key
-
-      sync: ->
-        #TODO other than local data
-        @ <<< JSON.parse(localStorage.getItem @key)
-
-
-
-    data-service = do
-      Dataset: Dataset
-      datasets: null #[] ++ sampleData.map(-> new Dataset(it))
-      local: rows: 0, size: 0
-      local-size: ->
-        @local <<< {rows: 0, size: 0}
-        for item in @datasets => 
-          if item.type.location == \local => 
-            @local.rows += item.rows
-            @local.size += item.size
-      list: (type = {name: \dataset, location: \any}, filter = {}, force = false) -> 
-        if @datasets and !force => return Promise.resolve(@datasets)
-        if !@datasets => @datasets = []
-        (ret) <~ IOService.list type .then
-        @datasets.splice 0, @datasets.length
-        @datasets.concat(ret.map(->new Dataset(it))).concat(sampleData.map(-> new Dataset(it)))
-        Array.prototype.splice.apply(
-          @datasets
-          [0,ret.length + sampleData.length] ++ (ret ++ sampleData).map(->new Dataset it)
-        )
-        @datasets
-
-      init: -> @list!then ~> @local-size!
-      field: do
-        update: (f) ->
-          dataset = @find-dataset f
-          dataset.sync!
-          f.data = dataset.[]data.map(->it[f.name])
-        find-dataset: (f) -> dataset = data-service.find f
-        #TODO better interface
-        settype: (data, field) ->
-          data = data.map(->it[field.name])
-          types = <[Boolean Percent Number Date String]>
-          for type in types =>
-            if !data.map(-> plotdb[type]test it).filter(->!it).length => 
-              field.type = type
-              break
-      find: (item) -> 
-        #TODO: complete implement finder
-        if item.dataset => key = item.dataset else key = item
-        @datasets.filter(->it.key == key).0
-
-      gen-key: (dataset) -> # TODO: preserve key once generated
-        for i from 0 til 1000
-          key = "/dataset/#{dataset.type.name}/#{Math.random!toString(36)substring 2}"
-          if !@find(key) => return key
-        null
-
-      save: (dataset) -> 
-        (ret) <~ IOService.save dataset .then
-        dataset.key = ret.key
-        idx = @datasets.map(->it.key).indexOf(ret.key)
-        if idx < 0 => @datasets.push dataset
-        else @datasets.splice idx, 1, dataset
-        dataset
-
-      delete: (dataset) -> 
-        (ret) <~ IOService.delete dataset.type, dataset.key .then
-        idx = @datasets.map(->it.key).indexOf(dataset.key)
-        if idx >= 0 => @datasets.splice idx, 1
-        eventBus.fire \dataset.delete, dataset.key
-        ret
-
-    data-service.init!
-    data-service
-    */
   ..controller \dataEditCtrl,
   <[$scope $timeout $http dataService plUtil eventBus]> ++
   ($scope, $timeout, $http, data-service, plUtil, eventBus) ->
