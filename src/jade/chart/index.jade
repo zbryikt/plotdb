@@ -192,7 +192,7 @@ block body
         .col-sm-4(style="position:relative")
           label Data Fields
           .data-fields(ng-controller="dataFiles")
-            .data-file(ng-repeat="file in datasets",ng-show="file.toggle",style="position:relative;z-index:10")
+            .data-file(ng-repeat="file in datasets",ng-show="file.toggle")
               .closebtn(ng-click="file.toggle=!!!file.toggle")
               .title {{file.name}}
               .desc {{file.size}}, {{file.rows}} rows

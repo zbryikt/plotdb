@@ -1,4 +1,5 @@
-
+@import 'basic'
+@import 'vars'
 
 .data-file
   border-radius: 3px
@@ -9,6 +10,8 @@
   width: 200px
   no-selection()
   background: #fff
+  z-index: index(order, 'data-file')
+  position: relative
   &.active
     box-shadow: inset 0 0 3px 1px rgba(0,0,0,0.1)
     background: #f9f9f9

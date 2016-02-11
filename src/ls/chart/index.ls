@@ -184,7 +184,7 @@ angular.module \plotDB
       assets: do
         preview: (file) ->
           @preview.toggled = true
-          datauri = [ "data:", file.type, ";base64,", file.content ].join("")
+          datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
           $('#assets-preview iframe').0.src = datauri
         read: (fobj) -> new Promise (res, rej) ~>
           name = if /([^/]+\.?[^/.]*)$/.exec(fobj.name) => that.1 else \unnamed

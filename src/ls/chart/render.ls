@@ -80,7 +80,7 @@ snapshot = ->
       canvas = document.createElement("canvas") <<< {width, height}
       canvas.getContext \2d .drawImage img, 0, 0
       window.parent.postMessage {type: \snapshot, payload: canvas.toDataURL!}, plotdomain
-    img.src = "data:image/svg+xml;base64," + btoa(svg)
+    img.src = "data:image/svg+xml;charset=utf-8;base64," + btoa(svg)
   catch e
     window.parent.postMessage {type: \snapshot, payload: null}, plotdomain
 
@@ -104,7 +104,7 @@ render = (payload, rebind = true) ->
       window.module = module
       root = document.getElementById \container
       chart = module.exports
-      if !data and chart.sample => data = chart.sample
+      if !data and chart.sample => data := chart.sample
       for k,v of config =>
         for type in v.type =>
           type = plotdb[type.name]
@@ -124,7 +124,7 @@ render = (payload, rebind = true) ->
         for idx from 0 til raw.length => array[idx] = raw.charCodeAt idx
         file.blob = new Blob([array],{type: file.type})
         file.url = URL.createObjectURL(file.blob)
-        file.datauri = [ "data:", file.type, ";base64,", file.content ].join("")
+        file.datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
         assetsmap[file.name] = file
       chart <<< {config}
       if rebind or !(chart.root and chart.data) or module.exec-error => chart <<< {root, data}
