@@ -182,6 +182,10 @@ angular.module \plotDB
         if type != \charttype => type = \chart
         $scope.load {name: type, location}, key
       assets: do
+        preview: (file) ->
+          @preview.toggled = true
+          datauri = [ "data:", file.type, ";base64,", file.content ].join("")
+          $('#assets-preview iframe').0.src = datauri
         read: (fobj) -> new Promise (res, rej) ~>
           name = if /([^/]+\.?[^/.]*)$/.exec(fobj.name) => that.1 else \unnamed
           type = \unknown
@@ -236,8 +240,7 @@ angular.module \plotDB
         if !data or typeof(data) != \object => return
         if data.type == \error =>
           $scope.$apply ->
-            if $scope.error.lineno =>
-              $(".CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").removeClass \error
+            $(".CodeMirror-code > .error").removeClass \error
             $scope.error.msg = data.{}payload.msg or ""
             $scope.error.lineno = data.{}payload.lineno or 0
             if $scope.error.lineno =>
