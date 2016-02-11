@@ -13,12 +13,14 @@ dispatcher = (evt) ->
   else if evt.data.type == \reload => window.location.reload!
 
 window.addEventListener \error, (e) ->
+  re-bloburl = /blobhttp:%3A\/\/[^:]+:/
   stack = e.error.stack
-  if stack.indexOf(window.codeURL) =>
-    stack = stack.split window.codeURL .join "line "
+  if re-bloburl.exec(stack) =>
+    stack = stack.split re-bloburl .join "line "
     msg = "#{e.message} at line #{e.lineno - 1}."
     if e.message.indexOf(stack) < 0 => msg += " Callstack: \n#stack"
-  error-handling window.error-message = msg
+  else msg = "#{e.message} at line #{e.lineno - 1}."
+  error-handling msg
 
 proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
   window.error-message = ""
@@ -36,14 +38,21 @@ proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
   document.body.appendChild codeNode
 
 error-handling = (e) ->
-  if !e => payload = "plot failed with unknown error"
-  else if typeof(e) != typeof({}) => payload = "#e"
-  else if !e.stack => payload = e.toString!
-  else payload = e.stack
-  if payload.length > 1024 => payload = payload.substring(0,1024) + "..."
-  lines = payload.split(\\n)
-  if lines.length > 4 => payload = lines.splice(0,4).join(\\n)
-  window.parent.postMessage {type: \error, payload}, plotdomain
+  if !e => msg = "plot failed with unknown error"
+  else if typeof(e) != typeof({}) => msg = "#e"
+  else if !e.stack => msg = e.toString!
+  else msg = e.stack
+
+  re-bloburl = /blob:http%3A\/\/[^:]+:/
+  if re-bloburl.exec(msg) => msg = msg.split re-bloburl .join "line "
+  ret = /line (\d+):\d+/.exec(msg)
+  lineno = if ret => parseInt(ret.1) else 0
+
+  if msg.length > 1024 => msg = msg.substring(0,1024) + "..."
+  lines = msg.split(\\n)
+  if lines.length > 4 => msg = lines.splice(0,4).join(\\n)
+  console.log msg, lineno
+  window.parent.postMessage {type: \error, payload: {msg, lineno}}, plotdomain
 
 parse = (payload) ->
   try
@@ -55,22 +64,25 @@ parse = (payload) ->
     error-handling e
 
 snapshot = ->
-  d3.selectAll('#container svg').each ->
-    {width, height} = @getBoundingClientRect!
-    d3.select(@).attr do
-      "xmlns": "http://www.w3.org/2000/svg"
-      "xmlns:xlink": "http://www.w3.org/1999/xlink"
-      "width": width
-      "height": height
-  svgnode = document.querySelector '#container svg'
-  {width, height} = svgnode.getBoundingClientRect!
-  svg = document.querySelector '#container svg' .outerHTML
-  img = new Image!
-  img.onload = ->
-    canvas = document.createElement("canvas") <<< {width, height}
-    canvas.getContext \2d .drawImage img, 0, 0
-    window.parent.postMessage {type: \snapshot, payload: canvas.toDataURL!}, plotdomain
-  img.src = "data:image/svg+xml;base64," + btoa(svg)
+  try
+    d3.selectAll('#container svg').each ->
+      {width, height} = @getBoundingClientRect!
+      d3.select(@).attr do
+        "xmlns": "http://www.w3.org/2000/svg"
+        "xmlns:xlink": "http://www.w3.org/1999/xlink"
+        "width": width
+        "height": height
+    svgnode = document.querySelector '#container svg'
+    {width, height} = svgnode.getBoundingClientRect!
+    svg = document.querySelector '#container svg' .outerHTML
+    img = new Image!
+    img.onload = ->
+      canvas = document.createElement("canvas") <<< {width, height}
+      canvas.getContext \2d .drawImage img, 0, 0
+      window.parent.postMessage {type: \snapshot, payload: canvas.toDataURL!}, plotdomain
+    img.src = "data:image/svg+xml;base64," + btoa(svg)
+  catch e
+    window.parent.postMessage {type: \snapshot, payload: null}, plotdomain
 
 render = (payload, rebind = true) ->
   code = payload.code.content

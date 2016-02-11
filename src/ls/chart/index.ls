@@ -54,7 +54,7 @@ angular.module \plotDB
       vis: \preview
       lastvis: null
       plotdomain: \http://localhost/
-      error: null
+      error: {msg: null, lineno: 0}
       codemirror: do
         code:  lineWrapping: true, lineNumbers: true, mode: \javascript
         style: lineWrapping: true, lineNumbers: true, mode: \css
@@ -233,11 +233,17 @@ angular.module \plotDB
         ({data}) <~ window.addEventListener \message, _, false
         if !data or typeof(data) != \object => return
         if data.type == \error =>
-          $scope.$apply -> $scope.error = data.payload
+          $scope.$apply ->
+            if $scope.error.lineno =>
+              $(".CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").removeClass \error
+            $scope.error.msg = data.{}payload.msg or ""
+            $scope.error.lineno = data.{}payload.lineno or 0
+            if $scope.error.lineno =>
+              $(".CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").addClass \error
         else if data.type == \alt-enter => $scope.$apply -> $scope.vis = 'code'
         else if data.type == \snapshot =>
           #TODO need sanity check
-          @chart.thumbnail = data.payload
+          if data.payload => @chart.thumbnail = data.payload
           @chart.save!then (ret) -> 
             plNotify.send \success, "chart saved"
             $scope.$apply -> $scope.chart <<< ret
