@@ -281,6 +281,14 @@
     width: 100%
     height: 100%
     padding: 32px 0 48px 0
+    position: absolute
+    width: 100%
+    height: 100%
+    left: 0
+    top: 0
+    z-index: index(order, 'chartedit-inner')
+    &.active
+      z-index: index(order, 'chartedit-inner-active')
   .CodeMirror
     z-index: index(order, 'codemirror')
     width: 100%
@@ -379,10 +387,20 @@
   height: 90%
   margin: 0
 
+#code-editor.active
+  z-index: index(order, 'chartedit-active')
+#visualization-canvas2.active
+  z-index: index(order, 'chartedit-active')
+
 #code-editor.fullscreen
-  z-index: index(order, 'fullscreen-edit')
+  z-index: index(order, 'chartedit-fullscreen')
 #visualization-canvas2.fullscreen
-  z-index: index(order, 'fullscreen-preview')
+  z-index: index(order, 'chartedit-fullscreen')
+
+#code-editor.fullscreen.active
+  z-index: index(order, 'chartedit-fullscreen-active')
+#visualization-canvas2.fullscreen.active
+  z-index: index(order, 'chartedit-fullscreen-active')
 
 #fullscreen-dimmer
   display: none

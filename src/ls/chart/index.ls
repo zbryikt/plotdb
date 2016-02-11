@@ -116,6 +116,7 @@ angular.module \plotDB
         update: ->
           @class = [
             if @fullscreen.toggled => \fullscreen else ""
+            if @vis != 'preview' => \active else ""
             @color.modes[@color.idx]
           ].join(" ")
         fullscreen: do

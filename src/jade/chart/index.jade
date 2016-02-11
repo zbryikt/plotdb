@@ -138,12 +138,12 @@ block body
 
       .col-sm-9(style="padding-left:0;position:relative"): .ib(style="position:relative")
         #code-error(ng-show="error.msg",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error.msg}}
-        #code-editor(ng-show="vis!='preview'",ng-class="editor.class")
+        #code-editor(ng-class="editor.class")
           #code-header {{vis}}
-          #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ng-show="vis=='code'",ui-refrehs="vis")
-          #code-editor-style.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="chart.style.content",ng-show="vis=='stylesheet'",ui-refrehs="vis")
-          #code-editor-doc.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="chart.doc.content",ng-show="vis=='document'",ui-refrehs="vis")
-          #code-editor-assets.inner(ng-show="vis=='assets'")
+          #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ui-refrehs="vis",ng-class="{'active':vis=='code'}")
+          #code-editor-style.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="chart.style.content",ui-refrehs="vis",ng-class="{'active':vis=='stylesheet'}")
+          #code-editor-doc.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="chart.doc.content",ui-refrehs="vis",ng-class="{'active':vis=='document'}")
+          #code-editor-assets.inner(ng-class="{'active':vis=='assets'}"
             .file.uploader Upload ... #[input(type="file",multiple)]
             .file(ng-repeat="f in chart.assets")
               .closebtn.outer(ng-click="chart.removeFile(f)")
@@ -159,7 +159,7 @@ block body
                 span  Full Screen
               .btn.btn-default(ng-click="chart.render();vis='preview'") Preview #[small.hint Alt-Enter]
 
-        #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled}")
+        #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
           .btn-group
             .btn.btn-default(ng-click="reset()") Reset
             .btn.btn-default(ng-click="editor.fullscreen.toggle()")
