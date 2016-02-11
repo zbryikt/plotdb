@@ -51,7 +51,6 @@ error-handling = (e) ->
   if msg.length > 1024 => msg = msg.substring(0,1024) + "..."
   lines = msg.split(\\n)
   if lines.length > 4 => msg = lines.splice(0,4).join(\\n)
-  console.log msg, lineno
   window.parent.postMessage {type: \error, payload: {msg, lineno}}, plotdomain
 
 parse = (payload) ->
