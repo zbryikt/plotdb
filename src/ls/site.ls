@@ -7,7 +7,7 @@ angular.module \plotDB
         if !name => list = [[k,v] for k,v of @queues]
         else list = [[name, @queues[][name]]]
         ([k,v]) <~ list.map
-        if !v or v.length => return
+        if !v or !v.length => return
         for func in (@handlers[k] or []) => for payload in v => func payload
       listen: (name, cb) ->
         @handlers[][name].push cb
