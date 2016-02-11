@@ -4,7 +4,9 @@ angular.module \plotDB
   ..service \chartService,
   <[$rootScope sampleChart IOService baseService]> ++
   ($rootScope, sampleChart, IOService, baseService) ->
-    service = sample: [sampleChart]
+    service = do
+      sample: [sampleChart]
+      link: (chart) -> "/chart/?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
     object = ->
     object.prototype = do
       name: \untitled
@@ -222,7 +224,8 @@ angular.module \plotDB
       communicate: -> # talk with canvas window
         ({data}) <~ window.addEventListener \message, _, false
         if !data or typeof(data) != \object => return
-        if data.type == \error => $scope.$apply -> $scope.error = data.payload
+        if data.type == \error =>
+          $scope.$apply -> $scope.error = data.payload
         else if data.type == \alt-enter => $scope.$apply -> $scope.vis = 'code'
         else if data.type == \snapshot =>
           #TODO need sanity check
@@ -230,6 +233,8 @@ angular.module \plotDB
           @chart.save!then (ret) -> 
             plNotify.send \success, "chart saved"
             $scope.$apply -> $scope.chart <<< ret
+            link = chartService.link $scope.chart
+            if !window.location.search => window.location.href = link
         else if data.type == \parse =>
           {config,dimension} = JSON.parse(data.payload)
           for k,v of @chart.dimension => if dimension[k]? => dimension[k].fields = v.fields
@@ -269,8 +274,7 @@ angular.module \plotDB
     (ret) <- chart-service.list!then
     <- $scope.$apply
     $scope.mycharts = ret
-    $scope.goto = (chart) ->
-      window.location.href = "/chart/?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
+    $scope.goto = (chart) -> chartService.link chart
   ..controller \chartList,
   <[$scope $http dataService chartService]> ++
   ($scope, $http, data-service, chart-service) ->

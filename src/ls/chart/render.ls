@@ -115,15 +115,18 @@ render = (payload, rebind = true) ->
         file.datauri = [ "data:", file.type, ";base64,", file.content ].join("")
         assetsmap[file.name] = file
       chart <<< {config}
-      if rebind or !(chart.root and chart.data) => chart <<< {root, data}
-      if rebind or !module.inited =>
+      if rebind or !(chart.root and chart.data) or module.exec-error => chart <<< {root, data}
+      if rebind or !module.inited or module.exec-error =>
         if chart.init => chart.init!
         module.inited = true
         chart.bind!
       chart.resize!
       chart.render!
+      module.exec-error = false
       window.parent.postMessage {type: \error, payload: window.error-message or ""}, plotdomain
-    .catch (e) -> return error-handling e
+    .catch (e) ->
+      module.exec-error = true
+      return error-handling e
   catch e
     error-handling e
 
