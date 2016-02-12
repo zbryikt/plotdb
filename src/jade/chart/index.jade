@@ -62,7 +62,7 @@ block body
           span.input-group-btn
             .btn.btn-default.btn-sm #[i.fa.fa-plus] User 
         .btn.btn-default.btn-sm #[i.fa.fa-plus] Link
-    #assets-preview(ng-show="assets.preview.toggled"): .ib
+    #assets-preview(ng-cloak,ng-show="assets.preview.toggled"): .ib
       .closebtn.inner(ng-click="assets.preview.toggled=false")
       .iframe(style="width:100%;height:100%;border:none")
     include /widget/palette-edit-modal.jade
@@ -139,13 +139,13 @@ block body
                 .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
 
       .col-sm-9(style="padding-left:0;position:relative"): .ib(style="position:relative")
-        #code-error(ng-show="error.msg",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error.msg}}
+        #code-error(ng-cloak,ng-show="error.msg",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error.msg}}
         #code-editor(ng-class="editor.class")
           #code-header {{vis}}
           #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ui-refrehs="vis",ng-class="{'active':vis=='code'}")
           #code-editor-style.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="chart.style.content",ui-refrehs="vis",ng-class="{'active':vis=='stylesheet'}")
           #code-editor-doc.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="chart.doc.content",ui-refrehs="vis",ng-class="{'active':vis=='document'}")
-          #code-editor-assets.inner(ng-class="{'active':vis=='assets'}")
+          #code-editor-assets.inner(ng-cloak,ng-class="{'active':vis=='assets'}")
             .file.uploader Upload ... #[input(type="file",multiple)]
             .file(ng-repeat="f in chart.assets",ng-click="assets.preview(f)")
               .closebtn.outer(ng-click="chart.removeFile(f)")
