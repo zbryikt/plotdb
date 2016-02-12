@@ -113,10 +113,20 @@ block body
             #project-action.btn-group(style="width:100%")
               .btn.btn-default(ng-disabled="!chart.name", ng-click="save()") Save
               .dropdown
-                .btn.btn-default.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-download] #[span.caret]
+                .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
+                  i.fa.fa-download
+                  span.caret
                 ul.dropdown-menu
-                  li: a(href="#") PNG
-                  li: a(href="#") SVG
+                  li.disabled(ng-show="!download.png.url"): a PNG #[img(src="/assets/img/loading.gif")]
+                  li.disabled(ng-show="!download.svg.url"): a SVG #[img(src="/assets/img/loading.gif")]
+                  li.disabled(ng-show="download.png.url=='#'"): a PNG #[i.fa.fa-warning.text-danger]
+                  li.disabled(ng-show="download.svg.url=='#'"): a SVG #[i.fa.fa-warning.text-danger]
+                  li(ng-show="download.png.url && download.png.url!='#'")
+                    a(ng-attr-download="{{chart.name}}.png",ng-attr-href="{{download.png.url}}")
+                      | PNG #[small(ng-show="download.png.size") {{download.png.size|size}}]
+                  li(ng-show="download.svg.url && download.svg.url!='#'")
+                    a(ng-attr-download="{{chart.name}}.svg",ng-attr-href="{{download.svg.url}}")
+                      | SVG #[small(ng-show="download.svg.size") {{download.svg.size|size}}]
           #chart-configs: .ib
             label Config
             .chart-config(ng-repeat="(name,v) in chart.config")

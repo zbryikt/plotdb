@@ -7,7 +7,7 @@ window.addEventListener \click, ->
 <- $ document .ready
 
 dispatcher = (evt) ->
-  if evt.data.type == \snapshot => snapshot!
+  if (evt.data.type in <[snapshot getsvg getpng]>) => snapshot evt.data.type
   else if evt.data.type == \render => render evt.data.payload, evt.data.rebind
   else if evt.data.type == \parse => parse evt.data.payload
   else if evt.data.type == \reload => window.location.reload!
@@ -63,7 +63,7 @@ parse = (payload) ->
   catch e
     error-handling e
 
-snapshot = ->
+snapshot = (type='snapshot') ->
   try
     d3.selectAll('#container svg').each ->
       {width, height} = @getBoundingClientRect!
@@ -75,14 +75,16 @@ snapshot = ->
     svgnode = document.querySelector '#container svg'
     {width, height} = svgnode.getBoundingClientRect!
     svg = document.querySelector '#container svg' .outerHTML
+    if type == \getsvg =>
+      return window.parent.postMessage {type: \getsvg, payload: svg}, plotdomain
     img = new Image!
     img.onload = ->
       canvas = document.createElement("canvas") <<< {width, height}
       canvas.getContext \2d .drawImage img, 0, 0
-      window.parent.postMessage {type: \snapshot, payload: canvas.toDataURL!}, plotdomain
+      window.parent.postMessage {type, payload: canvas.toDataURL!}, plotdomain
     img.src = "data:image/svg+xml;charset=utf-8;base64," + btoa(svg)
   catch e
-    window.parent.postMessage {type: \snapshot, payload: null}, plotdomain
+    window.parent.postMessage {type, payload: null}, plotdomain
 
 render = (payload, rebind = true) ->
   code = payload.code.content

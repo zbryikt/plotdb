@@ -110,6 +110,10 @@ angular.module \plotDB
         <~ <[code style doc]>.map
         @chart[it].lines = @chart[it].content.split(\\n).length
         @chart[it].size = @chart[it].content.length
+      download: do
+        prepare: -> <[svg png]>.map (n) ~> setTimeout (~> [@[n].url = '', @[n]!]), 1000
+        svg: -> $scope.canvas.window.postMessage {type: \getsvg}, $scope.plotdomain
+        png: -> $scope.canvas.window.postMessage {type: \getpng}, $scope.plotdomain
 
     $scope <<< do # Behaviors
       editor: do
@@ -260,6 +264,7 @@ angular.module \plotDB
             link = chartService.link $scope.chart
             if !window.location.search => window.location.href = link
         else if data.type == \parse =>
+          <~ $scope.$apply
           {config,dimension} = JSON.parse(data.payload)
           for k,v of @chart.dimension => if dimension[k]? => dimension[k].fields = v.fields
           for k,v of @chart.config => if config[k]? => config[k].value = v.value
@@ -284,6 +289,21 @@ angular.module \plotDB
             event = document.createEventObject!
             event.synthetic = true
             document.fireEvent("onclick", event)
+        else if data.type == \getsvg => $scope.$apply ~>
+          if !data.payload => return $scope.download.svg.url = '#'
+          $scope.download.svg.url = URL.createObjectURL(new Blob [data.payload], {type: 'image/svg+xml'})
+          $scope.download.svg.size = data.payload.length
+        else if data.type == \getpng =>
+          if !data.payload => return $scope.download.png.url = '#'
+          bytes = atob(data.payload.split(\,).1)
+          mime = data.payload.split(\,).0.split(\:).1.split(\;).0
+          if mime != 'image/png' => return $scope.download.png.url = '#'
+          buf = new ArrayBuffer bytes.length
+          ints = new Uint8Array buf
+          for idx from 0 til bytes.length => ints[idx] = bytes.charCodeAt idx
+          <~ $scope.$apply
+          $scope.download.png.url = URL.createObjectURL(new Blob [buf], {type: 'image/png'})
+          $scope.download.png.size = bytes.length
       init: ->
         @communicate!
         @hid-handler!
