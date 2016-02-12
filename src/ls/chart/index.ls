@@ -7,6 +7,7 @@ angular.module \plotDB
     service = do
       sample: []
       link: (chart) -> "/chart/?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
+      sharelink: (chart) -> "https://plotdb.com/v/chart/#{chart.key}"
     object = ->
     object.prototype = do
       name: \untitled
@@ -142,7 +143,22 @@ angular.module \plotDB
             @idx = (@idx + 1) % (@modes.length)
             $scope.editor.update!
       share-panel: do
-        toggle: -> @toggled = !!!@toggled
+        init: ->
+          (eventsrc) <~ <[#chartedit-sharelink #chartedit-embedcode]>.map
+          clipboard = new Clipboard eventsrc
+          clipboard.on \success, ->
+            $(eventsrc).tooltip({title: 'copied', trigger: 'click'}).tooltip('show')
+            setTimeout((->$(eventsrc).tooltip('hide')), 1000)
+          clipboard.on \error, ->
+            $(eventsrc).tooltip({title: 'Press Ctrl+C to Copy', trigger: 'click'}).tooltip('show')
+            setTimeout((->$(eventsrc).tooltip('hide')), 1000)
+          $scope.$watch 'sharePanel.link', ~> @embedcode = "<iframe src=\"#it\"><iframe>"
+        embedcode: ""
+        link: ""
+        toggle: ->
+          if @init => @init!
+          @init = null
+          @toggled = !!!@toggled
         toggled: false
         set-private: -> @is-public = false
         set-public: -> @is-public = true
@@ -250,6 +266,7 @@ angular.module \plotDB
             @canvas.window.postMessage {type: \parse, payload: code}, @plotdomain
           ), 500
         @$watch 'chart.config', (~> @render-async false), true
+        @$watch 'chart.key', (~> @share-panel.link = chartService.sharelink @chart)
       communicate: -> # talk with canvas window
         ({data}) <~ window.addEventListener \message, _, false
         if !data or typeof(data) != \object => return
