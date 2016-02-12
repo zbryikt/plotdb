@@ -111,9 +111,15 @@ angular.module \plotDB
         @chart[it].lines = @chart[it].content.split(\\n).length
         @chart[it].size = @chart[it].content.length
       download: do
-        prepare: -> <[svg png]>.map (n) ~> setTimeout (~> [@[n].url = '', @[n]!]), 1000
+        prepare: -> <[svg png plotdb]>.map (n) ~>
+          setTimeout (~> $scope.$apply ~> [@[n].url = '', @[n]!]), 300
         svg: -> $scope.canvas.window.postMessage {type: \getsvg}, $scope.plotdomain
         png: -> $scope.canvas.window.postMessage {type: \getpng}, $scope.plotdomain
+        plotdb: ->
+          payload = angular.toJson($scope.chart)
+          @plotdb.url = URL.createObjectURL new Blob [payload], {type: \application/json}
+          @plotdb.size = payload.length
+
 
     $scope <<< do # Behaviors
       editor: do
