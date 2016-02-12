@@ -2,8 +2,24 @@ angular.module \plotDB
   ..service \sampleData, <[$rootScope]> ++ ($rootScope) ->
     [
       {
+        key: "/dataset/sample/:crimeawar"
+        name: "Deaths in Crimea War, 1854", size: 4667, rows: 25, color: \#ddd
+        type: location: \sample, name: \dataset
+        fields: [
+          * name: "month", type: \Date, dataset: "/dataset/sample/:crimeawar"
+          * name: "army size", type: \Number, dataset: "/dataset/sample/:crimeawar"
+          * name: "zymotic deaths", type: \Number, dataset: "/dataset/sample/:crimeawar"
+          * name: "wound deaths", type: \Number, dataset: "/dataset/sample/:crimeawar"
+          * name: "other deaths", type: \Number, dataset: "/dataset/sample/:crimeawar"
+          * name: "zymotic death rate(‰)", type: \Number, dataset: "/dataset/sample/:crimeawar"
+          * name: "wound death rate(‰)", type: \Number, dataset: "/dataset/sample/:crimeawar"
+          * name: "other death rate(‰)", type: \Number, dataset: "/dataset/sample/:crimeawar"
+        ]
+        data: [{"month":"01/04/1854","army size":8571,"death number by zymotic":1,"death number by wound":0,"death number by other":5,"zymotic rate(‰)":1.4,"wound rate(‰)":0,"other rate(‰)":7},{"month":"01/05/1854","army size":23333,"death number by zymotic":12,"death number by wound":0,"death number by other":9,"zymotic rate(‰)":6.2,"wound rate(‰)":0,"other rate(‰)":4.6},{"month":"01/06/1854","army size":28333,"death number by zymotic":11,"death number by wound":0,"death number by other":6,"zymotic rate(‰)":4.7,"wound rate(‰)":0,"other rate(‰)":2.5},{"month":"01/07/1854","army size":28722,"death number by zymotic":359,"death number by wound":0,"death number by other":23,"zymotic rate(‰)":150,"wound rate(‰)":0,"other rate(‰)":9.6},{"month":"01/08/1854","army size":30246,"death number by zymotic":828,"death number by wound":1,"death number by other":30,"zymotic rate(‰)":328.5,"wound rate(‰)":0.4,"other rate(‰)":11.9},{"month":"01/09/1854","army size":30290,"death number by zymotic":788,"death number by wound":81,"death number by other":70,"zymotic rate(‰)":312.2,"wound rate(‰)":32.1,"other rate(‰)":27.7},{"month":"01/10/1854","army size":30643,"death number by zymotic":503,"death number by wound":132,"death number by other":128,"zymotic rate(‰)":197,"wound rate(‰)":51.7,"other rate(‰)":50.1},{"month":"01/11/1854","army size":29736,"death number by zymotic":844,"death number by wound":287,"death number by other":106,"zymotic rate(‰)":340.6,"wound rate(‰)":115.8,"other rate(‰)":42.8},{"month":"01/12/1854","army size":32779,"death number by zymotic":1725,"death number by wound":114,"death number by other":131,"zymotic rate(‰)":631.5,"wound rate(‰)":41.7,"other rate(‰)":48},{"month":"01/01/1855","army size":32393,"death number by zymotic":2761,"death number by wound":83,"death number by other":324,"zymotic rate(‰)":1022.8,"wound rate(‰)":30.7,"other rate(‰)":120},{"month":"01/02/1855","army size":30919,"death number by zymotic":2120,"death number by wound":42,"death number by other":361,"zymotic rate(‰)":822.8,"wound rate(‰)":16.3,"other rate(‰)":140.1},{"month":"01/03/1855","army size":30107,"death number by zymotic":1205,"death number by wound":32,"death number by other":172,"zymotic rate(‰)":480.3,"wound rate(‰)":12.8,"other rate(‰)":68.6},{"month":"01/04/1855","army size":32252,"death number by zymotic":477,"death number by wound":48,"death number by other":57,"zymotic rate(‰)":177.5,"wound rate(‰)":17.9,"other rate(‰)":21.2},{"month":"01/05/1855","army size":35473,"death number by zymotic":508,"death number by wound":49,"death number by other":37,"zymotic rate(‰)":171.8,"wound rate(‰)":16.6,"other rate(‰)":12.5},{"month":"01/06/1855","army size":38863,"death number by zymotic":802,"death number by wound":209,"death number by other":31,"zymotic rate(‰)":247.6,"wound rate(‰)":64.5,"other rate(‰)":9.6},{"month":"01/07/1855","army size":42647,"death number by zymotic":382,"death number by wound":134,"death number by other":33,"zymotic rate(‰)":107.5,"wound rate(‰)":37.7,"other rate(‰)":9.3},{"month":"01/08/1855","army size":44614,"death number by zymotic":483,"death number by wound":164,"death number by other":25,"zymotic rate(‰)":129.9,"wound rate(‰)":44.1,"other rate(‰)":6.7},{"month":"01/09/1855","army size":47751,"death number by zymotic":189,"death number by wound":276,"death number by other":20,"zymotic rate(‰)":47.5,"wound rate(‰)":69.4,"other rate(‰)":5},{"month":"01/10/1855","army size":46852,"death number by zymotic":128,"death number by wound":53,"death number by other":18,"zymotic rate(‰)":32.8,"wound rate(‰)":13.6,"other rate(‰)":4.6},{"month":"01/11/1855","army size":37853,"death number by zymotic":178,"death number by wound":33,"death number by other":32,"zymotic rate(‰)":56.4,"wound rate(‰)":10.5,"other rate(‰)":10.1},{"month":"01/12/1855","army size":43217,"death number by zymotic":91,"death number by wound":18,"death number by other":28,"zymotic rate(‰)":25.3,"wound rate(‰)":5,"other rate(‰)":7.8},{"month":"01/01/1856","army size":44212,"death number by zymotic":42,"death number by wound":2,"death number by other":48,"zymotic rate(‰)":11.4,"wound rate(‰)":0.5,"other rate(‰)":13},{"month":"01/02/1856","army size":43485,"death number by zymotic":24,"death number by wound":0,"death number by other":19,"zymotic rate(‰)":6.6,"wound rate(‰)":0,"other rate(‰)":5.2},{"month":"01/03/1856","army size":46140,"death number by zymotic":15,"death number by wound":0,"death number by other":35,"zymotic rate(‰)":3.9,"wound rate(‰)":0,"other rate(‰)":9.1}]
+      },
+      {
         key: "/dataset/sample/:joblesstaiwan"
-        name: "台灣五都失業率與低收入戶", size: \1765, rows: 71, color: \#ddd
+        name: "台灣五都失業率與低收入戶", size: 1765, rows: 71, color: \#ddd
         type: location: \sample, name: \dataset
         fields: [
           * name: "縣市名", type: \String, dataset: "/dataset/sample/:joblesstaiwan"
@@ -15,7 +31,7 @@ angular.module \plotDB
       },
       {
         key: "/dataset/sample/:goldprice2000"
-        name: "Gold Price(2000)", size: \481, rows: 12, color: \#ddd
+        name: "Gold Price(2000)", size: 481, rows: 12, color: \#ddd
         type: location: \sample, name: \dataset
         fields: [
           * name: "date", type: \Date, dataset: "/dataset/sample/:goldprice2000"
