@@ -97,11 +97,12 @@ angular.module \plotDB
     dataService
 
   ..controller \dataEditCtrl,
-  <[$scope $timeout $http dataService plUtil eventBus]> ++
-  ($scope, $timeout, $http, data-service, plUtil, eventBus) ->
+  <[$scope $timeout $http dataService plUtil eventBus plNotify]> ++
+  ($scope, $timeout, $http, data-service, plUtil, eventBus, plNotify) ->
     $scope.name = null
     $scope.dataset = null
     $scope.save = (locally = false) ->
+      if $scope.dataset and $scope.dataset.type.location != (if locally => \local else \server) => return
       $scope.data.parse true
       if !$scope.dataset =>
         config = do
@@ -113,7 +114,8 @@ angular.module \plotDB
         $scope.dataset = new dataService.dataset config
       $scope.dataset.name = $scope.name
       $scope.dataset.update $scope.data.parsed
-      $scope.dataset.save!
+      <~ $scope.dataset.save!then
+      $scope.$apply -> plNotify.send \success, "dataset saved"
     $scope.load-dataset = (dataset) ->
       $scope.dataset = dataset
       $scope.name = dataset.name

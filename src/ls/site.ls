@@ -9,6 +9,7 @@ angular.module \plotDB
         ([k,v]) <~ list.map
         if !v or !v.length => return
         for func in (@handlers[k] or []) => for payload in v => func payload
+        @queues[][name].splice 0, @queues[][name].length
       listen: (name, cb) ->
         @handlers[][name].push cb
         @process name

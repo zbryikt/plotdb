@@ -72,9 +72,13 @@ div(ng-controller="dataEditCtrl")
       .input-group.pull-left(style="width:200px")
         input.form-control.input-sm(type="input",ng-model="name",placeholder="Dataset Name")
         span.input-group-btn
-          .btn.btn-default.btn-sm(ng-disabled="!name || !data.parsed",ng-click="save()") Save
+          .btn.btn-default.btn-sm(
+          ng-disabled="!name || !data.parsed || (dataset.type.location && dataset.type.location!='server')"
+          ,ng-click="save()") Save
       span &nbsp;
-      .btn.btn-sm.btn-default(ng-disabled="!name || !data.parsed",ng-click="save(true)") Save Locally
+      .btn.btn-sm.btn-default(
+      ng-disabled="!name || !data.parsed || (dataset.type.location && dataset.type.location!='local')",
+      ng-click="save(true)") Save Locally
       span(style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px",ng-show="data.parsed && data.rows")
         | {{data.rows}} rows, {{data.size|size}}
 
