@@ -104,7 +104,7 @@ render = (payload, rebind = true) ->
       window.module = module
       root = document.getElementById \container
       chart = module.exports
-      if !data and chart.sample => data := chart.sample
+      if (!data or !data.length) and chart.sample => data := chart.sample
       for k,v of config =>
         for type in v.type =>
           type = plotdb[type.name]

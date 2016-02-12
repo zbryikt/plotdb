@@ -182,10 +182,14 @@ angular.module \plotDB
         if type != \charttype => type = \chart
         $scope.load {name: type, location}, key
       assets: do
+        measure: ->
+          $scope.chart.assets.size = $scope.chart.assets.map(-> it.content.length ).reduce(((a,b)->a+b),0)
         preview: (file) ->
           @preview.toggled = true
           datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
-          $('#assets-preview iframe').0.src = datauri
+          iframe = document.createElement("iframe")
+          $('#assets-preview .iframe').0.innerHTML = "<iframe></iframe>"
+          $('#assets-preview .iframe iframe').0.src = datauri
         read: (fobj) -> new Promise (res, rej) ~>
           name = if /([^/]+\.?[^/.]*)$/.exec(fobj.name) => that.1 else \unnamed
           type = \unknown
@@ -223,6 +227,7 @@ angular.module \plotDB
               setTimeout (~> cm.refresh!), 0
               ret.1.refreshed = true # make it happened only once.
           ), 0
+        @$watch 'chart.assets', (~> @assets.measure!), true
         @$watch 'chart.doc.content', ~> @countline!
         @$watch 'chart.style.content', ~> @countline!
         @$watch 'chart.code.content', ~> @countline!
