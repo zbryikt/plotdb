@@ -29,7 +29,7 @@ block body
       .row
         .col-sm-10.col-sm-offset-1
           label Link
-          .pull-right: a(href="",target="_blank") 
+          .pull-right: a(href="",target="_blank")
             i.fa.fa-external-link(style="vertical-align:middle")
             span(style="font-size:12px;margin-left:5px;") Open in New Window
           input.form-control(type="text",value="http://blah")
@@ -196,7 +196,10 @@ block body
               .closebtn(ng-click="file.toggle=!!!file.toggle")
               .title {{file.name}}
               .desc {{file.size}}, {{file.rows}} rows
-              .data-field(ng-repeat="field in file.fields",ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field") {{field.name}} #[small {{field.type}}]
+              .data-field(ng-repeat="field in file.fields",
+              ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field")
+                span {{field.name}}
+                small {{field.type}}
             br.clearfix
           img(src="/assets/img/drag.png",style="position:absolute;right:10px;z-index:0")
         .col-sm-8
@@ -210,9 +213,9 @@ block body
                 span(ng-show="dim.desc") {{dim.desc}} #[br]
                 i accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]
               .data-field(ng-repeat="field in dim.fields")
-                | {{field.name}} 
+                .closebtn(ng-click="dimension.unbind($event, dim, field)")
+                span {{field.name}}
                 small {{field.type}}
-                .pull-right: i.fa.fa-close(ng-click="dimension.unbind($event, dim, field)")
             .dimension.flexend
     .row
       .col-sm-12

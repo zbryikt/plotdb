@@ -72,7 +72,7 @@
 .data-fields, .dimension
   .data-field
     font-size: 14px
-    padding: 8px 12px
+    padding: 8px 8px
     background: #ade
     border-radius: 3px
     margin: 5px
@@ -80,15 +80,16 @@
     color: #421
     z-index: index(order, 'data-field')
     position: relative
+    span
+      width: 180px
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
     small
-      //-float: right
+      display: block
       font-size: 12px
       line-height: 16px
       opacity: 0.8
-      position: absolute
-      right: 25px
-      top: 50%
-      margin-top: -6px
     .fa-close
       position: absolute
       right: 5px
