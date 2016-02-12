@@ -73,6 +73,7 @@ angular.module \plotDB
       @load = ->
         <~ Dataset.prototype.load.call(@).then
         Dataset.call @
+      @update!
       @
 
     Dataset.prototype = do
@@ -83,11 +84,11 @@ angular.module \plotDB
         #TODO support more type
         # CSV dataset use first row as field name
         names = [k for k of @data.0]
-        for i from 0 til names.length
+        promises = for i from 0 til names.length
           if @fields[i] => that else @fields.push new Field(names[i], @)
           @fields[i].name = names[i]
           @fields[i].update!
-
+        <~ Promise.all promises .then
         #@fields = [[k,v] for k,v of @data.0].map(-> {name: it.0, type: \String})
         #for item in @fields => data-service.field.settype @data, item
         @size = angular.toJson(@data).length
@@ -113,7 +114,7 @@ angular.module \plotDB
           datatype: \csv #TODO support more types
         $scope.dataset = new dataService.dataset config
       $scope.dataset.name = $scope.name
-      $scope.dataset.update $scope.data.parsed
+      <~ $scope.dataset.update $scope.data.parsed .then
       <~ $scope.dataset.save!then
       $scope.$apply -> plNotify.send \success, "dataset saved"
     $scope.load-dataset = (dataset) ->
