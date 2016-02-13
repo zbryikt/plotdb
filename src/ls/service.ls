@@ -64,7 +64,7 @@ angular.module \plotDB
         service[name] = service.Object = @wrapper callee
 
         baseObject.prototype = do
-          type: {location: \local, name}
+          type: {location: \server, name}
           owner: null
           key: null
           permission: {switch: [], value: []}
