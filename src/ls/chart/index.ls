@@ -265,6 +265,7 @@ angular.module \plotDB
             @communicate.parse-handler = null
             @canvas.window.postMessage {type: \parse, payload: code}, @plotdomain
           ), 500
+        #TODO finish this
         @$watch 'chart.config', (~> @render-async false), true
         @$watch 'chart.key', (~> @share-panel.link = chartService.sharelink @chart)
       communicate: -> # talk with canvas window
