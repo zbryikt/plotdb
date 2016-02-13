@@ -1,6 +1,6 @@
 angular.module \plotDB
   ..config <[$compileProvider]> ++ ($compileProvider) ->
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob):|#/)
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob:|https?:\/\/plotdb\.com\/)|#/)
   ..service 'eventBus', <[$rootScope]> ++ ($rootScope) -> 
     ret = @ <<< do
       queues: {}

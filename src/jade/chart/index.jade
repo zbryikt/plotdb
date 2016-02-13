@@ -39,15 +39,19 @@ block body
         .row
           .col-sm-10.col-sm-offset-1
             label Link
-            .pull-right: a(href="",target="_blank")
+            .pull-right: a(ng-attr-href="{{sharePanel.link || '#'}}",target="_blank")
               i.fa.fa-external-link(style="vertical-align:middle")
               span(style="font-size:12px;margin-left:5px;") Open in New Window
-            input#chartedit-sharelink.form-control(type="text",ng-model="sharePanel.link",
-            placeholder="share link for this chart",
+            input.form-control(ng-cloak,disabled,
+            ng-show="!sharePanel.isPublic",placeholder="set chart public to get share link")
+            input#chartedit-sharelink.form-control(ng-cloak,type="text",ng-model="sharePanel.link",
+            placeholder="share link for this chart",ng-show="sharePanel.isPublic",
             data-clipboard-target="#chartedit-sharelink")
             br
             label Embed Code
-            textarea#chartedit-embedcode.form-control(rows="5",
+            textarea.form-control(ng-cloak,disabled,rows="5",
+            ng-show="!sharePanel.isPublic",placeholder="set chart public to get embed code")
+            textarea#chartedit-embedcode.form-control(ng-cloak,rows="5",ng-show="sharePanel.isPublic",
             data-clipboard-target="#chartedit-embedcode",ng-model="sharePanel.embedcode")
         br
         hr(style="margin-bottom:10px")
