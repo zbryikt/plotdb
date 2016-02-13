@@ -150,10 +150,30 @@ block body
                       | PlotDB.json #[small(ng-show="download.plotdb.size") {{download.plotdb.size|size}}]
           #chart-configs: .ib
             label Config
+            .chart-config
+              .btn-group
+                span.input-group-addon Theme
+                .dropdown
+                  .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                    span {{theme || 'default'}}
+                    i.fa.fa-caret-down
+                  ul.dropdown-menu
+                    li: a(ng-click="theme='default'") default
+                    li: a(ng-click="theme='playfair'") playfair
+
             .chart-config(ng-cloak,ng-repeat="(name,v) in chart.config")
-              .input-group(ng-if="v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color'")
+              .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color'")
                 span.input-group-addon {{v.name || name}}
                 input.form-control(type="text",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value",style="text-align:center")
+              .btn-group(ng-if="v.type[0].name=='Choice'")
+                span.input-group-addon {{v.name || name}}
+                .dropdown
+                  .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                    span {{v.value}}
+                    i.fa.fa-caret-down
+                  ul.dropdown-menu
+                    li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice}}
+
               //TODO coloredit
               .btn-group(ng-if="v.type[0].name=='Color'",ng-click="coloredit.edit(v);")
                 span.input-group-addon {{v.name || name}}

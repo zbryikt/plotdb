@@ -438,7 +438,7 @@
     left: 10px
 
 .chart-config 
-  .input-group span, .btn-group span
+  .input-group > span, .btn-group > span
     width: 90px
     display: table-cell
     padding-left: 2px
@@ -447,8 +447,18 @@
   .btn-group
     display: table
     width: 100%
-  .btn-group .btn
+  .btn-group > .btn
     display: table-cell
+  .btn-group .dropdown
+    .btn
+      border-top-left-radius: 0
+      border-bottom-left-radius: 0
+    .fa-caret-down
+      line-height: 16px
+      vertical-align: middle
+      margin-right: 5px
+      float: right
+  .btn-group .btn
     width: 100%
     padding-left: 2px
     padding-right: 2px
