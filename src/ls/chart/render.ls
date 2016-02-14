@@ -101,7 +101,8 @@ render = (payload, rebind = true) ->
       if ret => throw new Error("script tag is now allowed in document.")
     if rebind or !window.module =>
       $(document.body).html(
-        "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style><div id='container'>#doc</div>"
+        # the first space in container is crucial for elliminating margin collapsing
+        "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style><div id='container'>&nbsp;#doc</div>"
       )
       promise = proper-eval code
     else promise = Promise.resolve window.module
