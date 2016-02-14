@@ -217,8 +217,8 @@ block body
             .tabs
               span(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'") #[i.fa.fa-pie-chart] Preview
               span(ng-class="{'active':vis=='code'}",ng-click="vis='code'") #[i.fa.fa-terminal] Code
-              span(ng-class="{'active':vis=='stylesheet'}",ng-click="vis='stylesheet'") #[i.fa.fa-paint-brush] Style
-              span(ng-class="{'active':vis=='document'}",ng-click="vis='document'") #[i.fa.fa-code] Doc
+              span(ng-class="{'active':vis=='stylesheet'}",ng-click="vis='stylesheet'") #[i.fa.fa-paint-brush] Stylesheet
+              span(ng-class="{'active':vis=='document'}",ng-click="vis='document'") #[i.fa.fa-code] Document
               span(ng-class="{'active':vis=='assets'}",ng-click="vis='assets'") #[i.fa.fa-files-o] Assets
 
           #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ui-refrehs="vis",ng-class="{'active':vis=='code'}")
