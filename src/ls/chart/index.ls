@@ -66,7 +66,6 @@ angular.module \plotDB
       canvas: do
         node: document.getElementById(\chart-renderer)
         window: document.getElementById(\chart-renderer).contentWindow
-    $scope.chart.type.location = \local #TODO remove
     $scope <<< do # Functions
       save: (astype = false) -> 
         if astype and @chart.type.name == \chart =>
