@@ -243,20 +243,21 @@ angular.module \plotDB
           @ldcp.set-palette item.value
           @toggled = true
 
+      switch-panel: ->
+        <~ setTimeout _, 0
+        <~ $scope.$apply _
+        temp = @vis
+        if @vis == \preview and @lastvis => @vis = @lastvis
+        else if @vis == \preview => @vis = \code
+        else @vis = \preview
+        @lastvis = temp
+
       hid-handler: ->
-        # Switch Panel by Alt-Enter
-        switch-panel = ~>
-          <~ setTimeout _, 0
-          <~ $scope.$apply _
-          temp = @vis
-          if @vis == \preview and @lastvis => @vis = @lastvis
-          else if @vis == \preview => @vis = \code
-          else @vis = \preview
-          @lastvis = temp
+        # Switch Panel by alt-enter
         $scope.codemirrored = (editor) -> $scope.codemirror.objs.push editor
-        document.body.addEventListener \keydown, (e) ->
+        document.body.addEventListener \keydown, (e) ~>
           if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) =>
-            $scope.$apply -> switch-panel!
+            $scope.$apply ~> @switch-panel!
 
       check-param: ->
         if !window.location.search => return
@@ -321,7 +322,7 @@ angular.module \plotDB
             $scope.error.lineno = data.{}payload.lineno or 0
             if $scope.error.lineno =>
               $(".CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").addClass \error
-        else if data.type == \alt-enter => $scope.$apply -> $scope.vis = 'code'
+        else if data.type == \alt-enter => $scope.$apply -> $scope.switch-panel!
         else if data.type == \snapshot =>
           #TODO need sanity check
           if data.payload => @chart.thumbnail = data.payload
