@@ -197,8 +197,8 @@ angular.module \plotDB
           @toggled = !!!@toggled
         toggled: false
         is-public: -> ("public" in $scope.chart.permission.switch)
-        set-private: -> $scope.chart.permission.switch = <[private]>
-        set-public: -> $scope.chart.permission.switch = <[public]>
+        set-private: -> $scope.chart.{}permission.switch = <[private]>
+        set-public: -> $scope.chart.{}permission.switch = <[public]>
       coloredit: do
         config: (v, idx) -> do
           class: \no-palette
