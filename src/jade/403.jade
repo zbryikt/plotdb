@@ -1,0 +1,21 @@
+extends /base.jade
+block vars
+block head
+  script(type="text/javascript",src="/js/io.js")
+  script(type="text/javascript",src="/js/data/sample.js")
+  script(type="text/javascript",src="/js/data/index.js")
+block body
+  div &nbsp;
+  #root
+    br
+    br
+    h1.text-center Access Denied.
+    .text-center.grayed " http 403 "
+    br
+    .text-center: img(src="/assets/img/plotdb-forbidden.png")
+    br
+    br
+    p.text-center Can't find what you want? #[br]#[br] #[a(href="/") back to home]
+    br
+    script.
+      if(!window.location.search) { window.location.search = "?nexturl=/" }
