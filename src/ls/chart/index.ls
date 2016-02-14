@@ -247,8 +247,8 @@ angular.module \plotDB
         <~ setTimeout _, 0
         <~ $scope.$apply _
         temp = @vis
-        if @vis == \preview and @lastvis => @vis = @lastvis
-        else if @vis == \preview => @vis = \code
+        if @vis == \preview and (!@lastvis or @lastvis == \preview) => @vis = \code
+        else if @vis == \preview => @vis = @lastvis
         else @vis = \preview
         @lastvis = temp
 

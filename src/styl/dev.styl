@@ -254,10 +254,41 @@
   left: 0
   width: 100%
   height: 32px
-  padding: 6px
+  padding: 5px
   background: rgba(255,255,255,0.95)
   border-bottom: 1px solid #ddd
   box-shadow: 0 1px 3px rgba(0,0,0,0.1)
+  .tabs span
+    width: 0
+    opacity: 0
+    transition opacity 0.1s ease-in-out, width 0.1s ease-in-out
+    display: inline-block
+    height: 21px
+    overflow: hidden
+    font-size: 14px
+    margin-right: 0
+    color: #bbb
+    cursor: pointer
+    i
+      font-size: 13px
+      padding: 4px
+      border-radius: 4px
+      background: #ddd
+      color: #fff
+      width: 21px
+      height: 21px
+      text-align: center
+  .tabs span.active, .tabs span:hover
+    color: #333
+    i
+      color: #fff
+      background: #333
+
+#code-header.fullscreen .tabs span, #code-header .tabs span.active
+  width: 80px
+  opacity: 1
+  margin-right: 20px
+
 #code-ctrl
   position: absolute
   z-index: index(order, 'code-ctrl')
