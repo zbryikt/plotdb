@@ -14,6 +14,6 @@ module.exports = (backend, config) ->
     lmodel.chart.read req.params.id
       ..then (obj) ~>
         #TODO support more sophisticated permission chechking
-        if !("public" in obj.{}permission.[]switch) => return aux.r403 res
+        if !("public" in obj.{}permission.[]switch) => return aux.r403 res, "this chart is private", true
         res.render 'chart/view.jade', {obj}
       ..catch (err) ~> return aux.r404 res, err
