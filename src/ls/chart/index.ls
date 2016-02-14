@@ -135,6 +135,23 @@ angular.module \plotDB
     $scope <<< do # Behaviors
       editor: do
         class: ""
+        focus: ->
+          # codemirror won't update if it's not visible. so wait a little
+          # refresh will reset cursor which scroll to the top.
+          # so we only want to refresh once.
+          setTimeout (~>
+            $scope.codemirror.objs.map (cm) ->
+              ret = [[k,v] for k,v of $scope.codemirror].filter(->it.1.mode == cm.options.mode).0
+              if !ret or !$scope.vis.starts-with(ret.0) => return
+              setTimeout (~> cm.focus!), 10
+              if ret.1.refreshed => return
+              cm.refresh!
+              #WORKAROUND: one refresh only brings partial content
+              # use use another refresh to remedy this
+              setTimeout (~> cm.refresh!), 0
+              ret.1.refreshed = true # make it happened only once.
+          ), 0
+
         update: ->
           @class = [
             if @fullscreen.toggled => \fullscreen else ""
@@ -145,6 +162,7 @@ angular.module \plotDB
           toggle: ->
             @toggled = !!!@toggled
             $scope.editor.update!
+            $scope.editor.focus!
           toggled: false
         color: do
           modes: <[normal dark]>
@@ -247,22 +265,7 @@ angular.module \plotDB
             ..on \change, ~> @handle @node.0.files
       monitor: ->
         @assets.init!
-        @$watch 'vis', (vis) ~>
-          # codemirror won't update if it's not visible. so wait a little
-          # refresh will reset cursor which scroll to the top.
-          # so we only want to refresh once.
-          setTimeout (~>
-            @codemirror.objs.map (cm) ->
-              ret = [[k,v] for k,v of $scope.codemirror].filter(->it.1.mode == cm.options.mode).0
-              if !ret or !vis.starts-with(ret.0) => return
-              setTimeout (~> cm.focus!), 10
-              if ret.1.refreshed => return
-              cm.refresh!
-              #WORKAROUND: one refresh only brings partial content
-              # use use another refresh to remedy this
-              setTimeout (~> cm.refresh!), 0
-              ret.1.refreshed = true # make it happened only once.
-          ), 0
+        @$watch 'vis', (vis) ~> $scope.editor.focus!
         @$watch 'chart.assets', (~> @assets.measure!), true
         @$watch 'chart.doc.content', ~> @countline!
         @$watch 'chart.style.content', ~> @countline!
