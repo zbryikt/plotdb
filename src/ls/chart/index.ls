@@ -189,16 +189,22 @@ angular.module \plotDB
             $(eventsrc).tooltip({title: 'Press Ctrl+C to Copy', trigger: 'click'}).tooltip('show')
             setTimeout((->$(eventsrc).tooltip('hide')), 1000)
           $scope.$watch 'sharePanel.link', ~> @embedcode = "<iframe src=\"#it\"><iframe>"
+        save-hint: false
         embedcode: ""
         link: ""
         toggle: ->
           if @init => @init!
           @init = null
           @toggled = !!!@toggled
+          @save-hint = false
         toggled: false
         is-public: -> ("public" in $scope.chart.permission.switch)
-        set-private: -> $scope.chart.{}permission.switch = <[private]>
-        set-public: -> $scope.chart.{}permission.switch = <[public]>
+        set-private: ->
+          $scope.chart.{}permission.switch = <[private]>
+          @save-hint = true
+        set-public: ->
+          $scope.chart.{}permission.switch = <[public]>
+          @save-hint = true
       coloredit: do
         config: (v, idx) -> do
           class: \no-palette

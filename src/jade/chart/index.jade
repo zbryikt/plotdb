@@ -19,9 +19,9 @@ block body
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
 
-    #permission-modal(ng-cloak,ng-show="sharePanel.toggled",style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999"): .ib(style="width:640px;height:490px;background:#fff;border-radius:3px;box-shadow:0 4px 4px rgba(0,0,0,0.5);padding:10px;margin:70px auto 0;position:relative;")
+    #permission-modal(ng-cloak,ng-show="sharePanel.toggled"): .ib
       .closebtn(ng-click="sharePanel.toggle()")
-      h3(style="margin:0;padding:8px 0 8px 10px;border-bottom:1px solid #eee") Share
+      h3 Share
       div(ng-cloak,ng-show="!chart.key",
       style="position:absolute;top:0;left:0;width:100%;height:100%;")
         div(style="display:table;width:100%;height:100%;"): div(style="display:table-row;width:100%;height:100%")
@@ -49,7 +49,8 @@ block body
           .btn.btn-default(ng-click="sharePanel.setPublic()",ng-class="{'active':sharePanel.isPublic()}") Public
         .text-center(ng-show="!sharePanel.isPublic()") Only users with permission can see this chart.
         .text-center(ng-show="sharePanel.isPublic()") Every one can see this chart.
-        br
+        .text-center.text-danger(ng-cloak,ng-show="sharePanel.saveHint") Save to apply this change
+        br(ng-show="!sharePanel.saveHint")
 
         #share-buttons.text-center(style="font-size:2em",ng-class="{'disabled':!sharePanel.isPublic()}")
           i.fa.fa-facebook-square
@@ -82,7 +83,8 @@ block body
             data-clipboard-target="#chartedit-embedcode",ng-model="sharePanel.embedcode")
         hr(style="margin-bottom:10px")
         .pull-right
-          .btn.btn-default(style="margin-right:5px",ng-disabled="!chart.name",ng-click="save()") Save
+          .save-hint-btn.btn.btn-default(ng-disabled="!chart.name",ng-click="save();sharePanel.saveHint=false",
+           ng-class="{'btn-warning':sharePanel.saveHint,'btn-default':!sharepanel.saveHint}") Save
           .btn.btn-default(ng-click="sharePanel.toggle()") Close
         //- Simplify this for now
         //-
