@@ -321,6 +321,13 @@ block body
         .panel.panel-default
           .panel-heading: label Danger Zone
           .panel-body
-            p.text-center Permanently delete this chart. Are you sure?
-            .text-center: .btn.btn-danger(ng-click="delete()") Yes, Delete it
+            div(style="display:flex")
+              div(style="flex: 1 1 0")
+                .text-center: label Delete
+                p.text-center Permanently delete this chart. Are you sure?
+                .text-center: .btn.btn-danger(ng-click="delete()") Yes, Delete it
+              div(ng-cloak,ng-show="chart.type.location=='local'",style="flex: 1 1 0")
+                .text-center: label Migrate
+                p.text-center Permanently move this chart from local to server. Are you sure?
+                .text-center: .btn.btn-warning(ng-click="migrate()") Yes, Move it
   include /footer.jade
