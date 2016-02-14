@@ -204,7 +204,7 @@ block body
               .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);")
                 span.input-group-addon {{v.name || name}}
                 div(style="display:table-cell;float:left;width:100%;height:100%;border:1px solid #ccc;padding:5px;text-align:center;cursor:pointer;border-top-right-radius:3px;border-bottom-right-radius:3px;box-shadow:inset 0 1px 1px rgba(0,0,0,.075)")
-                  div(ng-repeat="c in v.value.colors",ng-attr-style="background:{{c.hex}};width:{{90/v.value.colors.length}}%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:24px;user-select:none;-webkit-user-select:none") &nbsp;
+                  div(ng-repeat="c in v.value.colors",ng-attr-style="background:{{c.hex}};width:{{90/v.value.colors.length}}%;height:100%;display:inline-block;border-radius:2px;margin:0 1px 0 0;height:24px;user-select:none;-webkit-user-select:none") &nbsp;
               //- Boolean
               .btn-group(ng-if="v.type[0].name=='Boolean'")
                 span.input-group-addon {{v.name || name}}
