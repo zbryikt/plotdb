@@ -7,7 +7,9 @@ angular.module \plotDB
     service = do
       sample: []
       link: (chart) -> "/chart/?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
-      sharelink: (chart) -> "https://plotdb.com/v/chart/#{chart.key}"
+      #TODO better mechanism for switching domain ( dev, staging and production )
+      #sharelink: (chart) -> "https://plotdb.com/v/chart/#{chart.key}"
+      sharelink: (chart) -> "http://localhost/v/chart/#{chart.key}"
     object = ->
     object.prototype = do
       name: \untitled
@@ -194,8 +196,9 @@ angular.module \plotDB
           @init = null
           @toggled = !!!@toggled
         toggled: false
-        set-private: -> @is-public = false
-        set-public: -> @is-public = true
+        is-public: -> ("public" in $scope.chart.permission.switch)
+        set-private: -> $scope.chart.permission.switch = <[private]>
+        set-public: -> $scope.chart.permission.switch = <[public]>
       coloredit: do
         config: (v, idx) -> do
           class: \no-palette

@@ -11,12 +11,9 @@ module.exports = (backend, config) ->
   for name in <[chart charttype]> => init name
 
   backend.app.get \/v/chart/:id/, (req, res) -> 
-    try
-      [location,name,key] = new Buffer(req.params.id, \base64).toString!split \|
-      if name != 'chart' and name !='charttype' => throw new Error!
-    catch
-      return aux.r400 res
-    lmodel[name].read key
+    lmodel.chart.read req.params.id
       ..then (obj) ~>
+        #TODO support more sophisticated permission chechking
+        if !("public" in obj.{}permission.[]switch) => return aux.r403 res
         res.render 'chart/view.jade', {obj}
       ..catch (err) ~> return aux.r404 res, err

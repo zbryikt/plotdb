@@ -43,13 +43,13 @@ block body
       div(ng-cloak,ng-show="chart.type.location=='server' && chart.key")
         br
         .text-center(style="margin-bottom: 8px"): .btn-group
-          .btn.btn-default(ng-click="sharePanel.setPrivate()",ng-class="{'active':!sharePanel.isPublic}") Private
-          .btn.btn-default(ng-click="sharePanel.setPublic()",ng-class="{'active':sharePanel.isPublic}") Public
-        .text-center(ng-show="!sharePanel.isPublic") Only users with permission can see this chart.
-        .text-center(ng-show="sharePanel.isPublic") Every one can see this chart.
+          .btn.btn-default(ng-click="sharePanel.setPrivate()",ng-class="{'active':!sharePanel.isPublic()}") Private
+          .btn.btn-default(ng-click="sharePanel.setPublic()",ng-class="{'active':sharePanel.isPublic()}") Public
+        .text-center(ng-show="!sharePanel.isPublic()") Only users with permission can see this chart.
+        .text-center(ng-show="sharePanel.isPublic()") Every one can see this chart.
         br
 
-        #share-buttons.text-center(style="font-size:2em",ng-class="{'disabled':!sharePanel.isPublic}")
+        #share-buttons.text-center(style="font-size:2em",ng-class="{'disabled':!sharePanel.isPublic()}")
           i.fa.fa-facebook-square
           i.fa.fa-pinterest-square
           i.fa.fa-linkedin-square
@@ -63,23 +63,24 @@ block body
           .col-sm-10.col-sm-offset-1
 
             label Link
-            .pull-right(ng-cloak,ng-show="sharePanel.isPublic")
+            .pull-right(ng-cloak,ng-show="sharePanel.isPublic()")
               a(ng-attr-href="{{sharePanel.link || '#'}}",target="_blank")
                 i.fa.fa-external-link(style="vertical-align:middle")
                 span(style="font-size:12px;margin-left:5px;") Open in New Window
             input.form-control(ng-cloak,disabled,
-            ng-show="!sharePanel.isPublic",placeholder="set chart public to get share link")
+            ng-show="!sharePanel.isPublic()",placeholder="set chart public to get share link")
             input#chartedit-sharelink.form-control(ng-cloak,type="text",ng-model="sharePanel.link",
-            placeholder="share link for this chart",ng-show="sharePanel.isPublic",
+            placeholder="share link for this chart",ng-show="sharePanel.isPublic()",
             data-clipboard-target="#chartedit-sharelink")
             br
             label Embed Code
             textarea.form-control(ng-cloak,disabled,rows="3",
-            ng-show="!sharePanel.isPublic",placeholder="set chart public to get embed code")
-            textarea#chartedit-embedcode.form-control(ng-cloak,rows="3",ng-show="sharePanel.isPublic",
+            ng-show="!sharePanel.isPublic()",placeholder="set chart public to get embed code")
+            textarea#chartedit-embedcode.form-control(ng-cloak,rows="3",ng-show="sharePanel.isPublic()",
             data-clipboard-target="#chartedit-embedcode",ng-model="sharePanel.embedcode")
         hr(style="margin-bottom:10px")
         .pull-right
+          .btn.btn-default(style="margin-right:5px",ng-disabled="!chart.name",ng-click="save()") Save
           .btn.btn-default(ng-click="sharePanel.toggle()") Close
         //- Simplify this for now
         //-
