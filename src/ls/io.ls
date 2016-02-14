@@ -36,7 +36,7 @@ angular.module \plotDB
         if !(key in list) => return rej [true, "no such item"]
         list = list.filter(-> it != key)
         localStorage.setItem("/db/list/#{type.name}", angular.toJson(list))
-        localStorage.setItem("/db/#{type.name}", null)
+        localStorage.setItem("/db/#{type.name}/#{key}", null)
         res!
       delete-remotely: (type, key, res, rej) ->
         config = {url: "/d/#{type.name}/#{key}", method: \DELETE}
