@@ -71,7 +71,7 @@ angular.module \plotDB
           save: -> service.save @ .then (ret) ~> @key = ret.key
           load: -> service.load @type, @key .then (ret) ~> @ <<< ret
           delete: -> service.delete @
-          clone: -> new callee(@ <<< key: null)
+          clone: -> new callee(@) <<< key: null
         service.Object.prototype <<< baseObject.prototype <<< callee.prototype
         callee.prototype = service.Object.prototype
         service

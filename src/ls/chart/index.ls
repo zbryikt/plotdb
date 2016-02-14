@@ -66,14 +66,17 @@ angular.module \plotDB
       canvas: do
         node: document.getElementById(\chart-renderer)
         window: document.getElementById(\chart-renderer).contentWindow
-
+    $scope.chart.type.location = \local #TODO remove
     $scope <<< do # Functions
       save: (astype = false) -> 
         if astype and @chart.type.name == \chart =>
           @chart.type.name = \charttype
           @chart.key = null
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
-      load: (type, key) -> chart-service.load type, key .then (ret) ~> @chart <<< ret
+      load: (type, key) ->
+        chart-service.load type, key
+          .then (ret) ~> @chart <<< ret
+          .catch (ret) ~> window.location.href = window.location.pathname
       delete: ->
         if !@chart.key => return
         (ret) <~ @chart.delete!then
@@ -81,6 +84,13 @@ angular.module \plotDB
         @chart = new chartService.chart!
         #TODO check future URL correctness
         setTimeout (-> window.location.href = "/chart/me.html"), 1000
+      migrate: ->
+        if !@chart.key => return
+        cloned = @chart.clone!
+        cloned.type.location = (if @chart.type.location == \local => \server else \local)
+        console.log @chart
+        <- @chart.delete!then
+        $scope.chart = cloned
 
       dimension: do
         bind: (event, dimension, field = {}) ->

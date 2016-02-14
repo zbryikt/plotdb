@@ -73,6 +73,7 @@ snapshot = (type='snapshot') ->
         "width": width
         "height": height
     svgnode = document.querySelector '#container svg'
+    svgnode.insertBefore document.body.querySelector(\style).cloneNode(true), svgnode.childNodes.0
     {width, height} = svgnode.getBoundingClientRect!
     svg = document.querySelector '#container svg' .outerHTML
     if type == \getsvg =>
@@ -99,7 +100,9 @@ render = (payload, rebind = true) ->
       ret = /<\s*script[^>]*>.*<\s*\/\s*script\s*>/g.exec(doc.toLowerCase!)
       if ret => throw new Error("script tag is now allowed in document.")
     if rebind or !window.module =>
-      $(document.body).html("<style type='text/css'>#style</style><div id='container'>#doc</div>")
+      $(document.body).html(
+        "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style><div id='container'>#doc</div>"
+      )
       promise = proper-eval code
     else promise = Promise.resolve window.module
     promise.then (module) ->

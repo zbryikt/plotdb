@@ -4,9 +4,12 @@ angular.module \plotDB
       doc: do
         content: """<h3>D3.js Pack Layout Example</h3>"""
       style: do
-        content: """circle {
+        content: """svg {
+  background: \#fff;
+}
+circle {
   fill: \#ccc;
-  stroke: #777;
+  stroke: \#777;
 }
 
 h3 {

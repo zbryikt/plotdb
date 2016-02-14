@@ -25,7 +25,7 @@ angular.module \plotDB
           .error (d) -> rej [true, d.toString!]
       load-locally: (type, key, res, rej) ->
         ret = JSON.parse(localStorage.getItem("/db/#{type.name}/#{key}"))
-        res ret
+        if ret => res ret else rej [true, "no such item"]
       load-remotely: (type, key, res, rej) ->
         config = {url: "/d/#{type.name}/#{key}", method: \GET}
         $http config
@@ -36,6 +36,7 @@ angular.module \plotDB
         if !(key in list) => return rej [true, "no such item"]
         list = list.filter(-> it != key)
         localStorage.setItem("/db/list/#{type.name}", angular.toJson(list))
+        localStorage.setItem("/db/#{type.name}", null)
         res!
       delete-remotely: (type, key, res, rej) ->
         config = {url: "/d/#{type.name}/#{key}", method: \DELETE}
