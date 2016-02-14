@@ -12,6 +12,7 @@ html(lang="en")
   block vars
   head(prefix="og: http://ogp.me/ns#")
     //-include library.jade
+    block head
     script(type="text/javascript",src="/js/sched.js")
     link(rel="stylesheet",type="text/css",href="/css/render.css")
     script(type="text/javascript",src="#{assets}/jquery/1.10.2/jquery.min.js")
@@ -23,4 +24,4 @@ html(lang="en")
     script(type="text/javascript",src="/js/chart/base.js")
     script(type="text/javascript",src="/js/chart/render.js")
   body
-
+    block body

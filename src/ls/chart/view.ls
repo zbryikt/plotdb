@@ -1,10 +1,10 @@
 plotdomain = \http://localhost
-render = ->
+render = (payload) ->
   chart = module.exports
+  assets = payload.assets
+  data = payload.data
+  config = payload.config or {}
   root = document.getElementById \container
-  config = chart.config
-  data = chart.data
-  assets = chart.assets or []
   if (!data or !data.length) and chart.sample => data = chart.sample
   for k,v of config =>
     for type in v.type =>

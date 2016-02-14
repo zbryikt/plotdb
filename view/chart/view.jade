@@ -1,4 +1,6 @@
-extends /base.jade
+extends /module/render.jade
+block head
+  title #{obj.name} by #{obj.author}
 block body
   style(type="text/css").
     html,body,#container {
@@ -6,18 +8,47 @@ block body
       height: 100%;
       background: initial;
     }
+    #container {
+      position: relative;
+      z-index: 1;
+    }
+    #plotdb-mark {
+      position: fixed;
+      z-index: 999999;
+      bottom: 10px;
+      right: 10px;
+      text-align: center;
+      font-size: 12px;
+      font-family: optima;
+      cursor: pointer;
+      color: #000;
+      text-decoration: none;
+      background: rgba(255,255,255,0.5);
+      padding: 5px;
+      border-radius: 3px;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
   //-
     p= obj.name
     p= obj.desc
     p= obj.author
   style(type="text/css") #{obj.style.content}
+  link(rel="stylesheet",type="text/css",href="/css/render.css")
   script(type="text/javascript",src="/assets/d3js/3.5.12/d3.v3.min.js")
+  script(type="text/javascript",src="#{assets}/topojson/1.6.24/topojson.min.js")
   script(type="text/javascript",src="/js/plotdb.js")
   script(type="text/javascript",src="/js/chart/base.js")
   script(type="text/javascript",src="/js/chart/view.js")
   script(type="text/javascript") !{obj.code.content}
   #container !{obj.doc.content}
+  a#plotdb-mark(href="http://plotdb.com")
+    img(src="/assets/img/poweredby.png",style="width:64px;margin-top:5px")
   script(type="text/javascript").
     !{obj.code.content}
-    render();
+    render(!{JSON.stringify(obj)});
 
