@@ -69,7 +69,7 @@ angular.module \plotDB
         node: document.getElementById(\chart-renderer)
         window: document.getElementById(\chart-renderer).contentWindow
     $scope <<< do # Functions
-      save: (astype = false) -> 
+      save: (astype = false) ->
         if astype and @chart.type.name == \chart =>
           @chart.type.name = \charttype
           @chart.key = null
@@ -224,7 +224,7 @@ angular.module \plotDB
                 $("<div class='palette select'><div class='name'>#{state.text}</div>"+
                   "<div class='palette-color'>#color</div></div>")
               data: @list
-            ..on \change, (e) ~>
+            ..on \select2:closing, (e) ~>
               for item in @list =>
                 ret = item.children.filter(~>it.id == $(e.target)val!).0
                 if ret => break
@@ -254,7 +254,7 @@ angular.module \plotDB
           else @vis = \preview
           @lastvis = temp
         $scope.codemirrored = (editor) -> $scope.codemirror.objs.push editor
-        document.body.addEventListener \keydown, (e) -> 
+        document.body.addEventListener \keydown, (e) ->
           if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) =>
             $scope.$apply -> switch-panel!
 
@@ -325,7 +325,7 @@ angular.module \plotDB
         else if data.type == \snapshot =>
           #TODO need sanity check
           if data.payload => @chart.thumbnail = data.payload
-          @chart.save!then (ret) -> 
+          @chart.save!then (ret) ->
             plNotify.send \success, "chart saved"
             $scope.$apply -> $scope.chart <<< ret
             link = chartService.link $scope.chart
