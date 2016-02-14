@@ -2,10 +2,10 @@ angular.module \plotDB
   ..service \baseService, <[$rootScope IOService eventBus]> ++ ($rootScope, IOService, eventBus) ->
     service-skeleton = do
       type: null # setup once inherited
-      items: null 
+      items: null
       sample: []
 
-      save: (item) -> 
+      save: (item) ->
         (ret) <~ IOService.save item .then
         (res, rej) <~ new Promise _
         <~ $rootScope.$apply-async
@@ -15,7 +15,7 @@ angular.module \plotDB
         else @items.splice idx, 1, item
         res item
 
-      load: (type, key, refresh = false) -> 
+      load: (type, key, refresh = false) ->
         filter = ->
           it.type.location == type.location and it.type.name == type.name and it.key == key
         item = @[]items.filter(filter).0
@@ -28,7 +28,7 @@ angular.module \plotDB
         else @items.push item := ret
         res item
 
-      delete: (item) -> 
+      delete: (item) ->
         (ret) <~ IOService.delete item.type, item.key .then
         (res, rej) <~ new Promise _
         <~ $rootScope.$apply-async
@@ -36,7 +36,7 @@ angular.module \plotDB
         if idx >= 0 => @items.splice idx, 1
         res ret
 
-      list: (type, filter = {}, force = false) -> 
+      list: (type, filter = {}, force = false) ->
         if !type => type = {location: \any, name: @type}
         if @items and !force => return Promise.resolve(@items)
         if !@items => @items = []
@@ -71,7 +71,10 @@ angular.module \plotDB
           save: -> service.save @ .then (ret) ~> @key = ret.key
           load: -> service.load @type, @key .then (ret) ~> @ <<< ret
           delete: -> service.delete @
-          clone: -> new callee(@) <<< key: null
+          clone: ->
+            # use JSON parse+stringify to deep clone. be aware of Date format issue:
+            # http://stackoverflow.com/questions/122102/5344074
+            (new service.Object(JSON.parse(JSON.stringify @))) <<< key: null
         service.Object.prototype <<< baseObject.prototype <<< callee.prototype
         callee.prototype = service.Object.prototype
         service

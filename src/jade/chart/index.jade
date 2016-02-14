@@ -20,7 +20,18 @@ block body
     #permission-modal(ng-cloak,ng-show="sharePanel.toggled",style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999"): .ib(style="width:640px;height:490px;background:#fff;border-radius:3px;box-shadow:0 4px 4px rgba(0,0,0,0.5);padding:10px;margin:70px auto 0;position:relative;")
       .closebtn(ng-click="sharePanel.toggle()")
       h3(style="margin:0;padding:8px 0 8px 10px;border-bottom:1px solid #eee") Share
-      div(ng-cloak,ng-show="chart.type.location=='local'",
+      div(ng-cloak,ng-show="!chart.key",
+      style="position:absolute;top:0;left:0;width:100%;height:100%;")
+        div(style="display:table;width:100%;height:100%;"): div(style="display:table-row;width:100%;height:100%")
+          div(style="display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center;color:#888")
+            | This chart is not saved. #[br] Save it to share it. #[br]#[br]#[br]
+            div(style="width:70%;margin:auto;max-width:500px")
+              .text-left: label(style="color:initial") Give Your Chart a Name
+              input.form-control(type="text",ng-model="chart.name",
+              placeholder="Project Name",style="margin-bottom:5px")
+              .btn.btn-default.btn-block(ng-disabled="!chart.name", ng-click="save()") Save
+
+      div(ng-cloak,ng-show="chart.type.location=='local' && chart.key",
       style="position:absolute;top:0;left:0;width:100%;height:100%;")
         div(style="display:table;width:100%;height:100%;"): div(style="display:table-row;width:100%;height:100%")
           div(style="display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center;color:#888")
@@ -29,7 +40,7 @@ block body
         div(style="position:absolute;bottom:5px;width:100%")
           hr(style="margin-bottom:10px")
           .pull-right(style="padding:0px 10px 5px"): .btn.btn-default(ng-click="sharePanel.toggle()") Close
-      div(ng-cloak,ng-show="chart.type.location=='server'")
+      div(ng-cloak,ng-show="chart.type.location=='server' && chart.key")
         br
         .text-center(style="margin-bottom: 8px"): .btn-group
           .btn.btn-default(ng-click="sharePanel.setPrivate()",ng-class="{'active':!sharePanel.isPublic}") Private
@@ -120,10 +131,6 @@ block body
         #config-panel.plpanel
           #project-configs
             label Project
-            //-.pull-right(style="cursor:pointer;font-family:open sans condensed;font-weight:bold")
-              small #[i.fa.fa-link] Link
-              span &nbsp; &nbsp;
-              small #[i.fa.fa-film] Embed
             .chart-config
               .input-group
                 span.input-group-addon name

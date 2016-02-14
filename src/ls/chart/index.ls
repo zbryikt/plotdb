@@ -87,9 +87,11 @@ angular.module \plotDB
         if !@chart.key => return
         cloned = @chart.clone!
         cloned.type.location = (if @chart.type.location == \local => \server else \local)
-        console.log @chart
-        <- @chart.delete!then
+        <~ cloned.save!then
+        <~ @chart.delete!then
         $scope.chart = cloned
+        window.location.href = chartService.link $scope.chart
+
 
       dimension: do
         bind: (event, dimension, field = {}) ->
@@ -129,7 +131,6 @@ angular.module \plotDB
           payload = angular.toJson($scope.chart)
           @plotdb.url = URL.createObjectURL new Blob [payload], {type: \application/json}
           @plotdb.size = payload.length
-
 
     $scope <<< do # Behaviors
       editor: do
