@@ -362,10 +362,6 @@
   top: 59px
   right: 0
   background: #fff
-  //border-radius: 3px
-  //box-shadow: 0 1px 1px rgba(0,0,0,0.2)
-  //border: 1px solid #ddd
-  //margin: 10px 0
 
 .plpanel
   panel()
@@ -412,6 +408,8 @@
     right: 5px
   iframe
     border-bottom: 1px solid #ddd
+  .closebtn
+    display: none
 
 #code-editor.fullscreen, #visualization-canvas2.fullscreen
   position: fixed
@@ -420,6 +418,8 @@
   width: 90%
   height: 90%
   margin: 0
+  .closebtn
+    display: block
 
 #code-editor.active
   z-index: index(order, 'chartedit-active')

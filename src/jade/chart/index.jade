@@ -235,18 +235,23 @@ block body
               .btn.btn-default(ng-click="editor.color.toggle()") Editor Style
               .btn.btn-default(ng-click="reset()") Reload
               .btn.btn-default(ng-click="editor.fullscreen.toggle()")
-                span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave
-                span(ng-cloak,ng-if="!editor.fullscreen.toggled") Enter
-                span  Fullscreen
+                span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave 
+                span
+                  | Fullscreen 
+                  i.glyphicon.glyphicon-fullscreen(ng-show="!editor.fullscreen.toggled")
+                  i.glyphicon.glyphicon-resize-small(ng-show="editor.fullscreen.toggled")
               .btn.btn-default(ng-click="chart.render();vis='preview'") Preview #[small.hint Alt-Enter]
 
         #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
+          .closebtn.inner(ng-click="editor.fullscreen.toggle()")
           .btn-group
             .btn.btn-default(ng-click="reset()") Reload
             .btn.btn-default(ng-click="editor.fullscreen.toggle()")
-              span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave
-              span(ng-cloak,ng-if="!editor.fullscreen.toggled") Enter
-              span  Fullscreen
+              span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave 
+              span
+                | Fullscreen 
+                i.glyphicon.glyphicon-fullscreen(ng-show="!editor.fullscreen.toggled")
+                i.glyphicon.glyphicon-resize-small(ng-show="editor.fullscreen.toggled")
             .btn.btn-default(ng-click="vis='code'") Edit Code #[small.hint Alt-Enter]
 
           iframe#chart-renderer(src="http://localhost/render.html",
