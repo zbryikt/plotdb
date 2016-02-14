@@ -1,0 +1,1 @@
+var x$;x$=angular.module("plotDB"),x$.service("paletteService",["$rootScope","samplePalette","IOService","baseService"].concat(function(e,r,t,a){var c,n,i;return c={sample:r},n=function(){return this},i=a.derive(name,c,n)}));

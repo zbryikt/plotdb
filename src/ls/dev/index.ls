@@ -19,9 +19,7 @@ angular.module \plotDB
     sel = [{ text: 'Custom', children: convert custom }]
     sel.push { text: 'Default', children: convert defpal }
     $scope.selector = sel
-    console.log $scope.selector
     colorschema-inited = false
-    console.log $(\#pal-select)
     setTimeout (->
       $(\#pal-select)
         ..select2 icon-pal-select-config = do
@@ -37,22 +35,7 @@ angular.module \plotDB
           data: $scope.selector
         ..on \change, (e) -> 
           $scope.schema-is-custom = ($(@)val! == \0)
-          #if !$scope.demoLoader => return
           if !colorschema-inited => return colorschema-inited := true
           count = 0
-          #pal = $scope.palettes.all.filter(~> it.key == $(@)val! ).0
-          #$scope.build.cbk = pal.colors[count].hex
-          /*
-          count = ( count + 1 ) % pal.colors.length
-          for v,idx in $scope.demoLoader.vars => 
-            if v.type == \color =>
-              $scope.build["c#{idx + 1}"] = pal.colors[count].hex
-              count = ( count + 1 ) % pal.colors.length
-            if v.type == \palette =>
-              $scope.build["c#{idx + 1}"] = pal.colors.map -> it.hex
-          $scope.colorpicker.ctrl.set-palette {colors: pal.colors}
-          ga \send, \event, \icon-editor, \colorschema, pal.name
-          */
     ), 0
-    #$(\#pal-select)val \0 .trigger \change
 

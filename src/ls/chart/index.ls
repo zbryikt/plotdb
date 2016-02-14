@@ -50,8 +50,8 @@ angular.module \plotDB
     chartService
 
   ..controller \chartEditor,
-  <[$scope $http $timeout $interval dataService chartService plNotify]> ++
-  ($scope, $http, $timeout, $interval, data-service, chart-service, plNotify) ->
+  <[$scope $http $timeout $interval dataService chartService paletteService plNotify]> ++
+  ($scope, $http, $timeout, $interval, data-service, chart-service, paletteService, plNotify) ->
     $scope <<< do # Variables
       showsrc: true
       vis: \preview
@@ -206,10 +206,31 @@ angular.module \plotDB
           exclusive: true
           palette: [v.value]
       paledit: do #TODO should be moved to standalone controller
+        convert: -> it.map(->{id: it.key, text: it.name, data: it.colors})
         ldcp: null, item: null
         init: ->
           @ldcp = new ldColorPicker null, {}, $('#palette-editor .editor .ldColorPicker').0
           @ldcp.on \change, ~> setTimeout ( ~> $scope.$apply ~> @update! ), 0
+          @list = [{ text: 'Default', children: @convert paletteService.sample }]
+          $(\#pal-select)
+            ..select2 icon-pal-select-config = do
+              allowedMethods: <[updateResults]>
+              templateResult: (state) ->
+                if !state.data => return state.text
+                color = [("<div class='color' "+
+                  "style='background:#{c.hex};width:#{100/state.data.length}%'"+
+                  "></div>") for c in state.data
+                ].join("")
+                $("<div class='palette select'><div class='name'>#{state.text}</div>"+
+                  "<div class='palette-color'>#color</div></div>")
+              data: @list
+            ..on \change, (e) ~>
+              for item in @list =>
+                ret = item.children.filter(~>it.id == $(e.target)val!).0
+                if ret => break
+              if !ret => return
+              @ldcp.set-palette {colors: ret.data}
+
         update: -> if @item => @item.value = @ldcp.get-palette!
         toggled: false
         toggle: ->
