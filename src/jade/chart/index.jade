@@ -133,8 +133,6 @@ block body
             span(ng-cloak,ng-if="!chart.assets.length") no file
             span(ng-cloak,ng-if="chart.assets.length") {{chart.assets.length}} files, {{chart.assets.size|size}}
         .pull-right
-          //-.tab.action #[i.fa.fa-link] #[span link]
-          //-.tab.action #[i.fa.fa-code] #[span embed]
           .tab.action(ng-click="sharePanel.toggle()") #[i.fa.fa-user] #[span share]
 
 
