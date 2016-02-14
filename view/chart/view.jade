@@ -4,10 +4,12 @@ block body
     html,body,#container {
       width: 100%;
       height: 100%;
+      background: initial;
     }
-  p= obj.name
-  p= obj.desc
-  p= obj.author
+  //-
+    p= obj.name
+    p= obj.desc
+    p= obj.author
   style(type="text/css") #{obj.style.content}
   script(type="text/javascript",src="/assets/d3js/3.5.12/d3.v3.min.js")
   script(type="text/javascript",src="/js/plotdb.js")
@@ -15,6 +17,7 @@ block body
   script(type="text/javascript",src="/js/chart/view.js")
   script(type="text/javascript") !{obj.code.content}
   #container !{obj.doc.content}
-  script.
-    render(!{JSON.stringify(obj)});
+  script(type="text/javascript").
+    !{obj.code.content}
+    render();
 

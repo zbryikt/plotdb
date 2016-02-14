@@ -1,9 +1,11 @@
 plotdomain = \http://localhost
-render = (chart) ->
+render = ->
+  chart = module.exports
   root = document.getElementById \container
   config = chart.config
   data = chart.data
-  chart = window.module.exports
+  assets = chart.assets or []
+  if (!data or !data.length) and chart.sample => data = chart.sample
   for k,v of config =>
     for type in v.type =>
       type = plotdb[type.name]
@@ -16,8 +18,18 @@ render = (chart) ->
         console.log "#{e.stack}"
   for k,v of chart.config =>
     config[k] = if !(config[k]?) or !(config[k].value?) => v.default else config[k].value
-  if chart.init => chart.init root, data, config
-  chart.bind root, data, config
-  chart.resize root, data, config
-  chart.render root, data, config
-  window.parent.postMessage {type: \error, payload: window.error-message or ""}, plotdomain
+  chart.assets = assetsmap = {}
+  for file in assets =>
+    raw = atob(file.content)
+    array = new Uint8Array(raw.length)
+    for idx from 0 til raw.length => array[idx] = raw.charCodeAt idx
+    file.blob = new Blob([array],{type: file.type})
+    file.url = URL.createObjectURL(file.blob)
+    file.datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
+    assetsmap[file.name] = file
+  chart <<< {config,root,data}
+  if chart.init => chart.init!
+  module.inited = true
+  if chart.bind => chart.bind!
+  chart.resize!
+  chart.render!
