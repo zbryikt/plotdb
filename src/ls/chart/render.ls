@@ -72,10 +72,22 @@ snapshot = (type='snapshot') ->
         "xmlns:xlink": "http://www.w3.org/1999/xlink"
         "width": width
         "height": height
+    #save the first svg #TODO save all?
     svgnode = document.querySelector '#container svg'
-    svgnode.insertBefore document.body.querySelector(\style).cloneNode(true), svgnode.childNodes.0
+    styles = svgnode.querySelectorAll("style")
+    for idx from 0 til styles.length
+      style = styles[idx]
+      if !style.generated => continue
+      svgnode.removeChild(style)
+    # this insert styles into svg everytime.
+    # yet cloneNode(true) on svgnode will fail the png generation
+    styles = document.body.querySelectorAll('#wrapper > style')
+    for idx from styles.length - 1 to 0 by -1
+      style = styles[idx].cloneNode(true)
+      style.generated = true
+      svgnode.insertBefore style, svgnode.childNodes.0
     {width, height} = svgnode.getBoundingClientRect!
-    svg = document.querySelector '#container svg' .outerHTML
+    svg = svgnode.outerHTML
     if type == \getsvg =>
       return window.parent.postMessage {type: \getsvg, payload: svg}, plotdomain
     img = new Image!
@@ -85,6 +97,7 @@ snapshot = (type='snapshot') ->
       window.parent.postMessage {type, payload: canvas.toDataURL!}, plotdomain
     img.src = "data:image/svg+xml;charset=utf-8;base64," + btoa(svg)
   catch e
+    console.log e
     window.parent.postMessage {type, payload: null}, plotdomain
 
 render = (payload, rebind = true) ->
@@ -100,7 +113,8 @@ render = (payload, rebind = true) ->
     if rebind or !window.module =>
       node = document.getElementById("wrapper")
       if !node =>
-        node = document.createElement("wrapper")
+        node = document.createElement("div")
+        node.setAttribute("id", "wrapper")
         document.body.appendChild(node)
       # the first space in container is crucial for elliminating margin collapsing
       $(node).html([
