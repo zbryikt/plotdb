@@ -15,5 +15,11 @@ module.exports = (backend, config) ->
       ..then (obj) ~>
         #TODO support more sophisticated permission chechking
         if !("public" in obj.{}permission.[]switch) => return aux.r403 res, "this chart is private", true
-        res.render 'chart/view.jade', {obj}
+        if obj.theme =>
+          lmodel.theme.read obj.theme
+            ..then (theme) ~>
+              obj.theme = theme
+              res.render 'chart/view.jade', {obj}
+            ..catch (err) ~> res.render 'chart/view.jade', {obj}
+        else res.render 'chart/view.jade', {obj}
       ..catch (err) ~> return aux.r404 res, err
