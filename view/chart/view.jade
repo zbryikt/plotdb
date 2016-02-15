@@ -45,7 +45,7 @@ block body
   script(type="text/javascript",src="/js/chart/view.js")
   script(type="text/javascript") !{obj.code.content}
   //- the first space in container is crucial for elliminating margin collapsing
-  #container &nbsp;!{obj.doc.content}
+  #container #[div(style="height:0") &nbsp;]!{obj.doc.content}
   a#plotdb-mark(href="http://plotdb.com",target="_blank")
     img(src="/assets/img/poweredby.png",style="width:64px;margin-top:5px")
   script(type="text/javascript").

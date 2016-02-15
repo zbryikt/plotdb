@@ -106,7 +106,7 @@ render = (payload, rebind = true) ->
         document.body.appendChild(node)
       $(node).html(
         # the first space in container is crucial for elliminating margin collapsing
-        "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style><div id='container'>&nbsp;#doc</div>",
+        "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style><div id='container'><div style='height:0'>&nbsp;</div>#doc</div>",
       )
       promise = proper-eval code
     else promise = Promise.resolve window.module
