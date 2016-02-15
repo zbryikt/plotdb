@@ -196,6 +196,9 @@ angular.module \plotDB
     $scope.datasets = data-service.datasets
     (ret) <- data-service.list!then
     $scope.datasets = ret
+    $scope.$watch 'datasets', ->
+      $scope.activelength = it.filter(-> it.toggle).length
+    , true
     $scope.edit = (dataset) -> eventBus.fire \dataset.edit, dataset
     $scope.remove = (dataset) -> 
       dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)

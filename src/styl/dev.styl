@@ -50,7 +50,7 @@
       font-size: 1em
 .flexend
   opacity: 0
-  flex(999 999 auto)
+  flex(8 8 auto!important)
 
 #chart-modal
   display: none
@@ -71,34 +71,33 @@
     border: 1px solid #999
 
 
-.data-fields, .dimension
-  .data-field
-    font-size: 14px
-    padding: 8px 8px
-    background: #ade
-    border-radius: 3px
-    margin: 5px
-    cursor: move
-    color: #421
-    z-index: index(order, 'data-field')
-    position: relative
-    span
-      width: 180px
-      overflow: hidden
-      text-overflow: ellipsis
-      white-space: nowrap
-    small
-      display: block
-      font-size: 12px
-      line-height: 16px
-      opacity: 0.8
-    .fa-close
-      position: absolute
-      right: 5px
-      top: 50%
-      margin-top: -6px
-      color: #444
-      cursor: pointer
+.data-field
+  font-size: 14px
+  padding: 8px 8px
+  background: #ade
+  border-radius: 3px
+  margin: 5px
+  cursor: move
+  color: #421
+  z-index: index(order, 'data-field')
+  position: relative
+  span
+    width: 180px
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+  small
+    display: block
+    font-size: 12px
+    line-height: 16px
+    opacity: 0.8
+  .fa-close
+    position: absolute
+    right: 5px
+    top: 50%
+    margin-top: -6px
+    color: #444
+    cursor: pointer
 
 #binding-panel
   width: 100%
@@ -113,15 +112,15 @@
   flexbox()
   flex-wrap wrap
   .dimension
-    width: 240px
+    width: 32%
     height: 160px
     background: #fff
     border-radius: 3px
     box-shadow: 0 1px 1px rgba(0,0,0,0.3)
     border: 1px solid #ccc
     display: block
-    flex(1 1 240px)
-    margin: 5px
+    //flex(1 1 240px)
+    margin: 0.66%
     padding: 10px
     z-index: index(order, 'chart-dimension')
     position: relative
@@ -642,3 +641,15 @@ small.hint
     margin-right: 5px
     &.btn-warning
       animation(jump 1s infinite linear)
+
+#blah
+  position: absolute
+  z-index: 99999
+  width: 100%
+  background: #ddd
+  border: 1px solid #999
+  border-radius: 3px
+  opacity: 0.01
+  margin-left: 20px
+#blah.dragging
+  opacity: 1

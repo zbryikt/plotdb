@@ -32,6 +32,10 @@ angular.module \plotDB
     $scope.nexturl = if /nexturl=([^&]+)/exec((window.location.search or "")) => that.1 else window.location.href
     $scope.user = data: global.user
     $scope.data-service = data-service
+    $scope.scrollto = (sel = null) ->
+      <- setTimeout _, 0
+      top = if sel => ( $(sel).offset!top - 60 ) else 0
+      $(document.body).animate {scrollTop: top}, '500', 'swing', ->
     $scope.auth = do
       email: ''
       passwd: ''
