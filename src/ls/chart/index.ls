@@ -378,41 +378,36 @@ angular.module \plotDB
           <~ $scope.$apply
           $scope.download.png.url = URL.createObjectURL(new Blob [buf], {type: 'image/png'})
           $scope.download.png.size = bytes.length
+      field-agent: do
+        data: null
+        drag: do
+          ging: false
+          start: -> @ging = true
+          end: -> @ging = false
+        set-proxy: (e,data) ->
+          if @drag.ging => return
+          [@data,node] = [data,e.target]
+          while true
+            if node.getAttribute("class").indexOf('data-field') >=0 => break
+            node = node.parentNode
+            if node.nodeName.toLowerCase! == \body => return
+          <- setTimeout _, 0
+          box = node.getBoundingClientRect!
+          box2 = node.parentNode.parentNode.getBoundingClientRect!
+          scroll = left: document.body.scrollLeft, top: document.body.scrollTop
+          $(\#field-agent).css do
+            top: "#{box.top - box2.top + 60}px"
+            left: "#{box.left - box2.left}px"
+            width: "#{box.width}px"
+            height: "#{box.height}px"
+
       init: ->
         @communicate!
         @hid-handler!
         @monitor!
         @check-param!
         @paledit.init!
-    $scope.blah2 = ->
-      console.log \gogogo
-      $scope.dragging = true
-    $scope.blah3 = ->
-      console.log \finfinfin
-      $scope.dragging = false
-    $scope.blah = (e,data) ->
-      console.log $scope.dragging
-      if $scope.dragging => return
-      $scope.blah.data = data
-      node = e.target
-      while true
-        if node.getAttribute("class").indexOf('data-field') >=0 => break
-        node = node.parentNode
-        if node.nodeName.toLowerCase! == \body => return
-      <- setTimeout _, 0
-      box2 = node.parentNode.parentNode.getBoundingClientRect!
-      box = node.getBoundingClientRect!
-      box3 = $(\#blah).0.parentNode.getBoundingClientRect!
-      console.log box2
-      scroll = left: document.body.scrollLeft, top: document.body.scrollTop
 
-      $(\#blah).css do
-        top: "#{box.top - box2.top + 60}px"
-        left: "#{box.left - box2.left}px"
-        #top: "#{box.top - box2.top}px"
-        #left: "#{box.left - box2.left}px"
-        width: "#{box.width}px"
-        height: "#{box.height}px"
     $scope.init!
 
   ..controller \mychart,

@@ -298,15 +298,15 @@ block body
               div: small 7 fields
 
 
-            #blah.data-field(ng-drag="true",ng-drag-data="blah.data",ng-drag-stop="blah3()",ng-drag-start="blah2()",ng-show="activelength")
-              span {{blah.data.name}}
-              small {{blah.data.type}}
+            #field-agent.data-field(ng-drag="true",ng-drag-data="fieldAgent.data",ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="activelength")
+              span {{fieldAgent.data.name}}
+              small {{fieldAgent.data.type}}
             .data-file(ng-repeat="file in datasets",ng-show="file.toggle",style="width:100%")
               .closebtn(ng-click="file.toggle=!!!file.toggle")
               .title {{file.name}}
               .desc {{file.size}}, {{file.rows}} rows
               div(style="max-height:230px;overflow:scroll")
-                .data-field(ng-repeat="field in file.fields",ng-mouseover="blah($event,field)",
+                .data-field(ng-repeat="field in file.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
                 ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field")
                   span {{field.name}}
                   small {{field.type}}
