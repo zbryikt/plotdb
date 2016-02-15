@@ -294,6 +294,11 @@ angular.module \plotDB
             idx = result.indexOf(\;)
             type = result.substring(5,idx)
             content = result.substring(idx + 8)
+            size = $scope.chart.assets.map(->(it.content or "").length).reduce(((a,b)->a+b),0) + content.length
+            if size > 3000000 => $scope.$apply ->
+              plNotify.alert "Assets size limit (3MB) exceeded. won't upload."
+              $scope.chart.remove-file file
+              return
             file <<< {type, content}
             $scope.$apply-async -> file <<< {type, content}
             res file

@@ -51,6 +51,11 @@ html(lang="en")
     include authpanel.jade
     #notifications
       .notify(ng-repeat="n in notifications",ng-class="'notify-'+n.type",ng-cloak) {{n.message}}
+    #alertbox(ng-cloak,ng-show="alert.toggled"): .ib
+      br
+      .text-center {{alert.msg}}
+      .footer
+        .btn.btn-default.btn-sm(ng-click="alert.toggled=false") OK
     block body
     script.
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
