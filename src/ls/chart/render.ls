@@ -100,9 +100,13 @@ render = (payload, rebind = true) ->
       ret = /<\s*script[^>]*>.*<\s*\/\s*script\s*>/g.exec(doc.toLowerCase!)
       if ret => throw new Error("script tag is now allowed in document.")
     if rebind or !window.module =>
-      $(document.body).html(
+      node = document.getElementById("wrapper")
+      if !node =>
+        node = document.createElement("wrapper")
+        document.body.appendChild(node)
+      $(node).html(
         # the first space in container is crucial for elliminating margin collapsing
-        "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style><div id='container'>&nbsp;#doc</div>"
+        "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style><div id='container'>&nbsp;#doc</div>",
       )
       promise = proper-eval code
     else promise = Promise.resolve window.module
@@ -165,3 +169,30 @@ window.addEventListener \keydown, (e) ->
     window.parent.postMessage {type: \alt-enter}, plotdomain
 
 window.parent.postMessage {type: \loaded}, plotdomain
+
+hover-box = document.createElement("div")
+hover-box.setAttribute("class", "hover-box")
+document.body.appendChild(hover-box)
+hover-margin = document.createElement("div")
+hover-margin.setAttribute("class", "hover-margin")
+document.body.appendChild(hover-margin)
+window.addEventListener \mousemove, (e) ->
+  rect = e.target.getBoundingClientRect!
+  scroll = top: document.body.scrollTop, left: document.body.scrollLeft
+  style = e.target.currentStyle || window.getComputedStyle(e.target);
+
+  margin = do
+    top: +style.marginTop.replace(\px,''), left: +style.marginLeft.replace(\px,'')
+    bottom: +style.marginBottom.replace(\px,''), right: +style.marginRight.replace(\px,'')
+
+  hover-box.style
+    ..top    = "#{rect.top + scroll.top}px"
+    ..left   = "#{rect.left + scroll.left}px"
+    ..height = "#{rect.height}px"
+    ..width  = "#{rect.width}px"
+
+  hover-margin.style
+    ..top    = "#{rect.top + scroll.top - margin.top}px"
+    ..left   = "#{rect.left + scroll.left - margin.left}px"
+    ..height = "#{rect.height + margin.top + margin.bottom}px"
+    ..width  = "#{rect.width + margin.left + margin.right}px"
