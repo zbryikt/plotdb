@@ -37,7 +37,7 @@ angular.module \plotDB
       @ <<< {name, _: ->}
       if dataset => 
         @ <<< {dataset: {type:dataset.type, key: dataset.key}}
-        @_.dataset = dataset
+        @set-dataset dataset
       @
     Field.prototype = do
       dataset: type: {}, key: null, ref: null
@@ -48,11 +48,20 @@ angular.module \plotDB
         (dataset) <~ @get-dataset!then
         @data = dataset.[]data.map(~>it[@name])
         @settype!
+      set-dataset: (dataset) ->
+        if !dataset.type or !dataset.key => return Promise.reject(null)
+        #(ret) <~ dataService.load dataset.type, dataset.key .then
+        @_.dataset = dataset
+        @dataset <<< dataset{type, key} <<< {name: dataset.name}
+        @dataset.ref
+        Promise.resolve(dataset)
       get-dataset: ->
         if @_.dataset => return Promise.resolve(that)
-        if !@dataset.type or !dataset.key => return Promise.reject(null)
+        if !@dataset.type or !@dataset.key => return Promise.reject(null)
         (ret) <~ dataService.load @dataset.type, @dataset.key .then
-        @dataset <<< {ref: ret} <<< ret{type, key}
+        @_.dataset = ret
+        @dataset <<< ret{type, key} <<< {name: ret.name}
+        console.log @name, @type, @dataset
         @dataset.ref
       settype: ->
         types = <[Boolean Percent Number Date String]> ++ [null]

@@ -324,6 +324,7 @@ block body
                 .closebtn(ng-click="dimension.unbind($event, dim, field)")
                 span {{field.name}}
                 small {{field.type}}
+                small in dataset "{{field.dataset.name}}"
             .dimension.flexend
 
     //-.panel.panel-default: .panel-body
