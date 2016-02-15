@@ -125,7 +125,7 @@ render = (payload, rebind = true) ->
         doc
         theme.doc.content if theme.{}doc.content
         "</div>"
-      ])
+      ].join(""))
       promise = proper-eval code
     else promise = Promise.resolve window.module
     promise.then (module) ->
@@ -188,6 +188,8 @@ window.addEventListener \keydown, (e) ->
 
 window.parent.postMessage {type: \loaded}, plotdomain
 
+# dont enable it for now
+/*
 hover-box = document.createElement("div")
 hover-box.setAttribute("class", "hover-box")
 document.body.appendChild(hover-box)
@@ -214,3 +216,4 @@ window.addEventListener \mousemove, (e) ->
     ..left   = "#{rect.left + scroll.left - margin.left}px"
     ..height = "#{rect.height + margin.top + margin.bottom}px"
     ..width  = "#{rect.width + margin.left + margin.right}px"
+*/
