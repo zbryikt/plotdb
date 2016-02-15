@@ -19,6 +19,9 @@ html(lang="en")
     //-link(rel="chrome-webstore-item",href="https://chrome.google.com/webstore/detail/einojbmllcjnkcapgajdbjjnpibkjnhh")
     script(type="text/javascript",src="/global")
     script(type="text/javascript",src="/js/plotdb.js")
+    script(type="text/javascript",src="/js/io.js")
+    script(type="text/javascript",src="/js/data/sample.js")
+    script(type="text/javascript",src="/js/data/index.js")
     script(type="text/javascript",src="/js/site.js")
     script(type="text/javascript",src="/js/service.js")
     link(rel="stylesheet",type="text/css",href="/assets/codemirror/5.10/lib/codemirror.css")
@@ -36,6 +39,7 @@ html(lang="en")
     script(type="text/javascript",src="/assets/select2/4.0.1/js/select2.min.js")
     block head
   body(id=rootid,ng-app="plotDB",ng-controller="plSite")
+    div(style="height:0") &nbsp;
     include nav.jade
     include authpanel.jade
     #notifications

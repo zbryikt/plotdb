@@ -27,6 +27,8 @@ backend.app.get \/sample.js, aux.type.json, (req, res) -> res.render 'sample/ind
 # backend.app.use express.static __dirname + '/static'
 
 backend.app.get \/, (req, res) -> res.render 'index.jade'
+backend.app.get \/me/, (req, res) -> res.render 'me/profile.jade'
+backend.app.get \/me/settings/, (req, res) -> res.render 'me/settings.jade'
 
 backend.start ->
   dataset-controller backend, config
