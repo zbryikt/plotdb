@@ -13,7 +13,8 @@ angular.module \plotDB
     object = ->
     object.prototype = do
       name: \untitled
-      desc: null, tags: null,
+      desc: null, tags: null
+      theme: null
       doc: {name: 'document', type: 'html', content: sampleChart.doc.content}
       style: {name: 'stylesheet', type: 'css', content: sampleChart.style.content}
       code: {name: 'code', type: 'javascript', content: sampleChart.code.content}
@@ -50,9 +51,10 @@ angular.module \plotDB
     chartService
 
   ..controller \chartEditor,
-  <[$scope $http $timeout $interval dataService chartService paletteService plNotify]> ++
-  ($scope, $http, $timeout, $interval, data-service, chart-service, paletteService, plNotify) ->
+  <[$scope $http $timeout $interval dataService chartService paletteService themeService plNotify]> ++
+  ($scope, $http, $timeout, $interval, data-service, chart-service, paletteService, themeService, plNotify) ->
     $scope <<< do # Variables
+      theme: null
       showsrc: true
       vis: \preview
       lastvis: null
@@ -93,8 +95,6 @@ angular.module \plotDB
         <~ @chart.delete!then
         $scope.chart = cloned
         window.location.href = chartService.link $scope.chart
-
-
       dimension: do
         bind: (event, dimension, field = {}) ->
           <~ field.update!then
@@ -108,7 +108,7 @@ angular.module \plotDB
       render: (rebind = true) ->
         @chart.update-data!
         for k,v of @chart => if typeof(v) != \function => @chart[k] = v
-        payload = JSON.parse(angular.toJson(@chart))
+        payload = JSON.parse(angular.toJson({theme: @theme, chart: @chart}))
         # trigger a full reload of renderer in case any previous code ( such as timeout recursive )
         # and actually render it once loaded
         $scope.render <<< {payload, rebind}
@@ -135,6 +135,9 @@ angular.module \plotDB
           @plotdb.size = payload.length
 
     $scope <<< do # Behaviors
+      themes:
+        list: themeService.sample
+        set: -> $scope.theme = it
       editor: do
         class: ""
         focus: ->
@@ -309,6 +312,11 @@ angular.module \plotDB
         @$watch 'chart.code.content', ~> @countline!
         @$watch 'chart.doc.content', ~> @render-async!
         @$watch 'chart.style.content', ~> @render-async!
+        @$watch 'theme', (theme) ~>
+          @render-async!
+          @chart.theme = if theme => theme.key else null
+        @$watch 'chart.theme', (key) ~>
+          @theme = @themes.list.filter(-> it.key == key).0
         @$watch 'chart.code.content', (code) ~>
           if @communicate.parse-handler => $timeout.cancel @communicate.parse-handler
           @communicate.parse-handler = $timeout (~>
@@ -332,11 +340,11 @@ angular.module \plotDB
         else if data.type == \snapshot =>
           #TODO need sanity check
           if data.payload => @chart.thumbnail = data.payload
-          @chart.save!then (ret) ->
-            plNotify.send \success, "chart saved"
-            $scope.$apply -> $scope.chart <<< ret
-            link = chartService.link $scope.chart
-            if !window.location.search => window.location.href = link
+          (ret) <~ @chart.save!then
+          $scope.$apply ~> plNotify.send \success, "chart saved"
+          #$scope.$apply -> $scope.chart <<< ret
+          link = chartService.link $scope.chart
+          if !window.location.search => window.location.href = link
         else if data.type == \parse =>
           <~ $scope.$apply
           {config,dimension} = JSON.parse(data.payload)

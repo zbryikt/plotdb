@@ -7,11 +7,6 @@ block vars
   - var thumbtype = "image/jpg"
   - var url = "http://plotdb.io/"
 block head
-  script(type="text/javascript",src="/js/chart/base.js")
-  script(type="text/javascript",src="/js/chart/sample.js")
-  script(type="text/javascript",src="/js/chart/index.js")
-  script(type="text/javascript",src="/js/palette/sample.js")
-  script(type="text/javascript",src="/js/palette/index.js")
 block body
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
@@ -133,7 +128,7 @@ block body
           .desc
             span(ng-cloak,ng-if="!chart.assets.length") no file
             span(ng-cloak,ng-if="chart.assets.length") {{chart.assets.length}} files, {{chart.assets.size|size}}
-        .tab.shown(ng-class="{'active':vis=='data'}",ng-click="scrollto('#binding-panel')",ng-cloak)
+        //-.tab.shown(ng-class="{'active':vis=='data'}",ng-click="scrollto('#binding-panel')",ng-cloak)
           div #[span data]
           .desc {{chart.dimension|length}} dimensions
         .pull-right
@@ -177,11 +172,10 @@ block body
                 span.input-group-addon Theme
                 .dropdown
                   .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
-                    span {{theme || 'default'}}
+                    span {{theme.name || 'No Theme'}}
                     i.fa.fa-caret-down
                   ul.dropdown-menu
-                    li: a(ng-click="theme='default'") default
-                    li: a(ng-click="theme='playfair'") playfair
+                    li(ng-repeat="item in themes.list"): a(ng-click="themes.set(item)") {{item.name}}
 
             .chart-config(ng-cloak,ng-repeat="(name,v) in chart.config")
               .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color'")
@@ -232,6 +226,7 @@ block body
               .title {{f.name}}
               .type #[i {{f.type}}] #[small.pull-right {{(f.content || "").length|size}}]
           #code-ctrl
+            .btn.btn-default(ng-click="scrollto('#binding-panel')") Bind Data
             .btn-group
               .btn.btn-default(ng-click="editor.color.toggle()") Editor Style
               .btn.btn-default(ng-click="reset()") Reload
@@ -245,6 +240,8 @@ block body
 
         #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
           .closebtn.inner(ng-click="editor.fullscreen.toggle()")
+          .btn.btn-default(style="position:absolute;bottom:5px;left:5px;",
+          ng-click="scrollto('#binding-panel')") Bind Data
           .btn-group
             .btn.btn-default(ng-click="reset()") Reload
             .btn.btn-default(ng-click="editor.fullscreen.toggle()")
@@ -259,8 +256,8 @@ block body
           style="width:100%;height:100%;border:none;")
 
     #binding-panel(style="position:relative")
-      div(style="font-weight:bold;font-size:2em") Data Mapping
-      p Which Dataset You'd like to use?
+      div(style="font-weight:bold;font-size:1.5em") Data Mapping
+      hr(style="margin:5px 0")
       //- try list functions in a navbar. will we use this?
       //-.navbar.navbar-default
         .navbar-collapse.collapse

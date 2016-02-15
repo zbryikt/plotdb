@@ -5,5 +5,5 @@ module.exports = (backend, config) ->
   lmodel := lmodel store
   lmodel.theme.rest backend.router.api
   backend.router.api.get "/theme/", (req, res) ->
-    (ret) <- lmodel.theme.list \owner, \null .then
+    (ret) <- lmodel.theme.list \owner, [req.user.key] .then
     res.send JSON.stringify(ret)

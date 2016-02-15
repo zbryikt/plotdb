@@ -1,0 +1,1 @@
+var x$;x$=angular.module("plotDB"),x$.service("themeService",["$rootScope","$http","IOService","sampleTheme","baseService","plUtil","plNotify","eventBus"].concat(function(e,t,r,i,c){var n,o,a;return n={sample:i},o=function(){return this},a=c.derive("theme",n,o)}));

@@ -88,12 +88,10 @@ snapshot = (type='snapshot') ->
     window.parent.postMessage {type, payload: null}, plotdomain
 
 render = (payload, rebind = true) ->
-  code = payload.code.content
-  style = payload.style.content
-  doc = payload.doc.content
-  data = payload.data
-  assets = payload.assets
-  config = payload.config or {}
+  [code,style,doc] = <[code style doc]>.map(->payload.{}chart[it].content)
+  [data,assets] = <[data assets]>.map(->payload.chart[it])
+  config = payload.chart.config or {}
+  theme = payload.theme or {}
   sched.clear!
   try
     if false and "script tag disallow" =>
@@ -104,10 +102,16 @@ render = (payload, rebind = true) ->
       if !node =>
         node = document.createElement("wrapper")
         document.body.appendChild(node)
-      $(node).html(
-        # the first space in container is crucial for elliminating margin collapsing
-        "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style><div id='container'><div style='height:0'>&nbsp;</div>#doc</div>",
-      )
+      # the first space in container is crucial for elliminating margin collapsing
+      $(node).html([
+        "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style>"
+        "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme.{}style.content
+        "<div id='container'>"
+        "<div style='height:0'>&nbsp;</div>"
+        doc
+        theme.doc.content if theme.{}doc.content
+        "</div>"
+      ])
       promise = proper-eval code
     else promise = Promise.resolve window.module
     promise.then (module) ->
