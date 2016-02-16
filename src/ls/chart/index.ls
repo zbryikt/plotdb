@@ -290,7 +290,7 @@ angular.module \plotDB
         ldcp: null, item: null
         init: ->
           @ldcp = new ldColorPicker null, {}, $('#palette-editor .editor .ldColorPicker').0
-          @ldcp.on \change, ~> setTimeout ( ~> $scope.$apply ~> @update! ), 0
+          @ldcp.on \change-palette, ~> setTimeout ( ~> $scope.$apply ~> @update! ), 0
           @list = [{ text: 'Default', children: @convert paletteService.sample }]
           $(\#pal-select)
             ..select2 icon-pal-select-config = do
