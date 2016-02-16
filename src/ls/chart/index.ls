@@ -361,7 +361,8 @@ angular.module \plotDB
           if data.payload => @chart.thumbnail = data.payload
           #TODO anonymouse handling
           if !$scope.user.data or !$scope.user.data.key => return $scope.auth.toggle true
-          if @chart.owner != $scope.user.data.key => @chart <<< {key: null, owner: null}
+          if @chart.owner != $scope.user.data.key =>
+            @chart <<< {key: null, owner: null, permission: chartService.chart.prototype.permission}
           refresh = if !@chart.key => true else false
           (ret) <~ @chart.save!then
           plNotify.send \success, "chart saved"
