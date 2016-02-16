@@ -342,8 +342,13 @@ angular.module \plotDB
             @communicate.parse-handler = null
             @canvas.window.postMessage {type: \parse, payload: code}, @plotdomain
           ), 500
-        #TODO finish this
-        @$watch 'chart.config', (~> @render-async false), true
+        @$watch 'chart.config', ((n,o) ~>
+          ret = !!([[k,v] for k,v of n]
+            .filter(([k,v]) -> !o[k] or (v.value != o[k].value))
+            .map(->v.rebindOnChange)
+            .filter(->it).length)
+          @render-async ret
+        ), true
         @$watch 'chart.key', (~> @share-panel.link = chartService.sharelink @chart)
       communicate: -> # talk with canvas window
         ({data}) <~ window.addEventListener \message, _, false
