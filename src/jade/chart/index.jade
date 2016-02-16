@@ -27,7 +27,8 @@ block body
       div
         hr(style="margin-bottom:10px")
         .pull-right
-          .save-hint-btn.btn.btn-default(ng-disabled="!chart.name",ng-click="save()") Save
+          .save-hint-btn.btn.btn-default.loader(ng-disabled="!chart.name",ng-click="save()",
+          ng-class="{'loading':save.handle}") Save
           .btn.btn-default(ng-click="settingPanel.toggle()") Close
 
     #permission-modal(ng-cloak,ng-show="sharePanel.toggled"): .ib
@@ -42,7 +43,8 @@ block body
               .text-left: label(style="color:initial") Give Your Chart a Name
               input.form-control(type="text",ng-model="chart.name",
               placeholder="Project Name",style="margin-bottom:5px")
-              .btn.btn-default.btn-block(ng-disabled="!chart.name", ng-click="save()") Save
+              .btn.btn-default.btn-block.loader(ng-disabled="!chart.name",ng-click="save()",
+              ng-class="{'loading':save.handle}") Save
 
       div(ng-cloak,ng-show="chart.type.location=='local' && chart.key",
       style="position:absolute;top:0;left:0;width:100%;height:100%;")
@@ -107,8 +109,8 @@ block body
             data-clipboard-target="#chartedit-embedcode",ng-model="sharePanel.embedcode")
         hr(style="margin-bottom:10px")
         .pull-right
-          .save-hint-btn.btn.btn-default(ng-disabled="!chart.name",ng-click="save();sharePanel.saveHint=false",
-           ng-class="{'btn-warning':sharePanel.saveHint,'btn-default':!sharepanel.saveHint}") Save
+          .save-hint-btn.btn.btn-default.loader(ng-disabled="!chart.name",ng-click="save();sharePanel.saveHint=false",
+          ng-class="{'btn-warning':sharePanel.saveHint,'btn-default':!sharepanel.saveHint,'loading':save.handle}") Save
           .btn.btn-default(ng-click="sharePanel.toggle()") Close
         //- Simplify this for now
         //-
@@ -182,7 +184,8 @@ block body
               textarea#chart-desc-input.form-control(placeholder="Chart description",ng-model="chart.desc")
 
             #chart-action.btn-group(style="width:100%")
-              .btn.btn-default(ng-disabled="!chart.name", ng-click="save()") Save
+              .btn.btn-default.loader(ng-disabled="!chart.name",ng-click="save()",
+              ng-class="{'loading':save.handle}") Save
               .dropdown
                 .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
                   i.fa.fa-download
@@ -406,18 +409,6 @@ block body
                 span {{field.name}}
                 small {{field.type}}
             .dimension.flexend
-    //-.row
-      .col-sm-12
-        .panel.panel-default
-          .panel-heading: label Deploy as Template
-          .panel-body
-            p You can deploy this chart as a new template for others to use.
-
-            label Description
-            textarea.form-control(ng-model="chart.desc",rows="5",style="margin-bottom:5px",placeholder="write something about this template..")
-            label What kind of data best fits into this chart?
-            input.form-control(ng-model="chart.tags",style="margin-bottom:5px",placeholder="comma separated values, like 'population,economics'")
-            .btn.btn-default(ng-click="save(true)") Deploy As Template
     .row(ng-show="chart.key")
       .col-sm-12
         .panel.panel-default

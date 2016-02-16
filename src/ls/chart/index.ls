@@ -72,11 +72,33 @@ angular.module \plotDB
         node: document.getElementById(\chart-renderer)
         window: document.getElementById(\chart-renderer).contentWindow
     $scope <<< do # Functions
-      save: (astype = false) ->
-        # astype deprecated
-        /*if astype and @chart.type.name == \chart =>
-          #@chart.type.name = \charttype
-          @chart.key = null*/
+      _save: (nothumb = false)->
+        #TODO anonymouse handling
+        if @chart.owner != $scope.user.data.key =>
+          @chart <<< {key: null, owner: null, permission: chartService.chart.prototype.permission}
+        refresh = if !@chart.key => true else false
+        @chart.save!
+          .then (ret) ~>
+            <~ $scope.$apply
+            if nothumb => plNotify.send \warning, "chart saved, but thumbnail failed to update"
+              else plNotify.send \success, "chart saved"
+            link = chartService.link $scope.chart
+            if refresh or !window.location.search => window.location.href = link
+            if $scope.save.handle => $timeout.cancel $scope.save.handle
+            $scope.save.handle = null
+          .catch (err) ~> $scope.$apply ->
+            plNotify.send \error, "failed to save chart"
+            console.error "[save chart]", err
+            #TODO write twice because lastly seems to not work. check why
+            if $scope.save.handle => $timeout.cancel $scope.save.handle
+            $scope.save.handle = null
+      save: ->
+        if !$scope.user.data or !$scope.user.data.key => return $scope.auth.toggle true
+        if @save.handle => return
+        @save.handle = $timeout (~>
+          @save.handle = null
+          @_save true
+        ), 3000
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
       load: (type, key) ->
         chart-service.load type, key
@@ -421,16 +443,8 @@ angular.module \plotDB
         else if data.type == \snapshot =>
           #TODO need sanity check
           if data.payload => @chart.thumbnail = data.payload
-          #TODO anonymouse handling
-          if !$scope.user.data or !$scope.user.data.key => return $scope.auth.toggle true
-          if @chart.owner != $scope.user.data.key =>
-            @chart <<< {key: null, owner: null, permission: chartService.chart.prototype.permission}
-          refresh = if !@chart.key => true else false
-          (ret) <~ @chart.save!then
-          $scope.$apply -> plNotify.send \success, "chart saved"
-          #$scope.chart <<< ret
-          link = chartService.link $scope.chart
-          if refresh or !window.location.search => window.location.href = link
+          @_save!
+
         else if data.type == \parse =>
           {config,dimension} = JSON.parse(data.payload)
           for k,v of @chart.dimension => if dimension[k]? => dimension[k].fields = v.fields
