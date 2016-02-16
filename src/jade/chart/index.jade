@@ -66,13 +66,24 @@ block body
         br(ng-show="!sharePanel.saveHint")
 
         #share-buttons.text-center(style="font-size:2em",ng-class="{'disabled':!sharePanel.isPublic()}")
-          i.fa.fa-facebook-square
-          i.fa.fa-pinterest-square
-          i.fa.fa-linkedin-square
-          i.fa.fa-tumblr-square
-          i.fa.fa-behance-square
-          i.fa.fa-envelope-square
-          i.fa.fa-slack
+          div(ng-show="!sharePanel.isPublic()")
+            i.fa.fa-facebook-square
+            i.fa.fa-twitter-square
+            i.fa.fa-pinterest-square
+            i.fa.fa-linkedin-square
+            i.fa.fa-envelope-square
+          div(ng-show="sharePanel.isPublic()")
+            a(ng-attr-href="{{sharePanel.social.facebook}}",target="_blank")
+              i.fa.fa-facebook-square(style="color:#3b5998")
+            a(ng-attr-href="{{sharePanel.social.twitter}}", target="_blank")
+              i.fa.fa-twitter-square(style="color:#00a0dc")
+            a(ng-attr-href="{{sharePanel.social.pinterest}}",target="_blank")
+              i.fa.fa-pinterest-square(style="color:#bd081c")
+            a(ng-attr-href="{{sharePanel.social.linkedin}}", target="_blank")
+              i.fa.fa-linkedin-square(style="color:#00a0dc")
+            a(ng-attr-href="{{sharePanel.social.email}}",target="_blank")
+              i.fa.fa-envelope-square(style="color:#444")
+
         hr
 
         .row

@@ -7,6 +7,7 @@ angular.module \plotDB
     service = do
       sample: []
       link: (chart) -> "/chart/?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
+      thumblink: (chart) -> "#{@sharelink chart}/thumb"
       #TODO better mechanism for switching domain ( dev, staging and production )
       #sharelink: (chart) -> "https://plotdb.com/v/chart/#{chart.key}"
       sharelink: (chart) -> "http://localhost/v/chart/#{chart.key}"
@@ -187,6 +188,8 @@ angular.module \plotDB
         toggled: false
 
       share-panel: do
+        social: do
+          facebook: null
         is-forkable: ->
           perms = $scope.chart.permission.[]value
           forkable = !!perms.filter(->it.perm == \fork and it.switch == \public).length
@@ -199,7 +202,57 @@ angular.module \plotDB
           clipboard.on \error, ->
             $(eventsrc).tooltip({title: 'Press Ctrl+C to Copy', trigger: 'click'}).tooltip('show')
             setTimeout((->$(eventsrc).tooltip('hide')), 1000)
-          $scope.$watch 'sharePanel.link', ~> @embedcode = "<iframe src=\"#it\"><iframe>"
+          $scope.$watch 'sharePanel.link', ~>
+            @embedcode = "<iframe src=\"#it\"><iframe>"
+            @thumblink = chartService.thumblink $scope.chart
+            fbobj = do
+              #TODO verify
+              app_id: \1546734828988373
+              display: \popup
+              caption: $scope.chart.name
+              picture: @thumblink
+              link: @link
+              name: $scope.chart.name
+              redirect_uri: \http://plotdb.com/
+              description: $scope.chart.desc or ""
+            @social.facebook = ([ "https://www.facebook.com/dialog/feed?" ] ++
+              ["#k=#{encodeURIComponent(v)}" for k,v of fbobj]
+            ).join(\&)
+
+            pinobj = do
+              url: @link
+              media: @thumblink
+              description: $scope.chart.desc or ""
+            @social.pinterest = (["https://www.pinterest.com/pin/create/button/?"] ++
+              ["#k=#{encodeURIComponent(v)}" for k,v of pinobj]
+            ).join(\&)
+
+            emailobj = do
+              subject: "plotdb: #{$scope.chart.name}"
+              body: "#{$scope.chart.desc} : #{@link}"
+            @social.email = (["mailto:?"] ++
+              ["#k=#{encodeURIComponent(v)}" for k,v of emailobj]
+            ).join(\&)
+
+            linkedinobj = do
+              mini: true
+              url: @link
+              title: "#{$scope.chart.name} on PlotDB"
+              summary: $scope.chart.desc
+              source: "plotdb.com"
+            @social.linkedin = (["http://www.linkedin.com/shareArticle?"] ++
+              ["#k=#{encodeURIComponent(v)}" for k,v of linkedinobj]
+            ).join(\&)
+
+            twitterobj = do
+              url: @link
+              text: "#{$scope.chart.name} - #{$scope.chart.desc or ''}"
+              hashtags: "dataviz,chart,visualization"
+              via: "plotdb"
+            @social.twitter = (["http://twitter.com/intent/tweet?"] ++
+              ["#k=#{encodeURIComponent(v)}" for k,v of twitterobj]
+            ).join(\&)
+
           $scope.$watch 'sharePanel.forkable', ~>
             forkable = @is-forkable!
             if forkable != @forkable and @forkable? =>

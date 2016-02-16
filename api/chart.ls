@@ -34,3 +34,18 @@ module.exports = (backend, config) ->
             ..catch (err) ~> res.render 'chart/view.jade', obj
         else res.render 'chart/view.jade', obj
       ..catch (err) ~> return aux.r404 res, err
+
+  backend.app.get \/v/chart/:id/thumb, (req, res) ->
+    lmodel.chart.read req.params.id
+      ..then (chart) ~>
+        #TODO support more sophisticated permission chechking
+        #TODO should return image
+        if !("public" in chart.{}permission.[]switch) => return aux.r403 res, "this chart is private", true
+        chart.thumbnail.split(\,).1
+        try
+          res.set('Content-Type', 'image/png')
+          output = new Buffer(chart.thumbnail.split(\,).1, \base64)
+        catch e
+          output = ""
+        res.send output
+      ..catch (err) ~> return aux.r404 res, err
