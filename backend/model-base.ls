@@ -158,7 +158,7 @@ model.type <<< do
   permission: new model do
     name: \permission
     switches: <[private public list token]>
-    permtype: <[read write admin]>
+    permtype: <[read fork write admin]>
     lint: ->
       if !it => return [true, null, \ISNULL]
       if typeof(it) != \object => return [true, null, \NOTOBJ]

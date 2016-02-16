@@ -40,7 +40,9 @@ block body
           .btn.btn-default(ng-click="sharePanel.setPublic()",ng-class="{'active':sharePanel.isPublic()}") Public
         .text-center(ng-show="!sharePanel.isPublic()") Only users with permission can see this chart.
         .text-center(ng-show="sharePanel.isPublic()") Every one can see this chart.
+
         .text-center.text-danger(ng-cloak,ng-show="sharePanel.saveHint") Save to apply this change
+        .text-center: .checkbox: label #[input(type="checkbox",ng-model="sharePanel.forkable")] Allow others to fork this work
         br(ng-show="!sharePanel.saveHint")
 
         #share-buttons.text-center(style="font-size:2em",ng-class="{'disabled':!sharePanel.isPublic()}")

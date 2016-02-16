@@ -182,6 +182,9 @@ angular.module \plotDB
             @idx = (@idx + 1) % (@modes.length)
             $scope.editor.update!
       share-panel: do
+        is-forkable: ->
+          perms = $scope.chart.permission.[]value
+          forkable = !!perms.filter(->it.perm == \fork and it.switch == \public).length
         init: ->
           (eventsrc) <~ <[#chartedit-sharelink #chartedit-embedcode]>.map
           clipboard = new Clipboard eventsrc
@@ -192,6 +195,16 @@ angular.module \plotDB
             $(eventsrc).tooltip({title: 'Press Ctrl+C to Copy', trigger: 'click'}).tooltip('show')
             setTimeout((->$(eventsrc).tooltip('hide')), 1000)
           $scope.$watch 'sharePanel.link', ~> @embedcode = "<iframe src=\"#it\"><iframe>"
+          $scope.$watch 'sharePanel.forkable', ~>
+            forkable = @is-forkable!
+            if forkable != @forkable and @forkable? =>
+              $scope.chart.permission.value = if it => [{switch: \public, perm: \fork}] else []
+              @save-hint = true
+          $scope.$watch 'chart.permission.value', (~>
+            forkable = @is-forkable!
+            if @forkable != forkable and @forkable? => @save-hint = true
+            @forkable = forkable
+          ), true
         save-hint: false
         embedcode: ""
         link: ""
