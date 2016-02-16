@@ -140,13 +140,16 @@ block body
     .row
       .col-sm-3
         #config-panel.plpanel
-          #project-configs
-            label Project
+          #chart-settings
+            label Chart
             .chart-config
               .input-group
                 span.input-group-addon name
                 input.form-control(type="text",ng-model="chart.name",placeholder="Project Name")
-            #project-action.btn-group(style="width:100%")
+            .chart-config
+              textarea#chart-desc-input.form-control(placeholder="Chart description",ng-model="chart.desc")
+
+            #chart-action.btn-group(style="width:100%")
               .btn.btn-default(ng-disabled="!chart.name", ng-click="save()") Save
               .dropdown
                 .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
