@@ -157,7 +157,7 @@ render = (payload, rebind = true) ->
       chart <<< {config}
       if rebind or !(chart.root and chart.data) or module.exec-error => chart <<< {root, data}
       if rebind or !module.inited or module.exec-error =>
-        if chart.init => chart.init!
+        if chart.init and !module.inited => chart.init!
         module.inited = true
         chart.bind!
       chart.resize!

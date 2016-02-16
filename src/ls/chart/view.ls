@@ -30,7 +30,6 @@ plotdb.viewer = do
       assetsmap[file.name] = file
     chart <<< {config,root,data}
     if chart.init => chart.init!
-    module.inited = true
     if chart.bind => chart.bind!
     chart.resize!
     chart.render!
