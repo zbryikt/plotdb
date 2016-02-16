@@ -320,8 +320,10 @@
     left: 0
     top: 0
     z-index: index(order, 'chartedit-inner')
+    opacity: 0.01
     &.active
       z-index: index(order, 'chartedit-inner-active')
+      opacity: 1.0
   .CodeMirror
     z-index: index(order, 'codemirror')
     width: 100%
@@ -404,6 +406,7 @@
   position: absolute
   padding-bottom: 45px
   background: #f9f9f9
+  opacity: 0.01
   .btn-group
     position: absolute
     bottom: 5px
@@ -425,8 +428,10 @@
 
 #code-editor.active
   z-index: index(order, 'chartedit-active')
+
 #visualization-canvas2.active
   z-index: index(order, 'chartedit-active')
+  opacity: 1
 
 #code-editor.fullscreen
   z-index: index(order, 'chartedit-fullscreen')
