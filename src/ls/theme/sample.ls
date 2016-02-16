@@ -46,6 +46,20 @@ text {
   fill: #4a4a4a;
   font-family: 'Noto Sans', 'Noto Sans TC', 'Apple LiGothic Medium', Roboto, 'Microsoft JhengHei', Arial, sans;
 }
+
+.button {
+  box-shadow: none;
+  border: 2px solid #f1f1f1;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+.button.active {
+  box-shadow: none;
+  background: #000;
+  color: #fff;
+}
+
 #banner {
   position: absolute;
   top: 10px;
