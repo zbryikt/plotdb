@@ -158,9 +158,12 @@ render = (payload, rebind = true) ->
         assetsmap[file.name] = file
       chart <<< {config}
       if rebind or reboot or !(chart.root and chart.data) => chart <<< {root, data}
-      if reboot and chart.init =>
-        chart.init!
+      promise = Promise.resolve!
+      if reboot and chart.init => promise = promise.then ->
+        ret = chart.init!
         module.inited = true
+        ret
+      <~ promise.then
       chart.resize!
       if rebind or reboot => chart.bind!
       chart.render!

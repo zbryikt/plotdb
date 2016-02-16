@@ -29,9 +29,11 @@ plotdb.viewer = do
       file.datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
       assetsmap[file.name] = file
     chart <<< {config,root,data}
-    if chart.init => chart.init!
-    if chart.bind => chart.bind!
+    promise = Promise.resolve!
+    if chart.init => promise = promise.then -> chart.init!
+    <~ promise.then
     chart.resize!
+    if chart.bind => chart.bind!
     chart.render!
 
   resize: ->
