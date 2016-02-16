@@ -106,11 +106,17 @@ angular.module \plotDB
           .catch (ret) ~> window.location.href = window.location.pathname
       delete: ->
         if !@chart.key => return
-        (ret) <~ @chart.delete!then
-        plNotify.send \success, "chart deleted"
-        @chart = new chartService.chart!
-        #TODO check future URL correctness
-        setTimeout (-> window.location.href = "/chart/me.html"), 1000
+        @delete.handle = true
+        @chart.delete!
+          .then (ret) ~>
+            plNotify.send \success, "chart deleted"
+            @chart = new chartService.chart!
+            #TODO check future URL correctness
+            setTimeout (-> window.location.href = "/chart/me.html"), 1000
+            @delete.handle = false
+          .catch (err) ~>
+            plNotify.send \error, "failed to delete chart"
+            @delete.handle = false
       migrate: ->
         if !@chart.key => return
         cloned = @chart.clone!
