@@ -182,6 +182,10 @@ angular.module \plotDB
           toggle: ->
             @idx = (@idx + 1) % (@modes.length)
             $scope.editor.update!
+      setting-panel: do
+        toggle: -> @toggled = !!!@toggled
+        toggled: false
+
       share-panel: do
         is-forkable: ->
           perms = $scope.chart.permission.[]value

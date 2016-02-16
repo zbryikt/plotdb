@@ -10,6 +10,26 @@ block head
 block body
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
+    #setting-modal(ng-cloak,ng-show="settingPanel.toggled"): .ib
+      .closebtn(ng-click="settingPanel.toggle()")
+      h3 Settings
+      br
+      div(style="width: 80%;margin:auto")
+        label Name
+        input.form-control(placeholder="Chart Name", ng-model="chart.name")
+        br
+        label Descriptiont
+        textarea.form-control(placeholder="Chart Description", ng-model="chart.desc",rows="3")
+        br
+        label Tags
+        input.form-control(placeholder="comma separated values, like 'population,economics'", ng-model="chart.tags")
+      br
+      div
+        hr(style="margin-bottom:10px")
+        .pull-right
+          .save-hint-btn.btn.btn-default(ng-disabled="!chart.name",ng-click="save()") Save
+          .btn.btn-default(ng-click="settingPanel.toggle()") Close
+
     #permission-modal(ng-cloak,ng-show="sharePanel.toggled"): .ib
       .closebtn(ng-click="sharePanel.toggle()")
       h3 Share
@@ -134,6 +154,7 @@ block body
           div #[span data]
           .desc {{chart.dimension|length}} dimensions
         .pull-right
+          .tab.action(ng-click="settingPanel.toggle()") #[i.fa.fa-cog] #[span settings]
           .tab.action(ng-click="sharePanel.toggle()") #[i.fa.fa-user] #[span share]
 
 
@@ -374,7 +395,7 @@ block body
                 span {{field.name}}
                 small {{field.type}}
             .dimension.flexend
-    .row
+    //-.row
       .col-sm-12
         .panel.panel-default
           .panel-heading: label Deploy as Template
