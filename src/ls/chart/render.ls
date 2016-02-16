@@ -106,11 +106,13 @@ render = (payload, rebind = true) ->
   config = payload.chart.config or {}
   theme = payload.theme or {}
   sched.clear!
+  reboot = !window.module or !window.module.inited or window.module.exec-error
   try
     if false and "script tag disallow" =>
       ret = /<\s*script[^>]*>.*<\s*\/\s*script\s*>/g.exec(doc.toLowerCase!)
       if ret => throw new Error("script tag is now allowed in document.")
-    if rebind or !window.module =>
+    #if rebind or !window.module =>
+    if reboot =>
       node = document.getElementById("wrapper")
       if !node =>
         node = document.createElement("div")
@@ -155,12 +157,12 @@ render = (payload, rebind = true) ->
         file.datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
         assetsmap[file.name] = file
       chart <<< {config}
-      if rebind or !(chart.root and chart.data) or module.exec-error => chart <<< {root, data}
-      if rebind or !module.inited or module.exec-error =>
-        if chart.init and !module.inited => chart.init!
+      if rebind or reboot or !(chart.root and chart.data) => chart <<< {root, data}
+      if reboot and chart.init =>
+        chart.init!
         module.inited = true
-        chart.bind!
       chart.resize!
+      if rebind or reboot => chart.bind!
       chart.render!
       module.exec-error = false
       window.parent.postMessage {type: \error, payload: window.error-message or ""}, plotdomain
