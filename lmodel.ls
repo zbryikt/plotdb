@@ -33,7 +33,7 @@ base.theme = new model do
     code: {type: base.file}
 
 chart-config = do
-  name: \charttype
+  name: \chart
   default-fields: true
   base: do
     name: {max: 100, min: 1, required: true, type: model.type.string}
@@ -50,10 +50,7 @@ chart-config = do
     thumbnail: {required: false, type: model.type.string}
     is-type: {required: false, type: model.type.boolean}
 
-base.charttype = new model chart-config
-base.chart = new model do
-  name: \chart
-  base: chart-config.base
+base.chart = new model chart-config
 
 module.exports = (storeOuter) ->
   store := storeOuter
