@@ -1,6 +1,6 @@
 extends /module/render.jade
 block head
-  title #{obj.name} by #{obj.author}
+  title #{chart.name} by #{chart.author}
   link(rel="icon",type="image/x-icon",href="/assets/img/favicon-16.png")
 block body
   style(type="text/css").
@@ -35,20 +35,29 @@ block body
       user-select: none;
     }
   //-
-    p= obj.name
-    p= obj.desc
-    p= obj.author
-  style(type="text/css") #{obj.style.content}
+    p= chart.name
+    p= chart.desc
+    p= chart.author
+  style(type="text/css") #{chart.style.content}
   script(type="text/javascript",src="/assets/d3js/3.5.12/d3.v3.min.js")
   script(type="text/javascript",src="#{assets}/topojson/1.6.24/topojson.min.js")
   script(type="text/javascript",src="/js/chart/base.js")
   script(type="text/javascript",src="/js/chart/view.js")
-  script(type="text/javascript") !{obj.code.content}
+  script(type="text/javascript") !{chart.code.content}
   //- the first space in container is crucial for elliminating margin collapsing
-  #container #[div(style="height:0") &nbsp;]!{obj.doc.content}
+  #container
+    div(style="height:0") &nbsp;
+    style(type="text/css").
+      !{chart.style.content}
+    if theme
+      style(type="text/css").
+        !{theme.style.content}
+    | !{chart.doc.content}
+    if theme
+      | !{theme.doc.content}
   a#plotdb-mark(href="http://plotdb.com",target="_blank")
     img(src="/assets/img/poweredby.png",style="width:64px;margin-top:5px")
   script(type="text/javascript").
-    !{obj.code.content}
-    plotdb.viewer.render(!{JSON.stringify(obj)});
+    !{chart.code.content}
+    plotdb.viewer.render(!{JSON.stringify(chart)});
 

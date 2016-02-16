@@ -1,36 +1,37 @@
-angular.module \plotDB
-  ..service \sampleTheme, <[$rootScope]> ++ ($rootScope) ->
-    [
-      {
-        key: "/theme/sample/:default"
-        name: "Default"
-        type: location: \sample, name: \theme
-        style: content: """
-        circle { fill: \#f00; stroke: #000; stroke-width: 1; }
-        """
-      },
-      {
-        key: "/theme/sample/:playfair"
-        name: "Playfair"
-        type: location: \sample, name: \theme
-        style: content: """
-        body { background: \#eee}
-        """
-      },
-      {
-        key: "/theme/sample/:thereporter"
-        name: "The Reporter"
-        type: location: \sample, name: \theme
-        config: do
-          palette: do
-            type: [plotdb.Palette]
-            value: do
-              name: "The Reporter", key: "D",
-              colors: <[#7a322a #d52c2a #f93634 #dddb83 #ede6de #fdfffa #dbdbdb #48462d]>.map(->{hex:it})
-        doc: content: '''
+if !(plotdb?) => plotdb = {}
+
+plotdb.{}theme.sample = do
+  [
+    {
+      key: "/theme/sample/:default"
+      name: "Default"
+      type: location: \sample, name: \theme
+      style: content: """
+      circle { fill: \#f00; stroke: #000; stroke-width: 1; }
+      """
+    },
+    {
+      key: "/theme/sample/:playfair"
+      name: "Playfair"
+      type: location: \sample, name: \theme
+      style: content: """
+      body { background: \#eee}
+      """
+    },
+    {
+      key: "/theme/sample/:thereporter"
+      name: "The Reporter"
+      type: location: \sample, name: \theme
+      config: do
+        palette: do
+          type: [plotdb.Palette]
+          value: do
+            name: "The Reporter", key: "D",
+            colors: <[#7a322a #d52c2a #f93634 #dddb83 #ede6de #fdfffa #dbdbdb #48462d]>.map(->{hex:it})
+      doc: content: '''
 <div id='banner'></div>
 '''
-        style: content: '''
+      style: content: '''
 @font-face {
   font-family: Noto Sans;
   src: url(/assets/fonts/noto-sans.ttf);
@@ -39,6 +40,10 @@ angular.module \plotDB
 body {
   background: #fdfffa;
   color: #4a4a4a;
+  font-family: 'Noto Sans', 'Noto Sans TC', 'Apple LiGothic Medium', Roboto, 'Microsoft JhengHei', Arial, sans;
+}
+text {
+  fill: #4a4a4a;
   font-family: 'Noto Sans', 'Noto Sans TC', 'Apple LiGothic Medium', Roboto, 'Microsoft JhengHei', Arial, sans;
 }
 #banner {
@@ -51,6 +56,7 @@ body {
   background-size: cover;
 }
 '''
-      }
-    ]
+    }
+  ]
 
+if module? => module.exports = plotdb.theme.sample

@@ -1,4 +1,5 @@
 require! <[../backend/aux ../backend/model ../lmodel]>
+themeSample = require '../src/ls/theme/sample'
 store = null
 module.exports = (backend, config) ->
   store := model.driver.use config.driver
@@ -16,14 +17,20 @@ module.exports = (backend, config) ->
 
   backend.app.get \/v/chart/:id/, (req, res) -> 
     lmodel.chart.read req.params.id
-      ..then (obj) ~>
+      ..then (chart) ~>
+        obj = {chart, theme: null}
         #TODO support more sophisticated permission chechking
-        if !("public" in obj.{}permission.[]switch) => return aux.r403 res, "this chart is private", true
-        if obj.theme =>
-          lmodel.theme.read obj.theme
+        if !("public" in chart.{}permission.[]switch) => return aux.r403 res, "this chart is private", true
+        if chart.theme =>
+          ret = themeSample.filter(-> it.key == chart.theme).0
+          if ret =>
+            obj.theme = ret
+            return res.render 'chart/view.jade', obj
+
+          lmodel.theme.read chart.theme
             ..then (theme) ~>
               obj.theme = theme
-              res.render 'chart/view.jade', {obj}
-            ..catch (err) ~> res.render 'chart/view.jade', {obj}
-        else res.render 'chart/view.jade', {obj}
+              res.render 'chart/view.jade', obj
+            ..catch (err) ~> res.render 'chart/view.jade', obj
+        else res.render 'chart/view.jade', obj
       ..catch (err) ~> return aux.r404 res, err
