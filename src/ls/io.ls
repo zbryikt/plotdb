@@ -51,8 +51,8 @@ angular.module \plotDB
           obj = JSON.parse(localStorage.getItem("/db/#{type.name}/#item"))
           if obj and obj.key => ret.push obj
         res ret
-      list-remotely: (type, res, rej) ->
-        $http url: "/d/#{type.name}", method: \GET
+      list-remotely: (type, res, rej, query = null) ->
+        $http url: "/d/#{type.name}#{if query => '?'+query else ''}", method: \GET
           .success (ret) -> res ret
           .error (d) -> rej [true, d.toString!]
 
@@ -62,6 +62,7 @@ angular.module \plotDB
         return false
 
     ret = do
+      aux: aux # one share not use this unless for dev purpose
       save: (item) -> new Promise (res, rej) ~>
         if aux.verify-type(item) => return rej [true, "type incorrect"]
         if item.type.location == \local => return aux.save-locally item, res, rej

@@ -72,9 +72,10 @@ angular.module \plotDB
         window: document.getElementById(\chart-renderer).contentWindow
     $scope <<< do # Functions
       save: (astype = false) ->
-        if astype and @chart.type.name == \chart =>
-          @chart.type.name = \charttype
-          @chart.key = null
+        # astype deprecated
+        /*if astype and @chart.type.name == \chart =>
+          #@chart.type.name = \charttype
+          @chart.key = null*/
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
       load: (type, key) ->
         chart-service.load type, key
@@ -346,25 +347,28 @@ angular.module \plotDB
         @$watch 'chart.key', (~> @share-panel.link = chartService.sharelink @chart)
       communicate: -> # talk with canvas window
         ({data}) <~ window.addEventListener \message, _, false
+        <~ $scope.$apply
         if !data or typeof(data) != \object => return
         if data.type == \error =>
-          $scope.$apply ->
-            $('#code-editor-code .CodeMirror-code > .error').removeClass \error
-            $scope.error.msg = data.{}payload.msg or ""
-            $scope.error.lineno = data.{}payload.lineno or 0
-            if $scope.error.lineno =>
-              $(".CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").addClass \error
-        else if data.type == \alt-enter => $scope.$apply -> $scope.switch-panel!
+          $('#code-editor-code .CodeMirror-code > .error').removeClass \error
+          $scope.error.msg = data.{}payload.msg or ""
+          $scope.error.lineno = data.{}payload.lineno or 0
+          if $scope.error.lineno =>
+            $(".CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").addClass \error
+        else if data.type == \alt-enter => $scope.switch-panel!
         else if data.type == \snapshot =>
           #TODO need sanity check
           if data.payload => @chart.thumbnail = data.payload
+          #TODO anonymouse handling
+          if !$scope.user.data or !$scope.user.data.key => return $scope.auth.toggle true
+          if @chart.owner != $scope.user.data.key => @chart <<< {key: null, owner: null}
+          refresh = if !@chart.key => true else false
           (ret) <~ @chart.save!then
-          $scope.$apply ~> plNotify.send \success, "chart saved"
-          #$scope.$apply -> $scope.chart <<< ret
+          plNotify.send \success, "chart saved"
+          #$scope.chart <<< ret
           link = chartService.link $scope.chart
-          if !window.location.search => window.location.href = link
+          if refresh or !window.location.search => window.location.href = link
         else if data.type == \parse =>
-          <~ $scope.$apply
           {config,dimension} = JSON.parse(data.payload)
           for k,v of @chart.dimension => if dimension[k]? => dimension[k].fields = v.fields
           for k,v of @chart.config => if config[k]? => config[k].value = v.value
@@ -389,7 +393,7 @@ angular.module \plotDB
             event = document.createEventObject!
             event.synthetic = true
             document.fireEvent("onclick", event)
-        else if data.type == \getsvg => $scope.$apply ~>
+        else if data.type == \getsvg =>
           if !data.payload => return $scope.download.svg.url = '#'
           $scope.download.svg.url = URL.createObjectURL(new Blob [data.payload], {type: 'image/svg+xml'})
           $scope.download.svg.size = data.payload.length
@@ -401,7 +405,6 @@ angular.module \plotDB
           buf = new ArrayBuffer bytes.length
           ints = new Uint8Array buf
           for idx from 0 til bytes.length => ints[idx] = bytes.charCodeAt idx
-          <~ $scope.$apply
           $scope.download.png.url = URL.createObjectURL(new Blob [buf], {type: 'image/png'})
           $scope.download.png.size = bytes.length
       field-agent: do
@@ -444,8 +447,11 @@ angular.module \plotDB
     $scope.mycharts = ret
     $scope.goto = (chart) -> window.location.href = chartService.link chart
   ..controller \chartList,
-  <[$scope $http dataService chartService]> ++
-  ($scope, $http, data-service, chart-service) ->
-    $scope.charttypes = []
-    (ret) <- chart-service.list {name: \charttype, location: \any} .then
-    $scope.charttypes = ret
+  <[$scope $http IOService dataService chartService]> ++
+  ($scope, $http, IO-service, data-service, chart-service) ->
+    $scope.charts = []
+    (ret) <- Promise.all [
+      new Promise (res, rej) -> IO-service.aux.list-locally {name: \chart}, res, rej
+      new Promise (res, rej) -> IO-service.aux.list-remotely {name: \chart}, res, rej, "q=all"
+    ] .then
+    $scope.$apply -> $scope.charts = ( ret.0 ++ ret.1 )

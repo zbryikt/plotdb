@@ -24,15 +24,17 @@ block body
       .row
         .col-sm-6: select.form-control
         .col-sm-6: select.form-control
-    br
-    hr
-    br
-    div(style="text-align:center;") Or Just pick one your favorite visualization to start ...
-    br
-    .text-center: big: i.fa.fa-chevron-down
-    br
-    hr
-    br
+    //-
+      br
+      hr
+      br
+      div(style="text-align:center;") Or Just pick one your favorite visualization to start ...
+      br
+      .text-center: big: i.fa.fa-chevron-down
+      br
+      hr
+      br
+
     include /chart/modal.jade
     br
     //-
@@ -52,23 +54,25 @@ block body
       h3 Applicable Charts
 
     .charts
-      .chart(ng-repeat="chart in charttypes",style="display:inline-block",ng-click="load(chart)")
-        .chart-img(ng-attr-style="background-image:url({{chart.thumbnail}})")
+      .chart(ng-repeat="chart in charts",style="display:inline-block",ng-click="load(chart)")
+        .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
         .chart-desc
           .title {{chart.name}}
           .desc {{chart.desc || 'check it yourself!'}}
-          .dimension
-            div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Dimensions
-            .label.label-default.label-light Radius
-            span &nbsp;
-            .label.label-success.label-light X-axis
-            span &nbsp;
-            .label.label-default.label-light Y-axis
-          .property
-            div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Best use with
-            .label.label-default.label-light Geo-related
-            span &nbsp;
-            .label.label-default.label-light Population
+          //-
+            .dimension
+              div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Dimensions
+              .label.label-default.label-light Radius
+              span &nbsp;
+              .label.label-success.label-light X-axis
+              span &nbsp;
+              .label.label-default.label-light Y-axis
+            .property
+              div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Best use with
+              .label.label-default.label-light Geo-related
+              span &nbsp;
+              .label.label-default.label-light Population
+
       .chart.flexend
     br
     .text-center: a(href="#") I want MORE! &nbsp; #[i.fa.fa-pie-chart]

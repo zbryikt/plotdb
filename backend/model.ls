@@ -38,6 +38,7 @@ model.prototype.rest = (api, config) ->
     console.log "[WARNING] use 'default-fields' to enable owner/key fields for RestAPI"
     return
   api.post "/#{@name}/", (req, res) ~>
+    if !req.user => aux.r403 res
     data = req.body
     data <<< {owner: req.user.key, key: null}
     ret = @lint(data)
@@ -51,6 +52,7 @@ model.prototype.rest = (api, config) ->
         return res.json ret
       ..catch -> return aux.r403 res
   api.put "/#{@name}/:id", (req, res) ~>
+    if !req.user => aux.r403 res
     data = req.body
     if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
     @read req.params.id
@@ -66,6 +68,7 @@ model.prototype.rest = (api, config) ->
       ..catch -> return aux.r403 res
 
   api.delete "/#{@name}/:id", (req, res) ~>
+    if !req.user => aux.r403 res
     @read req.params.id
       ..then (ret) ~> 
         if !ret => return aux.r404 res

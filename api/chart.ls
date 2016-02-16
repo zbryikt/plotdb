@@ -5,8 +5,14 @@ module.exports = (backend, config) ->
   lmodel := lmodel store
   lmodel.chart.rest backend.router.api
   backend.router.api.get "/chart/", (req, res) ->
-    (ret) <- lmodel.chart.list \owner, [req.user.key] .then
-    res.send JSON.stringify(ret)
+    # TODO optimization
+    if req.query.q == 'all'
+      (ret) <- lmodel.chart.list!then
+      ret = ret.filter(->it.{}permission.[]value.filter(->it.perm == \fork and it.switch == \public).length)
+      res.send JSON.stringify(ret)
+    else
+      (ret) <- lmodel.chart.list \owner, [req.user.key] .then
+      res.send JSON.stringify(ret)
 
   backend.app.get \/v/chart/:id/, (req, res) -> 
     lmodel.chart.read req.params.id

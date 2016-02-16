@@ -7,7 +7,8 @@ main = (driver) ->
       res driver.db.write key, data, prefix
     delete: (prefix, key) -> new bluebird (res, rej) -> res driver.db.delete key, prefix
     list: (prefix, field, values) ->
-      tester = (obj) -> if values.indexOf(obj[field]) >= 0 => true else false
+      tester = if field => ((obj) -> if values.indexOf(obj[field]) >= 0 => true else false)
+      else -> true
       new bluebird (res, rej) -> res driver.db.query tester, prefix
 /*
     list: do
