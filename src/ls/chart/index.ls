@@ -365,7 +365,7 @@ angular.module \plotDB
             @chart <<< {key: null, owner: null, permission: chartService.chart.prototype.permission}
           refresh = if !@chart.key => true else false
           (ret) <~ @chart.save!then
-          plNotify.send \success, "chart saved"
+          $scope.$apply -> plNotify.send \success, "chart saved"
           #$scope.chart <<< ret
           link = chartService.link $scope.chart
           if refresh or !window.location.search => window.location.href = link
