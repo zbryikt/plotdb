@@ -43,9 +43,14 @@ angular.module \plotDB
         for i from 0 til len
           ret = {}
           for k,v of @dimension
-            ret[k] = if v.[]fields.0 => that.[]data[i] else null
+            if v.multiple =>
+              ret[k] = if v.[]fields.length => v.[]fields.map(->it.[]data[i]) else []
+            else ret[k] = if v.[]fields.0 => that.[]data[i] else null
             #TODO need correct type matching
-            if v.type.filter(->it.name == \Number).length => ret[name] = parseFloat(ret[name])
+            if v.type.filter(->it.name == \Number).length =>
+              if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
+              else ret[k] = parseFloat(ret[k])
+          console.log ret
           @data.push ret
 
     chartService = baseService.derive \chart ,service, object
@@ -128,7 +133,8 @@ angular.module \plotDB
       dimension: do
         bind: (event, dimension, field = {}) ->
           <~ field.update!then
-          dimension.fields = [field]
+          if dimension.multiple => dimension.[]fields.push field
+          else dimension.fields = [field]
           $scope.render!
         unbind: (event, dimension, field = {}) ->
           idx = dimension.fields.index-of(field)
@@ -440,7 +446,7 @@ angular.module \plotDB
         <~ $scope.$apply
         if !data or typeof(data) != \object => return
         if data.type == \error =>
-          $('#code-editor-code .CodeMirror-code > .error').removeClass \error
+          $('.CodeMirror-code > .error').removeClass \error
           $scope.error.msg = data.{}payload.msg or ""
           $scope.error.lineno = data.{}payload.lineno or 0
           if $scope.error.lineno =>
