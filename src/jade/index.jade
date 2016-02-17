@@ -54,6 +54,12 @@ block body
     br
     h2.text-center Pick One and Go!
     br
+    .charts(ng-controller="chartList")
+      .chart(ng-repeat="chart in charts",style="display:inline-block",ng-click="load(chart)")
+        .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
+        .chart-desc
+          .title {{chart.name}}
+          .desc {{chart.desc || 'check it yourself!'}}
     br
     //-
       .panel.panel-default(style="display:inline-block"): .panel-body
@@ -71,7 +77,7 @@ block body
       hr(style="margin-top:0")
       h3 Applicable Charts
 
-    .charts
+    //-.charts
       .chart(ng-repeat="chart in charts",ng-click="load(chart)")
         .chart-img
           .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
@@ -79,6 +85,7 @@ block body
         .chart-desc
           .title {{chart.name}}
           .desc {{chart.desc || 'check it yourself!'}}
+
           //-.dimension
             div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Dimensions
             span(ng-repeat="dim in chart.dimension")
