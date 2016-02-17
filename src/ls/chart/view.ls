@@ -4,6 +4,7 @@ plotdb.viewer = do
     chart = module.exports
     assets = payload.assets
     data = payload.data
+    dimension = payload.dimension
     config = payload.config or {}
     root = document.getElementById \container
     if (!data or !data.length) and chart.sample => data = chart.sample
@@ -28,7 +29,7 @@ plotdb.viewer = do
       file.url = URL.createObjectURL(file.blob)
       file.datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
       assetsmap[file.name] = file
-    chart <<< {config,root,data}
+    chart <<< {config,root,data,dimension}
     promise = Promise.resolve!
     if chart.init => promise = promise.then -> chart.init!
     <~ promise.then

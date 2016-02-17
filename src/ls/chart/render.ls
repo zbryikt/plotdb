@@ -103,6 +103,7 @@ snapshot = (type='snapshot') ->
 render = (payload, rebind = true) ->
   [code,style,doc] = <[code style doc]>.map(->payload.{}chart[it].content)
   [data,assets] = <[data assets]>.map(->payload.chart[it])
+  dimension = payload.chart.dimension or {}
   config = payload.chart.config or {}
   theme = payload.theme or {}
   sched.clear!
@@ -157,7 +158,7 @@ render = (payload, rebind = true) ->
         file.datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
         assetsmap[file.name] = file
       chart <<< {config}
-      if rebind or reboot or !(chart.root and chart.data) => chart <<< {root, data}
+      if rebind or reboot or !(chart.root and chart.data) => chart <<< {root, data, dimension}
       promise = Promise.resolve!
       if reboot and chart.init => promise = promise.then ->
         ret = chart.init!

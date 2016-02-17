@@ -46,6 +46,7 @@ chart-config = do
     assets: {required: false, type: model.type.array({type: base.file})}
     config: {require: false}
     dimension: {require: false}
+    data: {required: false}
     permission: {required: false, type: model.type.permission}
     thumbnail: {required: false, type: model.type.string}
     is-type: {required: false, type: model.type.boolean}
