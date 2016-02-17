@@ -143,6 +143,7 @@ angular.module \plotDB
           idx = dimension.fields.index-of(field)
           if idx < 0 => return
           dimension.fields.splice idx, 1
+          $scope.render!
       reset: -> @render!
       render: (rebind = true) ->
         @chart.update-data!
