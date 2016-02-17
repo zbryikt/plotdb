@@ -49,11 +49,11 @@ block body
     div(style="height:0") &nbsp;
     style(type="text/css").
       !{chart.style.content}
-    if theme
+    if theme && theme.style
       style(type="text/css").
         !{theme.style.content}
     | !{chart.doc.content}
-    if theme
+    if theme && theme.doc
       | !{theme.doc.content}
   a#plotdb-mark(href="http://plotdb.com",target="_blank")
     img(src="/assets/img/poweredby.png",style="width:64px;margin-top:5px")
