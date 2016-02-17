@@ -266,7 +266,7 @@ block body
               .title {{f.name}}
               .type #[i {{f.type}}] #[small.pull-right {{(f.content || "").length|size}}]
           #code-ctrl
-            .btn.btn-default(ng-click="scrollto('#binding-panel')") Bind Data
+            .btn.btn-default(ng-click="scrollto('#binding-panel')",ng-show="!editor.fullscreen.toggled") Bind Data
             .btn-group
               .btn.btn-default(ng-click="editor.color.toggle()") Editor Style
               .btn.btn-default(ng-click="reset()") Reload
@@ -280,7 +280,7 @@ block body
 
         #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
           .closebtn.inner(ng-click="editor.fullscreen.toggle()")
-          .btn.btn-default(style="position:absolute;bottom:5px;left:5px;",
+          .btn.btn-default(style="position:absolute;bottom:5px;left:5px;",ng-show="!editor.fullscreen.toggled",
           ng-click="scrollto('#binding-panel')") Bind Data
           .btn-group
             .btn.btn-default(ng-click="reset()") Reload
