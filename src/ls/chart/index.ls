@@ -53,7 +53,6 @@ angular.module \plotDB
             if v.type.filter(->it.name == \Number).length =>
               if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
               else ret[k] = parseFloat(ret[k])
-          console.log ret
           @data.push ret
 
     chartService = baseService.derive \chart ,service, object

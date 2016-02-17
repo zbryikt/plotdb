@@ -6,6 +6,9 @@ block vars
   - var thumbnail = "http://plotdb.io/assets/img/thumbnail.jpg"
   - var thumbtype = "image/jpg"
   - var url = "http://plotdb.io/"
+mixin SaveFork
+  span(ng-cloak,ng-show="chart.owner==user.data.key") Save
+  span(ng-cloak,ng-show="chart.owner!=user.data.key") Fork
 block head
 block body
   div &nbsp;
@@ -28,7 +31,8 @@ block body
         hr(style="margin-bottom:10px")
         .pull-right
           .save-hint-btn.btn.btn-default.loader(ng-disabled="!chart.name",ng-click="save()",
-          ng-class="{'loading':save.handle}") Save
+          ng-class="{'loading':save.handle}")
+            +SaveFork
           .btn.btn-default(ng-click="settingPanel.toggle()") Close
 
     #permission-modal(ng-cloak,ng-show="sharePanel.toggled"): .ib
@@ -44,7 +48,8 @@ block body
               input.form-control(type="text",ng-model="chart.name",
               placeholder="Project Name",style="margin-bottom:5px")
               .btn.btn-default.btn-block.loader(ng-disabled="!chart.name",ng-click="save()",
-              ng-class="{'loading':save.handle}") Save
+              ng-class="{'loading':save.handle}")
+                +SaveFork
 
       div(ng-cloak,ng-show="chart.type.location=='local' && chart.key",
       style="position:absolute;top:0;left:0;width:100%;height:100%;")
@@ -110,7 +115,8 @@ block body
         hr(style="margin-bottom:10px")
         .pull-right
           .save-hint-btn.btn.btn-default.loader(ng-disabled="!chart.name",ng-click="save();sharePanel.saveHint=false",
-          ng-class="{'btn-warning':sharePanel.saveHint,'btn-default':!sharepanel.saveHint,'loading':save.handle}") Save
+          ng-class="{'btn-warning':sharePanel.saveHint,'btn-default':!sharepanel.saveHint,'loading':save.handle}")
+            +SaveFork
           .btn.btn-default(ng-click="sharePanel.toggle()") Close
         //- Simplify this for now
         //-
@@ -168,7 +174,8 @@ block body
           .desc {{chart.dimension|length}} dimensions
         .pull-right
           .tab.action(ng-click="settingPanel.toggle()") #[i.fa.fa-cog] #[span settings]
-          .tab.action(ng-click="sharePanel.toggle()") #[i.fa.fa-user] #[span share]
+          .tab.action(ng-show="chart.owner==user.data.key",
+          ng-click="sharePanel.toggle()") #[i.fa.fa-user] #[span share]
 
 
     .row
@@ -185,7 +192,8 @@ block body
 
             #chart-action.btn-group(style="width:100%")
               .btn.btn-default.loader(ng-disabled="!chart.name",ng-click="save()",
-              ng-class="{'loading':save.handle}") Save
+              ng-class="{'loading':save.handle}")
+                +SaveFork
               .dropdown
                 .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
                   i.fa.fa-download
@@ -412,7 +420,7 @@ block body
                 span {{field.name}}
                 small {{field.type}}
             .dimension.flexend
-    .row(ng-show="chart.key")
+    .row(ng-show="chart.key && chart.owner == user.data.key")
       .col-sm-12
         .panel.panel-default
           .panel-heading: label Danger Zone

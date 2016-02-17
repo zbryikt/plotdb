@@ -12,6 +12,10 @@ base.dataset = new model do
     if typeof(it) != 'object' => return [true]
     if !it.name or typeof(it.name) != 'string' => return [true, null, \name]
     if !(it.datatype in base.dataset.config.types) => return [true, null, \type]
+    for key in <[createdTime modifiedTime]> =>
+      if !it[key] => continue
+      ret = model.type.date.lint(it[key])
+      if ret.0 => return ret
     #TODO lint data by type
     #TODO lint permission
     return [false]
@@ -31,6 +35,8 @@ base.theme = new model do
     doc: {type: base.file}
     style: {type: base.file}
     code: {type: base.file}
+    createdTime: {required: false, type: model.type.date}
+    modifiedTime: {required: false, type: model.type.date}
 
 chart-config = do
   name: \chart
@@ -50,6 +56,8 @@ chart-config = do
     permission: {required: false, type: model.type.permission}
     thumbnail: {required: false, type: model.type.string}
     is-type: {required: false, type: model.type.boolean}
+    createdTime: {required: false, type: model.type.date}
+    modifiedTime: {required: false, type: model.type.date}
 
 base.chart = new model chart-config
 
