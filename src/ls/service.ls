@@ -5,6 +5,9 @@ angular.module \plotDB
       items: null
       sample: []
 
+      backup: (item) -> IOService.backup item
+      backups: (item) -> IOService.backups item
+      cleanBackups: (item) -> IOService.cleanBackups item
       save: (item) ->
         (ret) <~ IOService.save item .then
         (res, rej) <~ new Promise _
@@ -75,6 +78,11 @@ angular.module \plotDB
             # use JSON parse+stringify to deep clone. be aware of Date format issue:
             # http://stackoverflow.com/questions/122102/5344074
             (new service.Object(JSON.parse(JSON.stringify @))) <<< key: null
+          backup: -> service.backup @
+          backups: -> service.backups @
+          cleanBackups: -> service.cleanBackups @
+          recover: (backup) -> @ <<< backup
+
         service.Object.prototype <<< baseObject.prototype <<< callee.prototype
         callee.prototype = service.Object.prototype
         service

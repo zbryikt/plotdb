@@ -90,4 +90,26 @@ angular.module \plotDB
         if type.location == \local => return aux.delete-locally type, key, res, rej
         else if type.location == \server => return aux.delete-remotely type, key, res, rej
         else return rej [true, "not support type"]
-
+      backup: (item) -> new Promise (res, rej) ~>
+        path = "/db/backup/#{item.type.name}/#{item.key}"
+        #TODO think about a mechanism to backup multiple revisions
+        # such as difference checking?
+        #count = parseInt((localStorage.getItem("#path/count") or 0))
+        count = 0
+        localStorage.setItem("#path/count", angular.toJson(count + 1))
+        localStorage.setItem("#path/#count", angular.toJson(item))
+        localStorage.setItem("#path/#count/timestamp", angular.toJson(new Date!getTime!))
+        res!
+      backups: (item) -> new Promise (res, rej) ~>
+        path = "/db/backup/#{item.type.name}/#{item.key}"
+        count = parseInt((localStorage.getItem("#path/count") or 0))
+        ret = []
+        for idx from 0 til count =>
+          object = JSON.parse(localStorage.getItem("#path/#idx") or "")
+          timestamp = JSON.parse(localStorage.getItem("#path/#idx/timestamp") or "0")
+          ret.push {object, timestamp}
+        res ret
+      cleanBackups: (item) -> new Promise (res, rej) ~>
+        path = "/db/backup/#{item.type.name}/#{item.key}"
+        localStorage.setItem("#path/count", "0")
+        res!

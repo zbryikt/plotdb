@@ -1,5 +1,6 @@
 angular.module \plotDB
   ..filter \tags, -> -> (it or "").split(\,)
+  ..filter \date, -> -> new Date(it)
   ..filter \length, -> -> [k for k of it].length
   ..service \chartService,
   <[$rootScope sampleChart IOService baseService]> ++
@@ -109,7 +110,9 @@ angular.module \plotDB
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
       load: (type, key) ->
         chart-service.load type, key
-          .then (ret) ~> @chart <<< ret
+          .then (ret) ~>
+            @chart <<< ret
+            @backup.check!
           .catch (ret) ~> window.location.href = window.location.pathname
       delete: ->
         if !@chart.key => return
@@ -174,6 +177,30 @@ angular.module \plotDB
           @plotdb.size = payload.length
 
     $scope <<< do # Behaviors
+      backup: do
+        enabled: false
+        init: ->
+          $scope.$watch 'chart', (~>
+            if !@enabled => return
+            if @handle => $timeout.cancel @handle
+            @handle = $timeout (~>
+              @handle = null
+              <~ $scope.chart.backup!then
+            ), 2000 # response to final change after 2 sec.
+          ), true
+        recover: ->
+          if !@last or !@last.object => return
+          $scope.chart.recover @last.object
+          # disable backup until recheck to prevent backup triggered by recover.
+          @enabled = false
+          $scope.chart.cleanBackups!then ~> $scope.$apply ~> @check!
+        check: ->
+          $scope.chart.backups!
+            .then (ret) ~> $scope.$apply ~>
+              @ <<< {list: ret, last: ret.0}
+              # disable backup for 4 sec to prevent triggered by init / recover.
+              $timeout (~> @enabled = true), 4000
+            .catch (err) ~> console.error 'fecth backup failed: #', err
       themes:
         list: themeService.sample
         set: -> $scope.theme = it
@@ -528,6 +555,7 @@ angular.module \plotDB
         @monitor!
         @check-param!
         @paledit.init!
+        @backup.init!
 
     $scope.init!
 
@@ -550,4 +578,3 @@ angular.module \plotDB
     $scope.charts = ( ret.0 ++ ret.1 )
     $scope.charts.forEach (it) ->
       it.width = if Math.random() > 0.8 => 640 else 320
-    console.log $scope.charts

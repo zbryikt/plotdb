@@ -26,7 +26,12 @@ block body
         br
         label Tags
         input.form-control(placeholder="comma separated values, like 'population,economics'", ng-model="chart.tags")
-      br
+        br
+        label Backups
+        div(ng-cloak,ng-show="backup.list.length")
+          | backuped at {{backup.last.timestamp|date}}.&nbsp;
+          a(href="#",ng-click="backup.recover()") Recover
+        p.grayed(ng-cloak,ng-show="!backup.list.length") No backup found.
       div
         hr(style="margin-bottom:10px")
         .pull-right
