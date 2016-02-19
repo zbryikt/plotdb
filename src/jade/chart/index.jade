@@ -333,10 +333,9 @@ block body
             li: a(href="#") google sheet #[i.fa.fa-cloud]
             li: a(href="#") key in #[i.fa.fa-edit]
 
-      .row
+      .row(ng-controller="dataFiles")
         .col-sm-3(ng-cloak)
-          .data-fields(ng-controller="dataFiles",
-          style="height:337px;width:100%;overflow-y:scroll;")
+          .data-fields(style="height:337px;width:100%;overflow-y:scroll;")
             .data-file(style="border:none",ng-show="!activelength")
               b choose a dataset to start
               div: small {{datasets.length}} datasets
@@ -380,6 +379,9 @@ block body
                   small {{field.type}}
 
         .col-sm-9
+          #datamap-hint(ng-cloak,ng-class="{'step1': !activelength, 'step2': activelength}")
+            p(ng-show="!activelength") #[i.fa.fa-arrow-left] select a file to map data
+            p(ng-show="activelength") #[i.fa.fa-arrow-right] #[br] drag to bind
           .dimensions
             .dimension(ng-cloak,ng-repeat="(name,dim) in chart.dimension",ng-drop="true",
             ng-drop-success="dimension.bind($event,dim,$data)")

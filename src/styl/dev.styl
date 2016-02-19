@@ -665,3 +665,28 @@ small.hint
   margin-left: 20px
 #field-agent.dragging
   opacity: 1
+
+#datamap-hint
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background: rgba(255,255,255,0.8)
+  text-align: center
+  align-items: center
+  display: flex
+  justify-content: flex-start
+  font-size: 24px
+  z-index: index(order, 'datamap-hint')
+#datamap-hint.step2
+  background: none
+  font-size: 11px
+  left: -44px
+  width: 100px
+  p:nth-of-type(2)
+    background: rgba(255,255,255,0.7)
+    margin: 0
+    padding: 5px
+    border-radius: 10px
+    text-shadow: none
