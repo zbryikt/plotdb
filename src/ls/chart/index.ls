@@ -227,7 +227,6 @@ angular.module \plotDB
               # should this be refactored?
               if $scope.error.lineno =>
                 $("\#code-editor-code .CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").addClass \error
-
           ), 0
 
         update: ->
@@ -485,11 +484,11 @@ angular.module \plotDB
         <~ $scope.$apply
         if !data or typeof(data) != \object => return
         if data.type == \error =>
-          $('.CodeMirror-code > .error').removeClass \error
+          $('#code-editor-code .CodeMirror-code > .error').removeClass \error
           $scope.error.msg = data.{}payload.msg or ""
           $scope.error.lineno = data.{}payload.lineno or 0
           if $scope.error.lineno =>
-            $(".CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").addClass \error
+            $("\#code-editor-code .CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").addClass \error
         else if data.type == \alt-enter => $scope.switch-panel!
         else if data.type == \snapshot =>
           #TODO need sanity check
