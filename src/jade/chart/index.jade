@@ -263,6 +263,7 @@ block body
       .col-sm-9(style="padding-left:0;position:relative"): .ib(style="position:relative")
         #code-error(ng-cloak,ng-show="error.msg",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error.msg}}
         #code-editor(ng-class="editor.class")
+          .closebtn.inner(ng-cloak,ng-click="editor.fullscreen.toggle()",ng-show="editor.fullscreen.toggled")
           #code-header(ng-class="{'fullscreen':editor.fullscreen.toggled}")
             .tabs
               span(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'") #[i.fa.fa-pie-chart] Preview
@@ -271,10 +272,10 @@ block body
               span(ng-class="{'active':vis=='document'}",ng-click="vis='document'") #[i.fa.fa-code] Document
               span(ng-class="{'active':vis=='assets'}",ng-click="vis='assets'") #[i.fa.fa-files-o] Assets
 
-          #code-editor-code.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ui-refrehs="vis",ng-class="{'active':vis=='code'}")
-          #code-editor-style.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="chart.style.content",ui-refrehs="vis",ng-class="{'active':vis=='stylesheet'}")
-          #code-editor-doc.inner(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="chart.doc.content",ui-refrehs="vis",ng-class="{'active':vis=='document'}")
-          #code-editor-assets.inner(ng-cloak,ng-class="{'active':vis=='assets'}")
+          #code-editor-code.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ui-refrehs="vis",ng-class="{'active':vis=='code'}")
+          #code-editor-style.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="chart.style.content",ui-refrehs="vis",ng-class="{'active':vis=='stylesheet'}")
+          #code-editor-doc.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="chart.doc.content",ui-refrehs="vis",ng-class="{'active':vis=='document'}")
+          #code-editor-assets.box(ng-cloak,ng-class="{'active':vis=='assets'}")
             .file.uploader Upload ... #[input(type="file",multiple)]
             .file(ng-repeat="f in chart.assets",ng-click="assets.preview(f)")
               .closebtn.outer(ng-click="chart.removeFile(f)")
