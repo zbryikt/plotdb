@@ -373,7 +373,8 @@ angular.module \plotDB
                 ret = item.children.filter(~>it.id == $(e.target)val!).0
                 if ret => break
               if !ret => return
-              @ldcp.set-palette {colors: ret.data}
+              $scope.$apply ~> @item.value = JSON.parse(JSON.stringify({colors: ret.data}))
+              @ldcp.set-palette @item.value
 
         update: -> if @item =>
           src = @item.value
