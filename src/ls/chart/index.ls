@@ -383,8 +383,6 @@ angular.module \plotDB
           if !@toggled => @update!
         edit: (item) ->
           @item = item
-          #TODO remove this later
-          if Array.isArray(item.value) => item.value = {colors: item.value.map(->{hex:it})}
           @ldcp.set-palette item.value
           @toggled = true
 
