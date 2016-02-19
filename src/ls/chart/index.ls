@@ -7,7 +7,8 @@ angular.module \plotDB
   ($rootScope, sampleChart, IOService, baseService) ->
     service = do
       sample: []
-      link: (chart) -> "/chart/?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
+      #link: (chart) -> "/chart/?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
+      link: (chart) -> "/chart/?k=#{chart.type.location.charAt(0)}#{chart.key}"
       thumblink: (chart) -> "#{@sharelink chart}/thumb"
       #TODO better mechanism for switching domain ( dev, staging and production )
       #sharelink: (chart) -> "https://plotdb.com/v/chart/#{chart.key}"
@@ -414,11 +415,12 @@ angular.module \plotDB
 
       check-param: ->
         if !window.location.search => return
-        ret = /[?&]k=([^&#|]+)\|([^&#|]+)\|([^&#|]+)/.exec(window.location.search)
+        #ret = /[?&]k=([^&#|]+)\|([^&#|]+)\|([^&#|]+)/.exec(window.location.search)
+        ret = /[?&]k=([sl])([^&#|?]+)/.exec(window.location.search)
         if !ret => return
-        [location,type,key] = ret[1,2,3]
-        if type != \charttype => type = \chart
-        $scope.load {name: type, location}, key
+        key = ret.2
+        [location, key]= [(if ret.1 == \s => \server else \local), ret.2]
+        $scope.load {name: \chart, location}, key
       assets: do
         measure: ->
           $scope.chart.assets.size = $scope.chart.assets.map(-> it.content.length ).reduce(((a,b)->a+b),0)
