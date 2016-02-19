@@ -106,8 +106,8 @@ render = (payload, rebind = true) ->
   dimension = payload.chart.dimension or {}
   config = payload.chart.config or {}
   theme = payload.theme or {}
-  sched.clear!
   reboot = !window.module or !window.module.inited or window.module.exec-error
+  if reboot => sched.clear!
   try
     if false and "script tag disallow" =>
       ret = /<\s*script[^>]*>.*<\s*\/\s*script\s*>/g.exec(doc.toLowerCase!)

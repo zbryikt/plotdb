@@ -55,7 +55,7 @@ block body
     h2.text-center Pick One and Go!
     br
     .charts(ng-controller="chartList")
-      .chart(ng-repeat="chart in charts",style="display:inline-block",ng-click="load(chart)")
+      .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
         .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
         .chart-desc
           .title {{chart.name}}

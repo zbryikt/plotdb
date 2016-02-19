@@ -546,4 +546,8 @@ angular.module \plotDB
       new Promise (res, rej) -> IO-service.aux.list-locally {name: \chart}, res, rej
       new Promise (res, rej) -> IO-service.aux.list-remotely {name: \chart}, res, rej, "q=all"
     ] .then
-    $scope.$apply -> $scope.charts = ( ret.0 ++ ret.1 )
+    <~ $scope.$apply
+    $scope.charts = ( ret.0 ++ ret.1 )
+    $scope.charts.forEach (it) ->
+      it.width = if Math.random() > 0.8 => 640 else 320
+    console.log $scope.charts
