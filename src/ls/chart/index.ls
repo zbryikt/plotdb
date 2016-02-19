@@ -127,6 +127,7 @@ angular.module \plotDB
           .catch (err) ~>
             plNotify.send \error, "failed to delete chart"
             @delete.handle = false
+      reset-config: -> for k,v of @chart.config => v.value = v.default
       migrate: ->
         if !@chart.key => return
         cloned = @chart.clone!

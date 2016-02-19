@@ -221,6 +221,7 @@ block body
                       | PlotDB.json #[small(ng-show="download.plotdb.size") {{download.plotdb.size|size}}]
           #chart-configs: .ib
             label Config
+            .pull-right: a(href="#",ng-click="resetConfig()") reset
             .chart-config(ng-cloak)
               .btn-group
                 span.input-group-addon Theme
