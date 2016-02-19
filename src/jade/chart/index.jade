@@ -332,20 +332,34 @@ block body
             li: a(href="#") key in #[i.fa.fa-edit]
 
       .row
-        .col-sm-3
-          .data-fields(ng-controller="dataFiles",ng-show="!activelength",
+        .col-sm-3(ng-cloak)
+          .data-fields(ng-controller="dataFiles",
           style="height:337px;width:100%;overflow-y:scroll;")
             .data-file(style="border:none",ng-show="!activelength")
               b choose a dataset to start
               div: small {{datasets.length}} datasets
-
-            .data-file(ng-repeat="file in datasets",style="cursor:pointer",
-            ng-click="file.toggle=!!!file.toggle",ng-class="{'active':file.toggle}")
-              .title {{file.name}}
-              .desc {{file.size}}, {{file.rows}} rows
-
-          .data-fields(ng-controller="dataFiles")
             .data-file(style="border:none",ng-show="activelength")
+              b drag field to dimension
+              div: small {{activefile.fields.length}} datasets
+
+            #field-agent.data-field(ng-drag="true",ng-drag-data="fieldAgent.data",ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="activelength")
+              span {{fieldAgent.data.name}}
+              small {{fieldAgent.data.type}}
+            .data-file(ng-repeat="file in datasets",style="cursor:pointer",
+            ng-class="{'extend':file.toggle,'mini':!file.toggle && activelength}")
+              //-,ng-class="{'active':file.toggle}")
+              div(ng-click="file.toggle=!!!file.toggle")
+                .closebtn.inner(ng-cloak,ng-show="file.toggle")
+                .title {{file.name}}
+                .desc {{file.size}}, {{file.rows}} rows
+              div(ng-shxow="file.toggle")
+                .data-field(ng-repeat="field in file.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
+                ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field")
+                  span {{field.name}}
+                  small {{field.type}}
+
+          //-.data-fields(ng-controller="dataFiles")
+            //-.data-file(style="border:none",ng-show="activelength")
               b drag field to dimension
               div: small 7 fields
 
@@ -353,7 +367,7 @@ block body
             #field-agent.data-field(ng-drag="true",ng-drag-data="fieldAgent.data",ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="activelength")
               span {{fieldAgent.data.name}}
               small {{fieldAgent.data.type}}
-            .data-file(ng-repeat="file in datasets",ng-show="file.toggle",style="width:100%")
+            //-.data-file(ng-repeat="file in datasets",ng-show="file.toggle",style="width:100%")
               .closebtn(ng-click="file.toggle=!!!file.toggle")
               .title {{file.name}}
               .desc {{file.size}}, {{file.rows}} rows

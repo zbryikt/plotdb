@@ -206,6 +206,7 @@ angular.module \plotDB
     (ret) <- data-service.list!then
     $scope.datasets = ret
     $scope.$watch 'datasets', ->
+      $scope.activefile = it.filter(->it.toggle).0
       $scope.activelength = it.filter(-> it.toggle).length
     , true
     $scope.edit = (dataset) -> eventBus.fire \dataset.edit, dataset
