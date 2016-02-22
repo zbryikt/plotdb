@@ -491,6 +491,7 @@ angular.module \plotDB
         ), true
         @$watch 'chart.key', (~> @share-panel.link = chartService.sharelink @chart)
         $scope.limitscroll $('#data-fields').0
+        $scope.limitscroll $('#chart-configs').0
       communicate: -> # talk with canvas window
         ({data}) <~ window.addEventListener \message, _, false
         <~ $scope.$apply
