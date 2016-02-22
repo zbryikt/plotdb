@@ -36,6 +36,7 @@ plotdb.viewer = do
     chart.resize!
     if chart.bind => chart.bind!
     chart.render!
+    document.body.className = ""
 
   resize: ->
     if @resize.handle => clearTimeout @resize.handle
