@@ -557,10 +557,10 @@ angular.module \plotDB
           <- setTimeout _, 0
           box = node.getBoundingClientRect!
           box2 = node.parentNode.parentNode.getBoundingClientRect!
-          scroll = left: document.body.scrollLeft, top: document.body.scrollTop
+          scroll = left: $(\#data-fields).scrollLeft(), top: $(\#data-fields).scrollTop()
           $(\#field-agent).css do
-            top: "#{box.top - box2.top + 60}px"
-            left: "#{box.left - box2.left}px"
+            top: "#{box.top - box2.top + 60 - scroll.top}px"
+            left: "#{box.left - box2.left - scroll.left}px"
             width: "#{box.width}px"
             height: "#{box.height}px"
 

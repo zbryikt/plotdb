@@ -335,7 +335,7 @@ block body
 
       .row(ng-controller="dataFiles")
         .col-sm-3(ng-cloak)
-          .data-fields(style="height:337px;width:100%;overflow-y:scroll;")
+          #data-fields.data-fields(style="height:337px;width:100%;overflow-y:scroll;")
             .data-file(style="border:none",ng-show="!activelength")
               b choose a dataset to start
               div: small {{datasets.length}} datasets
