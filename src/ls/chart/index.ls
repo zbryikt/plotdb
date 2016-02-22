@@ -385,13 +385,13 @@ angular.module \plotDB
           src = @item.value
           des = @ldcp.get-palette!
           orphan = []
-          for item in @item.value.colors =>
+          for item in src.colors =>
             matched = des.colors.filter(-> it.hex == item.hex).0
             if matched => des.colors.splice(des.colors.indexOf(matched), 1)
             if !matched => orphan.push item
           for idx from 0 til orphan.length =>
             orphan[idx].hex = (des.colors[idx] or {}).hex
-          @item.value.colors = @item.value.colors.filter(->it.hex)
+          src.colors = (des.colors ++ src.colors).filter(->it.hex)
         toggled: false
         toggle: ->
           @toggled = !!!@toggled
