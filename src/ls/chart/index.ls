@@ -109,6 +109,11 @@ angular.module \plotDB
           @_save true
         ), 3000
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
+      clone: -> # clone forcely. same as save() when user is not the chart's owner
+        @chart.name = "#{@chart.name} - Copy"
+        @chart <<< {key: null, owner: null, permission: chartService.chart.prototype.permission}
+        @save!
+
       load: (type, key) ->
         chart-service.load type, key
           .then (ret) ~>

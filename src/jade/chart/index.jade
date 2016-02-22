@@ -34,6 +34,7 @@ block body
         p.grayed(ng-cloak,ng-show="!backup.list.length") No backup found.
       div
         hr(style="margin-bottom:10px")
+        .btn.btn-default(ng-click="clone()") Make a copy
         .pull-right
           .save-hint-btn.btn.btn-default.loader(ng-disabled="!chart.name",ng-click="save()",
           ng-class="{'loading':save.handle}")
