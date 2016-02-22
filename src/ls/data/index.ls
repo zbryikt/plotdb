@@ -112,6 +112,8 @@ angular.module \plotDB
     $scope.name = null
     $scope.dataset = null
     $scope.save = (locally = false) ->
+      if !$scope.name => return
+      if !$scope.user.data or !$scope.user.data.key => return $scope.auth.toggle true
       if $scope.dataset and $scope.dataset.type.location != (if locally => \local else \server) => return
       $scope.data.parse true
       if !$scope.dataset =>
