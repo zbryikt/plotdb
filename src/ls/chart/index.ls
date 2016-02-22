@@ -139,10 +139,14 @@ angular.module \plotDB
         window.location.href = chartService.link $scope.chart
       dimension: do
         bind: (event, dimension, field = {}) ->
-          <~ field.update!then
-          if dimension.multiple => dimension.[]fields.push field
-          else dimension.fields = [field]
-          $scope.render!
+          field.update!
+            .then ~>
+              if dimension.multiple => dimension.[]fields.push field
+              else dimension.fields = [field]
+              $scope.render!
+            .catch (err) ~>
+              plNotify.send \error, "failed to bind field. try again later."
+              console.error "chart.ls / dimension field binding failed due to : ", err
         unbind: (event, dimension, field = {}) ->
           idx = dimension.fields.index-of(field)
           if idx < 0 => return

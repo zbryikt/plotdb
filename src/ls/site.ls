@@ -19,14 +19,24 @@ angular.module \plotDB
         @queues[][name].push payload
         @process name
 
-  ..service 'plNotify', <[$rootScope $timeout]> ++ ($rootScope, $timeout) -> @ <<< do
-    queue: []
-    send: (type, message) ->
-      @queue.push node = {type, message}
-      $timeout (~> @queue.splice @queue.indexOf(node), 1), 2900
-    alert: (message) ->
-      @alert.msg = message
-      @alert.toggled = true
+  ..service 'plNotify', <[$rootScope $timeout]> ++ ($rootScope, $timeout) ->
+    plNotify = @ <<< do
+      queue: []
+      send: (type, message) ->
+        @queue.push node = {type, message}
+        $timeout (~> @queue.splice @queue.indexOf(node), 1), 2900
+      alert: (message) ->
+        @alert.msg = message
+        @alert.toggled = true
+    @{}aux.error = do
+      io: (name, type, e) ->
+        if !e or e.length < 3 => plNotify.send \error, "#name failed."
+        else if e.2 == 400 => plNotify.send \error, "#name failed: malformat #type."
+        else if e.2 == 403 => plNotify.send \error, "#name failed: permissions denied."
+        else if e.2 == 404 => plNotify.send \error, "#name failed: #type doesn't exist."
+        else if e.2 == 413 => plNotify.send \error, "#name failed: #type is too large."
+        else => plNotify.send \error, "#name failed."
+    @
 
   ..controller \plSite,
   <[$scope $http $interval global plNotify dataService chartService]> ++

@@ -35,34 +35,34 @@ angular.module \plotDB
       if field => @ <<< field
       # use _ as a little trick to prevent things to be stringify
       @ <<< {name, _: ->}
-      if dataset => 
-        @ <<< {dataset: {type:dataset.type, key: dataset.key}}
-        @set-dataset dataset
+      if dataset => @set-dataset dataset
       @
     Field.prototype = do
-      dataset: type: {}, key: null, ref: null
+      dataset: type: {}, key: null
       name: null, type: null
       #toJson: -> angular.toJson(@{name, type} <<< {dataset: @dataset{type, key}})
       #TODO this might be called individually. should propagate to dataset?
       update: ->
+        # failed only if remote dataset fetching failed
         (dataset) <~ @get-dataset!then
+        if !dataset => return # standalone field won't need to update
         @data = dataset.[]data.map(~>it[@name])
         @settype!
-      set-dataset: (dataset) ->
-        if !dataset.type or !dataset.key => return Promise.reject(null)
+      set-dataset: (dataset = null) -> # set null to clear dataset
+        #if !dataset.type or !dataset.key => return Promise.reject(null)
         #(ret) <~ dataService.load dataset.type, dataset.key .then
         @_.dataset = dataset
-        @dataset <<< dataset{type, key} <<< {name: dataset.name}
-        @dataset.ref
+        if dataset and dataset.type and dataset.key =>
+          @dataset <<< dataset{type, key} <<< {name: dataset.name}
+        else @dataset.type <<< {type: {}, key: null, name: null}
         Promise.resolve(dataset)
-      get-dataset: ->
+      get-dataset: -> # provide dataset or null for standalone field
         if @_.dataset => return Promise.resolve(that)
-        if !@dataset.type or !@dataset.key => return Promise.reject(null)
+        if !@dataset.type or !@dataset.key => return Promise.resolve(null)
         (ret) <~ dataService.load @dataset.type, @dataset.key .then
         @_.dataset = ret
         @dataset <<< ret{type, key} <<< {name: ret.name}
-        console.log @name, @type, @dataset
-        @dataset.ref
+        @_.dataset
       settype: ->
         types = <[Boolean Percent Number Date String]> ++ [null]
         for type in types =>
@@ -124,8 +124,9 @@ angular.module \plotDB
         $scope.dataset = new dataService.dataset config
       $scope.dataset.name = $scope.name
       <~ $scope.dataset.update $scope.data.parsed .then
-      <~ $scope.dataset.save!then
-      $scope.$apply -> plNotify.send \success, "dataset saved"
+      $scope.dataset.save!
+        .then -> $scope.$apply -> plNotify.send \success, "dataset saved"
+        .catch (e) -> $scope.$apply -> plNotify.aux.error.io \save, \data, e
     $scope.load-dataset = (dataset) ->
       $scope.dataset = dataset
       $scope.name = dataset.name

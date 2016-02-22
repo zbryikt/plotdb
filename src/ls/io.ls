@@ -24,7 +24,7 @@ angular.module \plotDB
         else {url: "/d/#{item.type.name}", method: \POST}
         $http config
           .success (ret) -> res ret
-          .error (d) -> rej [true, d.toString!]
+          .error (d, status) -> rej [true, d, status]
       load-locally: (type, key, res, rej) ->
         ret = JSON.parse(localStorage.getItem("/db/#{type.name}/#{key}"))
         if ret => res ret else rej [true, "no such item"]
