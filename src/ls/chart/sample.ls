@@ -1,10 +1,49 @@
 angular.module \plotDB
   ..service \sampleChart, <[$rootScope]> ++ ($rootScope) ->
-    ret = do
-      doc: do
-        content: """<h3>D3.js Pack Layout Example</h3>"""
-      style: do
-        content:''' 
+    ret = [
+      {
+        doc: content: ""
+        style: content: ""
+        code: content: '''
+var module = {};
+module.exports = plotdb.chart.create({
+  sample: [1,2,3,4,5],
+  dimension: {
+    value: { type: [plotdb.Number], require: true, desc: "" }
+  },
+  config: {
+    padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: true }
+  },
+  init: function() {
+    var that = this;
+    this.svg = d3.select(this.root).append("svg");
+  },
+  bind: function() {
+    var that = this;
+  },
+  resize: function() {
+    var that = this;
+    var box = this.root.getBoundingClientRect();
+    var width = this.width = box.width;
+    var height = this.height = box.height - 100;
+    this.svg.attr({
+      width: width + "px", height: height + "px",
+      viewBox: [0,0,width,height].join(" "),
+      preserveAspectRatio: "xMidYMid"
+    });
+  },
+  render: function() {
+    var that = this;
+  }
+});
+'''
+
+      },
+      {
+        doc: do
+          content: """<h3>D3.js Pack Layout Example</h3>"""
+        style: do
+          content:'''
 svg, body {
   background: #fff;
 }
@@ -91,4 +130,7 @@ module.exports = plotdb.chart.create({
     }).text(function(it) { return it.name; });
   }
 });
+
 '''
+      }
+    ]

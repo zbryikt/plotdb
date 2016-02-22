@@ -10,9 +10,10 @@
             a.dropdown-toggle(href="#",data-toggle="dropdown") CHARTS #[span.caret]
             ul.dropdown-menu
               li: a(href="/explore/") Explore
-              li: a(href="/chart/") Design
-              li.divider
               li: a(href="/chart/me.html") My Charts
+              li.divider
+                li: a(href="/chart/") New Chart
+                li: a(href="/chart/?demo") Demo Chart
 
           li#nav-data: a(href="/data/") DATA
           li#nav-theme: a(href="/theme/") THEME

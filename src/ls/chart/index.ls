@@ -6,7 +6,7 @@ angular.module \plotDB
   <[$rootScope sampleChart IOService baseService]> ++
   ($rootScope, sampleChart, IOService, baseService) ->
     service = do
-      sample: []
+      sample: sampleChart
       #link: (chart) -> "/chart/?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
       link: (chart) -> "/chart/?k=#{chart.type.location.charAt(0)}#{chart.key}"
       thumblink: (chart) -> "#{@sharelink chart}/thumb"
@@ -18,9 +18,9 @@ angular.module \plotDB
       name: \untitled
       desc: null, tags: null
       theme: null
-      doc: {name: 'document', type: 'html', content: sampleChart.doc.content}
-      style: {name: 'stylesheet', type: 'css', content: sampleChart.style.content}
-      code: {name: 'code', type: 'javascript', content: sampleChart.code.content}
+      doc: {name: 'document', type: 'html', content: service.sample.0.doc.content}
+      style: {name: 'stylesheet', type: 'css', content: service.sample.0.style.content}
+      code: {name: 'code', type: 'javascript', content: service.sample.0.code.content}
       config: {}
       dimension: {}
       assets: []
@@ -419,7 +419,11 @@ angular.module \plotDB
 
       check-param: ->
         if !window.location.search => return
-        #ret = /[?&]k=([^&#|]+)\|([^&#|]+)\|([^&#|]+)/.exec(window.location.search)
+        if window.location.search == \?demo =>
+          $scope.chart.doc.content = chartService.sample.1.doc.content
+          $scope.chart.style.content = chartService.sample.1.style.content
+          $scope.chart.code.content = chartService.sample.1.code.content
+          return
         ret = /[?&]k=([sl])([^&#|?]+)/.exec(window.location.search)
         if !ret => return
         key = ret.2
