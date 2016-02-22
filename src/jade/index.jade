@@ -7,10 +7,12 @@ block vars
   - var thumbtype = "image/jpg"
   - var url = "http://plotdb.com/"
 block head
+  script(type="text/javascript",src="/js/landing.js")
 block body
   //-#landing(style="background-image:url(/assets/img/test/landing.png);background-size:cover")
-  #landing(style="text-align: center")
-    img(src="/assets/img/test/logo.png",style="margin-top:100px")
+  #landing(style="text-align: center;background:url(/assets/img/landing.png) center center no-repeat;position:relative")
+    svg#landing-svg(style="position:absolute;z-index:1")
+    img(src="/assets/img/test/logo.png",style="margin-top:100px;position:relative;z-index:2")
     //-
       .title P#[small LOT]DB
       .subtitle data on you, vis by us.
@@ -50,7 +52,7 @@ block body
   #root
 
     hr
-    include /chart/modal.jade
+    //include /chart/modal.jade
     br
     h2.text-center Pick One and Go!
     br
