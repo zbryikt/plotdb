@@ -59,6 +59,7 @@ angular.module \plotDB
         box = @getBoundingClientRect!
         height = box.height
         scroll = height: @scrollHeight, top: @scrollTop
+        if scroll.height <= height => return
         delta = e.deltaY
         do-prevent = false
         on-agent = false
