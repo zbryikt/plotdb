@@ -1,0 +1,18 @@
+html
+  head
+    script(type="text/javascript",src="/assets/d3js/3.5.12/d3.v3.min.js")
+    script(type="text/javascript",src="/js/chart/base.js")
+    script(type="text/javascript",src="/js/chart/view.js")
+    script(type="text/javascript",src="/js/chart/loader.js")
+
+    style(type="text/css").
+      #blah {
+        width: 600px;
+        height: 600px;
+        border: 1px solid #999;
+      }
+
+  body
+    #blah
+  script.
+    plotdb.render("1dkgi3r", document.getElementById('blah'));
