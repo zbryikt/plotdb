@@ -295,6 +295,27 @@ block body
 
         #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
           .closebtn.inner(ng-click="editor.fullscreen.toggle()")
+
+          .dropdown(style="position:absolute")
+            .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
+              i.fa.fa-download
+              span.caret
+            ul.dropdown-menu
+              li.disabled(ng-show="!download.png.url"): a PNG #[img(src="/assets/img/loading.gif")]
+              li.disabled(ng-show="!download.svg.url"): a SVG #[img(src="/assets/img/loading.gif")]
+              li.disabled(ng-show="!download.plotdb.url"): a PlotDB.json #[img(src="/assets/img/loading.gif")]
+              li.disabled(ng-show="download.png.url=='#'"): a PNG #[i.fa.fa-warning.text-danger]
+              li.disabled(ng-show="download.svg.url=='#'"): a SVG #[i.fa.fa-warning.text-danger]
+              li(ng-show="download.png.url && download.png.url!='#'")
+                a(ng-attr-download="{{chart.name}}.png",ng-attr-href="{{download.png.url}}")
+                  | PNG #[small(ng-show="download.png.size") {{download.png.size|size}}]
+              li(ng-show="download.svg.url && download.svg.url!='#'")
+                a(ng-attr-download="{{chart.name}}.svg",ng-attr-href="{{download.svg.url}}")
+                  | SVG #[small(ng-show="download.svg.size") {{download.svg.size|size}}]
+              li(ng-show="download.plotdb.url && download.plotdb.url!='#'")
+                a(ng-attr-download="{{chart.name}}.plotdb.json",ng-attr-href="{{download.plotdb.url}}")
+                  | PlotDB.json #[small(ng-show="download.plotdb.size") {{download.plotdb.size|size}}]
+
           .btn.btn-default(style="position:absolute;bottom:5px;left:5px;",ng-show="!editor.fullscreen.toggled",
           ng-click="scrollto('#binding-panel')") Bind Data
           .btn-group
