@@ -490,6 +490,7 @@ angular.module \plotDB
           @render-async ret
         ), true
         @$watch 'chart.key', (~> @share-panel.link = chartService.sharelink @chart)
+        $scope.limitscroll $('#data-fields').0
       communicate: -> # talk with canvas window
         ({data}) <~ window.addEventListener \message, _, false
         <~ $scope.$apply
@@ -546,11 +547,23 @@ angular.module \plotDB
           $scope.download.png.url = URL.createObjectURL(new Blob [buf], {type: 'image/png'})
           $scope.download.png.size = bytes.length
       field-agent: do
+        init: ->
+          $(\#field-agent).on \mousewheel, ~> @set-position!
         data: null
         drag: do
           ging: false
           start: -> @ging = true
           end: -> @ging = false
+        set-position: ->
+          if !@node => return
+          box = @node.getBoundingClientRect!
+          box2 = @node.parentNode.parentNode.getBoundingClientRect!
+          scroll = left: $(\#data-fields).scrollLeft(), top: $(\#data-fields).scrollTop()
+          $(\#field-agent).css do
+            top: "#{box.top - box2.top + 55 - scroll.top}px"
+            left: "#{box.left - box2.left - scroll.left}px"
+            width: "#{box.width}px"
+            height: "#{box.height}px"
         set-proxy: (e,data) ->
           if @drag.ging => return
           [@data,node] = [data,e.target]
@@ -558,15 +571,9 @@ angular.module \plotDB
             if node.getAttribute("class").indexOf('data-field') >=0 => break
             node = node.parentNode
             if node.nodeName.toLowerCase! == \body => return
-          <- setTimeout _, 0
-          box = node.getBoundingClientRect!
-          box2 = node.parentNode.parentNode.getBoundingClientRect!
-          scroll = left: $(\#data-fields).scrollLeft(), top: $(\#data-fields).scrollTop()
-          $(\#field-agent).css do
-            top: "#{box.top - box2.top + 60 - scroll.top}px"
-            left: "#{box.left - box2.left - scroll.left}px"
-            width: "#{box.width}px"
-            height: "#{box.height}px"
+          <~ setTimeout _, 0
+          @node = node
+          @set-position!
 
       init: ->
         @communicate!
@@ -575,6 +582,7 @@ angular.module \plotDB
         @check-param!
         @paledit.init!
         @backup.init!
+        @field-agent.init!
 
     $scope.init!
 

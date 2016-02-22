@@ -161,7 +161,8 @@ render = (payload, rebind = true) ->
       if rebind or reboot or !(chart.root and chart.data) => chart <<< {root, data, dimension}
       promise = Promise.resolve!
       if reboot and chart.init => promise = promise.then ->
-        console.log "[debug] init module... reboot: #reboot / rebind: #rebind / chart: ", chart
+        console.log "[debug] init module... reboot: #reboot / rebind: #rebind / inited: #{module.inited}"
+        console.log "[debug] chart: ", chart
         console.log "[debug] init module... chart: ", chart
         console.log "[debug] init module... module: ", module
         ret = if !module.inited => chart.init! else null

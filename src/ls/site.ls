@@ -1,7 +1,7 @@
 angular.module \plotDB
   ..config <[$compileProvider]> ++ ($compileProvider) ->
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob:|https?:\/\/plotdb\.com\/|http:\/\/localhost\/|https:\/\/www\.facebook\.com\/|https:\/\/www\.pinterest\.com\/|mailto:\?|http:\/\/www\.linkedin\.com\/|http:\/\/twitter\.com\/)|#/)
-  ..service 'eventBus', <[$rootScope]> ++ ($rootScope) -> 
+  ..service 'eventBus', <[$rootScope]> ++ ($rootScope) ->
     ret = @ <<< do
       queues: {}
       handlers: {}
@@ -47,6 +47,32 @@ angular.module \plotDB
     $scope.nexturl = if /nexturl=([^&]+)/exec((window.location.search or "")) => that.1 else window.location.href
     $scope.user = data: global.user
     $scope.data-service = data-service
+    $scope.limitscroll = (node) ->
+      prevent = (e) ->
+        e.stopPropagation!
+        e.preventDefault!
+        e.cancelBubble = true
+        e.returnValue = false
+        return false
+      node.addEventListener 'mousewheel', (e) ->
+        # http://stackoverflow.com/questions/5802467/prevent-scrolling-of-parent-element
+        box = @getBoundingClientRect!
+        height = box.height
+        scroll = height: @scrollHeight, top: @scrollTop
+        delta = e.deltaY
+        do-prevent = false
+        on-agent = false
+        if e.target and (e.target.id == \field-agent or e.target.parentNode.id == \field-agent) =>
+          [on-agent,do-prevent] = [true,true]
+        if on-agent =>
+          $(@).scrollTop scroll.top + e.deltaY
+        else if (-e.deltaY > scroll.top) =>
+          $(@).scrollTop 0
+          do-prevent = true
+        else if (e.deltaY > 0 and (scroll.height - height - scroll.top) <= 0) =>
+          do-prevent = true
+        return if do-prevent => prevent e else undefined
+
     $scope.scrollto = (sel = null) ->
       <- setTimeout _, 0
       top = if sel => ( $(sel).offset!top - 60 ) else 0
@@ -84,12 +110,12 @@ angular.module \plotDB
           if $scope.nexturl => window.location.href = $scope.nexturl
           else if window.location.pathname == '/u/login' => window.location.href = '/'
           else window.location.reload!
-        .error (d, code) -> 
-          if code == 403 => 
+        .error (d, code) ->
+          if code == 403 =>
             $scope.auth.failed = if d.[]message.length => d.message.0 else 'email or password incorrect'
           else => $scope.auth.failed = 'system error, please try later'
         @passwd = ""
-    $scope.$watch 'auth.show', (is-show) -> 
+    $scope.$watch 'auth.show', (is-show) ->
       setTimeout (->
         if is-show => $(\#authpanel).modal \show
         else $(\#authpanel).modal \hide
@@ -97,7 +123,7 @@ angular.module \plotDB
     $(\#authpanel).on \shown.bs.modal, -> $scope.$apply -> $scope.auth.show = true
     $(\#authpanel).on \hidden.bs.modal, -> $scope.$apply -> $scope.auth.show = false
 
-    window.addEventListener \scroll, (it) -> 
+    window.addEventListener \scroll, (it) ->
       scroll-top = $(window).scroll-top!
       if scroll-top < 60 => $(\#nav-top)removeClass \dim
       else => $(\#nav-top)addClass \dim
