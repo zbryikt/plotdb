@@ -7,25 +7,25 @@ block vars
   - var thumbtype = "image/jpg"
   - var url = "http://plotdb.com/"
 mixin SaveFork
-  span(ng-cloak,ng-show="chart.owner==user.data.key") Save
-  span(ng-cloak,ng-show="chart.owner!=user.data.key") Fork
+  span(ng-cloak,ng-show="theme.owner==user.data.key") Save
+  span(ng-cloak,ng-show="theme.owner!=user.data.key") Fork
 block head
 block body
   div &nbsp;
-  #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
+  #root(ng-controller="themeEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
     #setting-modal(ng-cloak,ng-show="settingPanel.toggled"): .ib
       .closebtn(ng-click="settingPanel.toggle()")
       h3 Settings
       br
       div(style="width: 80%;margin:auto")
         label Name
-        input.form-control(placeholder="Chart Name", ng-model="chart.name")
+        input.form-control(placeholder="Chart Name", ng-model="theme.name")
         br
         label Descriptiont
-        textarea.form-control(placeholder="Chart Description", ng-model="chart.desc",rows="3")
+        textarea.form-control(placeholder="Chart Description", ng-model="theme.desc",rows="3")
         br
         label Tags
-        input.form-control(placeholder="comma separated values, like 'population,economics'", ng-model="chart.tags")
+        input.form-control(placeholder="comma separated values, like 'population,economics'", ng-model="theme.tags")
         br
         label Backups
         div(ng-cloak,ng-show="backup.list.length")
@@ -36,7 +36,7 @@ block body
         hr(style="margin-bottom:10px")
         .btn.btn-default(ng-click="clone()") Make a copy
         .pull-right
-          .save-hint-btn.btn.btn-default.loader(ng-disabled="!chart.name",ng-click="save()",
+          .save-hint-btn.btn.btn-default.loader(ng-disabled="!theme.name",ng-click="save()",
           ng-class="{'loading':save.handle}")
             +SaveFork
           .btn.btn-default(ng-click="settingPanel.toggle()") Close
@@ -44,35 +44,35 @@ block body
     #permission-modal(ng-cloak,ng-show="sharePanel.toggled"): .ib
       .closebtn(ng-click="sharePanel.toggle()")
       h3 Share
-      div(ng-cloak,ng-show="!chart.key",
+      div(ng-cloak,ng-show="!theme.key",
       style="position:absolute;top:0;left:0;width:100%;height:100%;")
         div(style="display:table;width:100%;height:100%;"): div(style="display:table-row;width:100%;height:100%")
           div(style="display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center;color:#888")
-            | This chart is not saved. #[br] Save it to share it. #[br]#[br]#[br]
+            | This theme is not saved. #[br] Save it to share it. #[br]#[br]#[br]
             div(style="width:70%;margin:auto;max-width:500px")
               .text-left: label(style="color:initial") Give Your Chart a Name
-              input.form-control(type="text",ng-model="chart.name",
+              input.form-control(type="text",ng-model="theme.name",
               placeholder="Project Name",style="margin-bottom:5px")
-              .btn.btn-default.btn-block.loader(ng-disabled="!chart.name",ng-click="save()",
+              .btn.btn-default.btn-block.loader(ng-disabled="!theme.name",ng-click="save()",
               ng-class="{'loading':save.handle}")
                 +SaveFork
 
-      div(ng-cloak,ng-show="chart.type.location=='local' && chart.key",
+      div(ng-cloak,ng-show="theme.type.location=='local' && theme.key",
       style="position:absolute;top:0;left:0;width:100%;height:100%;")
         div(style="display:table;width:100%;height:100%;"): div(style="display:table-row;width:100%;height:100%")
           div(style="display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center;color:#888")
-            | This chart is locally saved. #[br] You need to save it in plotdb.com to share it. #[br]#[br]
+            | This theme is locally saved. #[br] You need to save it in plotdb.com to share it. #[br]#[br]
             .btn.btn-default(ng-click="migrate()") OK, move it to the server
         div(style="position:absolute;bottom:5px;width:100%")
           hr(style="margin-bottom:10px")
           .pull-right(style="padding:0px 10px 5px"): .btn.btn-default(ng-click="sharePanel.toggle()") Close
-      div(ng-cloak,ng-show="chart.type.location=='server' && chart.key")
+      div(ng-cloak,ng-show="theme.type.location=='server' && theme.key")
         br
         .text-center(style="margin-bottom: 8px"): .btn-group
           .btn.btn-default(ng-click="sharePanel.setPrivate()",ng-class="{'active':!sharePanel.isPublic()}") Private
           .btn.btn-default(ng-click="sharePanel.setPublic()",ng-class="{'active':sharePanel.isPublic()}") Public
-        .text-center(ng-show="!sharePanel.isPublic()") Only users with permission can see this chart.
-        .text-center(ng-show="sharePanel.isPublic()") Every one can see this chart.
+        .text-center(ng-show="!sharePanel.isPublic()") Only users with permission can see this theme.
+        .text-center(ng-show="sharePanel.isPublic()") Every one can see this theme.
 
         .text-center.text-danger(ng-cloak,ng-show="sharePanel.saveHint") Save to apply this change
         .text-center: .checkbox: label #[input(type="checkbox",ng-model="sharePanel.forkable")] Allow others to fork this work
@@ -108,19 +108,19 @@ block body
                 i.fa.fa-external-link(style="vertical-align:middle")
                 span(style="font-size:12px;margin-left:5px;") Open in New Window
             input.form-control(ng-cloak,disabled,
-            ng-show="!sharePanel.isPublic()",placeholder="set chart public to get share link")
-            input#chartedit-sharelink.form-control(ng-cloak,type="text",ng-model="sharePanel.link",
-            placeholder="share link for this chart",ng-show="sharePanel.isPublic()",
-            data-clipboard-target="#chartedit-sharelink")
+            ng-show="!sharePanel.isPublic()",placeholder="set theme public to get share link")
+            input#themeedit-sharelink.form-control(ng-cloak,type="text",ng-model="sharePanel.link",
+            placeholder="share link for this theme",ng-show="sharePanel.isPublic()",
+            data-clipboard-target="#themeedit-sharelink")
             br
             label Embed Code
             textarea.form-control(ng-cloak,disabled,rows="3",
-            ng-show="!sharePanel.isPublic()",placeholder="set chart public to get embed code")
-            textarea#chartedit-embedcode.form-control(ng-cloak,rows="3",ng-show="sharePanel.isPublic()",
-            data-clipboard-target="#chartedit-embedcode",ng-model="sharePanel.embedcode")
+            ng-show="!sharePanel.isPublic()",placeholder="set theme public to get embed code")
+            textarea#themeedit-embedcode.form-control(ng-cloak,rows="3",ng-show="sharePanel.isPublic()",
+            data-clipboard-target="#themeedit-embedcode",ng-model="sharePanel.embedcode")
         hr(style="margin-bottom:10px")
         .pull-right
-          .save-hint-btn.btn.btn-default.loader(ng-disabled="!chart.name",ng-click="save();sharePanel.saveHint=false",
+          .save-hint-btn.btn.btn-default.loader(ng-disabled="!theme.name",ng-click="save();sharePanel.saveHint=false",
           ng-class="{'btn-warning':sharePanel.saveHint,'btn-default':!sharepanel.saveHint,'loading':save.handle}")
             +SaveFork
           .btn.btn-default(ng-click="sharePanel.toggle()") Close
@@ -160,27 +160,27 @@ block body
             i.glyphicon.glyphicon-chevron-left(ng-show="showsrc")
         .tab.shown(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'",ng-cloak)
           div #[span preview]
-          .desc {{chart.dimension|length}} dimensions
+          .desc {{theme.dimension|length}} dimensions
         .tab.src(ng-class="{'active':vis=='code','shown':showsrc}",ng-click="vis='code'",ng-cloak)
           div #[span code] #[small javascript]
-          .desc {{chart.code.size|size}}, {{chart.code.lines}} lines
+          .desc {{theme.code.size|size}}, {{theme.code.lines}} lines
         .tab.src(ng-class="{'active':vis=='stylesheet','shown':showsrc}",ng-click="vis='stylesheet'",ng-cloak)
           div #[span stylesheet] #[small css]
-          .desc {{chart.style.size|size}}, {{chart.style.lines}} lines
+          .desc {{theme.style.size|size}}, {{theme.style.lines}} lines
         .tab.src(ng-class="{'active':vis=='document','shown':showsrc}",ng-click="vis='document'",ng-cloak)
           div #[span document] #[small html]
-          .desc {{chart.doc.size|size}}, {{chart.doc.lines}} lines
+          .desc {{theme.doc.size|size}}, {{theme.doc.lines}} lines
         .tab.src(ng-class="{'active':vis=='assets','shown':showsrc}",ng-click="vis='assets'",ng-cloak)
           div #[span assets] #[small]
           .desc
-            span(ng-cloak,ng-if="!chart.assets.length") no file
-            span(ng-cloak,ng-if="chart.assets.length") {{chart.assets.length}} files, {{chart.assets.size|size}}
+            span(ng-cloak,ng-if="!theme.assets.length") no file
+            span(ng-cloak,ng-if="theme.assets.length") {{theme.assets.length}} files, {{theme.assets.size|size}}
         //-.tab.shown(ng-class="{'active':vis=='data'}",ng-click="scrollto('#binding-panel')",ng-cloak)
           div #[span data]
-          .desc {{chart.dimension|length}} dimensions
+          .desc {{theme.dimension|length}} dimensions
         .pull-right
           .tab.action(ng-click="settingPanel.toggle()") #[i.fa.fa-cog] #[span settings]
-          .tab.action(ng-show="chart.owner==user.data.key",
+          .tab.action(ng-show="theme.owner==user.data.key",
           ng-click="sharePanel.toggle()") #[i.fa.fa-user] #[span share]
 
 
@@ -192,13 +192,13 @@ block body
             .chart-config
               .input-group
                 span.input-group-addon name
-                input.form-control(type="text",ng-model="chart.name",placeholder="Project Name")
+                input.form-control(type="text",ng-model="theme.name",placeholder="Project Name")
             .chart-config
-              textarea#chart-desc-input.form-control(placeholder="Chart description",
-              ng-model="chart.desc",ng-class="{'hidden':editor.fullscreen.toggled}")
+              textarea#theme-desc-input.form-control(placeholder="Chart description",
+              ng-model="theme.desc",ng-class="{'hidden':editor.fullscreen.toggled}")
 
             #chart-action.btn-group(style="width:100%")
-              .btn.btn-default.loader(ng-disabled="!chart.name",ng-click="save()",
+              .btn.btn-default.loader(ng-disabled="!theme.name",ng-click="save()",
               ng-class="{'loading':save.handle}")
                 +SaveFork
               .dropdown
@@ -212,27 +212,27 @@ block body
                   li.disabled(ng-show="download.png.url=='#'"): a PNG #[i.fa.fa-warning.text-danger]
                   li.disabled(ng-show="download.svg.url=='#'"): a SVG #[i.fa.fa-warning.text-danger]
                   li(ng-show="download.png.url && download.png.url!='#'")
-                    a(ng-attr-download="{{chart.name}}.png",ng-attr-href="{{download.png.url}}")
+                    a(ng-attr-download="{{theme.name}}.png",ng-attr-href="{{download.png.url}}")
                       | PNG #[small(ng-show="download.png.size") {{download.png.size|size}}]
                   li(ng-show="download.svg.url && download.svg.url!='#'")
-                    a(ng-attr-download="{{chart.name}}.svg",ng-attr-href="{{download.svg.url}}")
+                    a(ng-attr-download="{{theme.name}}.svg",ng-attr-href="{{download.svg.url}}")
                       | SVG #[small(ng-show="download.svg.size") {{download.svg.size|size}}]
                   li(ng-show="download.plotdb.url && download.plotdb.url!='#'")
-                    a(ng-attr-download="{{chart.name}}.plotdb.json",ng-attr-href="{{download.plotdb.url}}")
+                    a(ng-attr-download="{{theme.name}}.plotdb.json",ng-attr-href="{{download.plotdb.url}}")
                       | PlotDB.json #[small(ng-show="download.plotdb.size") {{download.plotdb.size|size}}]
           #chart-configs: .ib
             label Config
             .pull-right: a(href="#",ng-click="resetConfig()") reset
             .chart-config(ng-cloak)
               .btn-group
-                span.input-group-addon Theme
+                span.input-group-addon Chart
                 .dropdown
                   .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
-                    span {{theme.name || 'No Theme'}}
+                    span {{chart.name || 'No Chart'}}
                     i.fa.fa-caret-down
                   ul.dropdown-menu
-                    li: a(ng-click="themes.set(null)") No Theme
-                    li(ng-repeat="item in themes.list"): a(ng-click="themes.set(item)") {{item.name}}
+                    li: a(ng-click="charts.set(null)") No Chart
+                    li(ng-repeat="item in charts.list"): a(ng-click="charts.set(item)") {{item.name}}
 
             .chart-config(ng-cloak,ng-repeat="(name,v) in chart.config")
               .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color'")
@@ -274,13 +274,13 @@ block body
               span(ng-class="{'active':vis=='document'}",ng-click="vis='document'") #[i.fa.fa-code] Document
               span(ng-class="{'active':vis=='assets'}",ng-click="vis='assets'") #[i.fa.fa-files-o] Assets
 
-          #code-editor-code.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="chart.code.content",ui-refrehs="vis",ng-class="{'active':vis=='code'}")
-          #code-editor-style.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="chart.style.content",ui-refrehs="vis",ng-class="{'active':vis=='stylesheet'}")
-          #code-editor-doc.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="chart.doc.content",ui-refrehs="vis",ng-class="{'active':vis=='document'}")
+          #code-editor-code.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="theme.code.content",ui-refrehs="vis",ng-class="{'active':vis=='code'}")
+          #code-editor-style.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="theme.style.content",ui-refrehs="vis",ng-class="{'active':vis=='stylesheet'}")
+          #code-editor-doc.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="theme.doc.content",ui-refrehs="vis",ng-class="{'active':vis=='document'}")
           #code-editor-assets.box(ng-cloak,ng-class="{'active':vis=='assets'}")
             .file.uploader Upload ... #[input(type="file",multiple)]
-            .file(ng-repeat="f in chart.assets",ng-click="assets.preview(f)")
-              .closebtn.outer(ng-click="chart.removeFile(f)")
+            .file(ng-repeat="f in theme.assets",ng-click="assets.preview(f)")
+              .closebtn.outer(ng-click="theme.removeFile(f)")
               .title {{f.name}}
               .type #[i {{f.type}}] #[small.pull-right {{(f.content || "").length|size}}]
           #code-ctrl
@@ -294,7 +294,7 @@ block body
                   | Fullscreen 
                   i.glyphicon.glyphicon-fullscreen(ng-show="!editor.fullscreen.toggled")
                   i.glyphicon.glyphicon-resize-small(ng-show="editor.fullscreen.toggled")
-              .btn.btn-default(ng-click="chart.render();vis='preview'") Preview #[small.hint Alt-Enter]
+              .btn.btn-default(ng-click="theme.render();vis='preview'") Preview #[small.hint Alt-Enter]
 
         #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
           .closebtn.inner(ng-click="editor.fullscreen.toggle()")
@@ -313,143 +313,7 @@ block body
           iframe#chart-renderer(src="http://localhost/render.html",
           style="width:100%;height:100%;border:none;")
 
-    #binding-panel(style="position:relative")
-      div(style="font-weight:bold;font-size:1.5em") Data Mapping
-      hr(style="margin:5px 0")
-      //- try list functions in a navbar. will we use this?
-      //-.navbar.navbar-default
-        .navbar-collapse.collapse
-          ul.nav.navbar-nav
-            li: a my dataset #[span.caret]
-            li: a sample dataset #[span.caret]
-
-          //-form.navbar-form.navbar-left
-            select.form-control(style="width:100px")
-            .input-group
-              input.form-control(type="text")
-              .input-group-btn: .btn.btn-default GO
-          ul.nav.navbar-nav.pull-right
-            li: a ... or
-            li: a(href="#") upload #[i.fa.fa-upload]
-            li: a(href="#") google sheet #[i.fa.fa-cloud]
-            li: a(href="#") key in #[i.fa.fa-edit]
-
-      .row(ng-controller="dataFiles")
-        .col-sm-3(ng-cloak)
-          #data-fields.data-fields(style="height:337px;width:100%;overflow-y:scroll;")
-            .data-file(style="border:none",ng-show="!activelength")
-              b choose a dataset to start
-              div: small {{datasets.length}} datasets
-            .data-file(style="border:none",ng-show="activelength")
-              b drag field to dimension
-              div: small {{activefile.fields.length}} datasets
-
-            #field-agent.data-field(ng-drag="true",ng-drag-data="fieldAgent.data",ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="activelength")
-              span {{fieldAgent.data.name}}
-              small {{fieldAgent.data.type}}
-            .data-file(ng-repeat="file in datasets",style="cursor:pointer",
-            ng-class="{'extend':file.toggle,'mini':!file.toggle && activelength}")
-              //-,ng-class="{'active':file.toggle}")
-              div(ng-click="file.toggle=!!!file.toggle")
-                .closebtn.inner(ng-cloak,ng-show="file.toggle")
-                .title {{file.name}}
-                .desc {{file.size}}, {{file.rows}} rows
-              div(ng-shxow="file.toggle")
-                .data-field(ng-repeat="field in file.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
-                ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field")
-                  span {{field.name}}
-                  small {{field.type}}
-
-          //-.data-fields(ng-controller="dataFiles")
-            //-.data-file(style="border:none",ng-show="activelength")
-              b drag field to dimension
-              div: small 7 fields
-
-
-            #field-agent.data-field(ng-drag="true",ng-drag-data="fieldAgent.data",ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="activelength")
-              span {{fieldAgent.data.name}}
-              small {{fieldAgent.data.type}}
-            //-.data-file(ng-repeat="file in datasets",ng-show="file.toggle",style="width:100%")
-              .closebtn(ng-click="file.toggle=!!!file.toggle")
-              .title {{file.name}}
-              .desc {{file.size}}, {{file.rows}} rows
-              div(style="max-height:230px;overflow:scroll")
-                .data-field(ng-repeat="field in file.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
-                ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field")
-                  span {{field.name}}
-                  small {{field.type}}
-
-        .col-sm-9
-          #datamap-hint(ng-cloak,ng-class="{'step1': !activelength, 'step2': activelength}")
-            p(ng-show="!activelength") #[i.fa.fa-arrow-left] select a file to map data
-            p(ng-show="activelength")
-              i.fa.fa-arrow-right
-              br
-              | drag
-          .dimensions
-            .dimension(ng-cloak,ng-repeat="(name,dim) in chart.dimension",ng-drop="true",
-            ng-drop-success="dimension.bind($event,dim,$data)")
-              .require(ng-show="dim.require"): i.fa.fa-asterisk
-              .title
-                | {{name}}
-                small(ng-cloak,ng-show="dim.multiple",
-                style="color:#999;font-weight:200;font-size:0.7em;margin-left:5px") multi-fields
-              .desc
-                span(ng-show="dim.desc") {{dim.desc}} #[br]
-                i accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]
-              .data-field(ng-repeat="field in dim.fields")
-                .closebtn(ng-click="dimension.unbind($event, dim, field)")
-                span {{field.name}}
-                small {{field.type}}
-                small in dataset "{{field.dataset.name}}"
-            .dimension.flexend
-
-    //-.panel.panel-default: .panel-body
-      .row
-        .col-sm-12
-          label Data Mapping
-          .data-fields(ng-controller="dataFiles")
-            .data-file(ng-repeat="file in datasets",style="cursor:pointer",
-            ng-click="file.toggle=!!!file.toggle",ng-class="{'active':file.toggle}")
-              .title {{file.name}}
-              .desc {{file.size}}, {{file.rows}} rows
-            .data-file.data-file-new
-              .title(style="line-height:2.5em",
-              ng-click="showDataCreateModal=!!!showDataCreateModal") add new dataset ...
-            br.clearfix
-          #data-create-modal(ng-show="showDataCreateModal")
-            include /data/create.jade
-      hr
-      .row
-        .col-sm-4(style="position:relative")
-          label Data Fields
-          .data-fields(ng-controller="dataFiles")
-            .data-file(ng-repeat="file in datasets",ng-show="file.toggle")
-              .closebtn(ng-click="file.toggle=!!!file.toggle")
-              .title {{file.name}}
-              .desc {{file.size}}, {{file.rows}} rows
-              .data-field(ng-repeat="field in file.fields",
-              ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field")
-                span {{field.name}}
-                small {{field.type}}
-            br.clearfix
-          img(src="/assets/img/drag.png",style="position:absolute;right:10px;z-index:0")
-        .col-sm-8
-          label Dimensions
-          .dimensions
-            .dimension(ng-cloak,ng-repeat="(name,dim) in chart.dimension",ng-drop="true",
-            ng-drop-success="dimension.bind($event,dim,$data)")
-              .require(ng-show="dim.require"): i.fa.fa-asterisk
-              .title {{name}}
-              .desc
-                span(ng-show="dim.desc") {{dim.desc}} #[br]
-                i accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]
-              .data-field(ng-repeat="field in dim.fields")
-                .closebtn(ng-click="dimension.unbind($event, dim, field)")
-                span {{field.name}}
-                small {{field.type}}
-            .dimension.flexend
-    .row(ng-show="chart.key && chart.owner == user.data.key")
+    .row(ng-show="theme.key && theme.owner == user.data.key")
       .col-sm-12
         .panel.panel-default
           .panel-heading: label Danger Zone
@@ -457,10 +321,10 @@ block body
             div(style="display:flex")
               div(style="flex: 1 1 0")
                 .text-center: label Delete
-                p.text-center Permanently delete this chart. Are you sure?
+                p.text-center Permanently delete this theme. Are you sure?
                 .text-center: .btn.btn-danger.loader(ng-click="delete()",ng-class="{'loading':delete.handle}") Yes, Delete it
-              div(ng-cloak,ng-show="chart.type.location=='local'",style="flex: 1 1 0")
+              div(ng-cloak,ng-show="theme.type.location=='local'",style="flex: 1 1 0")
                 .text-center: label Migrate
-                p.text-center Permanently move this chart from local to server. Are you sure?
+                p.text-center Permanently move this theme from local to server. Are you sure?
                 .text-center: .btn.btn-warning(ng-click="migrate()") Yes, Move it
   include /footer.jade
