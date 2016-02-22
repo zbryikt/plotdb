@@ -96,7 +96,7 @@ angular.module \plotDB
             if $scope.save.handle => $timeout.cancel $scope.save.handle
             $scope.save.handle = null
           .catch (err) ~> $scope.$apply ->
-            plNotify.send \error, "failed to save chart"
+            plNotify.aux.error.io \save, \chart, e
             console.error "[save chart]", err
             #TODO write twice because lastly seems to not work. check why
             if $scope.save.handle => $timeout.cancel $scope.save.handle

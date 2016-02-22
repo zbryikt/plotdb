@@ -381,7 +381,10 @@ block body
         .col-sm-9
           #datamap-hint(ng-cloak,ng-class="{'step1': !activelength, 'step2': activelength}")
             p(ng-show="!activelength") #[i.fa.fa-arrow-left] select a file to map data
-            p(ng-show="activelength") #[i.fa.fa-arrow-right] #[br] drag to bind
+            p(ng-show="activelength")
+              i.fa.fa-arrow-right
+              br
+              | drag
           .dimensions
             .dimension(ng-cloak,ng-repeat="(name,dim) in chart.dimension",ng-drop="true",
             ng-drop-success="dimension.bind($event,dim,$data)")
