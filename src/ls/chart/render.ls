@@ -4,6 +4,12 @@ plotdomain = \http://localhost/
 window.addEventListener \click, ->
   window.parent.postMessage {type: \click, payload: ""}, plotdomain
 
+window.thread = do
+  count: 0
+  inc: (t) -> if t => @count = (@count or 0) + 1
+  dec: (t) -> if t => @count = (@count or 1) - 1
+  racing: -> @count > 1
+
 <- $ document .ready
 
 dispatcher = (evt) ->
@@ -30,6 +36,7 @@ proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
   codeNode = document.createElement("script")
   codeNode.onload = ->
     URL.revokeObjectURL codeURL
+    window[module].identity = parseInt(Math.random!*1000)
     res window[module]
     try
       document.body.removeChild codeNode
@@ -101,6 +108,7 @@ snapshot = (type='snapshot') ->
     window.parent.postMessage {type, payload: null}, plotdomain
 
 render = (payload, rebind = true) ->
+  identity = parseInt(Math.random!*1000)
   [code,style,doc] = <[code style doc]>.map(->payload.{}chart[it].content)
   [data,assets] = <[data assets]>.map(->payload.chart[it])
   dimension = payload.chart.dimension or {}
@@ -108,11 +116,15 @@ render = (payload, rebind = true) ->
   theme = payload.theme or {}
   reboot = !window.module or !window.module.inited or window.module.exec-error
   if reboot => sched.clear!
+  # sometimes multiple thread enter this function
+  # they stop at proper-eval which overwrite module again and again
+  # this leads to the reinit of chart, then duplicate charts.
+  # use thread.racing to prevent this situaiton.
+  thread.inc reboot
   try
     if false and "script tag disallow" =>
       ret = /<\s*script[^>]*>.*<\s*\/\s*script\s*>/g.exec(doc.toLowerCase!)
-      if ret => throw new Error("script tag is now allowed in document.")
-    #if rebind or !window.module =>
+      if ret => throw new Error("script tag is not allowed in document.")
     if reboot =>
       node = document.getElementById("wrapper")
       if !node =>
@@ -132,7 +144,8 @@ render = (payload, rebind = true) ->
       promise = proper-eval code
     else promise = Promise.resolve window.module
     promise.then (module) ->
-      window.module = module
+      if thread.racing! => return thread.dec reboot
+      #window.module = module
       root = document.getElementById \container
       chart = module.exports
       if (!data or !data.length) and chart.sample => data := chart.sample
@@ -161,14 +174,12 @@ render = (payload, rebind = true) ->
       if rebind or reboot or !(chart.root and chart.data) => chart <<< {root, data, dimension}
       promise = Promise.resolve!
       if reboot and chart.init => promise = promise.then ->
-        console.log "[debug] init module... reboot: #reboot / rebind: #rebind / inited: #{module.inited}"
-        console.log "[debug] chart: ", chart
-        console.log "[debug] init module... chart: ", chart
-        console.log "[debug] init module... module: ", module
+        if thread.racing! => return
         ret = if !module.inited => chart.init! else null
         module.inited = true
         ret
       <~ promise.then
+      if thread.racing! => return thread.dec reboot
       chart.resize!
       if rebind or reboot => chart.bind!
       chart.render!
@@ -176,8 +187,10 @@ render = (payload, rebind = true) ->
       window.parent.postMessage {type: \error, payload: window.error-message or ""}, plotdomain
     .catch (e) ->
       module.exec-error = true
+      thread.dec reboot
       return error-handling e
   catch e
+    thread.dec reboot
     error-handling e
 
 window.addEventListener \message, dispatcher, false
@@ -190,7 +203,7 @@ window.addEventListener \resize, ->
     chart = window.module.exports
     chart.resize!
     chart.render!
-  ), 700
+  ), 400
 
 window.addEventListener \keydown, (e) ->
   if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) =>
