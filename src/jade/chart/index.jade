@@ -175,9 +175,6 @@ block body
           .desc
             span(ng-cloak,ng-if="!chart.assets.length") no file
             span(ng-cloak,ng-if="chart.assets.length") {{chart.assets.length}} files, {{chart.assets.size|size}}
-        //-.tab.shown(ng-class="{'active':vis=='data'}",ng-click="scrollto('#binding-panel')",ng-cloak)
-          div #[span data]
-          .desc {{chart.dimension|length}} dimensions
         .pull-right
           .tab.action(ng-click="settingPanel.toggle()") #[i.fa.fa-cog] #[span settings]
           .tab.action(ng-show="chart.owner==user.data.key",
