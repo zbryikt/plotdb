@@ -31,28 +31,7 @@ angular.module \plotDB
         idx = @assets.indexOf(file)
         if idx < 0 => return
         @assets.splice idx, 1
-      update-data: ->
-        @data = []
-        #TODO fields data load by demand
-        len = Math.max.apply null,
-          [v for k,v of @dimension]
-            .reduce(((a,b) -> (a) ++ (b.fields or [])),[])
-            .filter(->it.data)
-            .map(->it.data.length) ++ [0]
-        for i from 0 til len
-          ret = {}
-          for k,v of @dimension
-            if v.multiple =>
-              ret[k] = if v.[]fields.length => v.[]fields.map(->it.[]data[i]) else []
-              v.field-name = v.[]fields.map -> it.name
-            else
-              ret[k] = if v.[]fields.0 => that.[]data[i] else null
-              v.field-name = if v.[]fields.0 => that.name else null
-            #TODO need correct type matching
-            if v.type.filter(->it.name == \Number).length =>
-              if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
-              else ret[k] = parseFloat(ret[k])
-          @data.push ret
+
     themeService = baseService.derive \theme, service, object
     themeService
   ..controller \themeEditor,
@@ -141,6 +120,7 @@ angular.module \plotDB
         if !@chart => return
         @chart.update-data!
         for k,v of @chart => if typeof(v) != \function => @chart[k] = v
+        for k,v of @theme => if typeof(v) != \function => @theme[k] = v
         payload = JSON.parse(angular.toJson({theme: @theme, chart: @chart}))
         # trigger a full reload of renderer in case any previous code ( such as timeout recursive )
         # and actually render it once loaded
@@ -192,8 +172,11 @@ angular.module \plotDB
               $timeout (~> @enabled = true), 4000
             .catch (err) ~> console.error 'fecth backup failed: #', err
       charts:
-        list: chart-service.sample
-        set: -> $scope.chart = it
+        list: chart-service.sample.map -> new chart-service.chart it
+        set: ->
+          $scope.chart = it
+          $scope.chart.theme = $scope.theme
+          $scope.reset-config!
       editor: do
         class: ""
         focus: ->

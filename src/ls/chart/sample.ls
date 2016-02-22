@@ -2,6 +2,14 @@ angular.module \plotDB
   ..service \sampleChart, <[$rootScope]> ++ ($rootScope) ->
     ret = [
       {
+        name: "Empty Chart", desc: "a boilerplate for visualization"
+        permission: {}
+        key: "/chart/sample/:empty"
+        owner: null
+        type: location: \sample, name: \cahrt
+        config: { padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: true}}
+        dimension: {value: {type: [plotdb.Number], require: true, desc: "" }}
+        assets: []
         doc: content: ""
         style: content: ""
         code: content: '''
@@ -40,6 +48,20 @@ module.exports = plotdb.chart.create({
 
       },
       {
+        name: "Bubble Chart", desc: "a simple bubble chart"
+        permission: {}
+        key: "/chart/sample/:bubble"
+        owner: null
+        type: location: \sample, name: \cahrt
+        config: {
+          padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: true},
+          palette: { name: "Palette", type: [plotdb.Palette], default: plotdb.Palette.default}
+        },
+        dimension: {
+          value: {type: [plotdb.Number], require: true, desc: "size of circle" },
+          name: {type: [], require: false, desc: "tag of circle" },
+        }
+        assets: []
         doc: do
           content: """<h3>D3.js Pack Layout Example</h3>"""
         style: do
