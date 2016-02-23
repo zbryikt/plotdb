@@ -140,9 +140,37 @@
     border: 1px solid #666
     border-radius: 3px
 
+#subnav-top
+  background: #eee
+  width: 100%
+  height: 26px
+  position: fixed
+  top: 60px
+  z-index: index(order, 'subnav-top')
+  transition all 0.3s ease-out
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1)
+  .ib
+    max-width: 1200px
+    margin: auto
+  span
+    letter-spacing: 0.5px
+    margin-right: 40px
+    color: #777
+    padding: 5px
+    display: inline-block
+    font-size: 12px
+#subnav-top.dim
+  top: 50px
+  background: rgba(255,255,255,0.9)
+  border-bottom: 1px solid #ccc
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2)
+
+
 @media (max-width: 800px)
   #nav-top
     height: 46px
+  #subnav-top
+    top: 46px
   .navbar-brand
     height: auto
   #nav-top .navbar-header
@@ -182,6 +210,8 @@
 @media (max-width: 682px)
   #nav-top.dim
     height: 45px
+  #subnav-top.dim
+    top: 45px
   #nav-top .navbar-nav
     & > li > a
       padding-left: 8px
@@ -192,7 +222,6 @@
   #nav-localdata
     display: none
 
-
 #nav-top
   color: #eee
   background: #222
@@ -202,3 +231,4 @@
 
 #nav-top.dim
   background: rgba(0,0,0,0.8)
+

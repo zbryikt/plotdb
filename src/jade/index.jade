@@ -10,51 +10,57 @@ block head
   script(type="text/javascript",src="/js/landing.js")
 block body
   //-#landing(style="background-image:url(/assets/img/test/landing.png);background-size:cover")
+  #subnav-top: .ib
+    span Time Series
+    span Geographic
+    span Journalism
+    span Statistical
+    span Animated
+    span Scientific
   #landing(style="text-align: center;background:url(/assets/img/landing.png) center center no-repeat;position:relative")
-    svg#landing-svg(style="position:absolute;z-index:1")
-    img(src="/assets/img/test/logo.png",style="margin-top:100px;position:relative;z-index:2")
+    svg#landing-svg(style="width:100%;height:100%;position:absolute;z-index:1;background:rgba(20,10,0,0.4)")
+      defs
+        filter#blur1
+          feGaussianBlur(in="SourceGraphic",stdDeviation="1", result="blur")
+          feColorMatrix(in="blur", values="0.6 0 0 0 0   0 0.6 0 0 0   0 0 0.6 0 0   0 0 0 0.8 0")
+        filter#blur2(x="-50%",y="-50%",width="200%",height="200%")
+          feGaussianBlur(in="SourceGraphic",stdDeviation="2", result="blur")
+          feColorMatrix(in="blur", values="0.5 0 0 0 0   0 0.4 0 0 0   0 0 0.4 0 0   0 0 0 0.7 0")
+        filter#blur3(x="-50%",y="-50%",width="200%",height="200%")
+          feGaussianBlur(in="SourceGraphic",stdDeviation="3", result="blur")
+          feColorMatrix(in="blur", values="0.5 0 0 0 0   0 0.4 0 0 0   0 0 0.4 0 0   0 0 0 0.6 0")
+
+
+    img(src="/assets/img/logo-alt.png",style="margin-top:-60px;top:50%;position:relative;z-index:2")
     //-
       .title P#[small LOT]DB
       .subtitle data on you, vis by us.
 
-  #product-description(style="background:#fff")
-    span &nbsp;
+  #product-description
+    h3.text-center Visualizations shared for non-Coders
     br
-    br
-    div(style="position:absolute;right:220px;width:240px;height:180px;border:1px dashed #000;transform:rotate(-5deg);background:#fff;margin-top:-50px;box-shadow:-4px 4px 4px rgba(0,0,0,0.2)")
-    h4.text-center You don't need to be coder to do visualization.
-    h3.text-center No, You don't need.
-    //-
-      h4.text-center "Hey I want to vis like this, but I can't code ..."
-      h3.text-center No, You don't need.
-    br
-    hr
-    h3.text-center Why PlotDB ?
-    hr
     br
     .row.text-center(style="max-width:1024px;margin:auto")
       .col-sm-4
-        i.fa.fa-globe(style="font-size:64px")
+        //i.fa.fa-globe(style="font-size:64px")
+        img(src="/assets/img/test/noun_321419_cc.svg", style="width:128px;margin:39px 0 39px 0")
         h3 Keep Data Locally
         span use your data #[b without uploading]. #[br] Privacy First!
       .col-sm-4
-        i.fa.fa-link(style="font-size:64px")
+        img(src="/assets/img/test/noun_73820_cc.svg", style="width:192px")
         br
         h3 Infinite Creativity
         span more than common charts. #[b Much more]. #[br] Plot Like Shopping!
       .col-sm-4
-        i.fa.fa-heart(style="font-size:64px")
+        //-i.fa.fa-heart(style="font-size:64px")
+        img(src="/assets/img/test/gears.svg",style="width:128px;margin:57px 0")
         br
         h3 Full Control
         span #[b source code] and #[b stylesheet] in your hand. #[br] Customize as You Can!
     br
 
   #root
-
-    hr
-    //include /chart/modal.jade
-    br
-    h2.text-center Pick One and Go!
+    h2.text-center Popular Visualizations
     br
     .charts(ng-controller="chartList")
       .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")

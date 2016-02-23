@@ -15,6 +15,11 @@ force = d3.layout.force!size [box.width, box.height] .gravity 0.06 .charge -200 
 force.nodes data
 
 circles = svg.selectAll("circle").data(data).enter!append \circle
+  .attr do
+    filter: ->
+      d = parseInt(( 1 - it.value ) * 4)
+      console.log d
+      if d => "url(\#blur#d)" else ""
 speed = 1
 tick = ->
   for item in data =>

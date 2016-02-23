@@ -126,8 +126,12 @@ angular.module \plotDB
 
     window.addEventListener \scroll, (it) ->
       scroll-top = $(window).scroll-top!
-      if scroll-top < 60 => $(\#nav-top)removeClass \dim
-      else => $(\#nav-top)addClass \dim
+      if scroll-top < 60 =>
+        $(\#nav-top)removeClass \dim
+        $(\#subnav-top)removeClass \dim
+      else =>
+        $(\#nav-top)addClass \dim
+        $(\#subnav-top)addClass \dim
     #if ga? => $scope.$watch 'user.data', (-> ga \set, \dimension1, $scope.user.data.key), true
 
     /* temporarily code for mockup */
