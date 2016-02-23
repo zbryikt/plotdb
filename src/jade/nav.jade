@@ -9,14 +9,19 @@
           li#nav-chart.dropdown
             a.dropdown-toggle(href="#",data-toggle="dropdown") CHARTS #[span.caret]
             ul.dropdown-menu
-              li: a(href="/explore/") Explore
+              li: a(href="/chart/explore/") Explore
               li: a(href="/chart/me.html") My Charts
               li.divider
-                li: a(href="/chart/") New Chart
-                li: a(href="/chart/?demo") Demo Chart
+              li: a(href="/chart/") New Chart
+              li: a(href="/chart/?demo") Demo Chart
 
           li#nav-data: a(href="/data/") DATA
-          li#nav-theme: a(href="/theme/") THEME
+          li#nav-theme.dropdown
+            a.dropdown-toggle(href="#",data-toggle="dropdown") THEME #[span.caret]
+            ul.dropdown-menu
+              li: a(href="/theme/explore/") Explore
+              li.divider
+              li: a(href="/theme/") New Theme
 
         ul.nav.navbar-nav.pull-right
           li#nav-theme: a(href="/theme/"): small Request a Chart
