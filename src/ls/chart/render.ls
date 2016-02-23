@@ -36,7 +36,7 @@ proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
   codeNode = document.createElement("script")
   codeNode.onload = ->
     URL.revokeObjectURL codeURL
-    window[module].identity = parseInt(Math.random!*1000)
+    if window[module] => window[module].identity = parseInt(Math.random!*1000)
     res window[module]
     try
       document.body.removeChild codeNode
@@ -108,7 +108,6 @@ snapshot = (type='snapshot') ->
     window.parent.postMessage {type, payload: null}, plotdomain
 
 render = (payload, rebind = true) ->
-  identity = parseInt(Math.random!*1000)
   [code,style,doc] = <[code style doc]>.map(->payload.{}chart[it].content)
   [data,assets] = <[data assets]>.map(->payload.chart[it])
   dimension = payload.chart.dimension or {}
