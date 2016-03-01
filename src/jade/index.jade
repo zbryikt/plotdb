@@ -81,6 +81,7 @@ block body
     h2.text-center Visualizations
     .text-center Pick your favorite and visualize in seconds.
     br
+
     .charts(ng-controller="chartList")
       .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
         .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
@@ -95,6 +96,7 @@ block body
           .author #[i.fa.fa-user] zbryikt
           .favorite #[i.fa.fa-heart] 15
           .used #[i.fa.fa-code-fork] 15
+
     br
     //-
       .panel.panel-default(style="display:inline-block"): .panel-body

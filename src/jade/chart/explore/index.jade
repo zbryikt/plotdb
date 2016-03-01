@@ -13,6 +13,7 @@ block body
     //-
       br
       br
+
     //-.panel.panel-default(style="max-width:800px;margin:auto"): .panel-body
       label Search Chart
       .input-group
@@ -35,7 +36,6 @@ block body
       hr
       br
 
-    br
     //-
       .panel.panel-default(style="display:inline-block"): .panel-body
         big 我的資料 #[small(style="color:#777;"): small: i 67.5KB / 407 rows]
@@ -52,25 +52,60 @@ block body
       hr(style="margin-top:0")
       h3 Applicable Charts
 
+    #chart-explore-bar.navbar.navbar-default
+      .container-fluid
+        .collapse.navbar-collapse
+          ul.nav.navbar-nav
+            li.dropdown
+              a.dropdown-toggle(href="#",data-toggle="dropdown") Chart Type #[span.caret]
+              ul.dropdown-menu
+                li: a(href="#") Line Chart
+                li: a(href="#") Bar Chart
+                li: a(href="#") Pie Chart
+                li: a(href="#") Scatter Plot
+                li: a(href="#") Area Chart
+                li: a(href="#") Polar Chart
+                li: a(href="#") Bubble Chart
+                li: a(href="#") Cartography
+            li.dropdown
+              a.dropdown-toggle(href="#",data-toggle="dropdown") Category #[span.caret]
+              ul.dropdown-menu
+                li: a(href="#") Jounalaism
+                li: a(href="#") Statistics
+                li: a(href="#") Scentific
+                li: a(href="#") Business
+                li: a(href="#") Time Series
+                li: a(href="#") Geographic
+                li: a(href="#") Animated
+            li.dropdown
+              a.dropdown-toggle(href="#",data-toggle="dropdown") Order #[span.caret]
+              ul.dropdown-menu
+                li: a(href="#") Latest
+                li: a(href="#") Popular
+                li: a(href="#") Editor's Choice
+
+          form.navbar-form.navbar-right
+            .form-group
+              .input-group
+                input.form-control(type="text",placeholder="Search")
+                .input-group-btn
+                  .btn.btn-default #[i.fa.fa-search]
+
     .charts
-      .chart(ng-repeat="chart in charts",style="display:inline-block",ng-click="load(chart)")
+      .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
         .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
         .chart-desc
-          .title {{chart.name}}
+          .title
+            .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
+            span {{chart.name}}
           .desc {{chart.desc || 'check it yourself!'}}
-          //-
-            .dimension
-              div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Dimensions
-              .label.label-default.label-light Radius
-              span &nbsp;
-              .label.label-success.label-light X-axis
-              span &nbsp;
-              .label.label-default.label-light Y-axis
-            .property
-              div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Best use with
-              .label.label-default.label-light Geo-related
-              span &nbsp;
-              .label.label-default.label-light Population
+        .labels
+          .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
+        .social
+          .author #[i.fa.fa-user] zbryikt
+          .favorite #[i.fa.fa-heart] 15
+          .used #[i.fa.fa-code-fork] 15
+
 
       .chart.flexend
     br

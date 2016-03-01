@@ -659,7 +659,7 @@ small.hint
   opacity: 0.2
   cursor: not-allowed
 
-#permission-modal, #setting-modal
+#permission-modal, #setting-modal, #data-edit-modal
   position: fixed
   top: 0
   left: 0
@@ -685,6 +685,11 @@ small.hint
     margin-right: 5px
     &.btn-warning
       animation(jump 1s infinite linear)
+
+#data-edit-modal .ib
+  width: 90%
+  // TODO redesign data edit modal to fit into different screen
+  height: 580px
 
 #setting-modal .ib
   height: 470px

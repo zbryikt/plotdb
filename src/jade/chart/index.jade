@@ -331,7 +331,8 @@ block body
           iframe#chart-renderer(src="http://localhost/render.html",
           style="width:100%;height:100%;border:none;")
 
-    #binding-panel(style="position:relative")
+    #binding-panel(ng-controller="dataFiles",style="position:relative")
+      .pull-right(style="margin-top:5px;cursor:pointer",ng-click="showDataEditModal=!!!showDataEditModal") #[i.fa.fa-plus-circle] Add Dataset
       div(style="font-weight:bold;font-size:1.5em") Data Mapping
       hr(style="margin:5px 0")
       //- try list functions in a navbar. will we use this?
@@ -352,7 +353,20 @@ block body
             li: a(href="#") google sheet #[i.fa.fa-cloud]
             li: a(href="#") key in #[i.fa.fa-edit]
 
-      .row(ng-controller="dataFiles")
+      .row
+        #data-edit-modal(ng-cloak,ng-show="showDataEditModal"): .ib
+          .closebtn(ng-click="showDataEditModal=!!!showDataEditModal")
+          include /data/create.jade
+          label Datasets
+          hr(style="margin-top:5px")
+          .data-files(style="display:flex;overflow-y:100px;flex-wrap:wrap")
+            .data-file(ng-repeat="file in datasets",style="flex:1 1 200px;cursor:pointer"): div
+              .title {{file.name}}
+              .desc {{file.size|size}}, {{file.rows}} rows
+          .clearfix
+          hr
+          .pull-right: .btn.btn-default(ng-click="showDataEditModal=!!!showDataEditModal") Close
+
         .col-sm-3(ng-cloak)
           #data-fields.data-fields(style="height:337px;width:100%;overflow-y:scroll;")
             .data-file(style="border:none",ng-show="!chosen.key")

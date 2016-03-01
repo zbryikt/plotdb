@@ -11,6 +11,68 @@ plotdb.{}theme.sample = do
       """
     },
     {
+      key: "/theme/sample/:plotdb"
+      name: "PlotDB"
+      type: location: \sample, name: \theme
+      doc: content: '''
+<link href='https://fonts.googleapis.com/css?family=Lato:200,300,400,700' rel='stylesheet' type='text/css'/>
+'''
+      style: content: '''
+body, text {
+  font-family: 'lato', 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+.axis .tick line {
+  stroke: #bbb;
+}
+.axis .domain {
+  stroke: #444;
+}
+.axis .tick text {
+  fill: #444;
+  font-weight: 400;
+}
+
+line.connect {
+  stroke-width: 1;
+}
+.axis.horizontal .tick line, .axis.horizontal .tick text {
+  transform: translate(40px,-4px);
+  opacity: 0.8;
+}
+
+.axis.horizontal .tick line {
+  transform: translateY(10px) scaleY(1.5);
+  stroke-linecap: round;
+  stroke-width: 2;
+  stroke-dasharray: 1 1;
+  opacity: 0.4;
+}
+
+.popup {
+  background: #fff;
+  color: #555;
+}
+.popup:after {
+  background: #fff;
+  height: 0;
+  top: 50%;
+  margin-top: -1px;
+  transform: rotate(0);
+  border-bottom: 3px solid #ddd;
+}
+.popup.right:after {
+  left: -11px;
+}
+.popup.left:after {
+  background: #fff;
+  right: -11px
+}
+
+
+'''
+    },
+    {
       key: "/theme/sample/:playfair"
       name: "Playfair"
       type: location: \sample, name: \theme
