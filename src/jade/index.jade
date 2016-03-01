@@ -17,8 +17,8 @@ block body
     span Statistical
     span Animated
     span Scientific
-  #landing(style="text-align: center;background:url(/assets/img/landing.png) center center no-repeat;position:relative")
-    svg#landing-svg(style="width:100%;height:100%;position:absolute;z-index:1;background:rgba(20,10,0,0.4)")
+  #landing
+    svg#landing-svg
       defs
         filter#blur1
           feGaussianBlur(in="SourceGraphic",stdDeviation="1", result="blur")
@@ -31,7 +31,7 @@ block body
           feColorMatrix(in="blur", values="0.5 0 0 0 0   0 0.4 0 0 0   0 0 0.4 0 0   0 0 0 0.6 0")
 
 
-    img(src="/assets/img/logo-alt.png",style="margin-top:-60px;top:50%;position:relative;z-index:2")
+    img(src="/assets/img/logo-alt.png",style="top:50%;position:relative;z-index:2")
     //-
       .title P#[small LOT]DB
       .subtitle data on you, vis by us.
@@ -39,35 +39,46 @@ block body
     div(style="width:100%;height:30px;background:#000;text-align:center;") HEllow rodl
     br
     br
-  br
-
-  //-#product-description
-    h3.text-center Visualizations shared for non-Coders
+    br
+  //-div
+    div(style="width:90%;border-left:1px solid #999;border-right:1px solid #999;margin:0 auto;background:#eee")
+      +margin-break
+      h2.text-center Features
+      .text-center Pick your favorite and visualize in seconds.
+  #product-description: .ib
+    +margin-break
+    br
+    //-h3.text-center Visualizations shared for non-Coders
+    h2.text-center Break the Gap
+    .text-center(style="font-size:1.2em") Coding skill is not the limit of your creativity
+    br
     br
     br
     .row.text-center(style="max-width:1024px;margin:auto")
       .col-sm-4
-        //i.fa.fa-globe(style="font-size:64px")
-        img(src="/assets/img/test/noun_321419_cc.svg", style="width:128px;margin:39px 0 39px 0")
+        img(src="/assets/img/lock.svg", style="width:128px;margin:32px 0")
         h3 Keep Data Locally
         span use your data #[b without uploading]. #[br] Privacy First!
       .col-sm-4
-        img(src="/assets/img/test/noun_73820_cc.svg", style="width:192px")
+        img(src="/assets/img/creativity.svg", style="width:192px")
         br
         h3 Infinite Creativity
         span more than common charts. #[b Much more]. #[br] Plot Like Shopping!
       .col-sm-4
-        //-i.fa.fa-heart(style="font-size:64px")
-        img(src="/assets/img/test/gears.svg",style="width:128px;margin:57px 0")
+        img(src="/assets/img/test/gears.svg",style="width:128px;margin:32px 0")
         br
         h3 Full Control
         span #[b source code] and #[b stylesheet] in your hand. #[br] Customize as You Can!
     br
+  //-div(style="width:100%;height:60px;background:#ccc;z-index:999;position:relative;")
+    h2.text-center Visualize in a seconds
+    .text-center Pick your favorite and visualize in seconds.
 
   #root
     //-h3.text-center VISUALIZATIONS
-    hr
-    h2.text-center Visualize in a seconds
+    br
+    br
+    h2.text-center Visualizations
     .text-center Pick your favorite and visualize in seconds.
     br
     .charts(ng-controller="chartList")

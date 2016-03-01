@@ -1,5 +1,5 @@
 <- $ document .ready
-data = [{value: Math.random!} for i from 0 til 200]
+data = [{value: Math.random!} for i from 0 til 400]
 box = document.getElementById(\landing-svg).parentNode.getBoundingClientRect!
 svg = d3.select \#landing-svg
   .attr do
@@ -11,7 +11,7 @@ svg = d3.select \#landing-svg
     top: 0
     left: 0
 colors = d3.scale.ordinal!range <[#1d3263 #226c87 #f8d672 #e48e11 #e03215 #ab2321]>
-force = d3.layout.force!size [box.width, box.height] .gravity 0.06 .charge -200 .friction 0.4
+force = d3.layout.force!size [box.width, box.height] .gravity 0.08 .charge -300 .friction 0.5
 force.nodes data
 
 circles = svg.selectAll("circle").data(data).enter!append \circle
@@ -36,7 +36,10 @@ tick = ->
     cy: -> it.y
     r: -> it.value * 7 + 3
     fill: -> colors it.value
-    opacity: 0.8
+    opacity: -> 
+      dy = (it.y - (box.height * 0.5 )) / (box.height * 0.5)
+      if dy < 0 => return 0.8
+      0.8 - dy * 0.8
   if force.alpha! < 0.015 => force.alpha 0.03
   speed := speed * 0.994
   if speed < 0.2 => speed := 0.2
