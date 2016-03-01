@@ -209,5 +209,14 @@ angular.module \plotDB
     (ret) <- data-service.list!then
     $scope.datasets = ret
     $scope.edit = (dataset) -> eventBus.fire \dataset.edit, dataset
+    # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large
+    $scope.chosen = do
+      dataset: null
+      key: null
+    $scope.toggle = (dataset) ->
+      if !dataset or @chosen.key == dataset.key =>
+        return @chosen <<< {dataset: null, key: null}
+      @chosen.key = dataset.key
+      @chosen.dataset = dataset
     $scope.remove = (dataset) -> 
       dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)

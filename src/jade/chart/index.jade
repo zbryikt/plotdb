@@ -355,24 +355,24 @@ block body
       .row(ng-controller="dataFiles")
         .col-sm-3(ng-cloak)
           #data-fields.data-fields(style="height:337px;width:100%;overflow-y:scroll;")
-            .data-file(style="border:none",ng-show="!activelength")
+            .data-file(style="border:none",ng-show="!chosen.key")
               b choose a dataset to start
               div: small {{datasets.length}} datasets
-            .data-file(style="border:none",ng-show="activelength")
+            .data-file(style="border:none",ng-show="chosen.key")
               b drag field to dimension
-              div: small {{activefile.fields.length}} datasets
+              div: small {{chosen.dataset.fields.length}} datasets
 
-            #field-agent.data-field(ng-drag="true",ng-drag-data="fieldAgent.data",ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="activelength")
+            #field-agent.data-field(ng-drag="true",ng-drag-data="fieldAgent.data",
+            ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="chosen.key")
               span {{fieldAgent.data.name}}
               small {{fieldAgent.data.type}}
             .data-file(ng-repeat="file in datasets",style="cursor:pointer",
-            ng-class="{'extend':file.toggle,'mini':!file.toggle && activelength}")
-              //-,ng-class="{'active':file.toggle}")
-              div(ng-click="file.toggle=!!!file.toggle")
-                .closebtn.inner(ng-cloak,ng-show="file.toggle")
+            ng-class="{'extend':chosen.key == file.key,'mini':chosen.key != file.key && chosen.key}")
+              div(ng-click="toggle(file)")
+                .closebtn.inner(ng-cloak,ng-show="chosen.key == file.key")
                 .title {{file.name}}
-                .desc {{file.size}}, {{file.rows}} rows
-              div(ng-shxow="file.toggle")
+                .desc {{file.size|size}}, {{file.rows}} rows
+              div
                 .data-field(ng-repeat="field in file.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
                 ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field")
                   span {{field.name}}
@@ -398,9 +398,9 @@ block body
                   small {{field.type}}
 
         .col-sm-9
-          #datamap-hint(ng-cloak,ng-class="{'step1': !activelength, 'step2': activelength}")
-            p(ng-show="!activelength") #[i.fa.fa-arrow-left] select a file to map data
-            p(ng-show="activelength")
+          #datamap-hint(ng-cloak,ng-class="{'step1': !chosen.key, 'step2': chosen.key}")
+            p(ng-show="!chosen.key") #[i.fa.fa-arrow-left] select a file to map data
+            p(ng-show="chosen.key")
               i.fa.fa-arrow-right
               br
               | drag
@@ -416,7 +416,7 @@ block body
                 span(ng-show="dim.desc") {{dim.desc}} #[br]
                 i accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]
               .data-field(ng-repeat="field in dim.fields")
-                .closebtn(ng-click="dimension.unbind($event, dim, field)")
+                .closebtn.inner(ng-click="dimension.unbind($event, dim, field)")
                 span {{field.name}}
                 small {{field.type}}
                 small in dataset "{{field.dataset.name}}"
