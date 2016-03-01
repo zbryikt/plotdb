@@ -33,7 +33,7 @@ module.exports = plotdb.chart.create({
     var that = this;
     var box = this.root.getBoundingClientRect();
     var width = this.width = box.width;
-    var height = this.height = box.height - 100;
+    var height = this.height = box.height - 10;
     this.svg.attr({
       width: width + "px", height: height + "px",
       viewBox: [0,0,width,height].join(" "),
