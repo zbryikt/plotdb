@@ -35,8 +35,13 @@ block body
     //-
       .title P#[small LOT]DB
       .subtitle data on you, vis by us.
+  //-
+    div(style="width:100%;height:30px;background:#000;text-align:center;") HEllow rodl
+    br
+    br
+  br
 
-  #product-description
+  //-#product-description
     h3.text-center Visualizations shared for non-Coders
     br
     br
@@ -60,14 +65,25 @@ block body
     br
 
   #root
-    h2.text-center Popular Visualizations
+    //-h3.text-center VISUALIZATIONS
+    hr
+    h2.text-center Visualize in a seconds
+    .text-center Pick your favorite and visualize in seconds.
     br
     .charts(ng-controller="chartList")
       .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
         .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
         .chart-desc
-          .title {{chart.name}}
+          .title 
+            .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
+            span {{chart.name}}
           .desc {{chart.desc || 'check it yourself!'}}
+        .labels
+          .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
+        .social
+          .author #[i.fa.fa-user] zbryikt
+          .favorite #[i.fa.fa-heart] 15
+          .used #[i.fa.fa-code-fork] 15
     br
     //-
       .panel.panel-default(style="display:inline-block"): .panel-body
@@ -115,7 +131,7 @@ block body
               .label.label-default.label-light Population
       .chart.flexend
     br
-    .text-center: a.btn.btn-lg.btn-success(href="list.html"): big give me more!
+    .text-center: a.btn.btn-lg.btn-success(href="/chart/explore/"): big give me more!
     br
     hr
     br
