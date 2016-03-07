@@ -178,6 +178,12 @@ angular.module \plotDB
           if !it => return
           $scope.chart.theme = $scope.theme
           $scope.reset-config!
+          $scope.render!
+          $scope.canvas.window.postMessage {type: \parse-theme, payload: $scope.theme.code.content}, $scope.plotdomain
+        init: ->
+          (ret) <~ chart-service.list!then
+          <~ $scope.$apply
+          @list = chart-service.sample.map(-> new chart-service.chart it) ++ ret
       editor: do
         class: ""
         focus: ->
@@ -586,6 +592,7 @@ angular.module \plotDB
         @paledit.init!
         @backup.init!
         @field-agent.init!
+        @charts.init!
 
     $scope.init!
   ..controller \themeList,

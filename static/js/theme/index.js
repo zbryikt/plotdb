@@ -359,7 +359,22 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
           return;
         }
         $scope.chart.theme = $scope.theme;
-        return $scope.resetConfig();
+        $scope.resetConfig();
+        $scope.render();
+        return $scope.canvas.window.postMessage({
+          type: 'parse-theme',
+          payload: $scope.theme.code.content
+        }, $scope.plotdomain);
+      },
+      init: function(){
+        var this$ = this;
+        return chartService.list().then(function(ret){
+          return $scope.$apply(function(){
+            return this$.list = chartService.sample.map(function(it){
+              return new chartService.chart(it);
+            }).concat(ret);
+          });
+        });
       }
     },
     editor: {
@@ -1144,7 +1159,8 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
       this.checkParam();
       this.paledit.init();
       this.backup.init();
-      return this.fieldAgent.init();
+      this.fieldAgent.init();
+      return this.charts.init();
     }
   });
   return $scope.init();
