@@ -515,10 +515,11 @@ angular.module \plotDB
         else if data.type == \parse-theme =>
           {config} = JSON.parse(data.payload)
           @theme <<< {config}
-          for k,v of @theme.config => if @chart.config[k] =>
-            variant = @chart.config[k].hint or 'default'
-            if @theme.config[k][variant]? => @chart.config[k].value = @theme.config[k][variant]
-            else if @theme.config[k][\default] => @chart.config[k].value = @theme.config[k][\default]
+          if @chart =>
+            for k,v of @theme.config => if @chart.config[k] =>
+              variant = @chart.config[k].hint or 'default'
+              if @theme.config[k][variant]? => @chart.config[k].value = @theme.config[k][variant]
+              else if @theme.config[k][\default] => @chart.config[k].value = @theme.config[k][\default]
           @paledit.from-theme @theme
           $scope.render!
         else if data.type == \loaded =>

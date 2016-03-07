@@ -1018,14 +1018,16 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
           } else if (data.type === 'parse-theme') {
             config = JSON.parse(data.payload).config;
             this$.theme.config = config;
-            for (k in ref$ = this$.theme.config) {
-              v = ref$[k];
-              if (this$.chart.config[k]) {
-                variant = this$.chart.config[k].hint || 'default';
-                if (this$.theme.config[k][variant] != null) {
-                  this$.chart.config[k].value = this$.theme.config[k][variant];
-                } else if (this$.theme.config[k]['default']) {
-                  this$.chart.config[k].value = this$.theme.config[k]['default'];
+            if (this$.chart) {
+              for (k in ref$ = this$.theme.config) {
+                v = ref$[k];
+                if (this$.chart.config[k]) {
+                  variant = this$.chart.config[k].hint || 'default';
+                  if (this$.theme.config[k][variant] != null) {
+                    this$.chart.config[k].value = this$.theme.config[k][variant];
+                  } else if (this$.theme.config[k]['default']) {
+                    this$.chart.config[k].value = this$.theme.config[k]['default'];
+                  }
                 }
               }
             }

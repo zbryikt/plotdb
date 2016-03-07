@@ -11,6 +11,9 @@ if (!(typeof plotdb != 'undefined' && plotdb !== null)) {
       location: 'sample',
       name: 'theme'
     },
+    code: {
+      content: 'var module = {};\nmodule.exports = plotdb.theme.create({\n  config: {\n    palette: {\n      "default": {\n        colors: [\n          {hex: "#ae4948"},\n          {hex: "#256b9e"}\n        ]\n      },\n      "binary": {\n        colors: [\n          {hex: "#ae4948"},\n          {hex: "#256b9e"}\n        ]\n      },\n      "diverging": {\n        colors: [\n          {hex: "#b81673"},\n          {hex: "#eb7696"},\n          {hex: "#e0e0a0"},\n          {hex: "#83b365"},\n          {hex: "#368239"}\n        ]\n      },\n      "qualitative": {\n        colors: [\n          {hex: "#b43743"},\n          {hex: "#e68061"},\n          {hex: "#f9cb48"},\n          {hex: "#3c6a9c"},\n          {hex: "#0c2a54"},\n          {hex: "#405067"},\n          {hex: "#5a5e84"}\n        ]\n      },\n    }\n  }\n});'
+    },
     style: {
       content: "circle { fill: #f00; stroke: #000; stroke-width: 1; }"
     }

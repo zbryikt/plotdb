@@ -6,6 +6,47 @@ plotdb.{}theme.sample = do
       key: "/theme/sample/:default"
       name: "Default"
       type: location: \sample, name: \theme
+      code: content: '''
+var module = {};
+module.exports = plotdb.theme.create({
+  config: {
+    palette: {
+      "default": {
+        colors: [
+          {hex: "#ae4948"},
+          {hex: "#256b9e"}
+        ]
+      },
+      "binary": {
+        colors: [
+          {hex: "#ae4948"},
+          {hex: "#256b9e"}
+        ]
+      },
+      "diverging": {
+        colors: [
+          {hex: "#b81673"},
+          {hex: "#eb7696"},
+          {hex: "#e0e0a0"},
+          {hex: "#83b365"},
+          {hex: "#368239"}
+        ]
+      },
+      "qualitative": {
+        colors: [
+          {hex: "#b43743"},
+          {hex: "#e68061"},
+          {hex: "#f9cb48"},
+          {hex: "#3c6a9c"},
+          {hex: "#0c2a54"},
+          {hex: "#405067"},
+          {hex: "#5a5e84"}
+        ]
+      },
+    }
+  }
+});
+'''
       style: content: """
       circle { fill: \#f00; stroke: #000; stroke-width: 1; }
       """
