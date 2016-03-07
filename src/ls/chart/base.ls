@@ -67,10 +67,7 @@ plotdb.chart = do
   create: (config) ->
     {} <<< @base <<< config
   base: do
-    name: \base
-    title: 'chart template'
-    desc: null
-    mapping: do
+    dimension: do
       value: {type: [], require: false}
     config: do
       padding: {type: [plotdb.Number], default: 10}
@@ -78,3 +75,21 @@ plotdb.chart = do
     bind: (root, data, config) ->
     resize: (root, data, config) ->
     render: (root, data, config) ->
+
+plotdb.theme = do
+  create: (config) ->
+    {} <<< @base <<< config
+  base: do
+    palette: do
+      default: []
+      diverging: []
+      sequential: []
+      binary: []
+      qualitative: []
+      # 2 dimensional
+      binary-diverge: []
+      sequential-qualitative: []
+      sequential-sequential: []
+      diverging-diverging: []
+    config: do
+      padding: {type: [plotdb.Number], default: 10}

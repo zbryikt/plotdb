@@ -84,12 +84,31 @@ line.connect {
       key: "/theme/sample/:thereporter"
       name: "The Reporter"
       type: location: \sample, name: \theme
-      config: do
+      /*config: do
         palette: do
           type: [plotdb.Palette]
           value: do
             name: "The Reporter", key: "D",
             colors: <[#7a322a #d52c2a #f93634 #dddb83 #ede6de #fdfffa #dbdbdb #48462d]>.map(->{hex:it})
+      */
+      code: content: '''
+var module = {};
+module.exports = plotdb.theme.create({
+  config: {
+    palette: {
+      "default": {
+        colors: ["#7a322a","#d52c2a","#f93634","#dddb83","#ede6de","#fdfffa","#dbdbdb","#48462d"].map(function(it) { return {hex: it};})
+      },
+      "binary": {
+        colors: ["#7a322a","#d52c2a"].map(function(it) { return {hex: it};})
+      },
+      "qualitative": {
+        colors: ["#7a322a","#d52c2a","#f93634","#dddb83","#ede6de","#fdfffa","#dbdbdb","#48462d"].map(function(it) { return {hex: it};})
+      }
+    }
+  }
+});
+'''
       doc: content: '''
 <div id='banner'></div>
 '''

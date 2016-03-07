@@ -5526,7 +5526,6 @@ S2.define('jquery.select2',[
           }
 
           var args = Array.prototype.slice.call(arguments, 1);
-
           ret = instance[options].apply(instance, args);
         });
 

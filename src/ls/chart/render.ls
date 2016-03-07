@@ -15,7 +15,8 @@ window.thread = do
 dispatcher = (evt) ->
   if (evt.data.type in <[snapshot getsvg getpng]>) => snapshot evt.data.type
   else if evt.data.type == \render => render evt.data.payload, evt.data.rebind
-  else if evt.data.type == \parse => parse evt.data.payload
+  else if evt.data.type == \parse => parse evt.data.payload, \chart
+  else if evt.data.type == \parse-theme => parse evt.data.payload, \theme
   else if evt.data.type == \reload => window.location.reload!
 
 window.addEventListener \error, (e) ->
@@ -37,6 +38,7 @@ proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
   codeNode.onload = ->
     URL.revokeObjectURL codeURL
     if window[module] => window[module].identity = parseInt(Math.random!*1000)
+    #TODO: potential race condition?
     res window[module]
     try
       document.body.removeChild codeNode
@@ -61,12 +63,19 @@ error-handling = (e, lineno = 0) ->
   if lines.length > 4 => msg = lines.splice(0,4).join(\\n)
   window.parent.postMessage {type: \error, payload: {msg, lineno}}, plotdomain
 
-parse = (payload) ->
+parse = (payload, type) ->
   try
-    (module) <- proper-eval payload, false .then
-    chart = module.exports
-    payload = JSON.stringify({} <<< chart{dimension, config})
-    window.parent.postMessage {type: \parse, payload}, plotdomain
+    if type == \chart =>
+      (module) <- proper-eval payload, false .then
+      chart = module.exports
+      payload = JSON.stringify({} <<< chart{dimension, config})
+      window.parent.postMessage {type: \parse, payload}, plotdomain
+    else if type == \theme =>
+      (module) <- proper-eval payload, false .then
+      theme = module.exports
+      payload = JSON.stringify({} <<< theme{config})
+      window.parent.postMessage {type: \parse-theme, payload}, plotdomain
+
   catch e
     error-handling e
 

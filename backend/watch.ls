@@ -136,6 +136,7 @@ base = do
         mkdir-recurse path.dirname(des)
         fs.write-file-sync(
           des,
+          #lsc.compile(fs.read-file-sync(src)toString!,{bare:true})
           uglify-js.minify(lsc.compile(fs.read-file-sync(src)toString!,{bare:true}),{fromString:true}).code
         )
         console.log "[BUILD] #src --> #des"

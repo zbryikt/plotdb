@@ -175,6 +175,7 @@ angular.module \plotDB
         list: chart-service.sample.map -> new chart-service.chart it
         set: ->
           $scope.chart = it
+          if !it => return
           $scope.chart.theme = $scope.theme
           $scope.reset-config!
       editor: do
@@ -322,8 +323,29 @@ angular.module \plotDB
           exclusive: true
           palette: [v.value]
       paledit: do #TODO should be moved to standalone controller
-        convert: -> it.map(->{id: it.key, text: it.name, data: it.colors})
+        convert: -> it.map(->{id: it.key or "#{Math.random!}", text: it.name, data: it.colors})
         ldcp: null, item: null
+        from-theme: (theme) ->
+          if !theme or !theme.config or !theme.config.palette => return @list = @list.filter -> it.text != \Theme
+          themepal = @list.filter(-> it.text == \Theme).0
+          if !themepal =>
+            themepal = {text: 'Theme', id: '456', children: null}
+            @list = [themepal] ++ @list
+          themepal.children = @convert [v <<< {name:k} for k,v of theme.config.palette]
+          $('#pal-select option').remove!
+          $('#pal-select optgroup').remove!
+          $(\#pal-select).select2 do
+            allowedMethods: <[updateResults]>
+            templateResult: (state) ->
+              if !state.data => return state.text
+              color = [("<div class='color' "+
+                "style='background:#{c.hex};width:#{100/state.data.length}%'"+
+                "></div>") for c in state.data
+              ].join("")
+              $("<div class='palette select'><div class='name'>#{state.text}</div>"+
+                "<div class='palette-color'>#color</div></div>")
+            data: @list
+
         init: ->
           @ldcp = new ldColorPicker null, {}, $('#palette-editor .editor .ldColorPicker').0
           @ldcp.on \change-palette, ~> setTimeout ( ~> $scope.$apply ~> @update! ), 0
@@ -443,15 +465,16 @@ angular.module \plotDB
           @render-async!
           @theme.chart = if chart => chart.key else null
         @$watch 'theme.chart', (key) ~>
-          @chart = @charts.list.filter(-> it.key == key).0
+          @charts.set @charts.list.filter(-> it.key == key).0
+
         @$watch 'theme.code.content', (code) ~>
-          if !@chart => return
-          if @communicate.parse-handler => $timeout.cancel @communicate.parse-handler
-          @communicate.parse-handler = $timeout (~>
-            @communicate.parse-handler = null
-            @canvas.window.postMessage {type: \parse, payload: code}, @plotdomain
+          if !@theme => return
+          if @communicate.parse-theme-handler => $timeout.cancel @communicate.parse-theme-handler
+          @communicate.parse-theme-handler = $timeout (~>
+            @communicate.parse-theme-handler = null
+            @canvas.window.postMessage {type: \parse-theme, payload: code}, @plotdomain
           ), 500
-        @$watch 'theme.config', ((n,o) ~>
+        @$watch 'chart.config', ((n,o={}) ~>
           ret = !!([[k,v] for k,v of n]
             .filter(([k,v]) -> !o[k] or (v.value != o[k].value))
             .map(->v.rebindOnChange)
@@ -478,10 +501,19 @@ angular.module \plotDB
 
         else if data.type == \parse =>
           {config,dimension} = JSON.parse(data.payload)
-          for k,v of @theme.dimension => if dimension[k]? => dimension[k].fields = v.fields
-          for k,v of @theme.config => if config[k]? => config[k].value = v.value
+          for k,v of @chart.dimension => if dimension[k]? => dimension[k].fields = v.fields
+          for k,v of @chart.config => if config[k]? => config[k].value = v.value
           for k,v of config => if !(v.value?) => v.value = v.default
-          @theme <<< {config, dimension}
+          @chart <<< {config, dimension}
+          $scope.render!
+        else if data.type == \parse-theme =>
+          {config} = JSON.parse(data.payload)
+          @theme <<< {config}
+          for k,v of @theme.config => if @chart.config[k] =>
+            variant = @chart.config[k].hint or 'default'
+            if @theme.config[k][variant]? => @chart.config[k].value = @theme.config[k][variant]
+            else if @theme.config[k][\default] => @chart.config[k].value = @theme.config[k][\default]
+          @paledit.from-theme @theme
           $scope.render!
         else if data.type == \loaded =>
           if !@chart => return
@@ -491,7 +523,8 @@ angular.module \plotDB
             @canvas.window.postMessage {type: \render, payload, rebind}, @plotdomain
             $scope.render.payload = null
           else
-            @canvas.window.postMessage {type: \parse, payload: @theme.code.content}, @plotdomain
+            @canvas.window.postMessage {type: \parse, payload: @chart.code.content}, @plotdomain
+            @canvas.window.postMessage {type: \parse-theme, payload: @theme.code.content}, @plotdomain
         else if data.type == \click =>
           if document.dispatchEvent
             event = document.createEvent \MouseEvents
@@ -555,3 +588,17 @@ angular.module \plotDB
         @field-agent.init!
 
     $scope.init!
+  ..controller \themeList,
+  <[$scope $http IOService dataService themeService]> ++
+  ($scope, $http, IO-service, data-service, theme-service) ->
+    $scope.themes = []
+    (ret) <- Promise.all [
+      new Promise (res, rej) -> IO-service.aux.list-locally {name: \theme}, res, rej
+      new Promise (res, rej) -> IO-service.aux.list-remotely {name: \theme}, res, rej, "q=all"
+    ] .then
+    <~ $scope.$apply
+    $scope.themes = ( ret.0 ++ ret.1 )
+    $scope.themes.forEach (it) ->
+      it.width = if Math.random() > 0.8 => 640 else 320
+    $scope.load = (theme) -> window.location.href = theme-service.link theme
+
