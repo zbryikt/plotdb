@@ -1120,8 +1120,9 @@ x$.controller('chartEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
                   this$.chart.config[k].value = this$.theme.config[k][variant];
                 } else if (this$.theme.config[k]['default']) {
                   this$.chart.config[k].value = this$.theme.config[k]['default'];
+                } else if (this$.theme.config[k] && typeof this$.theme.config[k] !== 'object') {
+                  this$.chart.config[k].value = this$.theme.config[k];
                 }
-                console.log(this$.chart.config[k]);
               }
             }
             this$.paledit.fromTheme(this$.theme);
