@@ -111,7 +111,9 @@ snapshot = (type='snapshot') ->
       canvas = document.createElement("canvas") <<< {width, height}
       canvas.getContext \2d .drawImage img, 0, 0
       window.parent.postMessage {type, payload: canvas.toDataURL!}, plotdomain
-    img.src = "data:image/svg+xml;charset=utf-8;base64," + btoa(svg)
+    # btoa doesn't work for utf-8 string
+    encoded = base64.encode(utf8.encode(svg))
+    img.src = "data:image/svg+xml;charset=utf-8;base64," + encoded
   catch e
     console.log e
     window.parent.postMessage {type, payload: null}, plotdomain

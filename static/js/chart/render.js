@@ -147,7 +147,7 @@ $(document).ready(function(){
     }
   };
   snapshot = function(type){
-    var svgnode, styles, i$, to$, idx, style, ref$, width, height, svg, img, e;
+    var svgnode, styles, i$, to$, idx, style, ref$, width, height, svg, img, encoded, e;
     type == null && (type = 'snapshot');
     try {
       d3.selectAll('#container svg').each(function(){
@@ -195,7 +195,8 @@ $(document).ready(function(){
           payload: canvas.toDataURL()
         }, plotdomain);
       };
-      return img.src = "data:image/svg+xml;charset=utf-8;base64," + btoa(svg);
+      encoded = base64.encode(utf8.encode(svg));
+      return img.src = "data:image/svg+xml;charset=utf-8;base64," + encoded;
     } catch (e$) {
       e = e$;
       console.log(e);
