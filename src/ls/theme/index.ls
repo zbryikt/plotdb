@@ -520,6 +520,8 @@ angular.module \plotDB
               variant = @chart.config[k].hint or 'default'
               if @theme.config[k][variant]? => @chart.config[k].value = @theme.config[k][variant]
               else if @theme.config[k][\default] => @chart.config[k].value = @theme.config[k][\default]
+              else if @theme.config[k] and typeof(@theme.config[k]) != \object =>
+                @chart.config[k].value = @theme.config[k]
           @paledit.from-theme @theme
           $scope.render!
         else if data.type == \loaded =>

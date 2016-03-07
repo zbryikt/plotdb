@@ -50,6 +50,15 @@ plotdb <<< do
       return it 
     default: {colors: <[#1d3263 #226c87 #f8d672 #e48e11 #e03215 #ab2321]>.map(->{hex:it})}
     plotdb:  {colors: <[#ed1d78 #c59b6d #8cc63f #28aae2]>.map(->{hex:it})}
+    qualitative: {colors: <[]>.map(->{hex:it})}
+    binary: {colors: <[]>.map(->{hex:it})}
+    sequential: {colors: <[]>.map(->{hex:it})}
+    diverging: {colors: <[]>.map(->{hex:it})}
+    subtype: do
+      qualitative: "qualitative"
+      binary: "binary"
+      sequential: "sequential"
+      diverging: "diverging"
   Boolean:
     name: \Boolean, level: 2,
     test: -> !!/^(true|false|1|0|yes|no)$/.exec(it)
