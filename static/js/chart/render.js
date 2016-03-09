@@ -24,7 +24,7 @@ window.thread = {
   }
 };
 $(document).ready(function(){
-  var dispatcher, properEval, errorHandling, parse, snapshot, render, resizeHandler;
+  var dispatcher, properEval, errorHandling, colorblind, parse, snapshot, render, resizeHandler;
   dispatcher = function(evt){
     var ref$;
     if ((ref$ = evt.data.type) === 'snapshot' || ref$ === 'getsvg' || ref$ === 'getpng') {
@@ -37,6 +37,8 @@ $(document).ready(function(){
       return parse(evt.data.payload, 'theme');
     } else if (evt.data.type === 'reload') {
       return window.location.reload();
+    } else if (evt.data.type === 'colorblind-emu') {
+      return colorblind(evt.data.payload);
     }
   };
   window.addEventListener('error', function(e){
@@ -116,6 +118,17 @@ $(document).ready(function(){
         lineno: lineno
       }
     }, plotdomain);
+  };
+  colorblind = function(payload){
+    var val;
+    val = ['normal', 'protanopia', 'protanomaly', 'deuteranopia', 'deuteranomaly', 'tritanopia', 'tritanomaly', 'achromatopsia', 'achromatomaly'];
+    if (!in$(payload, val)) {
+      payload = 'normal';
+    }
+    return d3.select('body').style({
+      "-webkit-filter": "url('#" + payload + "')",
+      "filter": "url('#" + payload + "')"
+    });
   };
   parse = function(payload, type){
     var e;
@@ -363,3 +376,8 @@ $(document).ready(function(){
     type: 'loaded'
   }, plotdomain);
 });
+function in$(x, xs){
+  var i = -1, l = xs.length >>> 0;
+  while (++i < l) if (x === xs[i]) return true;
+  return false;
+}

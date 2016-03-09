@@ -105,8 +105,12 @@ angular.module \plotDB
         count = parseInt((localStorage.getItem("#path/count") or 0))
         ret = []
         for idx from 0 til count =>
-          object = JSON.parse(localStorage.getItem("#path/#idx") or "")
-          timestamp = JSON.parse(localStorage.getItem("#path/#idx/timestamp") or "0")
+          try
+            object = JSON.parse(localStorage.getItem("#path/#idx") or "")
+            timestamp = JSON.parse(localStorage.getItem("#path/#idx/timestamp") or "0")
+          catch
+            console.error "failed to parse backups for #{item.type.location} / #{item.type.name} / #{item.key}"
+            res []
           ret.push {object, timestamp}
         res ret
       cleanBackups: (item) -> new Promise (res, rej) ~>

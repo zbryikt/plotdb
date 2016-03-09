@@ -145,6 +145,11 @@ angular.module \plotDB
           payload = angular.toJson($scope.theme)
           @plotdb.url = URL.createObjectURL new Blob [payload], {type: \application/json}
           @plotdb.size = payload.length
+      colorblind: ->
+        val = <[normal protanopia protanomaly deuteranopia deuteranomaly tritanopia
+        tritanomaly achromatopsia achromatomaly]>
+        if !(it in val) => return
+        @canvas.window.postMessage {type: \colorblind-emu, payload: it}, $scope.plotdomain
 
     $scope <<< do # Behaviors
       backup: do
@@ -516,12 +521,14 @@ angular.module \plotDB
           {config} = JSON.parse(data.payload)
           @theme <<< {config}
           if @chart =>
-            for k,v of @theme.config => if @chart.config[k] =>
-              variant = @chart.config[k].hint or 'default'
-              if @theme.config[k][variant]? => @chart.config[k].value = @theme.config[k][variant]
-              else if @theme.config[k][\default] => @chart.config[k].value = @theme.config[k][\default]
-              else if @theme.config[k] and typeof(@theme.config[k]) != \object =>
-                @chart.config[k].value = @theme.config[k]
+            for k,v of @chart.config => if v._bytheme => delete @chart.config[k]
+            for k,v of @theme.config =>
+              hint = if @chart.config[k] => @chart.config[k].hint else \default
+              value = if @theme.config[k][hint]? => @theme.config[k][hint]
+              else if @theme.config[k][\default]? => @theme.config[k][\default]
+              else if typeof(@theme.config[k]) != \object => @theme.config[k]
+              if @chart.config[k] and @chart.config[k].value => @chart.config[k].value = value
+              else @chart.config[k] = {value, type: [], _bytheme: true}
           @paledit.from-theme @theme
           $scope.render!
         else if data.type == \loaded =>

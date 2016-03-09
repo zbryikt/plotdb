@@ -18,6 +18,7 @@ dispatcher = (evt) ->
   else if evt.data.type == \parse => parse evt.data.payload, \chart
   else if evt.data.type == \parse-theme => parse evt.data.payload, \theme
   else if evt.data.type == \reload => window.location.reload!
+  else if evt.data.type == \colorblind-emu => colorblind evt.data.payload
 
 window.addEventListener \error, (e) ->
   re-bloburl = /blobhttp:%3A\/\/[^:]+:/
@@ -62,6 +63,14 @@ error-handling = (e, lineno = 0) ->
   lines = msg.split(\\n)
   if lines.length > 4 => msg = lines.splice(0,4).join(\\n)
   window.parent.postMessage {type: \error, payload: {msg, lineno}}, plotdomain
+
+colorblind = (payload) ->
+  val = <[normal protanopia protanomaly deuteranopia deuteranomaly tritanopia
+  tritanomaly achromatopsia achromatomaly]>
+  if !(payload in val) => payload = \normal
+  d3.select(\body).style do
+    "-webkit-filter": "url('\##payload')"
+    "filter": "url('\##payload')"
 
 parse = (payload, type) ->
   try

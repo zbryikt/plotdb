@@ -249,7 +249,8 @@ x$.controller('chartEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
         import$(this$.chart, ret);
         return this$.backup.check();
       })['catch'](function(ret){
-        return window.location.href = window.location.pathname;
+        console.err(ret);
+        return plNotify.send('error', "failed to load chart. please try reloading");
       });
     },
     'delete': function(){
@@ -398,6 +399,17 @@ x$.controller('chartEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
         }));
         return this.plotdb.size = payload.length;
       }
+    },
+    colorblind: function(it){
+      var val;
+      val = ['normal', 'protanopia', 'protanomaly', 'deuteranopia', 'deuteranomaly', 'tritanopia', 'tritanomaly', 'achromatopsia', 'achromatomaly'];
+      if (!in$(it, val)) {
+        return;
+      }
+      return this.canvas.window.postMessage({
+        type: 'colorblind-emu',
+        payload: it
+      }, $scope.plotdomain);
     }
   });
   import$($scope, {
@@ -1067,7 +1079,7 @@ x$.controller('chartEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
         var data;
         data = arg$.data;
         return $scope.$apply(function(){
-          var ref$, config, dimension, k, v, variant, payload, rebind, event, bytes, mime, buf, ints, i$, to$, idx;
+          var ref$, config, dimension, k, v, hint, value, payload, rebind, event, bytes, mime, buf, ints, i$, to$, idx;
           if (!data || typeof data !== 'object') {
             return;
           }
@@ -1112,16 +1124,29 @@ x$.controller('chartEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
           } else if (data.type === 'parse-theme') {
             config = JSON.parse(data.payload).config;
             this$.theme.config = config;
-            for (k in ref$ = this$.theme.config) {
-              v = ref$[k];
-              if (this$.chart.config[k]) {
-                variant = this$.chart.config[k].hint || 'default';
-                if (this$.theme.config[k][variant] != null) {
-                  this$.chart.config[k].value = this$.theme.config[k][variant];
-                } else if (this$.theme.config[k]['default']) {
-                  this$.chart.config[k].value = this$.theme.config[k]['default'];
-                } else if (this$.theme.config[k] && typeof this$.theme.config[k] !== 'object') {
-                  this$.chart.config[k].value = this$.theme.config[k];
+            if (this$.chart) {
+              for (k in ref$ = this$.chart.config) {
+                v = ref$[k];
+                if (v._bytheme) {
+                  delete this$.chart.config[k];
+                }
+              }
+              for (k in ref$ = this$.theme.config) {
+                v = ref$[k];
+                hint = this$.chart.config[k] ? this$.chart.config[k].hint : 'default';
+                value = this$.theme.config[k][hint] != null
+                  ? this$.theme.config[k][hint]
+                  : this$.theme.config[k]['default'] != null
+                    ? this$.theme.config[k]['default']
+                    : typeof this$.theme.config[k] !== 'object' ? this$.theme.config[k] : void 8;
+                if (this$.chart.config[k] && this$.chart.config[k].value) {
+                  this$.chart.config[k].value = value;
+                } else {
+                  this$.chart.config[k] = {
+                    value: value,
+                    type: [],
+                    _bytheme: true
+                  };
                 }
               }
             }
