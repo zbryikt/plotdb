@@ -232,6 +232,8 @@ angular.module \plotDB
           # codemirror won't update if it's not visible. so wait a little
           # refresh will reset cursor which scroll to the top.
           # so we only want to refresh once.
+          # EDIT: looks like some other changes made this statement not applicable.
+          # maybe remove it later. TODO
           setTimeout (~>
             $scope.codemirror.objs.map (cm) ->
               ret = [[k,v] for k,v of $scope.codemirror].filter(->it.1.mode == cm.options.mode).0
@@ -447,6 +449,7 @@ angular.module \plotDB
         else @vis = \preview
         @lastvis = temp
         if @vis == \preview => $scope.codemirror.objs.forEach -> it.getInputField!.blur!
+        else $scope.codemirror.objs.forEach -> it.refresh!
 
       hid-handler: ->
         # Switch Panel by alt-enter
