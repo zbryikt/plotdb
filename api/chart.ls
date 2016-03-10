@@ -12,6 +12,7 @@ module.exports = (backend, config) ->
       ret = ret.filter(->it.{}permission.[]value.filter(->it.perm == \fork and it.switch == \public).length)
       res.send JSON.stringify(ret)
     else
+      if !req.user => return res.send "[]"
       (ret) <- lmodel.chart.list \owner, [req.user.key] .then
       res.send JSON.stringify(ret)
 

@@ -446,6 +446,7 @@ angular.module \plotDB
         else if @vis == \preview => @vis = @lastvis
         else @vis = \preview
         @lastvis = temp
+        if @vis == \preview => $scope.codemirror.objs.forEach -> it.getInputField!.blur!
 
       hid-handler: ->
         # Switch Panel by alt-enter
