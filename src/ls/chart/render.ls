@@ -117,8 +117,9 @@ snapshot = (type='snapshot') ->
       return window.parent.postMessage {type: \getsvg, payload: svg}, plotdomain
     img = new Image!
     img.onload = ->
-      canvas = document.createElement("canvas") <<< {width, height}
-      canvas.getContext \2d .drawImage img, 0, 0
+      newHeight = (if height > width => width else height )
+      canvas = document.createElement("canvas") <<< {width, height: newHeight}
+      canvas.getContext \2d .drawImage img, 0, 0, width, newHeight, 0, 0, width, newHeight
       window.parent.postMessage {type, payload: canvas.toDataURL!}, plotdomain
     # btoa doesn't work for utf-8 string
     encoded = base64.encode(utf8.encode(svg))
