@@ -50,10 +50,10 @@ plotdb <<< do
       return it 
     default: {colors: <[#1d3263 #226c87 #f8d672 #e48e11 #e03215 #ab2321]>.map(->{hex:it})}
     plotdb:  {colors: <[#ed1d78 #c59b6d #8cc63f #28aae2]>.map(->{hex:it})}
-    qualitative: {colors: <[]>.map(->{hex:it})}
-    binary: {colors: <[]>.map(->{hex:it})}
-    sequential: {colors: <[]>.map(->{hex:it})}
-    diverging: {colors: <[]>.map(->{hex:it})}
+    qualitative: {colors: <[#c05ae0 #cf2d0c #e9ab1e #86ffb5 #64dfff #003f7d]>.map(->{hex:it})}
+    binary: {colors: <[#ff8356 #0076a1]>.map(->{hex:it})}
+    sequential: {colors: <[#950431 #be043e #ec326d #fc82a9 #febed2 #fee6ee]>.map(->{hex:it})}
+    diverging: {colors: <[#74001a #cd2149 #f23971 #ff84ab #ffc3d7 #f2f2dd #b8d9ed #81b1d0 #3d8bb7 #0071a8 #003558]>.map(->{hex:it})}
     subtype: do
       qualitative: "qualitative"
       binary: "binary"
