@@ -1310,10 +1310,26 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
   ]).then(function(ret){
     var this$ = this;
     return $scope.$apply(function(){
+      var hit, i$, to$, i, d, width, results$ = [];
       $scope.charts = ret[0].concat(ret[1]);
-      return $scope.charts.forEach(function(it){
-        return it.width = Math.random() > 0.8 ? 640 : 320;
-      });
+      hit = false;
+      for (i$ = 0, to$ = $scope.charts.length; i$ < to$; ++i$) {
+        i = i$;
+        d = $scope.charts[i];
+        width = 320;
+        if (Math.random() > 0.6 && !hit) {
+          width = Math.random() > 0.5 ? 960 : 640;
+          hit = true;
+        }
+        if (i % 3 === 2) {
+          if (!hit) {
+            width = 640;
+          }
+          hit = false;
+        }
+        results$.push(d.width = width);
+      }
+      return results$;
     });
   });
 }));

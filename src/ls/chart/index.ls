@@ -665,5 +665,14 @@ angular.module \plotDB
     ] .then
     <~ $scope.$apply
     $scope.charts = ( ret.0 ++ ret.1 )
-    $scope.charts.forEach (it) ->
-      it.width = if Math.random() > 0.8 => 640 else 320
+    hit = false
+    for i from 0 til $scope.charts.length =>
+      d = $scope.charts[i]
+      width = 320
+      if Math.random! > 0.6 and !hit =>
+        width = (if Math.random! > 0.5 => 960 else 640)
+        hit = true
+      if i % 3 == 2 =>
+        if !hit => width = 640
+        hit = false
+      d.width = width #if Math.random() > 0.8 => 640 else 320
