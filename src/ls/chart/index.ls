@@ -670,7 +670,7 @@ angular.module \plotDB
       d = $scope.charts[i]
       width = 320
       if Math.random! > 0.6 and !hit =>
-        width = (if Math.random! > 0.5 => 960 else 640)
+        width = (if Math.random! > 0.8 => 960 else 640)
         hit = true
       if i % 3 == 2 =>
         if !hit => width = 640
