@@ -1,5 +1,77 @@
 extends /module/base.jade
+block head
+  script(type="text/javascript",src="/js/profile.js")
 block body
-  | #[br] #[br] #[br] #[br] #[br]
-  h1 User Profile Page
-
+  div(style="height: 80px")
+  div(style="max-width:1200px;margin:auto",ng-controller="profile")
+    img.pull-left(src="/assets/img/avatar.png",style="border-radius:3px")
+    h3.pull-left(ng-cloak) {{user.data.displayname}}
+    br
+    .clearfix
+    .well
+      .row.text-center
+        .col-sm-4
+          div 5 charts
+        .col-sm-4
+          div 3 themes
+        .col-sm-4
+          div 10 datasets
+    br
+    hr
+    h2.text-center My Charts
+    .text-center You underestimate my power
+    br
+    .well
+      .charts(ng-controller="chartList")
+        .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
+          .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
+          .chart-desc
+            .title 
+              .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
+              span {{chart.name}}
+            .desc {{chart.desc || 'check it yourself!'}}
+          .labels
+            .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
+          .social
+            .author #[i.fa.fa-user] zbryikt
+            .favorite #[i.fa.fa-heart] 15
+            .used #[i.fa.fa-code-fork] 15
+    br
+    hr
+    br
+    h2.text-center My Theme
+    .text-center I'm your father!
+    br
+    .well
+      .charts
+        .chart(ng-repeat="theme in themes",ng-attr-style="display:inline-block;flex:1 1 {{theme.width}}px",ng-click="load(theme)")
+          .chart-img: .ib(ng-attr-style="background-image:url({{theme.thumbnail}})")
+          .chart-desc
+            .title
+              .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
+              span {{theme.name}}
+            .desc {{theme.desc || 'check it yourself!'}}
+          .labels
+            .label(ng-cloak,ng-repeat="tag in theme.tags|tags") {{tag}}
+          .social
+            .author #[i.fa.fa-user] zbryikt
+            .favorite #[i.fa.fa-heart] 15
+            .used #[i.fa.fa-code-fork] 15
+    br
+    hr
+    br
+    h2.text-center My Datasets
+    .text-center there is no data
+    .well
+      .data-fields(ng-controller="dataFiles")
+        .data-file(ng-repeat="dataset in datasets")
+          .closebtn(ng-show="dataset.type.location!='sample'",ng-click="remove(dataset)")
+          .title(ng-click="edit(dataset)") {{dataset.name}}
+          .desc {{dataset.size|size}}, {{dataset.rows}} rows
+          .data-field(ng-repeat="field in dataset.fields",ng-attr-style="background:{{dataset.color}}",ng-drag="true",ng-drag-data="field")
+            span {{field.name}}
+            small {{field.type}}
+        //-.data-file.data-file-new
+          .title add new dataset ...
+        br.clearfix
+      .clearfix

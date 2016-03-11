@@ -1,0 +1,1 @@
+var x$;x$=angular.module("plotDB"),x$.controller("profile",["$scope","dataService","chartService","themeService"].concat(function(t,e,n,r){return e.list().then(function(e){return t.$apply(function(){return t.datasets=e})}),r.list().then(function(e){return t.$apply(function(){return t.themes=e})})}));
