@@ -10,7 +10,7 @@
             a.dropdown-toggle(href="#",data-toggle="dropdown") CHARTS #[span.caret]
             ul.dropdown-menu
               li: a(href="/chart/explore/") Explore
-              li: a(href="/chart/me.html") My Charts
+              li: a(ng-cloak,href="/chart/me.html",ng-show="user.data") My Charts
               li.divider
               li: a(href="/chart/") New Chart
               li: a(href="/chart/?demo") Demo Chart
@@ -20,6 +20,7 @@
             a.dropdown-toggle(href="#",data-toggle="dropdown") THEME #[span.caret]
             ul.dropdown-menu
               li: a(href="/theme/explore/") Explore
+              li: a(href="/theme/me.html",ng-cloak,ng-show="user.data") My Theme
               li.divider
               li: a(href="/theme/") New Theme
 

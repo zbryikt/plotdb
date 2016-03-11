@@ -110,7 +110,8 @@ angular.module \plotDB
           @show = false
           if $scope.nexturl => window.location.href = $scope.nexturl
           else if window.location.pathname == '/u/login' => window.location.href = '/'
-          else window.location.reload!
+          # let's see if it's ok to not reload...
+          #else window.location.reload!
         .error (d, code) ->
           if code == 403 =>
             $scope.auth.failed = if d.[]message.length => d.message.0 else 'email or password incorrect'
@@ -148,3 +149,4 @@ angular.module \plotDB
       window.location.href = chartService.link chart
       #"/chart/?k=#{chart.{}type.name or 'local'}|charttype|#{chart.key}"
 
+onSignIn = -> console.log it
