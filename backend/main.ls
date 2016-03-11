@@ -1,5 +1,5 @@
 require! <[fs path child_process express mongodb body-parser crypto chokidar]>
-require! <[passport passport-local passport-facebook express-session]>
+require! <[passport passport-local passport-facebook passport-google-oauth2 express-session]>
 require! <[nodemailer nodemailer-smtp-transport LiveScript]>
 require! <[connect-multiparty]>
 require! <[./aux ./watch]>
@@ -66,6 +66,16 @@ backend = do
       usernameField: \email
       passwordField: \passwd
     },(u,p,done) ~> @getUser u, p, true, null, done
+
+    passport.use new passport-google-oauth2.Strategy(
+      do
+        clientID: config.google.clientID
+        clientSecret: config.google.clientSecret
+        callbackURL: "/u/auth/google/callback"
+        passReqToCallback: true
+      , (request, access-token, refresh-token, profile, done) ~>
+        @getUser profile.emails.0.value, null, false, profile, done
+    )
 
     passport.use new passport-facebook.Strategy(
       do
