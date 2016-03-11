@@ -129,6 +129,10 @@ backend = do
       ..get \/logout, (req, res) ->
         req.logout!
         res.redirect \/
+      ..get \/auth/google, passport.authenticate \google, {scope: ['email']}
+      ..get \/auth/google/callback, passport.authenticate \google, do
+        successRedirect: \/
+        failureRedirect: \/u/403
       ..get \/auth/facebook, passport.authenticate \facebook, {scope: ['email']}
       ..get \/auth/facebook/callback, passport.authenticate \facebook, do
         successRedirect: \/
