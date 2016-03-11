@@ -129,7 +129,10 @@ backend = do
       ..get \/logout, (req, res) ->
         req.logout!
         res.redirect \/
-      ..get \/auth/google, passport.authenticate \google, {scope: ['email']}
+      ..get \/auth/google, passport.authenticate \google, {scope: <[
+          https://www.googleapis.com/auth/plus.login
+          https://www.googleapis.com/auth/plus.profile.emails.read
+        ]>}
       ..get \/auth/google/callback, passport.authenticate \google, do
         successRedirect: \/
         failureRedirect: \/u/403
