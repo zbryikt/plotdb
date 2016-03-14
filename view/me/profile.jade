@@ -11,7 +11,22 @@ block body
       div(style="position:absolute;bottom:32px;left:140px;font-size:14px;letter-spacing:0.5px")
         span #[i.fa.fa-map-marker] Taipei, Taiwan
         span &nbsp; &nbsp;
+      div.text-center(style="position:absolute;bottom:32px;right:20px;font-family:lato;font-size:20px;letter-spacing:0.3px") {{user.data.desc}}
   div(style="max-width:1200px;margin:auto",ng-controller="profile")
+    div(style="font-size:1.2em;margin:15px")
+      span #[i.fa.fa-area-chart] 15 Charts
+      span &nbsp; &nbsp; &nbsp; &nbsp;
+      span #[i.fa.fa-desktop] 2 Themes
+      span &nbsp; &nbsp; &nbsp; &nbsp;
+      span #[i.fa.fa-folder] 3 Datasets
+      span &nbsp; &nbsp; &nbsp; &nbsp;
+      span #[i.fa.fa-comments] Speak English
+      span &nbsp; &nbsp; &nbsp; &nbsp;
+      span #[i.fa.fa-clock-o] Response Quickly
+      .pull-right.btn.btn-info(style="margin-top:-5px;margin-left:5px") #[i.fa.fa-envelope]
+      .pull-right.btn.btn-success(style="margin-top:-5px") Request a Chart
+
+    div(style="border-bottom:1px solid #bbb;margin: 15px 0")
     //-
       img.pull-left(src="/assets/img/avatar.png",style="border-radius:3px")
       h3.pull-left(ng-cloak) {{user.data.displayname}}
@@ -30,21 +45,21 @@ block body
     h2.text-center My Charts
     .text-center You underestimate my power
     br
-    .well
-      .charts(ng-controller="chartList")
-        .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
-          .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
-          .chart-desc
-            .title 
-              .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
-              span {{chart.name}}
-            .desc {{chart.desc || 'check it yourself!'}}
-          .labels
-            .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
-          .social
-            .author #[i.fa.fa-user] zbryikt
-            .favorite #[i.fa.fa-heart] 15
-            .used #[i.fa.fa-code-fork] 15
+    .charts(ng-controller="chartList")
+      .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
+        .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
+        .chart-desc
+          .title
+            .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
+            span {{chart.name}}
+          .desc {{chart.desc || 'check it yourself!'}}
+        .labels
+          .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
+        .social
+          .author #[i.fa.fa-user] zbryikt
+          .favorite #[i.fa.fa-heart] 15
+          .used #[i.fa.fa-code-fork] 15
+
     br
     hr
     br
@@ -71,6 +86,7 @@ block body
     br
     h2.text-center My Datasets
     .text-center there is no data
+    br
     .well
       .data-fields(ng-controller="dataFiles")
         .data-file(ng-repeat="dataset in datasets")
@@ -84,3 +100,4 @@ block body
           .title add new dataset ...
         br.clearfix
       .clearfix
+  include /module/footer.jade

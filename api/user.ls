@@ -1,4 +1,4 @@
-require! <[fs crypto lwip read-chunk image-type bluebird ../backend/model ../storage ../lmodel ../backend/throttle]>
+require! <[fs crypto lwip read-chunk image-type bluebird ../backend/model ../storage ../backend/throttle]>
 require! '../backend/main': {backend, aux}
 store = null
 
@@ -12,7 +12,6 @@ module.exports = (backend, config) ->
   storage.init config
   router = backend.router
   store := model.driver.use config.driver
-  lmodel := lmodel store
 
   get-user = (req, key) ->
     if req.user and req.user.key == key => new bluebird (res, rej) -> res req.user
@@ -25,7 +24,7 @@ module.exports = (backend, config) ->
     if cur-user.password != (crypto.createHash(\md5).update(oldpasswd).digest(\hex) or "") => return aux.r403 res
     user = {} <<< cur-user
     user.password = (crypto.createHash(\md5).update(newpasswd).digest(\hex) or "")
-    lmodel.user.clean user
+    model.type.user.clean user
     user.save!then (ret) -> req.login user, -> res.send!
 
   backend.app.get \/me/, throttle.limit {lower-delta: 2, upper-delta: 6, penalty: 1, limit: 6}, (req, res) ->
@@ -53,7 +52,7 @@ module.exports = (backend, config) ->
     md5 = md5.digest \hex
     (e) <- storage.write \avatar, "#md5.jpg", b .then
     user = {} <<< req.user <<< {avatar: storage.path(\avatar, "#md5.jpg")}
-    lmodel.user.clean(user)
+    model.type.user.clean(user)
     user.save!then (ret) -> req.login user, -> res.send ret
     backend.multi.clean req, res
 
@@ -66,8 +65,8 @@ module.exports = (backend, config) ->
     if !req.user or req.user.key != req.params.id => return aux.r403 res
     for key in <[username usepasswd password create_date avatar]> => delete req.body[key]
     user = {} <<< req.user <<< req.body
-    if (e = lmodel.user.lint(user)).0 => return aux.r400 res, {msg: model.error-parser e}
-    lmodel.user.clean(user)
+    if (e = model.type.user.lint(user)).0 => return aux.r400 res, {msg: model.error-parser e}
+    model.type.user.clean(user)
     user.save!then (ret) -> req.login user, -> res.send ret
 
   router.api.get \/user/:id/summary, (req, res) ->
