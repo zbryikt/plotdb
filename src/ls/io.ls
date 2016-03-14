@@ -92,27 +92,35 @@ angular.module \plotDB
         else return rej [true, "not support type"]
       backup: (item) -> new Promise (res, rej) ~>
         path = "/db/backup/#{item.type.name}/#{item.key}"
+        # remove 1 hour older backups
+        list = JSON.parse(localStorage.getItem("/db/list/backups") or "[]")
+        now = new Date!getTime!
+        remains = []
+        for p in list =>
+          timestamp = JSON.parse(localstorage.getItem("#p/timestamp") or 0)
+          if now - timestamp > 3600000 =>
+            localstorage.removeItem("#p")
+            localstorage.removeItem("#p/timestamp")
+          else remains.push p
         #TODO think about a mechanism to backup multiple revisions
         # such as difference checking?
         #count = parseInt((localStorage.getItem("#path/count") or 0))
-        count = 0
-        localStorage.setItem("#path/count", angular.toJson(count + 1))
-        localStorage.setItem("#path/#count", angular.toJson(item))
-        localStorage.setItem("#path/#count/timestamp", angular.toJson(new Date!getTime!))
+        if remains.indexOf(path) < 0 => remains.push path
+        try
+          localStorage.setItem("#path", angular.toJson(item))
+          localStorage.setItem("#path/timestamp", angular.toJson(new Date!getTime!))
+        catch e
+          console.log e
         res!
       backups: (item) -> new Promise (res, rej) ~>
         path = "/db/backup/#{item.type.name}/#{item.key}"
-        count = parseInt((localStorage.getItem("#path/count") or 0))
-        ret = []
-        for idx from 0 til count =>
-          try
-            object = JSON.parse(localStorage.getItem("#path/#idx") or "")
-            timestamp = JSON.parse(localStorage.getItem("#path/#idx/timestamp") or "0")
-          catch
-            console.error "failed to parse backups for #{item.type.location} / #{item.type.name} / #{item.key}"
-            res []
-          ret.push {object, timestamp}
-        res ret
+        try
+          object = JSON.parse(localStorage.getItem("#path") or "{}")
+          timestamp = JSON.parse(localStorage.getItem("#path/timestamp") or "0")
+          res (if timestamp => [{object, timestamp}] else [])
+        catch e
+          console.error "failed to parse backups for #{item.type.location} / #{item.type.name} / #{item.key}: \n#e"
+          res []
       cleanBackups: (item) -> new Promise (res, rej) ~>
         path = "/db/backup/#{item.type.name}/#{item.key}"
         localStorage.setItem("#path/count", "0")

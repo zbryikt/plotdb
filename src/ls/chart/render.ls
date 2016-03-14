@@ -171,14 +171,16 @@ render = (payload, rebind = true) ->
       if (!data or !data.length) and chart.sample => data := chart.sample
       for k,v of config =>
         for type in v.type =>
-          type = plotdb[type.name]
           try
+            type = plotdb[type.name]
             if type.test and type.parse and type.test(v.value) =>
               v.value = type.parse v.value
               break
           catch e
-            console.log "plotdb type parsing error: #{type.name}"
+            console.log "chart config: type parsing exception ( #k / #type )"
             console.log "#{e.stack}"
+            thread.dec reboot
+            return error-handling "Exception parsing chart config '#k'"
       for k,v of chart.config =>
         config[k] = if !(config[k]?) or !(config[k].value?) => v.default else config[k].value
       chart.assets = assetsmap = {}
