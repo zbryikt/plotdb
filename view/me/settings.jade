@@ -1,6 +1,10 @@
 extends /module/base.jade
+block head
+  script(type="text/javascript",src="/js/profile.js")
 block body
-  #root(ng-controller="ldProfile",style="max-width:1024px;margin:auto;margin-top:80px"): #user-edit
+  script(type="text/javascript").
+    window.profileUser = !{JSON.stringify(user)};
+  #root(ng-controller="profile",style="max-width:1024px;margin:auto;margin-top:80px"): #user-edit
     .well(style="background:#fcfcfc;box-shadow:0 2px 4px rgba(0,0,0,0.2)"): .ib(style="margin:20px")
       .row.headline
         .col-sm-offset-3.col-sm-9: h4 Basic Information

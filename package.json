@@ -36,6 +36,9 @@
     "passport-local": ">=1.0.0",
     "stylus": "=0.50.0",
     "uglify-js": "=2.4.16",
-    "uglifycss": "0.0.15"
+    "uglifycss": "0.0.15",
+    "read-chunk": "=1.0.1",
+    "image-type": "=2.0.2",
+    "lwip": "=0.0.7"
   }
 }
