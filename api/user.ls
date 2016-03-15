@@ -50,8 +50,8 @@ module.exports = (backend, config) ->
     md5 = crypto.createHash \md5
     md5.update b
     md5 = md5.digest \hex
-    (e) <- storage.write \avatar, "#md5.jpg", b .then
-    user = {} <<< req.user <<< {avatar: storage.path(\avatar, "#md5.jpg")}
+    (e) <- storage.write \avatar, "#md5", b .then
+    user = {} <<< req.user <<< {avatar: storage.path(\avatar, "#md5")}
     model.type.user.clean(user)
     user.save!then (ret) -> req.login user, -> res.send ret
     backend.multi.clean req, res
@@ -74,3 +74,8 @@ module.exports = (backend, config) ->
     (user) <- store.read \user, req.params.id .then
     res.json user{displayname, avatar,key}
 
+  #TODO use better location
+  backend.app.get \/avatar/:name, (req, res) ->
+    (e,b) <- fs.read-file ".localstorage/avatar/#{req.params.name}", _
+    if e => aux.r404 res
+    res.send b

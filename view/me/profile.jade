@@ -6,19 +6,20 @@ block body
   div(style="width:100%;height:160px;position:relative;border-bottom:2px solid #bbb")
     div(style="position:absolute;width:100%;height:100%;background:#999;background-size:contain;opacity: 0.3")
     div(style="max-width:1200px;margin:auto;position:relative;height:100%;")
-      div(style="width:100px;height:100px;background:#999;border-radius:5px;background:#222;position:absolute;bottom:30px;left: 20px")
+      div(style="border:2px solid #444;width:100px;height:100px;border-radius:5px;background:#222;position:absolute;bottom:30px;left: 20px;overflow:hidden")
+        img(ng-attr-src="{{user.data.avatar || '/assets/img/avatar.png'}}",style="width:100%;")
       div(ng-cloak,style="position:absolute;bottom:52px;left:140px;font-size:24px;letter-spacing:0.5px") {{user.data.displayname}}
       div(style="position:absolute;bottom:32px;left:140px;font-size:14px;letter-spacing:0.5px")
         span #[i.fa.fa-map-marker] Taipei, Taiwan
         span &nbsp; &nbsp;
       div.text-center(style="position:absolute;bottom:32px;right:20px;font-family:lato;font-size:20px;letter-spacing:0.3px") {{user.data.desc}}
-  div(style="max-width:1200px;margin:auto",ng-controller="profile")
+  div(style="max-width:1200px;margin:auto",ng-controller="profile"): div(ng-controller="chartList"): div(ng-controller="themeList"): div(ng-controller="dataFiles")
     div(style="font-size:1.2em;margin:15px")
-      span #[i.fa.fa-area-chart] 15 Charts
+      span(ng-cloak) #[i.fa.fa-area-chart] {{charts.length}} Charts
       span &nbsp; &nbsp; &nbsp; &nbsp;
-      span #[i.fa.fa-desktop] 2 Themes
+      span(ng-cloak) #[i.fa.fa-desktop] {{themes.length}} Themes
       span &nbsp; &nbsp; &nbsp; &nbsp;
-      span #[i.fa.fa-folder] 3 Datasets
+      span(ng-cloak) #[i.fa.fa-folder] {{datasets.length}} Datasets
       span &nbsp; &nbsp; &nbsp; &nbsp;
       span #[i.fa.fa-comments] Speak English
       span &nbsp; &nbsp; &nbsp; &nbsp;
@@ -45,7 +46,7 @@ block body
     h2.text-center My Charts
     .text-center You underestimate my power
     br
-    .charts(ng-controller="chartList")
+    .charts
       .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
         .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
         .chart-desc
@@ -66,21 +67,22 @@ block body
     h2.text-center My Theme
     .text-center I'm your father!
     br
-    .well
-      .charts
-        .chart(ng-repeat="theme in themes",ng-attr-style="display:inline-block;flex:1 1 {{theme.width}}px",ng-click="load(theme)")
-          .chart-img: .ib(ng-attr-style="background-image:url({{theme.thumbnail}})")
-          .chart-desc
-            .title
-              .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
-              span {{theme.name}}
-            .desc {{theme.desc || 'check it yourself!'}}
-          .labels
-            .label(ng-cloak,ng-repeat="tag in theme.tags|tags") {{tag}}
-          .social
-            .author #[i.fa.fa-user] zbryikt
-            .favorite #[i.fa.fa-heart] 15
-            .used #[i.fa.fa-code-fork] 15
+
+    .charts
+      .chart(ng-repeat="theme in themes",ng-attr-style="display:inline-block;flex:1 1 {{theme.width}}px",ng-click="load(theme)")
+        .chart-img: .ib(ng-attr-style="background-image:url({{theme.thumbnail}})")
+        .chart-desc
+          .title
+            .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
+            span {{theme.name}}
+          .desc {{theme.desc || 'check it yourself!'}}
+        .labels
+          .label(ng-cloak,ng-repeat="tag in theme.tags|tags") {{tag}}
+        .social
+          .author #[i.fa.fa-user] zbryikt
+          .favorite #[i.fa.fa-heart] 15
+          .used #[i.fa.fa-code-fork] 15
+
     br
     hr
     br
@@ -88,7 +90,7 @@ block body
     .text-center there is no data
     br
     .well
-      .data-fields(ng-controller="dataFiles")
+      .data-fields
         .data-file(ng-repeat="dataset in datasets")
           .closebtn(ng-show="dataset.type.location!='sample'",ng-click="remove(dataset)")
           .title(ng-click="edit(dataset)") {{dataset.name}}
