@@ -2,8 +2,18 @@ angular.module \plotDB
   ..controller \profile,
   <[$scope $http global plNotify dataService chartService themeService]> ++
   ($scope, $http, global, plNotify, data-service, chart-service, theme-service) ->
-    data-service.list!then (ret) -> $scope.$apply -> $scope.datasets = ret
-    theme-service.list!then (ret) -> $scope.$apply -> $scope.themes = ret
+    data-service.list!then (ret) -> $scope.$apply ->
+      $scope.datasets = ret
+      d3.select \#dataset-number .transition!duration 1000
+        .tween \text, -> -> @textContent = parseInt($scope.datasets.length * it)
+    theme-service.list!then (ret) -> $scope.$apply ->
+      $scope.themes = ret
+      d3.select \#theme-number .transition!duration 1000
+        .tween \text, -> -> @textContent = parseInt($scope.themes.length * it)
+    chart-service.list!then (ret) -> $scope.$apply ->
+      $scope.charts = ret
+      d3.select \#chart-number .transition!duration 1000
+        .tween \text, -> -> @textContent = parseInt($scope.charts.length * it)
     $scope.profile = window.profileUser
     $scope.passwd = do
       oldOne: ''

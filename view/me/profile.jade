@@ -13,13 +13,13 @@ block body
         span #[i.fa.fa-map-marker] Taipei, Taiwan
         span &nbsp; &nbsp;
       div.text-center(style="position:absolute;bottom:32px;right:20px;font-family:lato;font-size:20px;letter-spacing:0.3px") {{user.data.desc}}
-  div(style="max-width:1200px;margin:auto",ng-controller="profile"): div(ng-controller="chartList"): div(ng-controller="themeList"): div(ng-controller="dataFiles")
+  div(style="max-width:1200px;margin:auto",ng-controller="profile")
     div(style="font-size:1.2em;margin:15px")
-      span(ng-cloak) #[i.fa.fa-area-chart] {{charts.length}} Charts
+      span(ng-cloak) #[i.fa.fa-area-chart] #[span#chart-number 0] Charts
       span &nbsp; &nbsp; &nbsp; &nbsp;
-      span(ng-cloak) #[i.fa.fa-desktop] {{themes.length}} Themes
+      span(ng-cloak) #[i.fa.fa-desktop] #[span#theme-number 0] Themes
       span &nbsp; &nbsp; &nbsp; &nbsp;
-      span(ng-cloak) #[i.fa.fa-folder] {{datasets.length}} Datasets
+      span(ng-cloak) #[i.fa.fa-folder] #[span#dataset-number 0] Datasets
       span &nbsp; &nbsp; &nbsp; &nbsp;
       span #[i.fa.fa-comments] Speak English
       span &nbsp; &nbsp; &nbsp; &nbsp;
@@ -46,7 +46,7 @@ block body
     h2.text-center My Charts
     .text-center You underestimate my power
     br
-    .charts
+    .charts(ng-controller="chartList")
       .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
         .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
         .chart-desc
@@ -68,7 +68,7 @@ block body
     .text-center I'm your father!
     br
 
-    .charts
+    .charts(ng-controller="themeList")
       .chart(ng-repeat="theme in themes",ng-attr-style="display:inline-block;flex:1 1 {{theme.width}}px",ng-click="load(theme)")
         .chart-img: .ib(ng-attr-style="background-image:url({{theme.thumbnail}})")
         .chart-desc
@@ -90,7 +90,7 @@ block body
     .text-center there is no data
     br
     .well
-      .data-fields
+      .data-fields(ng-controller="dataFiles")
         .data-file(ng-repeat="dataset in datasets")
           .closebtn(ng-show="dataset.type.location!='sample'",ng-click="remove(dataset)")
           .title(ng-click="edit(dataset)") {{dataset.name}}
