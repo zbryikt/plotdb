@@ -28,38 +28,13 @@ block body
       .pull-right.btn.btn-success(style="margin-top:-5px") Request a Chart
 
     div(style="border-bottom:1px solid #bbb;margin: 15px 0")
-    //-
-      img.pull-left(src="/assets/img/avatar.png",style="border-radius:3px")
-      h3.pull-left(ng-cloak) {{user.data.displayname}}
-      br
-      .clearfix
-      .well
-        .row.text-center
-          .col-sm-4
-            div 5 charts
-          .col-sm-4
-            div 3 themes
-          .col-sm-4
-            div 10 datasets
     br
     hr
     h2.text-center My Charts
     .text-center You underestimate my power
     br
-    .charts(ng-controller="chartList")
-      .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
-        .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
-        .chart-desc
-          .title
-            .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
-            span {{chart.name}}
-          .desc {{chart.desc || 'check it yourself!'}}
-        .labels
-          .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
-        .social
-          .author #[i.fa.fa-user] zbryikt
-          .favorite #[i.fa.fa-heart] 15
-          .used #[i.fa.fa-code-fork] 15
+    div(ng-controller="chartList")
+      include ../module/chart/widget/charts.jade
 
     br
     hr
