@@ -671,7 +671,7 @@ angular.module \plotDB
   ($scope, $http, data-service, chart-service) ->
     (ret) <- chart-service.list!then
     <- $scope.$apply
-    $scope.mycharts = ret
+    $scope.charts = ret
     $scope.goto = (chart) -> window.location.href = chartService.link chart
   ..controller \chartList,
   <[$scope $http IOService dataService chartService plNotify]> ++

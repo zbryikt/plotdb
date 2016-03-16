@@ -10,7 +10,8 @@ block head
 block body
   div &nbsp;
   #root(ng-controller="mychart",style="max-width:1200px;margin-left:auto;margin-right:auto")
-    .chart(ng-repeat="chart in mycharts",ng-click="goto(chart)")
+    include widget/charts.jade
+    //-.chart(ng-repeat="chart in mycharts",ng-click="goto(chart)")
       .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
       .chart-desc
         .title {{chart.name}}

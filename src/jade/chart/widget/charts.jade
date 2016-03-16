@@ -1,6 +1,8 @@
 .charts
   .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
-    .chart-img(ng-click="load(chart)"): .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
+    .chart-img(ng-click="load(chart)")
+      //- TODO remove chart.thumbnail once all charts are updated.
+      .ib(ng-attr-style="background-image:url({{chart.thumbnail || '/s/chart/'+chart.key}})")
     .chart-desc(ng-click="load(chart)")
       .title
         .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
