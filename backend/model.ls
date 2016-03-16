@@ -49,6 +49,8 @@ model.prototype.rest = (api, config) ->
     @read req.params.id
       ..then (ret) ->
         if !ret => return aux.r404 res
+        if (ret.{}permission.[]switch.indexOf(\public) < 0)
+        and (!req.user or ret.owner != req.user.key) => return aux.r403 res, "forbidden"
         return res.json ret
       ..catch -> return aux.r403 res
   api.put "/#{@name}/:id", (req, res) ~>
