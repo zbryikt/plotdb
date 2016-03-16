@@ -10,48 +10,6 @@ block head
 block body
   span &nbsp;
   #root(style="max-width:1200px;margin-left:auto;margin-right:auto;",ng-controller="chartList")
-    //-
-      br
-      br
-
-    //-.panel.panel-default(style="max-width:800px;margin:auto"): .panel-body
-      label Search Chart
-      .input-group
-        input.form-control(type="text",placeholder="keyword...")
-        span.input-group-btn
-          .btn.btn-default Search
-      hr
-      label Advanced Options
-      .row
-        .col-sm-6: select.form-control
-        .col-sm-6: select.form-control
-    //-
-      br
-      hr
-      br
-      div(style="text-align:center;") Or Just pick one your favorite visualization to start ...
-      br
-      .text-center: big: i.fa.fa-chevron-down
-      br
-      hr
-      br
-
-    //-
-      .panel.panel-default(style="display:inline-block"): .panel-body
-        big 我的資料 #[small(style="color:#777;"): small: i 67.5KB / 407 rows]
-        br
-        .label.label-info.label-light 姓名
-        span &nbsp;
-        .label.label-info.label-light 年齡
-        span &nbsp;
-        .label.label-info.label-light 屆別
-        span &nbsp;
-        .label.label-info.label-light 黨籍
-      span &nbsp; &nbsp;
-      .btn.btn-default.btn-sm 切換
-      hr(style="margin-top:0")
-      h3 Applicable Charts
-
     #chart-explore-bar.navbar.navbar-default
       .container-fluid
         .collapse.navbar-collapse
@@ -92,9 +50,9 @@ block body
                   .btn.btn-default #[i.fa.fa-search]
 
     .charts
-      .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
-        .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
-        .chart-desc
+      .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
+        .chart-img(ng-click="load(chart)"): .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
+        .chart-desc(ng-click="load(chart)")
           .title
             .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
             span {{chart.name}}
@@ -103,7 +61,7 @@ block body
           .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
         .social
           .author #[i.fa.fa-user] zbryikt
-          .favorite #[i.fa.fa-heart] 15
+          .favorite(ng-click="like(chart)", ng-class="{'active':user.data && user.data.likes.chart[chart.key]}") #[i.fa.fa-heart] {{chart.likes || 0}}
           .used #[i.fa.fa-code-fork] 15
 
 

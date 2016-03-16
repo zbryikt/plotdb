@@ -53,6 +53,7 @@ chart-config = do
     config: {require: false}
     dimension: {require: false}
     data: {required: false}
+    likes: {required: false, type: model.type.number}
     permission: {required: false, type: model.type.permission}
     thumbnail: {required: false, type: model.type.string}
     is-type: {required: false, type: model.type.boolean}

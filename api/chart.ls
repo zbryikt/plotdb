@@ -50,3 +50,17 @@ module.exports = (backend, config) ->
           output = ""
         res.send output
       ..catch (err) ~> return aux.r404 res, err
+
+  backend.router.api.put \/chart/:id/like, (req, res) ->
+    lmodel.chart.read req.params.id
+      ..then (chart) ~>
+        chart = lmodel.chart.clean(chart)
+        if !("public" in chart.{}permission.[]switch) => return aux.r403 res, "this chart is private", true
+        if !req.user => return aux.r403 res
+        v = req.user.{}likes.{}chart[chart.key] = !req.user.{}likes.{}chart[chart.key]
+        chart.likes = (if chart.likes? => chart.likes else 0) + (if v => 1 else -1) >? 0
+        (ret) <- chart.save!then
+        user = {} <<< req.user
+        user = model.type.user.clean(user)
+        user.save!then (ret) -> req.login user, -> res.send ret
+      ..catch (err) ~> return aux.r404 res, err

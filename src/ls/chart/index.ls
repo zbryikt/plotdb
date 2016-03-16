@@ -3,8 +3,8 @@ angular.module \plotDB
   ..filter \date, -> -> new Date(it)
   ..filter \length, -> -> [k for k of it].length
   ..service \chartService,
-  <[$rootScope sampleChart IOService baseService]> ++
-  ($rootScope, sampleChart, IOService, baseService) ->
+  <[$rootScope $http sampleChart IOService baseService]> ++
+  ($rootScope, $http, sampleChart, IOService, baseService) ->
     service = do
       sample: sampleChart
       #link: (chart) -> "/chart/?k=#{chart.type.location}|#{chart.type.name}|#{chart.key}"
@@ -26,6 +26,15 @@ angular.module \plotDB
       assets: []
       thumbnail: null
       isType: false
+      likes: 0
+      like: (v) -> new Promise (res, rej) ~>
+        @likes = @likes + (if v => 1 else -1) >? 0
+        $http {url: "/d/chart/#{@key}/like", method: \PUT}
+          .success -> res!
+          .error (d, status) ~>
+            @likes = @likes - (if v => 1 else -1) >? 0
+            rej!
+
       add-file: (name, type, content = null) ->
         file = {name, type, content}
         @assets.push file
@@ -119,9 +128,9 @@ angular.module \plotDB
             @chart <<< ret
             @backup.check!
           .catch (ret) ~> 
-            console.err ret
+            console.error ret
             plNotify.send \error, "failed to load chart. please try reloading"
-            #window.location.href = window.location.pathname
+            if ret.1 == \forbidden => window.location.href = window.location.pathname
       delete: ->
         if !@chart.key => return
         @delete.handle = true
@@ -660,15 +669,23 @@ angular.module \plotDB
     $scope.mycharts = ret
     $scope.goto = (chart) -> window.location.href = chartService.link chart
   ..controller \chartList,
-  <[$scope $http IOService dataService chartService]> ++
-  ($scope, $http, IO-service, data-service, chart-service) ->
+  <[$scope $http IOService dataService chartService plNotify]> ++
+  ($scope, $http, IO-service, data-service, chart-service, plNotify) ->
+    $scope.like = (chart) ->
+      if !chart => return
+      mylikes = $scope.user.data.{}likes.{}chart
+      v = mylikes[chart.key] = !mylikes[chart.key]
+      chart.like v .catch ->
+        plNotify.error "Can't do favorite. try again later?"
+        mylikes[chart.key] = !v
+
     $scope.charts = []
     (ret) <- Promise.all [
       new Promise (res, rej) -> IO-service.aux.list-locally {name: \chart}, res, rej
       new Promise (res, rej) -> IO-service.aux.list-remotely {name: \chart}, res, rej, "q=all"
     ] .then
     <~ $scope.$apply
-    $scope.charts = ( ret.0 ++ ret.1 )
+    $scope.charts = ( ret.0 ++ ret.1 ).map -> new chartService.chart(it)
     hit = false
     for i from 0 til $scope.charts.length =>
       d = $scope.charts[i]
