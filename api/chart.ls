@@ -58,11 +58,16 @@ module.exports = (backend, config) ->
       ret = ret.filter(->it.{}permission.[]value.filter(->it.perm == \fork and it.switch == \public).length)
       (users) <- model.type.user.list(\key,ret.map(-> it.owner)filter(->it))then
       users = users.map -> [it.key, it.displayname]
+      #TODO remove thumbnail
+      ret := ret.map -> it{name, tags, key, likes, owner, desc, createdTime, modifiedTime, thumbnail}
       ret.forEach (chart) -> chart.ownerName = (users.filter(-> it.0 == chart.owner).0 or []).1
       res.send JSON.stringify(ret)
     else
       if !req.user => return res.send "[]"
       (ret) <- lmodel.chart.list \owner, [req.user.key] .then
+      #TODO remove thumbnail
+      ret = ret.map -> it{name, tags, key, likes, owner, desc, createdTime, modifiedTime, thumbnail}
+      ret.forEach (chart) -> chart.ownerName = req.user.displayname
       res.send JSON.stringify(ret)
 
   backend.app.get \/v/chart/:id/, (req, res) -> 
