@@ -20,36 +20,11 @@ block body
     span Scientific
   #landing
     svg#landing-svg
-      defs
-        filter#blur1
-          feGaussianBlur(in="SourceGraphic",stdDeviation="1", result="blur")
-          feColorMatrix(in="blur", values="0.6 0 0 0 0   0 0.6 0 0 0   0 0 0.6 0 0   0 0 0 0.8 0")
-        filter#blur2(x="-50%",y="-50%",width="200%",height="200%")
-          feGaussianBlur(in="SourceGraphic",stdDeviation="2", result="blur")
-          feColorMatrix(in="blur", values="0.5 0 0 0 0   0 0.4 0 0 0   0 0 0.4 0 0   0 0 0 0.7 0")
-        filter#blur3(x="-50%",y="-50%",width="200%",height="200%")
-          feGaussianBlur(in="SourceGraphic",stdDeviation="3", result="blur")
-          feColorMatrix(in="blur", values="0.5 0 0 0 0   0 0.4 0 0 0   0 0 0.4 0 0   0 0 0 0.6 0")
-
-
     img(src="/assets/img/logo-alt.png",style="top:50%;position:relative;z-index:2")
-    //-
-      .title P#[small LOT]DB
-      .subtitle data on you, vis by us.
-  //-
-    div(style="width:100%;height:30px;background:#000;text-align:center;") HEllow rodl
-    br
-    br
-    br
-  //-div
-    div(style="width:90%;border-left:1px solid #999;border-right:1px solid #999;margin:0 auto;background:#eee")
-      +margin-break
-      h2.text-center Features
-      .text-center Pick your favorite and visualize in seconds.
+
   #product-description: .ib
     +margin-break
     br
-    //-h3.text-center Visualizations shared for non-Coders
     h2.text-center Break the Gap
     .text-center(style="font-size:1.2em") Coding skill is not the limit of your creativity
     br
@@ -71,79 +46,18 @@ block body
         h3 Full Control
         span #[b source code] and #[b stylesheet] in your hand. #[br] Customize as You Can!
     br
-  //-div(style="width:100%;height:60px;background:#ccc;z-index:999;position:relative;")
-    h2.text-center Visualize in a seconds
-    .text-center Pick your favorite and visualize in seconds.
 
   #root
-    //-h3.text-center VISUALIZATIONS
     br
     br
     h2.text-center Visualizations
     .text-center Pick your favorite and visualize in seconds.
     br
-
-    .charts(ng-controller="chartList")
-      .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px",ng-click="load(chart)")
-        .chart-img: .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
-        .chart-desc
-          .title 
-            .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
-            span {{chart.name}}
-          .desc {{chart.desc || 'check it yourself!'}}
-        .labels
-          .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
-        .social
-          .author #[i.fa.fa-user] zbryikt
-          .favorite #[i.fa.fa-heart] 15
-          .used #[i.fa.fa-code-fork] 15
+    div(ng-controller="chartList")
+      include chart/widget/charts.jade
 
     br
-    //-
-      .panel.panel-default(style="display:inline-block"): .panel-body
-        big 我的資料 #[small(style="color:#777;"): small: i 67.5KB / 407 rows]
-        br
-        .label.label-info.label-light 姓名
-        span &nbsp;
-        .label.label-info.label-light 年齡
-        span &nbsp;
-        .label.label-info.label-light 屆別
-        span &nbsp;
-        .label.label-info.label-light 黨籍
-      span &nbsp; &nbsp;
-      .btn.btn-default.btn-sm 切換
-      hr(style="margin-top:0")
-      h3 Applicable Charts
 
-    //-.charts
-      .chart(ng-repeat="chart in charts",ng-click="load(chart)")
-        .chart-img
-          .ib(ng-attr-style="background-image:url({{chart.thumbnail}})")
-          //-.ib
-        .chart-desc
-          .title {{chart.name}}
-          .desc {{chart.desc || 'check it yourself!'}}
-
-          //-.dimension
-            div(style="margin:10px 0 5px;border-bottom:1px solid #eee") Dimensions
-            span(ng-repeat="dim in chart.dimension")
-              .label.label-default.label-light {{dim.name}}
-              span &nbsp;
-            //-
-              .label.label-default.label-light Radius
-              span &nbsp;
-              .label.label-success.label-light X-axis
-              span &nbsp;
-              .label.label-default.label-light Y-axis
-          //-.property
-            div(style="margin:15px 0 5px;border-bottom:1px solid #ddd") #[i.fa.fa-tag] Best use with
-            span(style="color:#ccc;",ng-if="!chart.tags") n/a
-            .label.label-default.label-light(ng-repeat="tag in chart.tags|tags",style="margin-right:3px;font-size:0.9em;background:#fff;color:#777;box-shadow:0 1px 1px rgba(0,0,0,0.1)") {{tag}}
-            //-
-              .label.label-default.label-light Geo-related
-              span &nbsp;
-              .label.label-default.label-light Population
-      .chart.flexend
     br
     .text-center: a.btn.btn-lg.btn-success(href="/chart/explore/"): big give me more!
     br
