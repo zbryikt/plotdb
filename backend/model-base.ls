@@ -155,6 +155,7 @@ model.type = {} <<< do
 
 # complex type
 model.type <<< do
+  # {switch: [], value: [{switch, perm},{}, ...]}
   permission: new model do
     name: \permission
     switches: <[private public list token]>
