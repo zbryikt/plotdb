@@ -99,6 +99,7 @@ angular.module \plotDB
           # clone will set parent beforehand. so we only set it if necessary.
           if key => @chart <<< {parent: key}
         refresh = if !@chart.key => true else false
+        if Array.isArray(@chart.tags) => @chart.tags = @chart.tags.join(",")
         @chart.save!
           .then (ret) ~>
             <~ $scope.$apply
@@ -653,6 +654,25 @@ angular.module \plotDB
           <~ setTimeout _, 0
           @node = node
           @set-position!
+      settings: do
+        init: ->
+          $(\#chart-setting-type).select2!
+          $(\#chart-setting-encoding).select2!
+          $(\#chart-setting-category).select2!
+          $(\#chart-setting-tags).select2 { tags: true, tokenSeparators: [',',' '] }
+            .on \change, ->
+              value = ($(\#chart-setting-tags).val! or [])join(",")
+              if value != $scope.chart.tags => setTimeout (->$scope.$apply -> $scope.chart.tags = value),0
+          $scope.$watch 'chart.tags', (tags) ->
+            tags = if tags => tags.trim! else tags
+            if !tags => return
+            value = ($(\#chart-setting-tags).val! or [])join(",")
+            taglist = (tags or "").split(\,)
+            for it in taglist =>
+              $(\#chart-setting-tags).append $("<option value=\"#it\">#it</options>")
+            if tags != value => $(\#chart-setting-tags).val(taglist).trigger(\change)
+            value = ($(\#chart-setting-tags).val! or [])join(",")
+
 
       init: ->
         @communicate!
@@ -663,6 +683,7 @@ angular.module \plotDB
         @backup.init!
         @field-agent.init!
         @themes.init!
+        @settings.init!
 
     $scope.init!
 

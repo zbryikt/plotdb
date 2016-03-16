@@ -106,7 +106,6 @@
     margin: auto
     border: 1px solid #999
 
-
 .data-field
   font-size: 14px
   padding: 8px 8px
@@ -669,6 +668,7 @@ small.hint
   height: 100%
   background: rgba(0,0,0,0.5)
   z-index: index(order, 'high-modal')
+#permission-modal, #setting-modal, #data-edit-modal, #setting-modal-inner
   .ib
     width: 640px
     height: 530px
@@ -693,9 +693,13 @@ small.hint
   // TODO redesign data edit modal to fit into different screen
   height: 580px
 
-#setting-modal .ib
-  height: 470px
-  margin-top: 100px
+#setting-modal-inner .ib
+  height: auto
+  z-index: index(order, 'high-modal-inner')
+  position: absolute
+  left: 50%
+  margin-left: -320px
+
 
 #field-agent
   position: absolute

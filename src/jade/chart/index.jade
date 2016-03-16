@@ -13,7 +13,8 @@ block head
 block body
   div &nbsp;
   #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
-    #setting-modal(ng-cloak,ng-show="settingPanel.toggled"): .ib
+    #setting-modal(ng-cloak,ng-show="settingPanel.toggled",ng-click="settingPanel.toggle()")
+    #setting-modal-inner(ng-cloak,ng-show="settingPanel.toggled"): .ib
       .closebtn(ng-click="settingPanel.toggle()")
       h3 Settings
       br
@@ -27,8 +28,51 @@ block body
         label Descriptiont
         textarea.form-control(placeholder="Chart Description", ng-model="chart.desc",rows="3")
         br
+        label Base Chart Type
+        div: select#chart-setting-type.form-control
+          option Bar Chart
+          option Line Chart
+          option Pie Chart
+          option Area Chart
+          option Bubble Chart
+          option Radial Chart
+          option Calendar
+          option Treemap
+          option Choropleth
+          option Cartogram
+          option Heatmap
+          option Sankey
+          option Venn Diagram
+          option Word Cloud
+          option Timeline
+          option Mixed
+          option Other
+        br
+        label Visual Encoding
+        div: select#chart-setting-encoding.form-control(multiple="multiple")
+          option Position
+          option Position ( Non-aligned )
+          option Length
+          option Direction
+          option Angle
+          option Area
+          option Volume
+          option Curvature
+          option Shade
+          option Saturation
+        br
+        label Chart Category
+        div: select#chart-setting-category.form-control(multiple="multiple")
+          option Infographics
+          option Geographics
+          option Interactive
+          option Journalism
+          option Statistics
+
+        br
         label Tags
-        input.form-control(placeholder="comma separated values, like 'population,economics'", ng-model="chart.tags")
+        div: select#chart-setting-tags.form-control(multiple="multiple",
+        placeholder="comma separated values, like 'population,economics'")
         br
         label Backups
         div(ng-cloak,ng-show="backup.list.length")
