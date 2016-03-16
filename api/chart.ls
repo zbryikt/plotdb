@@ -10,6 +10,9 @@ module.exports = (backend, config) ->
     if req.query.q == 'all'
       (ret) <- lmodel.chart.list!then
       ret = ret.filter(->it.{}permission.[]value.filter(->it.perm == \fork and it.switch == \public).length)
+      (users) <- model.type.user.list(\key,ret.map(-> it.owner)filter(->it))then
+      users = users.map -> [it.key, it.displayname]
+      ret.forEach (chart) -> chart.ownerName = (users.filter(-> it.0 == chart.owner).0 or []).1
       res.send JSON.stringify(ret)
     else
       if !req.user => return res.send "[]"

@@ -9,7 +9,7 @@
     .labels
       .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
     .social
-      .author #[i.fa.fa-user] zbryikt
+      a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownerName}}
       .favorite(ng-click="like(chart)", ng-class="{'active':user.data && user.data.likes.chart[chart.key]}") #[i.fa.fa-heart] {{chart.likes || 0}}
-      .used #[i.fa.fa-code-fork] 15
+      //-.used #[i.fa.fa-code-fork] 15
 

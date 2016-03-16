@@ -18,6 +18,9 @@ block body
       h3 Settings
       br
       div(style="width: 80%;margin:auto")
+        .pull-right(ng-cloak,ng-show="chart.parent")
+          span derived from 
+          a(ng-attr-href="/chart/?k=s{{chart.parent}}",target="_blank") {{chart.parent}}
         label Name
         input.form-control(placeholder="Chart Name", ng-model="chart.name")
         br

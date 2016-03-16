@@ -59,7 +59,7 @@ module.exports = (backend, config) ->
   backend.app.get \/user/:id, (req, res) ->
     (user) <- get-user req, req.params.id .then
     if !user => return aux.r404 res
-    res.render \profile.jade, {user}
+    res.render \me/profile.jade, {user}
 
   router.api.put \/user/:id, throttle.limit edit-limit, (req, res) ->
     if !req.user or req.user.key != req.params.id => return aux.r403 res

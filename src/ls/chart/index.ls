@@ -27,6 +27,7 @@ angular.module \plotDB
       thumbnail: null
       isType: false
       likes: 0
+      parent: null
       like: (v) -> new Promise (res, rej) ~>
         @likes = @likes + (if v => 1 else -1) >? 0
         $http {url: "/d/chart/#{@key}/like", method: \PUT}
@@ -93,7 +94,10 @@ angular.module \plotDB
       _save: (nothumb = false)->
         #TODO anonymouse handling
         if @chart.owner != $scope.user.data.key =>
+          key = (if @chart.type.location == \server => @chart.key else null)
           @chart <<< {key: null, owner: null, permission: chartService.chart.prototype.permission}
+          # clone will set parent beforehand. so we only set it if necessary.
+          if key => @chart <<< {parent: key}
         refresh = if !@chart.key => true else false
         @chart.save!
           .then (ret) ~>
@@ -119,7 +123,8 @@ angular.module \plotDB
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
       clone: -> # clone forcely. same as save() when user is not the chart's owner
         @chart.name = "#{@chart.name} - Copy"
-        @chart <<< {key: null, owner: null, permission: chartService.chart.prototype.permission}
+        key = (if @chart.type.location == \server => @chart.key else null)
+        @chart <<< {key: null, owner: null, parent: key, permission: chartService.chart.prototype.permission}
         @save!
 
       load: (type, key) ->
