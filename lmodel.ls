@@ -44,7 +44,10 @@ chart-config = do
   base: do
     name: {max: 100, min: 1, required: true, type: model.type.string}
     desc: {max: 200, min: 1, required: false, type: model.type.string}
-    tags: {max: 200, min: 1, required: false, type: model.type.string}
+    basetype: {max: 20, min: 1, required: false, type: model.type.string}
+    visualencoding: { max: 10, required: false, type: model.type.array({max: 20, min: 1, type: model.type.string})}
+    category: { max: 10, required: false, type: model.type.array({max: 20, min: 1, type: model.type.string})}
+    tags: { required: false, type: model.type.array({max: 50, min: 1, type: model.type.string})}
     doc: {type: base.file}
     style: {type: base.file}
     code: {type: base.file}
