@@ -703,6 +703,30 @@ angular.module \plotDB
   ..controller \chartList,
   <[$scope $http IOService dataService chartService plNotify]> ++
   ($scope, $http, IO-service, data-service, chart-service, plNotify) ->
+    $scope.q = do
+      type: null
+      enc: null
+      cat: null
+      dim: null
+      order: \Latest
+    $scope.qmap = do
+      type: [
+        "Other" "Bar Chart" "Line Chart" "Pie Chart"
+        "Area Chart" "Bubble Chart" "Radial Chart" "Calendar"
+        "Treemap" "Choropleth" "Cartogram" "Heatmap" "Sankey"
+        "Venn Diagram" "Word Cloud" "Timeline" "Mixed"
+      ]
+      enc: [
+        "Other" "Position" "Position ( Non-aligned )" "Length" "Direction" "Angle"
+        "Area" "Volume" "Curvature" "Shade" "Saturation"
+      ]
+      cat: [
+        "Other" "Infographics" "Geographics" "Interactive" "Journalism" "Statistics"
+      ]
+      dim: [
+        0 1 2 3 4 5 "> 5"
+      ]
+
     $scope.like = (chart) ->
       if !chart => return
       mylikes = $scope.user.data.{}likes.{}chart

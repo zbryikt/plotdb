@@ -15,32 +15,89 @@ block body
         .collapse.navbar-collapse
           ul.nav.navbar-nav
             li.dropdown
-              a.dropdown-toggle(href="#",data-toggle="dropdown") Chart Type #[span.caret]
+              a.dropdown-toggle(href="#",data-toggle="dropdown")
+                small chart type
+                span(ng-cloak,ng-show="q.type") {{qmap.type[q.type]}}
+                span(ng-cloak,ng-show="!q.type") Any
+                span.caret
               ul.dropdown-menu
-                li: a(href="#") Line Chart
-                li: a(href="#") Bar Chart
-                li: a(href="#") Pie Chart
-                li: a(href="#") Scatter Plot
-                li: a(href="#") Area Chart
-                li: a(href="#") Polar Chart
-                li: a(href="#") Bubble Chart
-                li: a(href="#") Cartography
+                li: a(href="#",ng-click="q.type=''") Any
+                li(ng-class="{'active':q.type==1}"): a(href="#",ng-click="q.type=1") Bar Chart
+                li(ng-class="{'active':q.type==2}"): a(href="#",ng-click="q.type=2") Line Chart
+                li(ng-class="{'active':q.type==3}"): a(href="#",ng-click="q.type=3") Pie Chart
+                li(ng-class="{'active':q.type==4}"): a(href="#",ng-click="q.type=4") Area Chart
+                li(ng-class="{'active':q.type==5}"): a(href="#",ng-click="q.type=5") Bubble Chart
+                li(ng-class="{'active':q.type==6}"): a(href="#",ng-click="q.type=6") Radial Chart
+                li(ng-class="{'active':q.type==7}"): a(href="#",ng-click="q.type=7") Calendar
+                li(ng-class="{'active':q.type==8}"): a(href="#",ng-click="q.type=8") Treemap
+                li(ng-class="{'active':q.type==9}"): a(href="#",ng-click="q.type=9") Choropleth
+                li(ng-class="{'active':q.type==10}"): a(href="#",ng-click="q.type=10") Cartogram
+                li(ng-class="{'active':q.type==11}"): a(href="#",ng-click="q.type=11") Heatmap
+                li(ng-class="{'active':q.type==12}"): a(href="#",ng-click="q.type=12") Sankey
+                li(ng-class="{'active':q.type==13}"): a(href="#",ng-click="q.type=13") Venn Diagram
+                li(ng-class="{'active':q.type==14}"): a(href="#",ng-click="q.type=14") Word Cloud
+                li(ng-class="{'active':q.type==15}"): a(href="#",ng-click="q.type=15") Timeline
+                li(ng-class="{'active':q.type==16}"): a(href="#",ng-click="q.type=16") Mixed
+                li(ng-class="{'active':q.type==0}"): a(href="#",ng-click="q.type=0") Other
+
             li.dropdown
-              a.dropdown-toggle(href="#",data-toggle="dropdown") Category #[span.caret]
+              a.dropdown-toggle(href="#",data-toggle="dropdown")
+                small encoding
+                span(ng-cloak,ng-show="q.enc") {{qmap.enc[q.enc]}}
+                span(ng-cloak,ng-show="!q.enc") Any
+                span.caret
               ul.dropdown-menu
-                li: a(href="#") Jounalaism
-                li: a(href="#") Statistics
-                li: a(href="#") Scentific
-                li: a(href="#") Business
-                li: a(href="#") Time Series
-                li: a(href="#") Geographic
-                li: a(href="#") Animated
+                li: a(href="#",ng-click="q.enc=''") Any
+                li(ng-class="{'active':q.enc==1}"): a(href="#",ng-click="q.enc=1") Position
+                li(ng-class="{'active':q.enc==2}"): a(href="#",ng-click="q.enc=2") Position ( Non-aligned )
+                li(ng-class="{'active':q.enc==3}"): a(href="#",ng-click="q.enc=3") Length
+                li(ng-class="{'active':q.enc==4}"): a(href="#",ng-click="q.enc=4") Direction
+                li(ng-class="{'active':q.enc==5}"): a(href="#",ng-click="q.enc=5") Angle
+                li(ng-class="{'active':q.enc==6}"): a(href="#",ng-click="q.enc=6") Area
+                li(ng-class="{'active':q.enc==7}"): a(href="#",ng-click="q.enc=7") Volume
+                li(ng-class="{'active':q.enc==8}"): a(href="#",ng-click="q.enc=8") Curvature
+                li(ng-class="{'active':q.enc==9}"): a(href="#",ng-click="q.enc=9") Shade
+                li(ng-class="{'active':q.enc==10}"): a(href="#",ng-click="q.enc=10") Saturation
+                li(ng-class="{'active':q.enc==0}"): a(href="#",ng-click="q.enc=0") Other
+
             li.dropdown
-              a.dropdown-toggle(href="#",data-toggle="dropdown") Order #[span.caret]
+              a.dropdown-toggle(href="#",data-toggle="dropdown")
+                small category
+                span(ng-cloak,ng-show="q.cat") {{qmap.cat[q.cat]}}
+                span(ng-cloak,ng-show="!q.cat") Any
+                span.caret
               ul.dropdown-menu
-                li: a(href="#") Latest
-                li: a(href="#") Popular
-                li: a(href="#") Editor's Choice
+                li: a(href="#",ng-click="q.cat=''") Any
+                li(ng-class="{'active':q.cat==1}"): a(href="#",ng-click="q.cat=1") Infographics
+                li(ng-class="{'active':q.cat==2}"): a(href="#",ng-click="q.cat=2") Geographics
+                li(ng-class="{'active':q.cat==3}"): a(href="#",ng-click="q.cat=3") Interactive
+                li(ng-class="{'active':q.cat==4}"): a(href="#",ng-click="q.cat=4") Journalism
+                li(ng-class="{'active':q.cat==5}"): a(href="#",ng-click="q.cat=5") Statistics
+                li(ng-class="{'active':q.cat==6}"): a(href="#",ng-click="q.cat=6") Other
+
+            li.dropdown
+              a.dropdown-toggle(href="#",data-toggle="dropdown")
+                small dimension
+                span(ng-cloak,ng-show="q.dim") {{qmap.dim[q.dim]}}
+                span(ng-cloak,ng-show="!q.dim") Any
+                span.caret
+              ul.dropdown-menu
+                li: a(href="#",ng-click="q.dim=''") Any
+                li(ng-class="{'active':q.dim==1}"): a(href="#",ng-click="q.dim=1") 1
+                li(ng-class="{'active':q.dim==2}"): a(href="#",ng-click="q.dim=2") 2
+                li(ng-class="{'active':q.dim==3}"): a(href="#",ng-click="q.dim=3") 3
+                li(ng-class="{'active':q.dim==4}"): a(href="#",ng-click="q.dim=4") 4
+                li(ng-class="{'active':q.dim==5}"): a(href="#",ng-click="q.dim=5") 5
+                li(ng-class="{'active':q.dim==6}"): a(href="#",ng-click="q.dim=6") > 5
+            li.dropdown
+              a.dropdown-toggle(href="#",data-toggle="dropdown")
+                small Order
+                span(ng-cloak) {{q.order}}
+                span.caret
+              ul.dropdown-menu
+                li(ng-class="{'active':q.order=='Latest'}"): a(href="#",ng-click="q.order='Latest'") Latest
+                li(ng-class="{'active':q.order=='Popular'}"): a(href="#",ng-click="q.order='Popular'") Popular
+                li(ng-class="{'active':q.order==\"Editor's Choice\"}"): a(href="#",ng-click="q.order=\"Editor's Choice\"") Editor's Choice
 
           form.navbar-form.navbar-right
             .form-group
