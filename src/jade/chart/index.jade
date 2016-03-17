@@ -30,44 +30,46 @@ block body
         br
         label Base Chart Type
         div: select#chart-setting-type.form-control
-          option Bar Chart
-          option Line Chart
-          option Pie Chart
-          option Area Chart
-          option Bubble Chart
-          option Radial Chart
-          option Calendar
-          option Treemap
-          option Choropleth
-          option Cartogram
-          option Heatmap
-          option Sankey
-          option Venn Diagram
-          option Word Cloud
-          option Timeline
-          option Mixed
-          option Other
+          option(value="1") Bar Chart
+          option(value="2") Line Chart
+          option(value="3") Pie Chart
+          option(value="4") Area Chart
+          option(value="5") Bubble Chart
+          option(value="6") Radial Chart
+          option(value="7") Calendar
+          option(value="8") Treemap
+          option(value="9") Choropleth
+          option(value="10") Cartogram
+          option(value="11") Heatmap
+          option(value="12") Sankey
+          option(value="13") Venn Diagram
+          option(value="14") Word Cloud
+          option(value="15") Timeline
+          option(value="16") Mixed
+          option(value="0") Other
         br
         label Visual Encoding
         div: select#chart-setting-encoding.form-control(multiple="multiple")
-          option Position
-          option Position ( Non-aligned )
-          option Length
-          option Direction
-          option Angle
-          option Area
-          option Volume
-          option Curvature
-          option Shade
-          option Saturation
+          option(value="1") Position
+          option(value="2") Position ( Non-aligned )
+          option(value="3") Length
+          option(value="4") Direction
+          option(value="5") Angle
+          option(value="6") Area
+          option(value="7") Volume
+          option(value="8") Curvature
+          option(value="9") Shade
+          option(value="10") Saturation
+          option(value="0") Other
         br
         label Chart Category
         div: select#chart-setting-category.form-control(multiple="multiple")
-          option Infographics
-          option Geographics
-          option Interactive
-          option Journalism
-          option Statistics
+          option(value="1") Infographics
+          option(value="2") Geographics
+          option(value="3") Interactive
+          option(value="4") Journalism
+          option(value="5") Statistics
+          option(value="0") Other
 
         br
         label Tags

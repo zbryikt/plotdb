@@ -1,5 +1,5 @@
 angular.module \plotDB
-  ..filter \tags, -> -> (it or "").split(\,)
+  ..filter \tags, -> -> if Array.isArray(it) => it else (it or "").split(\,)
   ..filter \date, -> -> new Date(it)
   ..filter \length, -> -> [k for k of it].length
   ..service \chartService,
@@ -14,9 +14,10 @@ angular.module \plotDB
       #sharelink: (chart) -> "https://plotdb.com/v/chart/#{chart.key}"
       sharelink: (chart) -> "http://localhost/v/chart/#{chart.key}"
     object = ->
+      if typeof(@tags) == \string => @tags = @tags.split \,
     object.prototype = do
       name: \untitled
-      desc: null, tags: null
+      desc: null, tags: []
       theme: null
       doc: {name: 'document', type: 'html', content: service.sample.0.doc.content}
       style: {name: 'stylesheet', type: 'css', content: service.sample.0.style.content}
@@ -99,7 +100,8 @@ angular.module \plotDB
           # clone will set parent beforehand. so we only set it if necessary.
           if key => @chart <<< {parent: key}
         refresh = if !@chart.key => true else false
-        if Array.isArray(@chart.tags) => @chart.tags = @chart.tags.join(",")
+        if !Array.isArray(@chart.tags) => @chart.tags = @chart.tags.split \,
+        #if Array.isArray(@chart.tags) => @chart.tags = @chart.tags.join(",")
         @chart.save!
           .then (ret) ~>
             <~ $scope.$apply
@@ -131,7 +133,7 @@ angular.module \plotDB
       load: (type, key) ->
         chart-service.load type, key
           .then (ret) ~>
-            @chart <<< ret
+            @chart = new chartService.chart(@chart <<< ret)
             @backup.check!
           .catch (ret) ~> 
             console.error ret
@@ -655,24 +657,28 @@ angular.module \plotDB
           @node = node
           @set-position!
       settings: do
+        changed: (node, field) ->
+          [cval,nval] = [$scope.chart[field], $(node)val!]
+          if !Array.isArray(cval) => return cval != nval
+          [cval,nval] = [cval,nval].map -> (it or []).join(",")
+          cval != nval
+        bind: (node, field, config = {}) ->
+          $(node)select2!
+          $(node).select2 config .on \change, ~>
+            if @changed(node,field) => setTimeout (-> $scope.$apply -> $scope.chart[field] = $(node).val!),0
+          $scope.$watch "chart.#field", (vals) ~>
+            html = ""
+            # escaped html from jquery.
+            # jquery.val won't help select2 build option tags so we have to do this by ourselves
+            if config.tags =>
+              for val in (vals or []) => html += $("<option></option>").val(val).text(val).0.outerHTML
+              $(node).html(html)
+            if @changed(node,field) => $(node).val(vals).trigger(\change)
         init: ->
-          $(\#chart-setting-type).select2!
-          $(\#chart-setting-encoding).select2!
-          $(\#chart-setting-category).select2!
-          $(\#chart-setting-tags).select2 { tags: true, tokenSeparators: [',',' '] }
-            .on \change, ->
-              value = ($(\#chart-setting-tags).val! or [])join(",")
-              if value != $scope.chart.tags => setTimeout (->$scope.$apply -> $scope.chart.tags = value),0
-          $scope.$watch 'chart.tags', (tags) ->
-            tags = if tags => tags.trim! else tags
-            if !tags => return
-            value = ($(\#chart-setting-tags).val! or [])join(",")
-            taglist = (tags or "").split(\,)
-            for it in taglist =>
-              $(\#chart-setting-tags).append $("<option value=\"#it\">#it</options>")
-            if tags != value => $(\#chart-setting-tags).val(taglist).trigger(\change)
-            value = ($(\#chart-setting-tags).val! or [])join(",")
-
+          @bind $(\#chart-setting-type), \basetype
+          @bind $(\#chart-setting-encoding), \visualencoding
+          @bind $(\#chart-setting-category), \category
+          @bind $(\#chart-setting-tags), \tags, { tags: true, tokenSeparators: [',',' '] }
 
       init: ->
         @communicate!
