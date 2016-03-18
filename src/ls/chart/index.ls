@@ -100,7 +100,7 @@ angular.module \plotDB
           # clone will set parent beforehand. so we only set it if necessary.
           if key => @chart <<< {parent: key}
         refresh = if !@chart.key => true else false
-        if !Array.isArray(@chart.tags) => @chart.tags = @chart.tags.split \,
+        if !Array.isArray(@chart.tags) => @chart.tags = (@chart.tags or "").split \,
         #if Array.isArray(@chart.tags) => @chart.tags = @chart.tags.join(",")
         @chart.save!
           .then (ret) ~>
@@ -678,7 +678,7 @@ angular.module \plotDB
           @bind $(\#chart-setting-type), \basetype
           @bind $(\#chart-setting-encoding), \visualencoding
           @bind $(\#chart-setting-category), \category
-          @bind $(\#chart-setting-tags), \tags, { tags: true, tokenSeparators: [',',' '] }
+          @bind $(\#chart-setting-tags), \tags, { tags: true, tokenSeparators: [','] }
 
       init: ->
         @communicate!
@@ -727,6 +727,16 @@ angular.module \plotDB
         0 1 2 3 4 5 "> 5"
       ]
 
+    $scope.$watch 'q', (->
+      if !$scope.fullcharts or !$scope.fullcharts.length => $scope.fullcharts = $scope.charts
+      $scope.charts = $scope.fullcharts.filter ->
+        return (
+          (!$scope.q.type or it.basetype == $scope.q.type) and
+          (!$scope.q.enc or ($scope.q.enc in (it.visualencoding or []))) and
+          (!$scope.q.cat or ($scope.q.cat in (it.category or []))) and
+          (!$scope.q.dim or it.dimlen == $scope.q.dim or ($scope.q.dim == 99 and it.dimlen.length > 5))
+        )
+    ), true
     $scope.like = (chart) ->
       if !chart => return
       mylikes = $scope.user.data.{}likes.{}chart

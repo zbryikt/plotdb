@@ -59,14 +59,18 @@ module.exports = (backend, config) ->
       (users) <- model.type.user.list(\key,ret.map(-> it.owner)filter(->it))then
       users = users.map -> [it.key, it.displayname]
       #TODO remove thumbnail
-      ret := ret.map -> it{name, tags, key, likes, owner, desc, createdTime, modifiedTime, thumbnail}
+      ret := ret.map ->
+        dimlen = [k for k of it.dimension].length
+        it{name, tags, key, likes, owner, desc, createdTime, modifiedTime, visualencoding, category, basetype } <<< {dimlen}
       ret.forEach (chart) -> chart.ownerName = (users.filter(-> it.0 == chart.owner).0 or []).1
       res.send JSON.stringify(ret)
     else
       if !req.user => return res.send "[]"
       (ret) <- lmodel.chart.list \owner, [req.user.key] .then
       #TODO remove thumbnail
-      ret = ret.map -> it{name, tags, key, likes, owner, desc, createdTime, modifiedTime, thumbnail}
+      ret = ret.map ->
+        dimlen = [k for k of it.dimension].length
+        it{name, tags, key, likes, owner, desc, createdTime, modifiedTime, visualencoding, category, basetype} <<< {dimlen}
       ret.forEach (chart) -> chart.ownerName = req.user.displayname
       res.send JSON.stringify(ret)
 
