@@ -205,11 +205,16 @@ angular.module \plotDB
           payload = angular.toJson($scope.chart)
           @plotdb.url = URL.createObjectURL new Blob [payload], {type: \application/json}
           @plotdb.size = payload.length
-      colorblind: ->
-        val = <[normal protanopia protanomaly deuteranopia deuteranomaly tritanopia
-        tritanomaly achromatopsia achromatomaly]>
-        if !(it in val) => return
-        @canvas.window.postMessage {type: \colorblind-emu, payload: it}, $scope.plotdomain
+      colorblind: do
+        val: \normal
+        vals: <[
+          normal protanopia protanomaly deuteranopia deuteranomaly tritanopia
+          tritanomaly achromatopsia achromatomaly
+        ]>
+        set: ->
+          if !(it in @vals) => return
+          @val = it
+          $scope.canvas.window.postMessage {type: \colorblind-emu, payload: it}, $scope.plotdomain
 
     $scope <<< do # Behaviors
       backup: do
