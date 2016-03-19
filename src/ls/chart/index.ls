@@ -421,7 +421,7 @@ angular.module \plotDB
         init: ->
           @ldcp = new ldColorPicker null, {}, $('#palette-editor .editor .ldColorPicker').0
           @ldcp.on \change-palette, ~> setTimeout ( ~> $scope.$apply ~> @update! ), 0
-          @list = [{ text: 'Default', id: '123', children: @convert paletteService.sample }]
+          @list = [{ text: 'Default', id: 'default', children: @convert paletteService.sample }]
           $(\#pal-select)
             ..select2 icon-pal-select-config = do
               allowedMethods: <[updateResults]>
@@ -443,16 +443,23 @@ angular.module \plotDB
               @ldcp.set-palette @item.value
 
         update: -> if @item =>
-          src = @item.value
-          des = @ldcp.get-palette!
-          orphan = []
-          for item in src.colors =>
-            matched = des.colors.filter(-> it.hex == item.hex).0
-            if matched => des.colors.splice(des.colors.indexOf(matched), 1)
-            if !matched => orphan.push item
-          for idx from 0 til orphan.length =>
-            orphan[idx].hex = (des.colors[idx] or {}).hex
-          src.colors = (des.colors ++ src.colors).filter(->it.hex)
+          [src,des,pairing] = [@item.value, @ldcp.get-palette!, []]
+          for i from 0 til des.colors.length =>
+            d = des.colors[i]
+            for j from 0 til src.colors.length =>
+              s = src.colors[j]
+              if s.hex != d.hex => continue
+              pairing.push [s, d, Math.abs(i - j)]
+          pairing.sort (a,b) -> a.2 - b.2
+          for pair in pairing =>
+            if pair.0.pair or pair.1.pair => continue
+            pair.0.pair = pair.1
+            pair.1.pair = pair.0
+          unpair = [src.colors.filter(->!it.pair), des.colors.filter(->!it.pair)]
+          for i from 0 til Math.min(unpair.0.length, unpair.1.length) => unpair.1[i].pair = unpair.0[i]
+          src.colors = des.colors.map -> if it.pair => it.pair <<< {hex: it.hex} else it
+          src.colors.forEach -> delete it.pair
+
         toggled: false
         toggle: ->
           @toggled = !!!@toggled
