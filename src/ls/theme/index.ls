@@ -151,7 +151,7 @@ angular.module \plotDB
         if !(it in val) => return
         @canvas.window.postMessage {type: \colorblind-emu, payload: it}, $scope.plotdomain
       apply-theme: ->
-        if @chart and @theme=>
+        if @chart and @theme =>
           for k,v of @chart.config => if v._bytheme => delete @chart.config[k]
           for k,v of @chart.config =>
             if !@chart.config[k].hint => continue
@@ -548,8 +548,8 @@ angular.module \plotDB
           @chart <<< {config, dimension}
           $scope.render!
         else if data.type == \parse-theme =>
-          {config} = JSON.parse(data.payload)
-          @theme <<< {config}
+          {config,typedef} = JSON.parse(data.payload)
+          @theme <<< {config,typedef}
           @apply-theme!
           $scope.render!
         else if data.type == \loaded =>

@@ -1055,7 +1055,7 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
         var data;
         data = arg$.data;
         return $scope.$apply(function(){
-          var ref$, config, dimension, k, v, payload, rebind, event, bytes, mime, buf, ints, i$, to$, idx;
+          var ref$, config, dimension, k, v, typedef, payload, rebind, event, bytes, mime, buf, ints, i$, to$, idx;
           if (!data || typeof data !== 'object') {
             return;
           }
@@ -1098,8 +1098,10 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
             ref$.dimension = dimension;
             return $scope.render();
           } else if (data.type === 'parse-theme') {
-            config = JSON.parse(data.payload).config;
-            this$.theme.config = config;
+            ref$ = JSON.parse(data.payload), config = ref$.config, typedef = ref$.typedef;
+            ref$ = this$.theme;
+            ref$.config = config;
+            ref$.typedef = typedef;
             this$.applyTheme();
             return $scope.render();
           } else if (data.type === 'loaded') {
