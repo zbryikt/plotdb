@@ -1,1 +1,1273 @@
-function import$(e,t){var n={}.hasOwnProperty;for(var r in t)n.call(t,r)&&(e[r]=t[r]);return e}function in$(e,t){for(var n=-1,r=t.length>>>0;++n<r;)if(e===t[n])return!0;return!1}var x$;x$=angular.module("plotDB"),x$.service("sampleTheme",["$rootScope"].concat(function(){return plotdb.theme.sample})),x$.service("themeService",["$rootScope","$http","IOService","sampleTheme","baseService","plUtil","plNotify","eventBus"].concat(function(e,t,n,r,i){var o,a,c,s;return o={sample:r,link:function(e){return"/theme/?k="+e.type.location.charAt(0)+e.key},thumblink:function(e){return"/theme/thumb/?k="+e.type.location.charAt(0)+e.key},sharelink:function(e){return"https://plotdb.com"+this.link(e)}},a=function(){},a.prototype={name:"untitled",desc:null,tags:null,theme:null,doc:{name:"document",type:"html",content:((c=o.sample[0]).doc||(c.doc={})).content||""},style:{name:"stylesheet",type:"css",content:((c=o.sample[0]).style||(c.style={})).content||""},code:{name:"code",type:"javascript",content:((c=o.sample[0]).code||(c.code={})).content||""},config:{},dimension:{},assets:[],thumbnail:null,isType:!1,addFile:function(e,t,n){var r;return null==n&&(n=null),r={name:e,type:t,content:n},this.assets.push(r),r},removeFile:function(e){var t;return t=this.assets.indexOf(e),0>t?void 0:this.assets.splice(t,1)}},s=i.derive("theme",o,a)})),x$.controller("themeEditor",["$scope","$http","$timeout","$interval","dataService","chartService","paletteService","themeService","plNotify"].concat(function(t,n,r,i,o,a,c,s,l){return import$(t,{theme:new s.theme,showsrc:!0,vis:"preview",lastvis:null,plotdomain:"http://localhost/",error:{msg:null,lineno:0},codemirror:{code:{lineWrapping:!0,lineNumbers:!0,viewportMargin:1/0,mode:"javascript"},style:{lineWrapping:!0,lineNumbers:!0,viewportMargin:1/0,mode:"css"},doc:{lineWrapping:!0,lineNumbers:!0,viewportMargin:1/0,mode:"xml"},objs:[]},chart:null,canvas:{node:document.getElementById("chart-renderer"),window:document.getElementById("chart-renderer").contentWindow}}),import$(t,{_save:function(n){var i,o;return null==n&&(n=!1),this.theme.owner!==t.user.data.key&&(i=this.theme,i.key=null,i.owner=null,i.permission=s.theme.prototype.permission),o=this.theme.key?!1:!0,this.theme.save().then(function(){return t.$apply(function(){var e;return n?l.send("warning","theme saved, but thumbnail failed to update"):l.send("success","theme saved"),e=s.link(t.theme),(o||!window.location.search)&&(window.location.href=e),t.save.handle&&r.cancel(t.save.handle),t.save.handle=null})})["catch"](function(n){return t.$apply(function(){return l.aux.error.io("save","theme",e),console.error("[save theme]",n),t.save.handle&&r.cancel(t.save.handle),t.save.handle=null})})},save:function(){var e=this;if(!t.user.data||!t.user.data.key)return t.auth.toggle(!0);if(!this.save.handle)return this.save.handle=r(function(){return e.save.handle=null,e._save(!0)},3e3),this.canvas.window.postMessage({type:"snapshot"},this.plotdomain)},clone:function(){var e;return this.theme.name=this.theme.name+" - Copy",e=this.theme,e.key=null,e.owner=null,e.permission=a.chart.prototype.permission,this.save()},load:function(e,t){var n=this;return console.log(e,t),s.load(e,t).then(function(e){return console.log(e),import$(n.theme,e),n.backup.check()})["catch"](function(){return window.location.href=window.location.pathname})},"delete":function(){var e=this;if(this.theme.key)return this["delete"].handle=!0,this.theme["delete"]().then(function(){return l.send("success","theme deleted"),e.theme=new s.theme,setTimeout(function(){return window.location.href="/theme/me.html"},1e3),e["delete"].handle=!1})["catch"](function(){return l.send("error","failed to delete theme"),e["delete"].handle=!1})},resetConfig:function(){var e,t,n,r=[];if(this.chart){for(e in t=this.chart.config)n=t[e],r.push(n.value=n["default"]);return r}},migrate:function(){var e,n=this;if(this.theme.key)return e=this.theme.clone(),e.type.location="local"===this.theme.type.location?"server":"local",e.save().then(function(){return n.theme["delete"]().then(function(){return t.theme=e,window.location.href=s.link(t.theme)})})},reset:function(){return this.render()},render:function(e){var n,r,i,o;if(null==e&&(e=!0),this.chart){this.chart.updateData();for(n in r=this.chart)i=r[n],"function"!=typeof i&&(this.chart[n]=i);for(n in r=this.theme)i=r[n],"function"!=typeof i&&(this.theme[n]=i);return o=JSON.parse(angular.toJson({theme:this.theme,chart:this.chart})),r=t.render,r.payload=o,r.rebind=e,e?this.canvas.window.postMessage({type:"reload"},this.plotdomain):this.canvas.window.postMessage({type:"render",payload:o,rebind:e},this.plotdomain)}},renderAsync:function(e){var t=this;return null==e&&(e=!0),this.chart?(this.renderAsync.handler&&r.cancel(this.renderAsync.handler),this.renderAsync.handler=r(function(){return t.renderAsync.handler=null,t.render(e)},500)):void 0},countline:function(){var e=this;return["code","style","doc"].map(function(t){return e.theme[t].lines=e.theme[t].content.split("\n").length,e.theme[t].size=e.theme[t].content.length})},download:{prepare:function(){var e=this;return["plotdb"].map(function(n){return setTimeout(function(){return t.$apply(function(){return[e[n].url="",e[n]()]})},300)})},plotdb:function(){var e;return e=angular.toJson(t.theme),this.plotdb.url=URL.createObjectURL(new Blob([e],{type:"application/json"})),this.plotdb.size=e.length}},colorblind:function(e){var n;return n=["normal","protanopia","protanomaly","deuteranopia","deuteranomaly","tritanopia","tritanomaly","achromatopsia","achromatomaly"],in$(e,n)?this.canvas.window.postMessage({type:"colorblind-emu",payload:e},t.plotdomain):void 0}}),import$(t,{backup:{enabled:!1,init:function(){var e=this;return t.$watch("theme",function(){return e.enabled?(e.handle&&r.cancel(e.handle),e.handle=r(function(){return e.handle=null,t.theme.backup().then(function(){})},2e3)):void 0},!0)},recover:function(){var e=this;if(this.last&&this.last.object)return t.theme.recover(this.last.object),this.enabled=!1,t.theme.cleanBackups().then(function(){return t.$apply(function(){return e.check()})})},check:function(){var e=this;return t.theme.backups().then(function(n){return t.$apply(function(){return e.list=n,e.last=n[0],r(function(){return e.enabled=!0},4e3)})["catch"](function(e){return console.error("fecth backup failed: #",e)})})}},charts:{list:a.sample.map(function(e){return new a.chart(e)}),set:function(e){return t.chart=e,e?a.load(e.type,e.key).then(function(e){return t.chart=new a.chart(e),t.chart.theme=t.theme,t.resetConfig(),t.render(),t.canvas.window.postMessage({type:"parse-theme",payload:t.theme.code.content},t.plotdomain)})["catch"](function(e){return console.error(e),l.send("error","failed to load chart. please try reloading")}):void 0},init:function(){var e=this;return a.list().then(function(n){return t.$apply(function(){return e.list=a.sample.map(function(e){return new a.chart(e)}).concat(n)})})}},editor:{"class":"",focus:function(){return setTimeout(function(){return t.codemirror.objs.map(function(e){var n,r,i;return n=function(){var e,n=[];for(r in e=t.codemirror)i=e[r],n.push([r,i]);return n}().filter(function(t){return t[1].mode===e.options.mode})[0],n&&t.vis.startsWith(n[0])&&(setTimeout(function(){return e.focus()},10),!n[1].refreshed)?(e.refresh(),n[1].refreshed=!0,setTimeout(function(){return e.refresh(),t.error.lineno?$("#code-editor-code .CodeMirror-code > div:nth-of-type("+t.error.lineno+")").addClass("error"):void 0},0)):void 0})},0)},update:function(){return this["class"]=[this.fullscreen.toggled?"fullscreen":"","preview"!==this.vis?"active":"",this.color.modes[this.color.idx]].join(" ")},fullscreen:{toggle:function(){return this.toggled=!this.toggled,t.editor.update(),t.editor.focus()},toggled:!1},color:{modes:["normal","dark"],idx:0,toggle:function(){return this.idx=(this.idx+1)%this.modes.length,t.editor.update()}}},settingPanel:{toggle:function(){return this.toggled=!this.toggled},toggled:!1},sharePanel:{social:{facebook:null},isForkable:function(){var e,n,r;return e=(n=t.theme.permission).value||(n.value=[]),r=!!e.filter(function(e){return"fork"===e.perm&&"public"===e["switch"]}).length},init:function(){var e=this;return["#themeedit-sharelink","#themeedit-embedcode"].map(function(n){var r;return r=new Clipboard(n),r.on("success",function(){return $(n).tooltip({title:"copied",trigger:"click"}).tooltip("show"),setTimeout(function(){return $(n).tooltip("hide")},1e3)}),r.on("error",function(){return $(n).tooltip({title:"Press Ctrl+C to Copy",trigger:"click"}).tooltip("show"),setTimeout(function(){return $(n).tooltip("hide")},1e3)}),t.$watch("sharePanel.link",function(n){var r,i,o,a,c,l,u;return e.embedcode='<iframe src="'+n+'"><iframe>',e.thumblink=s.thumblink(t.theme),r={app_id:"1546734828988373",display:"popup",caption:t.theme.name,picture:e.thumblink,link:e.link,name:t.theme.name,redirect_uri:"http://plotdb.com/",description:t.theme.desc||""},e.social.facebook=["https://www.facebook.com/dialog/feed?"].concat(function(){var e,t=[];for(i in e=r)o=e[i],t.push(i+"="+encodeURIComponent(o));return t}()).join("&"),a={url:e.link,media:e.thumblink,description:t.theme.desc||""},e.social.pinterest=["https://www.pinterest.com/pin/create/button/?"].concat(function(){var e,t=[];for(i in e=a)o=e[i],t.push(i+"="+encodeURIComponent(o));return t}()).join("&"),c={subject:"plotdb: "+t.theme.name,body:t.theme.desc+" : "+e.link},e.social.email=["mailto:?"].concat(function(){var e,t=[];for(i in e=c)o=e[i],t.push(i+"="+encodeURIComponent(o));return t}()).join("&"),l={mini:!0,url:e.link,title:t.theme.name+" on PlotDB",summary:t.theme.desc,source:"plotdb.com"},e.social.linkedin=["http://www.linkedin.com/shareArticle?"].concat(function(){var e,t=[];for(i in e=l)o=e[i],t.push(i+"="+encodeURIComponent(o));return t}()).join("&"),u={url:e.link,text:t.theme.name+" - "+(t.theme.desc||""),hashtags:"dataviz,chart,visualization",via:"plotdb"},e.social.twitter=["http://twitter.com/intent/tweet?"].concat(function(){var e,t=[];for(i in e=u)o=e[i],t.push(i+"="+encodeURIComponent(o));return t}()).join("&")}),t.$watch("sharePanel.forkable",function(n){var r;return r=e.isForkable(),r!==e.forkable&&null!=e.forkable?(t.theme.permission.value=n?[{"switch":"public",perm:"fork"}]:[],e.saveHint=!0):void 0}),t.$watch("theme.permission.value",function(){var t;return t=e.isForkable(),e.forkable!==t&&null!=e.forkable&&(e.saveHint=!0),e.forkable=t},!0)})},saveHint:!1,embedcode:"",link:"",toggle:function(){return this.init&&this.init(),this.init=null,this.toggled=!this.toggled,this.saveHint=!1},toggled:!1,isPublic:function(){return in$("public",t.theme.permission["switch"])},setPrivate:function(){var e;return((e=t.theme).permission||(e.permission={}))["switch"]=["private"],this.saveHint=!0},setPublic:function(){var e;return((e=t.theme).permission||(e.permission={}))["switch"]=["public"],this.saveHint=!0}},coloredit:{config:function(e,t){return{"class":"no-palette",context:"context"+t,exclusive:!0,palette:[e.value]}}},paledit:{convert:function(e){return e.map(function(e){return{id:e.key||Math.random()+"",text:e.name,data:e.colors}})},ldcp:null,item:null,fromTheme:function(e){var t,n,r;return e&&e.config&&e.config.palette?(t=this.list.filter(function(e){return"Theme"===e.text})[0],t||(t={text:"Theme",id:"456",children:null},this.list=[t].concat(this.list)),t.children=this.convert(function(){var t,i=[];for(n in t=e.config.palette)r=t[n],i.push((r.name=n,r));return i}()),$("#pal-select option").remove(),$("#pal-select optgroup").remove(),$("#pal-select").select2({allowedMethods:["updateResults"],templateResult:function(e){var t,n;return e.data?(t=function(){var t,r,i,o=[];for(t=0,i=(r=e.data).length;i>t;++t)n=r[t],o.push("<div class='color' "+("style='background:"+n.hex+";width:"+100/e.data.length+"%'")+"></div>");return o}().join(""),$("<div class='palette select'><div class='name'>"+e.text+"</div>"+("<div class='palette-color'>"+t+"</div></div>"))):e.text},data:this.list})):this.list=this.list.filter(function(e){return"Theme"!==e.text})},init:function(){var e,n,r=this;return this.ldcp=new ldColorPicker(null,{},$("#palette-editor .editor .ldColorPicker")[0]),this.ldcp.on("change-palette",function(){return setTimeout(function(){return t.$apply(function(){return r.update()})},0)}),this.list=[{text:"Default",id:"default",children:this.convert(c.sample)}],e=$("#pal-select"),e.select2(n={allowedMethods:["updateResults"],templateResult:function(e){var t,n;return e.data?(t=function(){var t,r,i,o=[];for(t=0,i=(r=e.data).length;i>t;++t)n=r[t],o.push("<div class='color' "+("style='background:"+n.hex+";width:"+100/e.data.length+"%'")+"></div>");return o}().join(""),$("<div class='palette select'><div class='name'>"+e.text+"</div>"+("<div class='palette-color'>"+t+"</div></div>"))):e.text},data:this.list}),e.on("select2:closing",function(e){function n(t){return t.id===$(e.target).val()}var i,o,a,c,s;for(i=0,a=(o=r.list).length;a>i&&(c=o[i],!(s=c.children.filter(n)[0]));++i);if(s)return t.$apply(function(){return r.item.value=JSON.parse(JSON.stringify({colors:s.data}))}),r.ldcp.setPalette(r.item.value)}),e},update:function(){var e,t,n,r,i,o,a,c,s,l,u,h,d,p,f;if(this.item){for(e=[this.item.value,this.ldcp.getPalette(),[]],t=e[0],n=e[1],r=e[2],i=0,o=n.colors.length;o>i;++i)for(a=i,c=n.colors[a],s=0,l=t.colors.length;l>s;++s)u=s,h=t.colors[u],h.hex===c.hex&&r.push([h,c,Math.abs(a-u)]);for(r.sort(function(e,t){return e[2]-t[2]}),i=0,d=r.length;d>i;++i)p=r[i],p[0].pair||p[1].pair||(p[0].pair=p[1],p[1].pair=p[0]);for(f=[t.colors.filter(function(e){return!e.pair}),n.colors.filter(function(e){return!e.pair})],i=0,o=Math.min(f[0].length,f[1].length);o>i;++i)a=i,f[1][a].pair=f[0][a];return t.colors=n.colors.map(function(e){var t;return e.pair?(t=e.pair,t.hex=e.hex,t):e}),t.colors.forEach(function(e){var t;return t=e.pair,delete e.pair,t})}},toggled:!1,toggle:function(){return this.toggled=!this.toggled,this.toggled?void 0:this.update()},edit:function(e){return this.item=e,this.ldcp.setPalette(e.value),this.toggled=!0}},switchPanel:function(){var e=this;return setTimeout(function(){return t.$apply(function(){var t;return t=e.vis,e.vis="preview"!==e.vis||e.lastvis&&"preview"!==e.lastvis?"preview"===e.vis?e.lastvis:"preview":"code",e.lastvis=t})},0)},hidHandler:function(){var e=this;return t.codemirrored=function(e){return t.codemirror.objs.push(e)},document.body.addEventListener("keydown",function(n){return!n.metaKey&&!n.altKey||13!==n.keyCode&&13!==n.which?void 0:t.$apply(function(){return e.switchPanel()})})},checkParam:function(){var e,n,r,i;if(window.location.search){if("?demo"===window.location.search)return t.theme.doc.content=s.sample[1].doc.content,t.theme.style.content=s.sample[1].style.content,void(t.theme.code.content=s.sample[1].code.content);if(e=/[?&]k=([sl])([^&#|?]+)/.exec(window.location.search))return n=e[2],r=["s"===e[1]?"server":"local",e[2]],i=r[0],n=r[1],t.load({name:"theme",location:i},n)}},assets:{measure:function(){return t.theme.assets.size=t.theme.assets.map(function(e){return e.content.length}).reduce(function(e,t){return e+t},0)},preview:function(e){var t,n;return this.preview.toggled=!0,t=["data:",e.type,";charset=utf-8;base64,",e.content].join(""),n=document.createElement("iframe"),$("#assets-preview .iframe")[0].innerHTML="<iframe></iframe>",$("#assets-preview .iframe iframe")[0].src=t},read:function(e){return new Promise(function(n){var r,i,o,a,c;return r=(i=/([^/]+\.?[^/.]*)$/.exec(e.name))?i[1]:"unnamed",o="unknown",a=t.theme.addFile(r,o,null),c=new FileReader,c.onload=function(){var e,r,i,o,s;return e=c.result,r=e.indexOf(";"),i=e.substring(5,r),o=e.substring(r+8),s=t.theme.assets.map(function(e){return(e.content||"").length}).reduce(function(e,t){return e+t},0)+o.length,s>3e6&&t.$apply(function(){l.alert("Assets size limit (3MB) exceeded. won't upload."),t.theme.removeFile(a)}),a.type=i,a.content=o,t.$applyAsync(function(){return a.type=i,a.content=o,a}),n(a)},c.readAsDataURL(e)})},handle:function(e){var t,n,r,i=[];for(t=0,n=e.length;n>t;++t)r=e[t],i.push(this.read(r));return i},node:null,init:function(){var e,t=this;return e=this.node=$("#code-editor-assets input"),e.on("change",function(){return t.handle(t.node[0].files)}),e}},monitor:function(){var e=this;return this.assets.init(),this.$watch("vis",function(){return t.editor.focus()}),this.$watch("theme.assets",function(){return e.assets.measure()},!0),this.$watch("theme.doc.content",function(){return e.countline()}),this.$watch("theme.style.content",function(){return e.countline()}),this.$watch("theme.code.content",function(){return e.countline()}),this.$watch("theme.doc.content",function(){return e.renderAsync()}),this.$watch("theme.style.content",function(){return e.renderAsync()}),this.$watch("theme",function(){return e.renderAsync()}),this.$watch("chart",function(t){return e.renderAsync(),e.theme.chart=t?t.key:null}),this.$watch("theme.chart",function(t){return e.charts.set(e.charts.list.filter(function(e){return e.key===t})[0])}),this.$watch("theme.code.content",function(t){return e.theme?(e.communicate.parseThemeHandler&&r.cancel(e.communicate.parseThemeHandler),e.communicate.parseThemeHandler=r(function(){return e.communicate.parseThemeHandler=null,e.canvas.window.postMessage({type:"parse-theme",payload:t},e.plotdomain)},500)):void 0}),this.$watch("chart.config",function(t,n){var r,i,o;return null==n&&(n={}),r=!!function(){var e,n=[];for(i in e=t)o=e[i],n.push([i,o]);return n}().filter(function(e){var t,r;return t=e[0],r=e[1],!n[t]||r.value!==n[t].value}).map(function(){return o.rebindOnChange}).filter(function(e){return e}).length,e.renderAsync(r)},!0),this.$watch("theme.key",function(){return e.sharePanel.link=s.sharelink(e.theme)}),t.limitscroll($("#chart-configs")[0])},communicate:function(){var e=this;return window.addEventListener("message",function(n){var r;return r=n.data,t.$apply(function(){var n,i,o,a,c,s,l,u,h,d,p,f,m,v,g,y,w;if(r&&"object"==typeof r)if("error"===r.type){if($("#code-editor-code .CodeMirror-code > .error").removeClass("error"),t.error.msg=(r.payload||(r.payload={})).msg||"",t.error.lineno=(r.payload||(r.payload={})).lineno||0,t.error.lineno)return $("#code-editor-code .CodeMirror-code > div:nth-of-type("+t.error.lineno+")").addClass("error")}else{if("alt-enter"===r.type)return t.switchPanel();if("snapshot"===r.type)return r.payload&&(e.theme.thumbnail=r.payload),e._save();if("parse"===r.type){n=JSON.parse(r.payload),i=n.config,o=n.dimension;for(a in n=e.chart.dimension)c=n[a],null!=o[a]&&(o[a].fields=c.fields);for(a in n=e.chart.config)c=n[a],null!=i[a]&&(i[a].value=c.value);for(a in i)c=i[a],null==c.value&&(c.value=c["default"]);return n=e.chart,n.config=i,n.dimension=o,t.render()}if("parse-theme"===r.type){if(i=JSON.parse(r.payload).config,e.theme.config=i,e.chart){for(a in n=e.chart.config)c=n[a],c._bytheme&&delete e.chart.config[a];for(a in n=e.theme.config)c=n[a],s=e.chart.config[a]?e.chart.config[a].hint:"default",l=null!=e.theme.config[a][s]?e.theme.config[a][s]:null!=e.theme.config[a]["default"]?e.theme.config[a]["default"]:"object"!=typeof e.theme.config[a]?e.theme.config[a]:void 0,e.chart.config[a]&&e.chart.config[a].value?e.chart.config[a].value=l:e.chart.config[a]={value:l,type:[],_bytheme:!0}}return e.paledit.fromTheme(e.theme),t.render()}if("loaded"===r.type){if(!e.chart)return;return t.render.payload?(u=t.render.payload,h=t.render.rebind,e.canvas.window.postMessage({type:"render",payload:u,rebind:h},e.plotdomain),t.render.payload=null):(e.canvas.window.postMessage({type:"parse",payload:e.chart.code.content},e.plotdomain),e.canvas.window.postMessage({type:"parse-theme",payload:e.theme.code.content},e.plotdomain))}if("click"===r.type)return document.dispatchEvent?(d=document.createEvent("MouseEvents"),d.initEvent("click",!0,!0),d.synthetic=!0,document.dispatchEvent(d)):(d=document.createEventObject(),d.synthetic=!0,document.fireEvent("onclick",d));if("getsvg"===r.type)return r.payload?(t.download.svg.url=URL.createObjectURL(new Blob([r.payload],{type:"image/svg+xml"})),t.download.svg.size=r.payload.length):t.download.svg.url="#";if("getpng"===r.type){if(!r.payload)return t.download.png.url="#";if(p=atob(r.payload.split(",")[1]),f=r.payload.split(",")[0].split(":")[1].split(";")[0],"image/png"!==f)return t.download.png.url="#";for(m=new ArrayBuffer(p.length),v=new Uint8Array(m),g=0,y=p.length;y>g;++g)w=g,v[w]=p.charCodeAt(w);return t.download.png.url=URL.createObjectURL(new Blob([m],{type:"image/png"})),t.download.png.size=p.length}}})},!1)},fieldAgent:{init:function(){var e=this;return $("#field-agent").on("mousewheel",function(){return e.setPosition()})},data:null,drag:{ging:!1,start:function(){return this.ging=!0},end:function(){return this.ging=!1}},setPosition:function(){var e,t,n;if(this.node)return e=this.node.getBoundingClientRect(),t=this.node.parentNode.parentNode.getBoundingClientRect(),n={left:$("#data-fields").scrollLeft(),top:$("#data-fields").scrollTop()},$("#field-agent").css({top:e.top-t.top+55-n.top+"px",left:e.left-t.left-n.left+"px",width:e.width+"px",height:e.height+"px"})},setProxy:function(e,t){var n,r,i=this;if(!this.drag.ging){for(n=[t,e.target],this.data=n[0],r=n[1];!(r.getAttribute("class").indexOf("data-field")>=0);)if(r=r.parentNode,"body"===r.nodeName.toLowerCase())return;return setTimeout(function(){return i.node=r,i.setPosition()},0)}}},init:function(){return this.communicate(),this.hidHandler(),this.monitor(),this.checkParam(),this.paledit.init(),this.backup.init(),this.fieldAgent.init(),this.charts.init()}}),t.init()})),x$.controller("themeList",["$scope","$http","IOService","dataService","themeService"].concat(function(e,t,n,r,i){return e.themes=[],Promise.all([new Promise(function(e,t){return n.aux.listLocally({name:"theme"},e,t)}),new Promise(function(e,t){return n.aux.listRemotely({name:"theme"},e,t,"q=all")})]).then(function(t){return e.$apply(function(){return e.themes=t[0].concat(t[1]),e.themes.forEach(function(e){return e.width=Math.random()>.8?640:320}),e.load=function(e){return window.location.href=i.link(e)}})})}));
+// Generated by LiveScript 1.3.1
+var x$;
+x$ = angular.module('plotDB');
+x$.service('sampleTheme', ['$rootScope'].concat(function($rootScope){
+  return plotdb.theme.sample;
+}));
+x$.service('themeService', ['$rootScope', '$http', 'IOService', 'sampleTheme', 'baseService', 'plUtil', 'plNotify', 'eventBus'].concat(function($rootScope, $http, IOService, sampleTheme, baseService, plUtil, plNotify, eventBus){
+  var service, object, ref$, themeService;
+  service = {
+    sample: sampleTheme,
+    link: function(theme){
+      return "/theme/?k=" + theme.type.location.charAt(0) + theme.key;
+    },
+    thumblink: function(theme){
+      return "/theme/thumb/?k=" + theme.type.location.charAt(0) + theme.key;
+    },
+    sharelink: function(theme){
+      return "https://plotdb.com" + this.link(theme);
+    }
+  };
+  object = function(){};
+  object.prototype = {
+    name: 'untitled',
+    desc: null,
+    tags: null,
+    theme: null,
+    doc: {
+      name: 'document',
+      type: 'html',
+      content: ((ref$ = service.sample[0]).doc || (ref$.doc = {})).content || ""
+    },
+    style: {
+      name: 'stylesheet',
+      type: 'css',
+      content: ((ref$ = service.sample[0]).style || (ref$.style = {})).content || ""
+    },
+    code: {
+      name: 'code',
+      type: 'javascript',
+      content: ((ref$ = service.sample[0]).code || (ref$.code = {})).content || ""
+    },
+    config: {},
+    dimension: {},
+    assets: [],
+    thumbnail: null,
+    isType: false,
+    addFile: function(name, type, content){
+      var file;
+      content == null && (content = null);
+      file = {
+        name: name,
+        type: type,
+        content: content
+      };
+      this.assets.push(file);
+      return file;
+    },
+    removeFile: function(file){
+      var idx;
+      idx = this.assets.indexOf(file);
+      if (idx < 0) {
+        return;
+      }
+      return this.assets.splice(idx, 1);
+    }
+  };
+  themeService = baseService.derive('theme', service, object);
+  return themeService;
+}));
+x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataService', 'chartService', 'paletteService', 'themeService', 'plNotify'].concat(function($scope, $http, $timeout, $interval, dataService, chartService, paletteService, themeService, plNotify){
+  import$($scope, {
+    theme: new themeService.theme(),
+    showsrc: true,
+    vis: 'preview',
+    lastvis: null,
+    plotdomain: 'http://localhost/',
+    error: {
+      msg: null,
+      lineno: 0
+    },
+    codemirror: {
+      code: {
+        lineWrapping: true,
+        lineNumbers: true,
+        viewportMargin: Infinity,
+        mode: 'javascript'
+      },
+      style: {
+        lineWrapping: true,
+        lineNumbers: true,
+        viewportMargin: Infinity,
+        mode: 'css'
+      },
+      doc: {
+        lineWrapping: true,
+        lineNumbers: true,
+        viewportMargin: Infinity,
+        mode: 'xml'
+      },
+      objs: []
+    },
+    chart: null,
+    canvas: {
+      node: document.getElementById('chart-renderer'),
+      window: document.getElementById('chart-renderer').contentWindow
+    }
+  });
+  import$($scope, {
+    _save: function(nothumb){
+      var ref$, refresh, this$ = this;
+      nothumb == null && (nothumb = false);
+      if (this.theme.owner !== $scope.user.data.key) {
+        ref$ = this.theme;
+        ref$.key = null;
+        ref$.owner = null;
+        ref$.permission = themeService.theme.prototype.permission;
+      }
+      refresh = !this.theme.key ? true : false;
+      return this.theme.save().then(function(ret){
+        return $scope.$apply(function(){
+          var link;
+          if (nothumb) {
+            plNotify.send('warning', "theme saved, but thumbnail failed to update");
+          } else {
+            plNotify.send('success', "theme saved");
+          }
+          link = themeService.link($scope.theme);
+          if (refresh || !window.location.search) {
+            window.location.href = link;
+          }
+          if ($scope.save.handle) {
+            $timeout.cancel($scope.save.handle);
+          }
+          return $scope.save.handle = null;
+        });
+      })['catch'](function(err){
+        return $scope.$apply(function(){
+          plNotify.aux.error.io('save', 'theme', e);
+          console.error("[save theme]", err);
+          if ($scope.save.handle) {
+            $timeout.cancel($scope.save.handle);
+          }
+          return $scope.save.handle = null;
+        });
+      });
+    },
+    save: function(){
+      var this$ = this;
+      if (!$scope.user.data || !$scope.user.data.key) {
+        return $scope.auth.toggle(true);
+      }
+      if (this.save.handle) {
+        return;
+      }
+      this.save.handle = $timeout(function(){
+        this$.save.handle = null;
+        return this$._save(true);
+      }, 3000);
+      return this.canvas.window.postMessage({
+        type: 'snapshot'
+      }, this.plotdomain);
+    },
+    clone: function(){
+      var ref$;
+      this.theme.name = this.theme.name + " - Copy";
+      ref$ = this.theme;
+      ref$.key = null;
+      ref$.owner = null;
+      ref$.permission = chartService.chart.prototype.permission;
+      return this.save();
+    },
+    load: function(type, key){
+      var this$ = this;
+      return themeService.load(type, key).then(function(ret){
+        import$(this$.theme, ret);
+        return this$.backup.check();
+      })['catch'](function(ret){
+        return window.location.href = window.location.pathname;
+      });
+    },
+    'delete': function(){
+      var this$ = this;
+      if (!this.theme.key) {
+        return;
+      }
+      this['delete'].handle = true;
+      return this.theme['delete']().then(function(ret){
+        plNotify.send('success', "theme deleted");
+        this$.theme = new themeService.theme();
+        setTimeout(function(){
+          return window.location.href = "/theme/me.html";
+        }, 1000);
+        return this$['delete'].handle = false;
+      })['catch'](function(err){
+        plNotify.send('error', "failed to delete theme");
+        return this$['delete'].handle = false;
+      });
+    },
+    resetConfig: function(){
+      var k, ref$, v, results$ = [];
+      if (this.chart) {
+        for (k in ref$ = this.chart.config) {
+          v = ref$[k];
+          results$.push(v.value = v['default']);
+        }
+        return results$;
+      }
+    },
+    migrate: function(){
+      var cloned, this$ = this;
+      if (!this.theme.key) {
+        return;
+      }
+      cloned = this.theme.clone();
+      cloned.type.location = this.theme.type.location === 'local' ? 'server' : 'local';
+      return cloned.save().then(function(){
+        return this$.theme['delete']().then(function(){
+          $scope.theme = cloned;
+          return window.location.href = themeService.link($scope.theme);
+        });
+      });
+    },
+    reset: function(){
+      return this.render();
+    },
+    render: function(rebind){
+      var k, ref$, v, payload;
+      rebind == null && (rebind = true);
+      if (!this.chart) {
+        return;
+      }
+      this.chart.updateData();
+      for (k in ref$ = this.chart) {
+        v = ref$[k];
+        if (typeof v !== 'function') {
+          this.chart[k] = v;
+        }
+      }
+      for (k in ref$ = this.theme) {
+        v = ref$[k];
+        if (typeof v !== 'function') {
+          this.theme[k] = v;
+        }
+      }
+      payload = JSON.parse(angular.toJson({
+        theme: this.theme,
+        chart: this.chart
+      }));
+      ref$ = $scope.render;
+      ref$.payload = payload;
+      ref$.rebind = rebind;
+      if (!rebind) {
+        return this.canvas.window.postMessage({
+          type: 'render',
+          payload: payload,
+          rebind: rebind
+        }, this.plotdomain);
+      } else {
+        return this.canvas.window.postMessage({
+          type: 'reload'
+        }, this.plotdomain);
+      }
+    },
+    renderAsync: function(rebind){
+      var this$ = this;
+      rebind == null && (rebind = true);
+      if (!this.chart) {
+        return;
+      }
+      if (this.renderAsync.handler) {
+        $timeout.cancel(this.renderAsync.handler);
+      }
+      return this.renderAsync.handler = $timeout(function(){
+        this$.renderAsync.handler = null;
+        return this$.render(rebind);
+      }, 500);
+    },
+    countline: function(){
+      var this$ = this;
+      return ['code', 'style', 'doc'].map(function(it){
+        this$.theme[it].lines = this$.theme[it].content.split('\n').length;
+        return this$.theme[it].size = this$.theme[it].content.length;
+      });
+    },
+    download: {
+      prepare: function(){
+        var this$ = this;
+        return ['plotdb'].map(function(n){
+          return setTimeout(function(){
+            return $scope.$apply(function(){
+              return [this$[n].url = '', this$[n]()];
+            });
+          }, 300);
+        });
+      },
+      plotdb: function(){
+        var payload;
+        payload = angular.toJson($scope.theme);
+        this.plotdb.url = URL.createObjectURL(new Blob([payload], {
+          type: 'application/json'
+        }));
+        return this.plotdb.size = payload.length;
+      }
+    },
+    colorblind: function(it){
+      var val;
+      val = ['normal', 'protanopia', 'protanomaly', 'deuteranopia', 'deuteranomaly', 'tritanopia', 'tritanomaly', 'achromatopsia', 'achromatomaly'];
+      if (!in$(it, val)) {
+        return;
+      }
+      return this.canvas.window.postMessage({
+        type: 'colorblind-emu',
+        payload: it
+      }, $scope.plotdomain);
+    },
+    applyTheme: function(){
+      var k, ref$, v, preset;
+      if (this.chart && this.theme) {
+        for (k in ref$ = this.chart.config) {
+          v = ref$[k];
+          if (v._bytheme) {
+            delete this.chart.config[k];
+          }
+        }
+        for (k in ref$ = this.chart.config) {
+          v = ref$[k];
+          if (!this.chart.config[k].hint) {
+            continue;
+          }
+          preset = this.theme.typedef[this.chart.config[k].type[0].name];
+          if (!preset) {
+            continue;
+          }
+          if (preset[this.chart.config[k].hint] != null) {
+            this.chart.config[k].value = preset[this.chart.config[k].hint];
+          }
+        }
+        for (k in ref$ = this.theme.config) {
+          v = ref$[k];
+          if (!this.chart.config[k]) {
+            this.chart.config[k] = import$({
+              _bytheme: true
+            }, v);
+          } else if (this.chart.config[k].type[0] !== v.type[0]) {
+            continue;
+          } else {
+            this.chart.config[k].value = v['default'];
+          }
+        }
+      }
+      if (this.theme) {
+        return this.paledit.fromTheme(this.theme);
+      }
+    }
+  });
+  import$($scope, {
+    backup: {
+      enabled: false,
+      init: function(){
+        var this$ = this;
+        return $scope.$watch('theme', function(){
+          if (!this$.enabled) {
+            return;
+          }
+          if (this$.handle) {
+            $timeout.cancel(this$.handle);
+          }
+          return this$.handle = $timeout(function(){
+            this$.handle = null;
+            return $scope.theme.backup().then(function(){});
+          }, 2000);
+        }, true);
+      },
+      recover: function(){
+        var this$ = this;
+        if (!this.last || !this.last.object) {
+          return;
+        }
+        $scope.theme.recover(this.last.object);
+        this.enabled = false;
+        return $scope.theme.cleanBackups().then(function(){
+          return $scope.$apply(function(){
+            return this$.check();
+          });
+        });
+      },
+      check: function(){
+        var this$ = this;
+        return $scope.theme.backups().then(function(ret){
+          return $scope.$apply(function(){
+            this$.list = ret;
+            this$.last = ret[0];
+            return $timeout(function(){
+              return this$.enabled = true;
+            }, 4000);
+          })['catch'](function(err){
+            return console.error('fecth backup failed: #', err);
+          });
+        });
+      }
+    },
+    charts: {
+      list: chartService.sample.map(function(it){
+        return new chartService.chart(it);
+      }),
+      set: function(it){
+        var this$ = this;
+        $scope.chart = it;
+        if (!it) {
+          return;
+        }
+        return chartService.load(it.type, it.key).then(function(ret){
+          $scope.chart = new chartService.chart(ret);
+          $scope.chart.theme = $scope.theme;
+          $scope.resetConfig();
+          $scope.render();
+          return $scope.canvas.window.postMessage({
+            type: 'parse-theme',
+            payload: $scope.theme.code.content
+          }, $scope.plotdomain);
+        })['catch'](function(ret){
+          console.error(ret);
+          return plNotify.send('error', "failed to load chart. please try reloading");
+        });
+      },
+      init: function(){
+        var this$ = this;
+        return chartService.list().then(function(ret){
+          return $scope.$apply(function(){
+            return this$.list = chartService.sample.map(function(it){
+              return new chartService.chart(it);
+            }).concat(ret);
+          });
+        });
+      }
+    },
+    editor: {
+      'class': "",
+      focus: function(){
+        var this$ = this;
+        return setTimeout(function(){
+          return $scope.codemirror.objs.map(function(cm){
+            var ret, k, v, this$ = this;
+            ret = (function(){
+              var ref$, results$ = [];
+              for (k in ref$ = $scope.codemirror) {
+                v = ref$[k];
+                results$.push([k, v]);
+              }
+              return results$;
+            }()).filter(function(it){
+              return it[1].mode === cm.options.mode;
+            })[0];
+            if (!ret || !$scope.vis.startsWith(ret[0])) {
+              return;
+            }
+            setTimeout(function(){
+              return cm.focus();
+            }, 10);
+            if (ret[1].refreshed) {
+              return;
+            }
+            cm.refresh();
+            ret[1].refreshed = true;
+            return setTimeout(function(){
+              cm.refresh();
+              if ($scope.error.lineno) {
+                return $("#code-editor-code .CodeMirror-code > div:nth-of-type(" + $scope.error.lineno + ")").addClass('error');
+              }
+            }, 0);
+          });
+        }, 0);
+      },
+      update: function(){
+        return this['class'] = [this.fullscreen.toggled ? 'fullscreen' : "", this.vis !== 'preview' ? 'active' : "", this.color.modes[this.color.idx]].join(" ");
+      },
+      fullscreen: {
+        toggle: function(){
+          this.toggled = !this.toggled;
+          $scope.editor.update();
+          return $scope.editor.focus();
+        },
+        toggled: false
+      },
+      color: {
+        modes: ['normal', 'dark'],
+        idx: 0,
+        toggle: function(){
+          this.idx = (this.idx + 1) % this.modes.length;
+          return $scope.editor.update();
+        }
+      }
+    },
+    settingPanel: {
+      toggle: function(){
+        return this.toggled = !this.toggled;
+      },
+      toggled: false
+    },
+    sharePanel: {
+      social: {
+        facebook: null
+      },
+      isForkable: function(){
+        var perms, ref$, forkable;
+        perms = (ref$ = $scope.theme.permission).value || (ref$.value = []);
+        return forkable = !!perms.filter(function(it){
+          return it.perm === 'fork' && it['switch'] === 'public';
+        }).length;
+      },
+      init: function(){
+        var this$ = this;
+        return ['#themeedit-sharelink', '#themeedit-embedcode'].map(function(eventsrc){
+          var clipboard;
+          clipboard = new Clipboard(eventsrc);
+          clipboard.on('success', function(){
+            $(eventsrc).tooltip({
+              title: 'copied',
+              trigger: 'click'
+            }).tooltip('show');
+            return setTimeout(function(){
+              return $(eventsrc).tooltip('hide');
+            }, 1000);
+          });
+          clipboard.on('error', function(){
+            $(eventsrc).tooltip({
+              title: 'Press Ctrl+C to Copy',
+              trigger: 'click'
+            }).tooltip('show');
+            return setTimeout(function(){
+              return $(eventsrc).tooltip('hide');
+            }, 1000);
+          });
+          $scope.$watch('sharePanel.link', function(it){
+            var fbobj, k, v, pinobj, emailobj, linkedinobj, twitterobj;
+            this$.embedcode = "<iframe src=\"" + it + "\"><iframe>";
+            this$.thumblink = themeService.thumblink($scope.theme);
+            fbobj = {
+              app_id: '1546734828988373',
+              display: 'popup',
+              caption: $scope.theme.name,
+              picture: this$.thumblink,
+              link: this$.link,
+              name: $scope.theme.name,
+              redirect_uri: 'http://plotdb.com/',
+              description: $scope.theme.desc || ""
+            };
+            this$.social.facebook = (["https://www.facebook.com/dialog/feed?"].concat((function(){
+              var ref$, results$ = [];
+              for (k in ref$ = fbobj) {
+                v = ref$[k];
+                results$.push(k + "=" + encodeURIComponent(v));
+              }
+              return results$;
+            }()))).join('&');
+            pinobj = {
+              url: this$.link,
+              media: this$.thumblink,
+              description: $scope.theme.desc || ""
+            };
+            this$.social.pinterest = (["https://www.pinterest.com/pin/create/button/?"].concat((function(){
+              var ref$, results$ = [];
+              for (k in ref$ = pinobj) {
+                v = ref$[k];
+                results$.push(k + "=" + encodeURIComponent(v));
+              }
+              return results$;
+            }()))).join('&');
+            emailobj = {
+              subject: "plotdb: " + $scope.theme.name,
+              body: $scope.theme.desc + " : " + this$.link
+            };
+            this$.social.email = (["mailto:?"].concat((function(){
+              var ref$, results$ = [];
+              for (k in ref$ = emailobj) {
+                v = ref$[k];
+                results$.push(k + "=" + encodeURIComponent(v));
+              }
+              return results$;
+            }()))).join('&');
+            linkedinobj = {
+              mini: true,
+              url: this$.link,
+              title: $scope.theme.name + " on PlotDB",
+              summary: $scope.theme.desc,
+              source: "plotdb.com"
+            };
+            this$.social.linkedin = (["http://www.linkedin.com/shareArticle?"].concat((function(){
+              var ref$, results$ = [];
+              for (k in ref$ = linkedinobj) {
+                v = ref$[k];
+                results$.push(k + "=" + encodeURIComponent(v));
+              }
+              return results$;
+            }()))).join('&');
+            twitterobj = {
+              url: this$.link,
+              text: $scope.theme.name + " - " + ($scope.theme.desc || ''),
+              hashtags: "dataviz,chart,visualization",
+              via: "plotdb"
+            };
+            return this$.social.twitter = (["http://twitter.com/intent/tweet?"].concat((function(){
+              var ref$, results$ = [];
+              for (k in ref$ = twitterobj) {
+                v = ref$[k];
+                results$.push(k + "=" + encodeURIComponent(v));
+              }
+              return results$;
+            }()))).join('&');
+          });
+          $scope.$watch('sharePanel.forkable', function(it){
+            var forkable;
+            forkable = this$.isForkable();
+            if (forkable !== this$.forkable && this$.forkable != null) {
+              $scope.theme.permission.value = it
+                ? [{
+                  'switch': 'public',
+                  perm: 'fork'
+                }]
+                : [];
+              return this$.saveHint = true;
+            }
+          });
+          return $scope.$watch('theme.permission.value', function(){
+            var forkable;
+            forkable = this$.isForkable();
+            if (this$.forkable !== forkable && this$.forkable != null) {
+              this$.saveHint = true;
+            }
+            return this$.forkable = forkable;
+          }, true);
+        });
+      },
+      saveHint: false,
+      embedcode: "",
+      link: "",
+      toggle: function(){
+        if (this.init) {
+          this.init();
+        }
+        this.init = null;
+        this.toggled = !this.toggled;
+        return this.saveHint = false;
+      },
+      toggled: false,
+      isPublic: function(){
+        return in$("public", $scope.theme.permission['switch']);
+      },
+      setPrivate: function(){
+        var ref$;
+        ((ref$ = $scope.theme).permission || (ref$.permission = {}))['switch'] = ['private'];
+        return this.saveHint = true;
+      },
+      setPublic: function(){
+        var ref$;
+        ((ref$ = $scope.theme).permission || (ref$.permission = {}))['switch'] = ['public'];
+        return this.saveHint = true;
+      }
+    },
+    coloredit: {
+      config: function(v, idx){
+        return {
+          'class': 'no-palette',
+          context: "context" + idx,
+          exclusive: true,
+          palette: [v.value]
+        };
+      }
+    },
+    paledit: {
+      convert: function(it){
+        return it.map(function(it){
+          return {
+            id: it.key || Math.random() + "",
+            text: it.name,
+            data: it.colors
+          };
+        });
+      },
+      ldcp: null,
+      item: null,
+      fromTheme: function(theme){
+        var themepal, k, v;
+        if (!theme || !theme.config || !theme.config.palette) {
+          return this.list = this.list.filter(function(it){
+            return it.text !== 'Theme';
+          });
+        }
+        themepal = this.list.filter(function(it){
+          return it.text === 'Theme';
+        })[0];
+        if (!themepal) {
+          themepal = {
+            text: 'Theme',
+            id: '456',
+            children: null
+          };
+          this.list = [themepal].concat(this.list);
+        }
+        themepal.children = this.convert((function(){
+          var ref$, results$ = [];
+          for (k in ref$ = theme.config.palette) {
+            v = ref$[k];
+            results$.push((v.name = k, v));
+          }
+          return results$;
+        }()));
+        $('#pal-select option').remove();
+        $('#pal-select optgroup').remove();
+        return $('#pal-select').select2({
+          allowedMethods: ['updateResults'],
+          templateResult: function(state){
+            var color, c;
+            if (!state.data) {
+              return state.text;
+            }
+            color = (function(){
+              var i$, ref$, len$, results$ = [];
+              for (i$ = 0, len$ = (ref$ = state.data).length; i$ < len$; ++i$) {
+                c = ref$[i$];
+                results$.push("<div class='color' " + ("style='background:" + c.hex + ";width:" + 100 / state.data.length + "%'") + "></div>");
+              }
+              return results$;
+            }()).join("");
+            return $(("<div class='palette select'><div class='name'>" + state.text + "</div>") + ("<div class='palette-color'>" + color + "</div></div>"));
+          },
+          data: this.list
+        });
+      },
+      init: function(){
+        var x$, iconPalSelectConfig, this$ = this;
+        this.ldcp = new ldColorPicker(null, {}, $('#palette-editor .editor .ldColorPicker')[0]);
+        this.ldcp.on('change-palette', function(){
+          return setTimeout(function(){
+            return $scope.$apply(function(){
+              return this$.update();
+            });
+          }, 0);
+        });
+        this.list = [{
+          text: 'Default',
+          id: 'default',
+          children: this.convert(paletteService.sample)
+        }];
+        x$ = $('#pal-select');
+        x$.select2(iconPalSelectConfig = {
+          allowedMethods: ['updateResults'],
+          templateResult: function(state){
+            var color, c;
+            if (!state.data) {
+              return state.text;
+            }
+            color = (function(){
+              var i$, ref$, len$, results$ = [];
+              for (i$ = 0, len$ = (ref$ = state.data).length; i$ < len$; ++i$) {
+                c = ref$[i$];
+                results$.push("<div class='color' " + ("style='background:" + c.hex + ";width:" + 100 / state.data.length + "%'") + "></div>");
+              }
+              return results$;
+            }()).join("");
+            return $(("<div class='palette select'><div class='name'>" + state.text + "</div>") + ("<div class='palette-color'>" + color + "</div></div>"));
+          },
+          data: this.list
+        });
+        x$.on('select2:closing', function(e){
+          var i$, ref$, len$, item, ret;
+          for (i$ = 0, len$ = (ref$ = this$.list).length; i$ < len$; ++i$) {
+            item = ref$[i$];
+            ret = item.children.filter(fn$)[0];
+            if (ret) {
+              break;
+            }
+          }
+          if (!ret) {
+            return;
+          }
+          $scope.$apply(function(){
+            return this$.item.value = JSON.parse(JSON.stringify({
+              colors: ret.data
+            }));
+          });
+          return this$.ldcp.setPalette(this$.item.value);
+          function fn$(it){
+            return it.id === $(e.target).val();
+          }
+        });
+        return x$;
+      },
+      update: function(){
+        var ref$, src, des, pairing, i$, to$, i, d, j$, to1$, j, s, len$, pair, unpair;
+        if (this.item) {
+          ref$ = [this.item.value, this.ldcp.getPalette(), []], src = ref$[0], des = ref$[1], pairing = ref$[2];
+          for (i$ = 0, to$ = des.colors.length; i$ < to$; ++i$) {
+            i = i$;
+            d = des.colors[i];
+            for (j$ = 0, to1$ = src.colors.length; j$ < to1$; ++j$) {
+              j = j$;
+              s = src.colors[j];
+              if (s.hex !== d.hex) {
+                continue;
+              }
+              pairing.push([s, d, Math.abs(i - j)]);
+            }
+          }
+          pairing.sort(function(a, b){
+            return a[2] - b[2];
+          });
+          for (i$ = 0, len$ = pairing.length; i$ < len$; ++i$) {
+            pair = pairing[i$];
+            if (pair[0].pair || pair[1].pair) {
+              continue;
+            }
+            pair[0].pair = pair[1];
+            pair[1].pair = pair[0];
+          }
+          unpair = [
+            src.colors.filter(function(it){
+              return !it.pair;
+            }), des.colors.filter(function(it){
+              return !it.pair;
+            })
+          ];
+          for (i$ = 0, to$ = Math.min(unpair[0].length, unpair[1].length); i$ < to$; ++i$) {
+            i = i$;
+            unpair[1][i].pair = unpair[0][i];
+          }
+          src.colors = des.colors.map(function(it){
+            var ref$;
+            if (it.pair) {
+              return ref$ = it.pair, ref$.hex = it.hex, ref$;
+            } else {
+              return it;
+            }
+          });
+          return src.colors.forEach(function(it){
+            var ref$;
+            return ref$ = it.pair, delete it.pair, ref$;
+          });
+        }
+      },
+      toggled: false,
+      toggle: function(){
+        this.toggled = !this.toggled;
+        if (!this.toggled) {
+          return this.update();
+        }
+      },
+      edit: function(item){
+        this.item = item;
+        this.ldcp.setPalette(item.value);
+        return this.toggled = true;
+      }
+    },
+    switchPanel: function(){
+      var this$ = this;
+      return setTimeout(function(){
+        return $scope.$apply(function(){
+          var temp;
+          temp = this$.vis;
+          if (this$.vis === 'preview' && (!this$.lastvis || this$.lastvis === 'preview')) {
+            this$.vis = 'code';
+          } else if (this$.vis === 'preview') {
+            this$.vis = this$.lastvis;
+          } else {
+            this$.vis = 'preview';
+          }
+          return this$.lastvis = temp;
+        });
+      }, 0);
+    },
+    hidHandler: function(){
+      var this$ = this;
+      $scope.codemirrored = function(editor){
+        return $scope.codemirror.objs.push(editor);
+      };
+      return document.body.addEventListener('keydown', function(e){
+        if ((e.metaKey || e.altKey) && (e.keyCode === 13 || e.which === 13)) {
+          return $scope.$apply(function(){
+            return this$.switchPanel();
+          });
+        }
+      });
+    },
+    checkParam: function(){
+      var ret, key, ref$, location;
+      if (!window.location.search) {
+        return;
+      }
+      if (window.location.search === '?demo') {
+        $scope.theme.doc.content = themeService.sample[1].doc.content;
+        $scope.theme.style.content = themeService.sample[1].style.content;
+        $scope.theme.code.content = themeService.sample[1].code.content;
+        return;
+      }
+      ret = /[?&]k=([sl])([^&#|?]+)/.exec(window.location.search);
+      if (!ret) {
+        return;
+      }
+      key = ret[2];
+      ref$ = [ret[1] === 's' ? 'server' : 'local', ret[2]], location = ref$[0], key = ref$[1];
+      return $scope.load({
+        name: 'theme',
+        location: location
+      }, key);
+    },
+    assets: {
+      measure: function(){
+        return $scope.theme.assets.size = $scope.theme.assets.map(function(it){
+          return it.content.length;
+        }).reduce(function(a, b){
+          return a + b;
+        }, 0);
+      },
+      preview: function(file){
+        var datauri, iframe;
+        this.preview.toggled = true;
+        datauri = ["data:", file.type, ";charset=utf-8;base64,", file.content].join("");
+        iframe = document.createElement("iframe");
+        $('#assets-preview .iframe')[0].innerHTML = "<iframe></iframe>";
+        return $('#assets-preview .iframe iframe')[0].src = datauri;
+      },
+      read: function(fobj){
+        var this$ = this;
+        return new Promise(function(res, rej){
+          var name, that, type, file, fr;
+          name = (that = /([^/]+\.?[^/.]*)$/.exec(fobj.name)) ? that[1] : 'unnamed';
+          type = 'unknown';
+          file = $scope.theme.addFile(name, type, null);
+          fr = new FileReader();
+          fr.onload = function(){
+            var result, idx, type, content, size;
+            result = fr.result;
+            idx = result.indexOf(';');
+            type = result.substring(5, idx);
+            content = result.substring(idx + 8);
+            size = $scope.theme.assets.map(function(it){
+              return (it.content || "").length;
+            }).reduce(function(a, b){
+              return a + b;
+            }, 0) + content.length;
+            if (size > 3000000) {
+              $scope.$apply(function(){
+                plNotify.alert("Assets size limit (3MB) exceeded. won't upload.");
+                $scope.theme.removeFile(file);
+              });
+            }
+            file.type = type;
+            file.content = content;
+            $scope.$applyAsync(function(){
+              return file.type = type, file.content = content, file;
+            });
+            return res(file);
+          };
+          return fr.readAsDataURL(fobj);
+        });
+      },
+      handle: function(files){
+        var i$, len$, file, results$ = [];
+        for (i$ = 0, len$ = files.length; i$ < len$; ++i$) {
+          file = files[i$];
+          results$.push(this.read(file));
+        }
+        return results$;
+      },
+      node: null,
+      init: function(){
+        var x$, this$ = this;
+        x$ = this.node = $('#code-editor-assets input');
+        x$.on('change', function(){
+          return this$.handle(this$.node[0].files);
+        });
+        return x$;
+      }
+    },
+    monitor: function(){
+      var this$ = this;
+      this.assets.init();
+      this.$watch('vis', function(vis){
+        return $scope.editor.focus();
+      });
+      this.$watch('theme.assets', function(){
+        return this$.assets.measure();
+      }, true);
+      this.$watch('theme.doc.content', function(){
+        return this$.countline();
+      });
+      this.$watch('theme.style.content', function(){
+        return this$.countline();
+      });
+      this.$watch('theme.code.content', function(){
+        return this$.countline();
+      });
+      this.$watch('theme.doc.content', function(){
+        return this$.renderAsync();
+      });
+      this.$watch('theme.style.content', function(){
+        return this$.renderAsync();
+      });
+      this.$watch('theme', function(theme){
+        return this$.renderAsync();
+      });
+      this.$watch('chart', function(chart){
+        this$.renderAsync();
+        return this$.theme.chart = chart ? chart.key : null;
+      });
+      this.$watch('theme.chart', function(key){
+        return this$.charts.set(this$.charts.list.filter(function(it){
+          return it.key === key;
+        })[0]);
+      });
+      this.$watch('theme.code.content', function(code){
+        if (!this$.theme) {
+          return;
+        }
+        if (this$.communicate.parseThemeHandler) {
+          $timeout.cancel(this$.communicate.parseThemeHandler);
+        }
+        return this$.communicate.parseThemeHandler = $timeout(function(){
+          this$.communicate.parseThemeHandler = null;
+          return this$.canvas.window.postMessage({
+            type: 'parse-theme',
+            payload: code
+          }, this$.plotdomain);
+        }, 500);
+      });
+      this.$watch('chart.config', function(n, o){
+        var ret, k, v;
+        o == null && (o = {});
+        ret = !!(function(){
+          var ref$, results$ = [];
+          for (k in ref$ = n) {
+            v = ref$[k];
+            results$.push([k, v]);
+          }
+          return results$;
+        }()).filter(function(arg$){
+          var k, v;
+          k = arg$[0], v = arg$[1];
+          return !o[k] || v.value !== o[k].value;
+        }).map(function(){
+          return v.rebindOnChange;
+        }).filter(function(it){
+          return it;
+        }).length;
+        return this$.renderAsync(ret);
+      }, true);
+      this.$watch('theme.key', function(){
+        return this$.sharePanel.link = themeService.sharelink(this$.theme);
+      });
+      return $scope.limitscroll($('#chart-configs')[0]);
+    },
+    communicate: function(){
+      var this$ = this;
+      return window.addEventListener('message', function(arg$){
+        var data;
+        data = arg$.data;
+        return $scope.$apply(function(){
+          var ref$, config, dimension, k, v, payload, rebind, event, bytes, mime, buf, ints, i$, to$, idx;
+          if (!data || typeof data !== 'object') {
+            return;
+          }
+          if (data.type === 'error') {
+            $('#code-editor-code .CodeMirror-code > .error').removeClass('error');
+            $scope.error.msg = (data.payload || (data.payload = {})).msg || "";
+            $scope.error.lineno = (data.payload || (data.payload = {})).lineno || 0;
+            if ($scope.error.lineno) {
+              return $("#code-editor-code .CodeMirror-code > div:nth-of-type(" + $scope.error.lineno + ")").addClass('error');
+            }
+          } else if (data.type === 'alt-enter') {
+            return $scope.switchPanel();
+          } else if (data.type === 'snapshot') {
+            if (data.payload) {
+              this$.theme.thumbnail = data.payload;
+            }
+            return this$._save();
+          } else if (data.type === 'parse') {
+            ref$ = JSON.parse(data.payload), config = ref$.config, dimension = ref$.dimension;
+            for (k in ref$ = this$.chart.dimension) {
+              v = ref$[k];
+              if (dimension[k] != null) {
+                dimension[k].fields = v.fields;
+              }
+            }
+            for (k in ref$ = this$.chart.config) {
+              v = ref$[k];
+              if (config[k] != null) {
+                config[k].value = v.value;
+              }
+            }
+            for (k in config) {
+              v = config[k];
+              if (!(v.value != null)) {
+                v.value = v['default'];
+              }
+            }
+            ref$ = this$.chart;
+            ref$.config = config;
+            ref$.dimension = dimension;
+            return $scope.render();
+          } else if (data.type === 'parse-theme') {
+            config = JSON.parse(data.payload).config;
+            this$.theme.config = config;
+            this$.applyTheme();
+            return $scope.render();
+          } else if (data.type === 'loaded') {
+            if (!this$.chart) {
+              return;
+            }
+            if ($scope.render.payload) {
+              payload = $scope.render.payload;
+              rebind = $scope.render.rebind;
+              this$.canvas.window.postMessage({
+                type: 'render',
+                payload: payload,
+                rebind: rebind
+              }, this$.plotdomain);
+              return $scope.render.payload = null;
+            } else {
+              this$.canvas.window.postMessage({
+                type: 'parse',
+                payload: this$.chart.code.content
+              }, this$.plotdomain);
+              return this$.canvas.window.postMessage({
+                type: 'parse-theme',
+                payload: this$.theme.code.content
+              }, this$.plotdomain);
+            }
+          } else if (data.type === 'click') {
+            if (document.dispatchEvent) {
+              event = document.createEvent('MouseEvents');
+              event.initEvent('click', true, true);
+              event.synthetic = true;
+              return document.dispatchEvent(event);
+            } else {
+              event = document.createEventObject();
+              event.synthetic = true;
+              return document.fireEvent("onclick", event);
+            }
+          } else if (data.type === 'getsvg') {
+            if (!data.payload) {
+              return $scope.download.svg.url = '#';
+            }
+            $scope.download.svg.url = URL.createObjectURL(new Blob([data.payload], {
+              type: 'image/svg+xml'
+            }));
+            return $scope.download.svg.size = data.payload.length;
+          } else if (data.type === 'getpng') {
+            if (!data.payload) {
+              return $scope.download.png.url = '#';
+            }
+            bytes = atob(data.payload.split(',')[1]);
+            mime = data.payload.split(',')[0].split(':')[1].split(';')[0];
+            if (mime !== 'image/png') {
+              return $scope.download.png.url = '#';
+            }
+            buf = new ArrayBuffer(bytes.length);
+            ints = new Uint8Array(buf);
+            for (i$ = 0, to$ = bytes.length; i$ < to$; ++i$) {
+              idx = i$;
+              ints[idx] = bytes.charCodeAt(idx);
+            }
+            $scope.download.png.url = URL.createObjectURL(new Blob([buf], {
+              type: 'image/png'
+            }));
+            return $scope.download.png.size = bytes.length;
+          }
+        });
+      }, false);
+    },
+    fieldAgent: {
+      init: function(){
+        var this$ = this;
+        return $('#field-agent').on('mousewheel', function(){
+          return this$.setPosition();
+        });
+      },
+      data: null,
+      drag: {
+        ging: false,
+        start: function(){
+          return this.ging = true;
+        },
+        end: function(){
+          return this.ging = false;
+        }
+      },
+      setPosition: function(){
+        var box, box2, scroll;
+        if (!this.node) {
+          return;
+        }
+        box = this.node.getBoundingClientRect();
+        box2 = this.node.parentNode.parentNode.getBoundingClientRect();
+        scroll = {
+          left: $('#data-fields').scrollLeft(),
+          top: $('#data-fields').scrollTop()
+        };
+        return $('#field-agent').css({
+          top: (box.top - box2.top + 55 - scroll.top) + "px",
+          left: (box.left - box2.left - scroll.left) + "px",
+          width: box.width + "px",
+          height: box.height + "px"
+        });
+      },
+      setProxy: function(e, data){
+        var ref$, node, this$ = this;
+        if (this.drag.ging) {
+          return;
+        }
+        ref$ = [data, e.target], this.data = ref$[0], node = ref$[1];
+        for (;;) {
+          if (node.getAttribute("class").indexOf('data-field') >= 0) {
+            break;
+          }
+          node = node.parentNode;
+          if (node.nodeName.toLowerCase() === 'body') {
+            return;
+          }
+        }
+        return setTimeout(function(){
+          this$.node = node;
+          return this$.setPosition();
+        }, 0);
+      }
+    },
+    init: function(){
+      this.communicate();
+      this.hidHandler();
+      this.monitor();
+      this.checkParam();
+      this.paledit.init();
+      this.backup.init();
+      this.fieldAgent.init();
+      return this.charts.init();
+    }
+  });
+  return $scope.init();
+}));
+x$.controller('themeList', ['$scope', '$http', 'IOService', 'dataService', 'themeService'].concat(function($scope, $http, IOService, dataService, themeService){
+  $scope.themes = [];
+  return Promise.all([
+    new Promise(function(res, rej){
+      return IOService.aux.listLocally({
+        name: 'theme'
+      }, res, rej);
+    }), new Promise(function(res, rej){
+      return IOService.aux.listRemotely({
+        name: 'theme'
+      }, res, rej, "q=all");
+    })
+  ]).then(function(ret){
+    var this$ = this;
+    return $scope.$apply(function(){
+      $scope.themes = ret[0].concat(ret[1]);
+      $scope.themes.forEach(function(it){
+        return it.width = Math.random() > 0.8 ? 640 : 320;
+      });
+      return $scope.load = function(theme){
+        return window.location.href = themeService.link(theme);
+      };
+    });
+  });
+}));
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}
+function in$(x, xs){
+  var i = -1, l = xs.length >>> 0;
+  while (++i < l) if (x === xs[i]) return true;
+  return false;
+}

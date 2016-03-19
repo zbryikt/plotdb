@@ -215,6 +215,20 @@ angular.module \plotDB
           if !(it in @vals) => return
           @val = it
           $scope.canvas.window.postMessage {type: \colorblind-emu, payload: it}, $scope.plotdomain
+      apply-theme: ->
+        if @chart and @theme=>
+          for k,v of @chart.config => if v._bytheme => delete @chart.config[k]
+          for k,v of @chart.config =>
+            if !@chart.config[k].hint => continue
+            preset = @theme.typedef[@chart.config[k].type.0.name]
+            if !preset => continue
+            if preset[@chart.config[k].hint]? =>
+              @chart.config[k].value = preset[@chart.config[k].hint]
+          for k,v of @theme.config =>
+            if !@chart.config[k] => @chart.config[k] = {_bytheme: true} <<< v
+            else if @chart.config[k].type.0 != v.type.0 => continue
+            else @chart.config[k].value = v.default
+        if @theme => @paledit.from-theme @theme
 
     $scope <<< do # Behaviors
       backup: do
@@ -594,18 +608,9 @@ angular.module \plotDB
           @chart <<< {config, dimension}
           $scope.render!
         else if data.type == \parse-theme =>
-          {config} = JSON.parse(data.payload)
-          @theme <<< {config}
-          if @chart =>
-            for k,v of @chart.config => if v._bytheme => delete @chart.config[k]
-            for k,v of @theme.config =>
-              hint = if @chart.config[k] => @chart.config[k].hint else \default
-              value = if @theme.config[k][hint]? => @theme.config[k][hint]
-              else if @theme.config[k][\default]? => @theme.config[k][\default]
-              else if typeof(@theme.config[k]) != \object => @theme.config[k]
-              if @chart.config[k] and @chart.config[k].value => @chart.config[k].value = value
-              else @chart.config[k] = {value, type: [], _bytheme: true}
-          @paledit.from-theme @theme
+          {config,typedef} = JSON.parse(data.payload)
+          @theme <<< {config,typedef}
+          @apply-theme!
           $scope.render!
         else if data.type == \loaded =>
           if $scope.render.payload =>

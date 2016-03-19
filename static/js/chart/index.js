@@ -1,1 +1,1525 @@
-function import$(t,e){var n={}.hasOwnProperty;for(var r in e)n.call(e,r)&&(t[r]=e[r]);return t}function in$(t,e){for(var n=-1,r=e.length>>>0;++n<r;)if(t===e[n])return!0;return!1}var x$;x$=angular.module("plotDB"),x$.filter("tags",function(){return function(t){return Array.isArray(t)?t:(t||"").split(",")}}),x$.filter("date",function(){return function(t){return new Date(t)}}),x$.filter("length",function(){return function(t){var e;return function(){var n=[];for(e in t)n.push(e);return n}().length}}),x$.service("chartService",["$rootScope","$http","sampleChart","IOService","baseService"].concat(function(t,e,n,r,i){var a,o,c;return a={sample:n,link:function(t){return"/chart/?k="+t.type.location.charAt(0)+t.key},thumblink:function(t){return this.sharelink(t)+"/thumb"},sharelink:function(t){return"http://localhost/v/chart/"+t.key}},o=function(){return"string"==typeof this.tags?this.tags=this.tags.split(","):void 0},o.prototype={name:"untitled",desc:null,tags:[],theme:null,doc:{name:"document",type:"html",content:a.sample[0].doc.content},style:{name:"stylesheet",type:"css",content:a.sample[0].style.content},code:{name:"code",type:"javascript",content:a.sample[0].code.content},config:{},dimension:{},assets:[],thumbnail:null,isType:!1,likes:0,parent:null,like:function(t){var n=this;return new Promise(function(r,i){var a;return n.likes=(a=n.likes+(t?1:-1))>0?a:0,e({url:"/d/chart/"+n.key+"/like",method:"PUT"}).success(function(){return r()}).error(function(){var e;return n.likes=(e=n.likes-(t?1:-1))>0?e:0,i()})})},addFile:function(t,e,n){var r;return null==n&&(n=null),r={name:t,type:e,content:n},this.assets.push(r),r},removeFile:function(t){var e;return e=this.assets.indexOf(t),0>e?void 0:this.assets.splice(e,1)},updateData:function(){function t(t){return(t.data||(t.data=[]))[s]}function e(t){return t.name}function n(t){return"Number"===t.name}function r(t){return parseFloat(t)}var i,a,o,c,s,l,u,h,d=[];for(this.data=[],i=Math.max.apply(null,function(){var t,e=[];for(a in t=this.dimension)o=t[a],e.push(o);return e}.call(this).reduce(function(t,e){return t.concat(e.fields||[])},[]).filter(function(t){return t.data}).map(function(t){return t.data.length}).concat([0])),c=0;i>c;++c){s=c,l={};for(a in u=this.dimension)o=u[a],o.multiple?(l[a]=(o.fields||(o.fields=[])).length?(o.fields||(o.fields=[])).map(t):[],o.fieldName=(o.fields||(o.fields=[])).map(e)):(l[a]=(h=(o.fields||(o.fields=[]))[0])?(h.data||(h.data=[]))[s]:null,o.fieldName=(h=(o.fields||(o.fields=[]))[0])?h.name:null),o.type.filter(n).length&&(l[a]=Array.isArray(l[a])?l[a].map(r):parseFloat(l[a]));d.push(this.data.push(l))}return d}},c=i.derive("chart",a,o)})),x$.controller("chartEditor",["$scope","$http","$timeout","$interval","dataService","chartService","paletteService","themeService","plNotify"].concat(function(t,n,r,i,a,o,c,s,l){return import$(t,{theme:null,showsrc:!0,vis:"preview",lastvis:null,plotdomain:"http://localhost/",error:{msg:null,lineno:0},codemirror:{code:{lineWrapping:!0,lineNumbers:!0,viewportMargin:1/0,mode:"javascript"},style:{lineWrapping:!0,lineNumbers:!0,viewportMargin:1/0,mode:"css"},doc:{lineWrapping:!0,lineNumbers:!0,viewportMargin:1/0,mode:"xml"},objs:[]},chart:new o.chart,canvas:{node:document.getElementById("chart-renderer"),window:document.getElementById("chart-renderer").contentWindow}}),import$(t,{_save:function(n){var i,a,c;return null==n&&(n=!1),this.chart.owner!==t.user.data.key&&(i="server"===this.chart.type.location?this.chart.key:null,a=this.chart,a.key=null,a.owner=null,a.permission=o.chart.prototype.permission,i&&(this.chart.parent=i)),c=this.chart.key?!1:!0,Array.isArray(this.chart.tags)||(this.chart.tags=(this.chart.tags||"").split(",")),this.chart.save().then(function(){return t.$apply(function(){var e;return n?l.send("warning","chart saved, but thumbnail failed to update"):l.send("success","chart saved"),e=o.link(t.chart),(c||!window.location.search)&&(window.location.href=e),t.save.handle&&r.cancel(t.save.handle),t.save.handle=null})})["catch"](function(n){return t.$apply(function(){return l.aux.error.io("save","chart",e),console.error("[save chart]",n),t.save.handle&&r.cancel(t.save.handle),t.save.handle=null})})},save:function(){var e=this;if(!t.user.data||!t.user.data.key)return t.auth.toggle(!0);if(!this.save.handle)return this.save.handle=r(function(){return e.save.handle=null,e._save(!0)},3e3),this.canvas.window.postMessage({type:"snapshot"},this.plotdomain)},clone:function(){var t,e;return this.chart.name=this.chart.name+" - Copy",t="server"===this.chart.type.location?this.chart.key:null,e=this.chart,e.key=null,e.owner=null,e.parent=t,e.permission=o.chart.prototype.permission,this.save()},load:function(t,e){var n=this;return o.load(t,e).then(function(t){return n.chart=new o.chart(import$(n.chart,t)),n.backup.check()})["catch"](function(t){return console.error(t),l.send("error","failed to load chart. please try reloading"),"forbidden"===t[1]?window.location.href=window.location.pathname:void 0})},"delete":function(){var t=this;if(this.chart.key)return this["delete"].handle=!0,this.chart["delete"]().then(function(){return l.send("success","chart deleted"),t.chart=new o.chart,setTimeout(function(){return window.location.href="/chart/me.html"},1e3),t["delete"].handle=!1})["catch"](function(){return l.send("error","failed to delete chart"),t["delete"].handle=!1})},resetConfig:function(){var t,e,n,r=[];for(t in e=this.chart.config)n=e[t],r.push(n.value=n["default"]);return r},migrate:function(){var e,n=this;if(this.chart.key)return e=this.chart.clone(),e.type.location="local"===this.chart.type.location?"server":"local",e.save().then(function(){return n.chart["delete"]().then(function(){return t.chart=e,window.location.href=o.link(t.chart)})})},dimension:{bind:function(e,n,r){return null==r&&(r={}),r.update().then(function(){return n.multiple?(n.fields||(n.fields=[])).push(r):n.fields=[r],t.render()})["catch"](function(t){return l.send("error","failed to bind field. try again later."),console.error("chart.ls / dimension field binding failed due to : ",t)})},unbind:function(e,n,r){var i;return null==r&&(r={}),i=n.fields.indexOf(r),0>i?void 0:(n.fields.splice(i,1),t.render())}},reset:function(){return this.render()},render:function(e){var n,r,i,a;null==e&&(e=!0),this.chart.updateData();for(n in r=this.chart)i=r[n],"function"!=typeof i&&(this.chart[n]=i);return a=JSON.parse(angular.toJson({theme:this.theme,chart:this.chart})),r=t.render,r.payload=a,r.rebind=e,e?this.canvas.window.postMessage({type:"reload"},this.plotdomain):this.canvas.window.postMessage({type:"render",payload:a,rebind:e},this.plotdomain)},renderAsync:function(t){var e=this;return null==t&&(t=!0),this.renderAsync.handler&&r.cancel(this.renderAsync.handler),this.renderAsync.handler=r(function(){return e.renderAsync.handler=null,e.render(t)},500)},countline:function(){var t=this;return["code","style","doc"].map(function(e){return t.chart[e].lines=t.chart[e].content.split("\n").length,t.chart[e].size=t.chart[e].content.length})},download:{prepare:function(){var e=this;return["svg","png","plotdb"].map(function(n){return setTimeout(function(){return t.$apply(function(){return[e[n].url="",e[n]()]})},300)})},svg:function(){return t.canvas.window.postMessage({type:"getsvg"},t.plotdomain)},png:function(){return t.canvas.window.postMessage({type:"getpng"},t.plotdomain)},plotdb:function(){var e;return e=angular.toJson(t.chart),this.plotdb.url=URL.createObjectURL(new Blob([e],{type:"application/json"})),this.plotdb.size=e.length}},colorblind:{val:"normal",vals:["normal","protanopia","protanomaly","deuteranopia","deuteranomaly","tritanopia","tritanomaly","achromatopsia","achromatomaly"],set:function(e){return in$(e,this.vals)?(this.val=e,t.canvas.window.postMessage({type:"colorblind-emu",payload:e},t.plotdomain)):void 0}}}),import$(t,{backup:{enabled:!1,init:function(){var e=this;return t.$watch("chart",function(){return e.enabled?(e.handle&&r.cancel(e.handle),e.handle=r(function(){return e.handle=null,t.chart.backup().then(function(){})},2e3)):void 0},!0)},recover:function(){var e=this;if(this.last&&this.last.object)return t.chart.recover(this.last.object),this.enabled=!1,t.chart.cleanBackups().then(function(){return t.$apply(function(){return e.check()})})},check:function(){var e=this;return t.chart.backups().then(function(n){return t.$apply(function(){return e.list=n,e.last=n[0],r(function(){return e.enabled=!0},4e3)})["catch"](function(t){return console.error("fecth backup failed: #",t)})})}},themes:{list:s.sample,set:function(e){return t.theme=e},init:function(){var e=this;return s.list().then(function(n){return t.$apply(function(){return e.list=n})})}},editor:{"class":"",focus:function(){return setTimeout(function(){return t.codemirror.objs.map(function(e){var n,r,i;return n=function(){var e,n=[];for(r in e=t.codemirror)i=e[r],n.push([r,i]);return n}().filter(function(t){return t[1].mode===e.options.mode})[0],n&&t.vis.startsWith(n[0])&&(setTimeout(function(){return e.focus()},10),!n[1].refreshed)?(e.refresh(),n[1].refreshed=!0,setTimeout(function(){return e.refresh(),t.error.lineno?$("#code-editor-code .CodeMirror-code > div:nth-of-type("+t.error.lineno+")").addClass("error"):void 0},0)):void 0})},0)},update:function(){return this["class"]=[this.fullscreen.toggled?"fullscreen":"","preview"!==this.vis?"active":"",this.color.modes[this.color.idx]].join(" ")},fullscreen:{toggle:function(){return this.toggled=!this.toggled,t.editor.update(),t.editor.focus()},toggled:!1},color:{modes:["normal","dark"],idx:0,toggle:function(){return this.idx=(this.idx+1)%this.modes.length,t.editor.update()}}},settingPanel:{toggle:function(){return this.toggled=!this.toggled},toggled:!1},sharePanel:{social:{facebook:null},isForkable:function(){var e,n,r;return e=(n=t.chart.permission).value||(n.value=[]),r=!!e.filter(function(t){return"fork"===t.perm&&"public"===t["switch"]}).length},init:function(){var e=this;return["#chartedit-sharelink","#chartedit-embedcode"].map(function(n){var r;return r=new Clipboard(n),r.on("success",function(){return $(n).tooltip({title:"copied",trigger:"click"}).tooltip("show"),setTimeout(function(){return $(n).tooltip("hide")},1e3)}),r.on("error",function(){return $(n).tooltip({title:"Press Ctrl+C to Copy",trigger:"click"}).tooltip("show"),setTimeout(function(){return $(n).tooltip("hide")},1e3)}),t.$watch("sharePanel.link",function(n){var r,i,a,c,s,l,u;return e.embedcode='<iframe src="'+n+'"><iframe>',e.thumblink=o.thumblink(t.chart),r={app_id:"1546734828988373",display:"popup",caption:t.chart.name,picture:e.thumblink,link:e.link,name:t.chart.name,redirect_uri:"http://plotdb.com/",description:t.chart.desc||""},e.social.facebook=["https://www.facebook.com/dialog/feed?"].concat(function(){var t,e=[];for(i in t=r)a=t[i],e.push(i+"="+encodeURIComponent(a));return e}()).join("&"),c={url:e.link,media:e.thumblink,description:t.chart.desc||""},e.social.pinterest=["https://www.pinterest.com/pin/create/button/?"].concat(function(){var t,e=[];for(i in t=c)a=t[i],e.push(i+"="+encodeURIComponent(a));return e}()).join("&"),s={subject:"plotdb: "+t.chart.name,body:t.chart.desc+" : "+e.link},e.social.email=["mailto:?"].concat(function(){var t,e=[];for(i in t=s)a=t[i],e.push(i+"="+encodeURIComponent(a));return e}()).join("&"),l={mini:!0,url:e.link,title:t.chart.name+" on PlotDB",summary:t.chart.desc,source:"plotdb.com"},e.social.linkedin=["http://www.linkedin.com/shareArticle?"].concat(function(){var t,e=[];for(i in t=l)a=t[i],e.push(i+"="+encodeURIComponent(a));return e}()).join("&"),u={url:e.link,text:t.chart.name+" - "+(t.chart.desc||""),hashtags:"dataviz,chart,visualization",via:"plotdb"},e.social.twitter=["http://twitter.com/intent/tweet?"].concat(function(){var t,e=[];for(i in t=u)a=t[i],e.push(i+"="+encodeURIComponent(a));return e}()).join("&")}),t.$watch("sharePanel.forkable",function(n){var r;return r=e.isForkable(),r!==e.forkable&&null!=e.forkable?(t.chart.permission.value=n?[{"switch":"public",perm:"fork"}]:[],e.saveHint=!0):void 0}),t.$watch("chart.permission.value",function(){var t;return t=e.isForkable(),e.forkable!==t&&null!=e.forkable&&(e.saveHint=!0),e.forkable=t},!0)})},saveHint:!1,embedcode:"",link:"",toggle:function(){return this.init&&this.init(),this.init=null,this.toggled=!this.toggled,this.saveHint=!1},toggled:!1,isPublic:function(){return in$("public",t.chart.permission["switch"])},setPrivate:function(){var e;return((e=t.chart).permission||(e.permission={}))["switch"]=["private"],this.saveHint=!0},setPublic:function(){var e;return((e=t.chart).permission||(e.permission={}))["switch"]=["public"],this.saveHint=!0}},coloredit:{config:function(t,e){return{"class":"no-palette",context:"context"+e,exclusive:!0,palette:[t.value]}}},paledit:{convert:function(t){return t.map(function(t){return{id:t.key||Math.random()+"",text:t.name,data:t.colors}})},ldcp:null,item:null,fromTheme:function(t){var e,n,r;return t&&t.config&&t.config.palette?(e=this.list.filter(function(t){return"Theme"===t.text})[0],e||(e={text:"Theme",id:"456",children:null},this.list=[e].concat(this.list)),e.children=this.convert(function(){var e,i=[];for(n in e=t.config.palette)r=e[n],i.push((r.name=n,r));return i}()),$("#pal-select option").remove(),$("#pal-select optgroup").remove(),$("#pal-select").select2({allowedMethods:["updateResults"],templateResult:function(t){var e,n;return t.data?(e=function(){var e,r,i,a=[];for(e=0,i=(r=t.data).length;i>e;++e)n=r[e],a.push("<div class='color' "+("style='background:"+n.hex+";width:"+100/t.data.length+"%'")+"></div>");return a}().join(""),$("<div class='palette select'><div class='name'>"+t.text+"</div>"+("<div class='palette-color'>"+e+"</div></div>"))):t.text},data:this.list})):this.list=this.list.filter(function(t){return"Theme"!==t.text})},init:function(){var e,n,r=this;return this.ldcp=new ldColorPicker(null,{},$("#palette-editor .editor .ldColorPicker")[0]),this.ldcp.on("change-palette",function(){return setTimeout(function(){return t.$apply(function(){return r.update()})},0)}),this.list=[{text:"Default",id:"default",children:this.convert(c.sample)}],e=$("#pal-select"),e.select2(n={allowedMethods:["updateResults"],templateResult:function(t){var e,n;return t.data?(e=function(){var e,r,i,a=[];for(e=0,i=(r=t.data).length;i>e;++e)n=r[e],a.push("<div class='color' "+("style='background:"+n.hex+";width:"+100/t.data.length+"%'")+"></div>");return a}().join(""),$("<div class='palette select'><div class='name'>"+t.text+"</div>"+("<div class='palette-color'>"+e+"</div></div>"))):t.text},data:this.list}),e.on("select2:closing",function(e){function n(t){return t.id===$(e.target).val()}var i,a,o,c,s;for(i=0,o=(a=r.list).length;o>i&&(c=a[i],!(s=c.children.filter(n)[0]));++i);if(s)return t.$apply(function(){return r.item.value=JSON.parse(JSON.stringify({colors:s.data}))}),r.ldcp.setPalette(r.item.value)}),e},update:function(){var t,e,n,r,i,a,o,c,s,l,u,h,d,f,p;if(this.item){for(t=[this.item.value,this.ldcp.getPalette(),[]],e=t[0],n=t[1],r=t[2],i=0,a=n.colors.length;a>i;++i)for(o=i,c=n.colors[o],s=0,l=e.colors.length;l>s;++s)u=s,h=e.colors[u],h.hex===c.hex&&r.push([h,c,Math.abs(o-u)]);for(r.sort(function(t,e){return t[2]-e[2]}),i=0,d=r.length;d>i;++i)f=r[i],f[0].pair||f[1].pair||(f[0].pair=f[1],f[1].pair=f[0]);for(p=[e.colors.filter(function(t){return!t.pair}),n.colors.filter(function(t){return!t.pair})],i=0,a=Math.min(p[0].length,p[1].length);a>i;++i)o=i,p[1][o].pair=p[0][o];return e.colors=n.colors.map(function(t){var e;return t.pair?(e=t.pair,e.hex=t.hex,e):t}),e.colors.forEach(function(t){var e;return e=t.pair,delete t.pair,e})}},toggled:!1,toggle:function(){return this.toggled=!this.toggled,this.toggled?void 0:this.update()},edit:function(t){return this.item=t,this.ldcp.setPalette(t.value),this.toggled=!0}},switchPanel:function(){var e=this;return setTimeout(function(){return t.$apply(function(){var n;return n=e.vis,e.vis="preview"!==e.vis||e.lastvis&&"preview"!==e.lastvis?"preview"===e.vis?e.lastvis:"preview":"code",e.lastvis=n,t.codemirror.objs.forEach("preview"===e.vis?function(t){return t.getInputField().blur()}:function(t){return t.refresh()})})},0)},hidHandler:function(){var e=this;return t.codemirrored=function(e){return t.codemirror.objs.push(e)},document.body.addEventListener("keydown",function(n){return!n.metaKey&&!n.altKey||13!==n.keyCode&&13!==n.which?void 0:t.$apply(function(){return e.switchPanel()})})},checkParam:function(){var e,n,r,i;if(window.location.search){if("?demo"===window.location.search)return t.chart.doc.content=o.sample[1].doc.content,t.chart.style.content=o.sample[1].style.content,void(t.chart.code.content=o.sample[1].code.content);if(e=/[?&]k=([sl])([^&#|?]+)/.exec(window.location.search))return n=e[2],r=["s"===e[1]?"server":"local",e[2]],i=r[0],n=r[1],t.load({name:"chart",location:i},n)}},assets:{measure:function(){return t.chart.assets.size=t.chart.assets.map(function(t){return t.content.length}).reduce(function(t,e){return t+e},0)},preview:function(t){var e,n;return this.preview.toggled=!0,e=["data:",t.type,";charset=utf-8;base64,",t.content].join(""),n=document.createElement("iframe"),$("#assets-preview .iframe")[0].innerHTML="<iframe></iframe>",$("#assets-preview .iframe iframe")[0].src=e},read:function(e){return new Promise(function(n){var r,i,a,o,c;return r=(i=/([^/]+\.?[^/.]*)$/.exec(e.name))?i[1]:"unnamed",a="unknown",o=t.chart.addFile(r,a,null),c=new FileReader,c.onload=function(){var e,r,i,a,s;return e=c.result,r=e.indexOf(";"),i=e.substring(5,r),a=e.substring(r+8),s=t.chart.assets.map(function(t){return(t.content||"").length}).reduce(function(t,e){return t+e},0)+a.length,s>3e6&&t.$apply(function(){l.alert("Assets size limit (3MB) exceeded. won't upload."),t.chart.removeFile(o)}),o.type=i,o.content=a,t.$applyAsync(function(){return o.type=i,o.content=a,o}),n(o)},c.readAsDataURL(e)})},handle:function(t){var e,n,r,i=[];for(e=0,n=t.length;n>e;++e)r=t[e],i.push(this.read(r));return i},node:null,init:function(){var t,e=this;return t=this.node=$("#code-editor-assets input"),t.on("change",function(){return e.handle(e.node[0].files)}),t}},monitor:function(){var e=this;return this.assets.init(),this.$watch("vis",function(){return t.editor.focus()}),this.$watch("chart.assets",function(){return e.assets.measure()},!0),this.$watch("chart.doc.content",function(){return e.countline()}),this.$watch("chart.style.content",function(){return e.countline()}),this.$watch("chart.code.content",function(){return e.countline()}),this.$watch("chart.doc.content",function(){return e.renderAsync()}),this.$watch("chart.style.content",function(){return e.renderAsync()}),this.$watch("theme",function(t){return e.renderAsync(),e.chart.theme=t?t.key:null}),this.$watch("chart.theme",function(t){return e.theme=e.themes.list.filter(function(e){return e.key===t})[0]}),this.$watch("chart.code.content",function(t){return e.communicate.parseHandler&&r.cancel(e.communicate.parseHandler),e.communicate.parseHandler=r(function(){return e.communicate.parseHandler=null,e.canvas.window.postMessage({type:"parse",payload:t},e.plotdomain)},500)}),this.$watch("theme.code.content",function(t){return e.theme?(e.communicate.parseThemeHandler&&r.cancel(e.communicate.parseThemeHandler),e.communicate.parseThemeHandler=r(function(){return e.communicate.parseThemeHandler=null,e.canvas.window.postMessage({type:"parse-theme",payload:t},e.plotdomain)},500)):void 0}),this.$watch("chart.config",function(t,n){var r,i,a;return null==n&&(n={}),r=!!function(){var e,n=[];for(i in e=t)a=e[i],n.push([i,a]);return n}().filter(function(t){var e,r;return e=t[0],r=t[1],!n[e]||r.value!==n[e].value}).map(function(){return a.rebindOnChange}).filter(function(t){return t}).length,e.renderAsync(r)},!0),this.$watch("chart.key",function(){return e.sharePanel.link=o.sharelink(e.chart)}),t.limitscroll($("#data-fields")[0]),t.limitscroll($("#chart-configs")[0])},communicate:function(){var e=this;return window.addEventListener("message",function(n){var r;return r=n.data,t.$apply(function(){var n,i,a,o,c,s,l,u,h,d,f,p,m,v,g,y,w;if(r&&"object"==typeof r)if("error"===r.type){if($("#code-editor-code .CodeMirror-code > .error").removeClass("error"),t.error.msg=(r.payload||(r.payload={})).msg||"",t.error.lineno=(r.payload||(r.payload={})).lineno||0,t.error.lineno)return $("#code-editor-code .CodeMirror-code > div:nth-of-type("+t.error.lineno+")").addClass("error")}else{if("alt-enter"===r.type)return t.switchPanel();if("snapshot"===r.type)return r.payload&&(e.chart.thumbnail=r.payload),e._save();if("parse"===r.type){n=JSON.parse(r.payload),i=n.config,a=n.dimension;for(o in n=e.chart.dimension)c=n[o],null!=a[o]&&(a[o].fields=c.fields);for(o in n=e.chart.config)c=n[o],null!=i[o]&&(i[o].value=c.value);for(o in i)c=i[o],null==c.value&&(c.value=c["default"]);return n=e.chart,n.config=i,n.dimension=a,t.render()}if("parse-theme"===r.type){if(i=JSON.parse(r.payload).config,e.theme.config=i,e.chart){for(o in n=e.chart.config)c=n[o],c._bytheme&&delete e.chart.config[o];for(o in n=e.theme.config)c=n[o],s=e.chart.config[o]?e.chart.config[o].hint:"default",l=null!=e.theme.config[o][s]?e.theme.config[o][s]:null!=e.theme.config[o]["default"]?e.theme.config[o]["default"]:"object"!=typeof e.theme.config[o]?e.theme.config[o]:void 0,e.chart.config[o]&&e.chart.config[o].value?e.chart.config[o].value=l:e.chart.config[o]={value:l,type:[],_bytheme:!0}}return e.paledit.fromTheme(e.theme),t.render()}if("loaded"===r.type){if(t.render.payload)return u=t.render.payload,h=t.render.rebind,e.canvas.window.postMessage({type:"render",payload:u,rebind:h},e.plotdomain),t.render.payload=null;if(e.canvas.window.postMessage({type:"parse",payload:e.chart.code.content},e.plotdomain),e.theme)return e.canvas.window.postMessage({type:"parse-theme",payload:e.theme.code.content},e.plotdomain)}else{if("click"===r.type)return document.dispatchEvent?(d=document.createEvent("MouseEvents"),d.initEvent("click",!0,!0),d.synthetic=!0,document.dispatchEvent(d)):(d=document.createEventObject(),d.synthetic=!0,document.fireEvent("onclick",d));if("getsvg"===r.type)return r.payload?(t.download.svg.url=URL.createObjectURL(new Blob([r.payload],{type:"image/svg+xml"})),t.download.svg.size=r.payload.length):t.download.svg.url="#";if("getpng"===r.type){if(!r.payload)return t.download.png.url="#";if(f=atob(r.payload.split(",")[1]),p=r.payload.split(",")[0].split(":")[1].split(";")[0],"image/png"!==p)return t.download.png.url="#";for(m=new ArrayBuffer(f.length),v=new Uint8Array(m),g=0,y=f.length;y>g;++g)w=g,v[w]=f.charCodeAt(w);return t.download.png.url=URL.createObjectURL(new Blob([m],{type:"image/png"})),t.download.png.size=f.length}}}})},!1)},fieldAgent:{init:function(){var t=this;return $("#field-agent").on("mousewheel",function(){return t.setPosition()})},data:null,drag:{ging:!1,start:function(){return this.ging=!0},end:function(){return this.ging=!1}},setPosition:function(){var t,e,n;if(this.node)return t=this.node.getBoundingClientRect(),e=this.node.parentNode.parentNode.getBoundingClientRect(),n={left:$("#data-fields").scrollLeft(),top:$("#data-fields").scrollTop()},$("#field-agent").css({top:t.top-e.top+55-n.top+"px",left:t.left-e.left-n.left+"px",width:t.width+"px",height:t.height+"px"})},setProxy:function(t,e){var n,r,i=this;if(!this.drag.ging){for(n=[e,t.target],this.data=n[0],r=n[1];!(r.getAttribute("class").indexOf("data-field")>=0);)if(r=r.parentNode,"body"===r.nodeName.toLowerCase())return;return setTimeout(function(){return i.node=r,i.setPosition()},0)}}},settings:{changed:function(e,n){var r,i,a;return r=[t.chart[n],$(e).val()],i=r[0],a=r[1],Array.isArray(i)?(r=[i,a].map(function(t){return(t||[]).join(",")}),i=r[0],a=r[1],i!==a):i!==a},bind:function(e,n,r){var i=this;return null==r&&(r={}),$(e).select2(),$(e).select2(r).on("change",function(){return i.changed(e,n)?setTimeout(function(){return t.$apply(function(){return t.chart[n]=$(e).val()})},0):void 0}),t.$watch("chart."+n,function(t){var a,o,c,s,l;if(a="",r.tags){for(o=0,s=(c=t||[]).length;s>o;++o)l=c[o],a+=$("<option></option>").val(l).text(l)[0].outerHTML;$(e).html(a)}return i.changed(e,n)?$(e).val(t).trigger("change"):void 0})},init:function(){return this.bind($("#chart-setting-type"),"basetype"),this.bind($("#chart-setting-encoding"),"visualencoding"),this.bind($("#chart-setting-category"),"category"),this.bind($("#chart-setting-tags"),"tags",{tags:!0,tokenSeparators:[","]})}},init:function(){return this.communicate(),this.hidHandler(),this.monitor(),this.checkParam(),this.paledit.init(),this.backup.init(),this.fieldAgent.init(),this.themes.init(),this.settings.init()}}),t.init()})),x$.controller("mychart",["$scope","$http","dataService","chartService"].concat(function(t,e,n,r){return r.list().then(function(e){return t.$apply(function(){return t.charts=e,t["goto"]=function(t){return window.location.href=r.link(t)}})})})),x$.controller("chartList",["$scope","$http","IOService","dataService","chartService","plNotify"].concat(function(t,e,n,r,i,a){return t.q={type:null,enc:null,cat:null,dim:null,order:"Latest"},t.qmap={type:["Other","Bar Chart","Line Chart","Pie Chart","Area Chart","Bubble Chart","Radial Chart","Calendar","Treemap","Choropleth","Cartogram","Heatmap","Sankey","Venn Diagram","Word Cloud","Timeline","Mixed"],enc:["Other","Position","Position ( Non-aligned )","Length","Direction","Angle","Area","Volume","Curvature","Shade","Saturation"],cat:["Other","Infographics","Geographics","Interactive","Journalism","Statistics"],dim:[0,1,2,3,4,5,"> 5"]},t.$watch("q",function(){return t.fullcharts&&t.fullcharts.length||(t.fullcharts=t.charts),t.charts=t.fullcharts.filter(function(e){return!(t.q.type&&e.basetype!==t.q.type||t.q.enc&&!in$(t.q.enc,e.visualencoding||[])||t.q.cat&&!in$(t.q.cat,e.category||[])||t.q.dim&&e.dimlen!==t.q.dim&&!(99===t.q.dim&&e.dimlen.length>5))})},!0),t.like=function(e){var n,r,i,o;if(e)return n=(r=(i=t.user.data).likes||(i.likes={})).chart||(r.chart={}),o=n[e.key]=!n[e.key],e.like(o)["catch"](function(){return a.error("Can't do favorite. try again later?"),n[e.key]=!o})},t.charts=[],Promise.all([new Promise(function(t,e){return n.aux.listLocally({name:"chart"},t,e)}),new Promise(function(t,e){return n.aux.listRemotely({name:"chart"},t,e,"q=all")})]).then(function(e){return t.$apply(function(){var n,r,a,o,c,s,l=[];for(t.charts=e[0].concat(e[1]).map(function(t){return new i.chart(t)}),n=!1,r=0,a=t.charts.length;a>r;++r)o=r,c=t.charts[o],s=320,Math.random()>.6&&!n&&(s=Math.random()>.8?960:640,n=!0),o%3===2&&(n||(s=640),n=!1),l.push(c.width=s);return l})})}));
+// Generated by LiveScript 1.3.1
+var x$;
+x$ = angular.module('plotDB');
+x$.filter('tags', function(){
+  return function(it){
+    if (Array.isArray(it)) {
+      return it;
+    } else {
+      return (it || "").split(',');
+    }
+  };
+});
+x$.filter('date', function(){
+  return function(it){
+    return new Date(it);
+  };
+});
+x$.filter('length', function(){
+  return function(it){
+    var k;
+    return (function(){
+      var results$ = [];
+      for (k in it) {
+        results$.push(k);
+      }
+      return results$;
+    }()).length;
+  };
+});
+x$.service('chartService', ['$rootScope', '$http', 'sampleChart', 'IOService', 'baseService'].concat(function($rootScope, $http, sampleChart, IOService, baseService){
+  var service, object, chartService;
+  service = {
+    sample: sampleChart,
+    link: function(chart){
+      return "/chart/?k=" + chart.type.location.charAt(0) + chart.key;
+    },
+    thumblink: function(chart){
+      return this.sharelink(chart) + "/thumb";
+    },
+    sharelink: function(chart){
+      return "http://localhost/v/chart/" + chart.key;
+    }
+  };
+  object = function(){
+    if (typeof this.tags === 'string') {
+      return this.tags = this.tags.split(',');
+    }
+  };
+  object.prototype = {
+    name: 'untitled',
+    desc: null,
+    tags: [],
+    theme: null,
+    doc: {
+      name: 'document',
+      type: 'html',
+      content: service.sample[0].doc.content
+    },
+    style: {
+      name: 'stylesheet',
+      type: 'css',
+      content: service.sample[0].style.content
+    },
+    code: {
+      name: 'code',
+      type: 'javascript',
+      content: service.sample[0].code.content
+    },
+    config: {},
+    dimension: {},
+    assets: [],
+    thumbnail: null,
+    isType: false,
+    likes: 0,
+    parent: null,
+    like: function(v){
+      var this$ = this;
+      return new Promise(function(res, rej){
+        var ref$;
+        this$.likes = (ref$ = this$.likes + (v
+          ? 1
+          : -1)) > 0 ? ref$ : 0;
+        return $http({
+          url: "/d/chart/" + this$.key + "/like",
+          method: 'PUT'
+        }).success(function(){
+          return res();
+        }).error(function(d, status){
+          var ref$;
+          this$.likes = (ref$ = this$.likes - (v
+            ? 1
+            : -1)) > 0 ? ref$ : 0;
+          return rej();
+        });
+      });
+    },
+    addFile: function(name, type, content){
+      var file;
+      content == null && (content = null);
+      file = {
+        name: name,
+        type: type,
+        content: content
+      };
+      this.assets.push(file);
+      return file;
+    },
+    removeFile: function(file){
+      var idx;
+      idx = this.assets.indexOf(file);
+      if (idx < 0) {
+        return;
+      }
+      return this.assets.splice(idx, 1);
+    },
+    updateData: function(){
+      var len, k, v, i$, i, ret, ref$, that, results$ = [];
+      this.data = [];
+      len = Math.max.apply(null, (function(){
+        var ref$, results$ = [];
+        for (k in ref$ = this.dimension) {
+          v = ref$[k];
+          results$.push(v);
+        }
+        return results$;
+      }.call(this)).reduce(function(a, b){
+        return a.concat(b.fields || []);
+      }, []).filter(function(it){
+        return it.data;
+      }).map(function(it){
+        return it.data.length;
+      }).concat([0]));
+      for (i$ = 0; i$ < len; ++i$) {
+        i = i$;
+        ret = {};
+        for (k in ref$ = this.dimension) {
+          v = ref$[k];
+          if (v.multiple) {
+            ret[k] = (v.fields || (v.fields = [])).length
+              ? (v.fields || (v.fields = [])).map(fn$)
+              : [];
+            v.fieldName = (v.fields || (v.fields = [])).map(fn1$);
+          } else {
+            ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
+            v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
+          }
+          if (v.type.filter(fn2$).length) {
+            if (Array.isArray(ret[k])) {
+              ret[k] = ret[k].map(fn3$);
+            } else {
+              ret[k] = parseFloat(ret[k]);
+            }
+          }
+        }
+        results$.push(this.data.push(ret));
+      }
+      return results$;
+      function fn$(it){
+        return (it.data || (it.data = []))[i];
+      }
+      function fn1$(it){
+        return it.name;
+      }
+      function fn2$(it){
+        return it.name === 'Number';
+      }
+      function fn3$(it){
+        return parseFloat(it);
+      }
+    }
+  };
+  chartService = baseService.derive('chart', service, object);
+  return chartService;
+}));
+x$.controller('chartEditor', ['$scope', '$http', '$timeout', '$interval', 'dataService', 'chartService', 'paletteService', 'themeService', 'plNotify'].concat(function($scope, $http, $timeout, $interval, dataService, chartService, paletteService, themeService, plNotify){
+  import$($scope, {
+    theme: null,
+    showsrc: true,
+    vis: 'preview',
+    lastvis: null,
+    plotdomain: 'http://localhost/',
+    error: {
+      msg: null,
+      lineno: 0
+    },
+    codemirror: {
+      code: {
+        lineWrapping: true,
+        lineNumbers: true,
+        viewportMargin: Infinity,
+        mode: 'javascript'
+      },
+      style: {
+        lineWrapping: true,
+        lineNumbers: true,
+        viewportMargin: Infinity,
+        mode: 'css'
+      },
+      doc: {
+        lineWrapping: true,
+        lineNumbers: true,
+        viewportMargin: Infinity,
+        mode: 'xml'
+      },
+      objs: []
+    },
+    chart: new chartService.chart(),
+    canvas: {
+      node: document.getElementById('chart-renderer'),
+      window: document.getElementById('chart-renderer').contentWindow
+    }
+  });
+  import$($scope, {
+    _save: function(nothumb){
+      var key, ref$, refresh, this$ = this;
+      nothumb == null && (nothumb = false);
+      if (this.chart.owner !== $scope.user.data.key) {
+        key = this.chart.type.location === 'server' ? this.chart.key : null;
+        ref$ = this.chart;
+        ref$.key = null;
+        ref$.owner = null;
+        ref$.permission = chartService.chart.prototype.permission;
+        if (key) {
+          this.chart.parent = key;
+        }
+      }
+      refresh = !this.chart.key ? true : false;
+      if (!Array.isArray(this.chart.tags)) {
+        this.chart.tags = (this.chart.tags || "").split(',');
+      }
+      return this.chart.save().then(function(ret){
+        return $scope.$apply(function(){
+          var link;
+          if (nothumb) {
+            plNotify.send('warning', "chart saved, but thumbnail failed to update");
+          } else {
+            plNotify.send('success', "chart saved");
+          }
+          link = chartService.link($scope.chart);
+          if (refresh || !window.location.search) {
+            window.location.href = link;
+          }
+          if ($scope.save.handle) {
+            $timeout.cancel($scope.save.handle);
+          }
+          return $scope.save.handle = null;
+        });
+      })['catch'](function(err){
+        return $scope.$apply(function(){
+          plNotify.aux.error.io('save', 'chart', e);
+          console.error("[save chart]", err);
+          if ($scope.save.handle) {
+            $timeout.cancel($scope.save.handle);
+          }
+          return $scope.save.handle = null;
+        });
+      });
+    },
+    save: function(){
+      var this$ = this;
+      if (!$scope.user.data || !$scope.user.data.key) {
+        return $scope.auth.toggle(true);
+      }
+      if (this.save.handle) {
+        return;
+      }
+      this.save.handle = $timeout(function(){
+        this$.save.handle = null;
+        return this$._save(true);
+      }, 3000);
+      return this.canvas.window.postMessage({
+        type: 'snapshot'
+      }, this.plotdomain);
+    },
+    clone: function(){
+      var key, ref$;
+      this.chart.name = this.chart.name + " - Copy";
+      key = this.chart.type.location === 'server' ? this.chart.key : null;
+      ref$ = this.chart;
+      ref$.key = null;
+      ref$.owner = null;
+      ref$.parent = key;
+      ref$.permission = chartService.chart.prototype.permission;
+      return this.save();
+    },
+    load: function(type, key){
+      var this$ = this;
+      return chartService.load(type, key).then(function(ret){
+        this$.chart = new chartService.chart(import$(this$.chart, ret));
+        return this$.backup.check();
+      })['catch'](function(ret){
+        console.error(ret);
+        plNotify.send('error', "failed to load chart. please try reloading");
+        if (ret[1] === 'forbidden') {
+          return window.location.href = window.location.pathname;
+        }
+      });
+    },
+    'delete': function(){
+      var this$ = this;
+      if (!this.chart.key) {
+        return;
+      }
+      this['delete'].handle = true;
+      return this.chart['delete']().then(function(ret){
+        plNotify.send('success', "chart deleted");
+        this$.chart = new chartService.chart();
+        setTimeout(function(){
+          return window.location.href = "/chart/me.html";
+        }, 1000);
+        return this$['delete'].handle = false;
+      })['catch'](function(err){
+        plNotify.send('error', "failed to delete chart");
+        return this$['delete'].handle = false;
+      });
+    },
+    resetConfig: function(){
+      var k, ref$, v, results$ = [];
+      for (k in ref$ = this.chart.config) {
+        v = ref$[k];
+        results$.push(v.value = v['default']);
+      }
+      return results$;
+    },
+    migrate: function(){
+      var cloned, this$ = this;
+      if (!this.chart.key) {
+        return;
+      }
+      cloned = this.chart.clone();
+      cloned.type.location = this.chart.type.location === 'local' ? 'server' : 'local';
+      return cloned.save().then(function(){
+        return this$.chart['delete']().then(function(){
+          $scope.chart = cloned;
+          return window.location.href = chartService.link($scope.chart);
+        });
+      });
+    },
+    dimension: {
+      bind: function(event, dimension, field){
+        var this$ = this;
+        field == null && (field = {});
+        return field.update().then(function(){
+          if (dimension.multiple) {
+            (dimension.fields || (dimension.fields = [])).push(field);
+          } else {
+            dimension.fields = [field];
+          }
+          return $scope.render();
+        })['catch'](function(err){
+          plNotify.send('error', "failed to bind field. try again later.");
+          return console.error("chart.ls / dimension field binding failed due to : ", err);
+        });
+      },
+      unbind: function(event, dimension, field){
+        var idx;
+        field == null && (field = {});
+        idx = dimension.fields.indexOf(field);
+        if (idx < 0) {
+          return;
+        }
+        dimension.fields.splice(idx, 1);
+        return $scope.render();
+      }
+    },
+    reset: function(){
+      return this.render();
+    },
+    render: function(rebind){
+      var k, ref$, v, payload;
+      rebind == null && (rebind = true);
+      this.chart.updateData();
+      for (k in ref$ = this.chart) {
+        v = ref$[k];
+        if (typeof v !== 'function') {
+          this.chart[k] = v;
+        }
+      }
+      payload = JSON.parse(angular.toJson({
+        theme: this.theme,
+        chart: this.chart
+      }));
+      ref$ = $scope.render;
+      ref$.payload = payload;
+      ref$.rebind = rebind;
+      if (!rebind) {
+        return this.canvas.window.postMessage({
+          type: 'render',
+          payload: payload,
+          rebind: rebind
+        }, this.plotdomain);
+      } else {
+        return this.canvas.window.postMessage({
+          type: 'reload'
+        }, this.plotdomain);
+      }
+    },
+    renderAsync: function(rebind){
+      var this$ = this;
+      rebind == null && (rebind = true);
+      if (this.renderAsync.handler) {
+        $timeout.cancel(this.renderAsync.handler);
+      }
+      return this.renderAsync.handler = $timeout(function(){
+        this$.renderAsync.handler = null;
+        return this$.render(rebind);
+      }, 500);
+    },
+    countline: function(){
+      var this$ = this;
+      return ['code', 'style', 'doc'].map(function(it){
+        this$.chart[it].lines = this$.chart[it].content.split('\n').length;
+        return this$.chart[it].size = this$.chart[it].content.length;
+      });
+    },
+    download: {
+      prepare: function(){
+        var this$ = this;
+        return ['svg', 'png', 'plotdb'].map(function(n){
+          return setTimeout(function(){
+            return $scope.$apply(function(){
+              return [this$[n].url = '', this$[n]()];
+            });
+          }, 300);
+        });
+      },
+      svg: function(){
+        return $scope.canvas.window.postMessage({
+          type: 'getsvg'
+        }, $scope.plotdomain);
+      },
+      png: function(){
+        return $scope.canvas.window.postMessage({
+          type: 'getpng'
+        }, $scope.plotdomain);
+      },
+      plotdb: function(){
+        var payload;
+        payload = angular.toJson($scope.chart);
+        this.plotdb.url = URL.createObjectURL(new Blob([payload], {
+          type: 'application/json'
+        }));
+        return this.plotdb.size = payload.length;
+      }
+    },
+    colorblind: {
+      val: 'normal',
+      vals: ['normal', 'protanopia', 'protanomaly', 'deuteranopia', 'deuteranomaly', 'tritanopia', 'tritanomaly', 'achromatopsia', 'achromatomaly'],
+      set: function(it){
+        if (!in$(it, this.vals)) {
+          return;
+        }
+        this.val = it;
+        return $scope.canvas.window.postMessage({
+          type: 'colorblind-emu',
+          payload: it
+        }, $scope.plotdomain);
+      }
+    },
+    applyTheme: function(){
+      var k, ref$, v, preset;
+      if (this.chart && this.theme) {
+        for (k in ref$ = this.chart.config) {
+          v = ref$[k];
+          if (v._bytheme) {
+            delete this.chart.config[k];
+          }
+        }
+        for (k in ref$ = this.chart.config) {
+          v = ref$[k];
+          if (!this.chart.config[k].hint) {
+            continue;
+          }
+          preset = this.theme.typedef[this.chart.config[k].type[0].name];
+          if (!preset) {
+            continue;
+          }
+          if (preset[this.chart.config[k].hint] != null) {
+            this.chart.config[k].value = preset[this.chart.config[k].hint];
+          }
+        }
+        for (k in ref$ = this.theme.config) {
+          v = ref$[k];
+          if (!this.chart.config[k]) {
+            this.chart.config[k] = import$({
+              _bytheme: true
+            }, v);
+          } else if (this.chart.config[k].type[0] !== v.type[0]) {
+            continue;
+          } else {
+            this.chart.config[k].value = v['default'];
+          }
+        }
+      }
+      if (this.theme) {
+        return this.paledit.fromTheme(this.theme);
+      }
+    }
+  });
+  import$($scope, {
+    backup: {
+      enabled: false,
+      init: function(){
+        var this$ = this;
+        return $scope.$watch('chart', function(){
+          if (!this$.enabled) {
+            return;
+          }
+          if (this$.handle) {
+            $timeout.cancel(this$.handle);
+          }
+          return this$.handle = $timeout(function(){
+            this$.handle = null;
+            return $scope.chart.backup().then(function(){});
+          }, 2000);
+        }, true);
+      },
+      recover: function(){
+        var this$ = this;
+        if (!this.last || !this.last.object) {
+          return;
+        }
+        $scope.chart.recover(this.last.object);
+        this.enabled = false;
+        return $scope.chart.cleanBackups().then(function(){
+          return $scope.$apply(function(){
+            return this$.check();
+          });
+        });
+      },
+      check: function(){
+        var this$ = this;
+        return $scope.chart.backups().then(function(ret){
+          return $scope.$apply(function(){
+            this$.list = ret;
+            this$.last = ret[0];
+            return $timeout(function(){
+              return this$.enabled = true;
+            }, 4000);
+          })['catch'](function(err){
+            return console.error('fecth backup failed: #', err);
+          });
+        });
+      }
+    },
+    themes: {
+      list: themeService.sample,
+      set: function(it){
+        return $scope.theme = it;
+      },
+      init: function(){
+        var this$ = this;
+        return themeService.list().then(function(ret){
+          return $scope.$apply(function(){
+            return this$.list = ret;
+          });
+        });
+      }
+    },
+    editor: {
+      'class': "",
+      focus: function(){
+        var this$ = this;
+        return setTimeout(function(){
+          return $scope.codemirror.objs.map(function(cm){
+            var ret, k, v, this$ = this;
+            ret = (function(){
+              var ref$, results$ = [];
+              for (k in ref$ = $scope.codemirror) {
+                v = ref$[k];
+                results$.push([k, v]);
+              }
+              return results$;
+            }()).filter(function(it){
+              return it[1].mode === cm.options.mode;
+            })[0];
+            if (!ret || !$scope.vis.startsWith(ret[0])) {
+              return;
+            }
+            setTimeout(function(){
+              return cm.focus();
+            }, 10);
+            if (ret[1].refreshed) {
+              return;
+            }
+            cm.refresh();
+            ret[1].refreshed = true;
+            return setTimeout(function(){
+              cm.refresh();
+              if ($scope.error.lineno) {
+                return $("#code-editor-code .CodeMirror-code > div:nth-of-type(" + $scope.error.lineno + ")").addClass('error');
+              }
+            }, 0);
+          });
+        }, 0);
+      },
+      update: function(){
+        return this['class'] = [this.fullscreen.toggled ? 'fullscreen' : "", this.vis !== 'preview' ? 'active' : "", this.color.modes[this.color.idx]].join(" ");
+      },
+      fullscreen: {
+        toggle: function(){
+          this.toggled = !this.toggled;
+          $scope.editor.update();
+          return $scope.editor.focus();
+        },
+        toggled: false
+      },
+      color: {
+        modes: ['normal', 'dark'],
+        idx: 0,
+        toggle: function(){
+          this.idx = (this.idx + 1) % this.modes.length;
+          return $scope.editor.update();
+        }
+      }
+    },
+    settingPanel: {
+      toggle: function(){
+        return this.toggled = !this.toggled;
+      },
+      toggled: false
+    },
+    sharePanel: {
+      social: {
+        facebook: null
+      },
+      isForkable: function(){
+        var perms, ref$, forkable;
+        perms = (ref$ = $scope.chart.permission).value || (ref$.value = []);
+        return forkable = !!perms.filter(function(it){
+          return it.perm === 'fork' && it['switch'] === 'public';
+        }).length;
+      },
+      init: function(){
+        var this$ = this;
+        return ['#chartedit-sharelink', '#chartedit-embedcode'].map(function(eventsrc){
+          var clipboard;
+          clipboard = new Clipboard(eventsrc);
+          clipboard.on('success', function(){
+            $(eventsrc).tooltip({
+              title: 'copied',
+              trigger: 'click'
+            }).tooltip('show');
+            return setTimeout(function(){
+              return $(eventsrc).tooltip('hide');
+            }, 1000);
+          });
+          clipboard.on('error', function(){
+            $(eventsrc).tooltip({
+              title: 'Press Ctrl+C to Copy',
+              trigger: 'click'
+            }).tooltip('show');
+            return setTimeout(function(){
+              return $(eventsrc).tooltip('hide');
+            }, 1000);
+          });
+          $scope.$watch('sharePanel.link', function(it){
+            var fbobj, k, v, pinobj, emailobj, linkedinobj, twitterobj;
+            this$.embedcode = "<iframe src=\"" + it + "\"><iframe>";
+            this$.thumblink = chartService.thumblink($scope.chart);
+            fbobj = {
+              app_id: '1546734828988373',
+              display: 'popup',
+              caption: $scope.chart.name,
+              picture: this$.thumblink,
+              link: this$.link,
+              name: $scope.chart.name,
+              redirect_uri: 'http://plotdb.com/',
+              description: $scope.chart.desc || ""
+            };
+            this$.social.facebook = (["https://www.facebook.com/dialog/feed?"].concat((function(){
+              var ref$, results$ = [];
+              for (k in ref$ = fbobj) {
+                v = ref$[k];
+                results$.push(k + "=" + encodeURIComponent(v));
+              }
+              return results$;
+            }()))).join('&');
+            pinobj = {
+              url: this$.link,
+              media: this$.thumblink,
+              description: $scope.chart.desc || ""
+            };
+            this$.social.pinterest = (["https://www.pinterest.com/pin/create/button/?"].concat((function(){
+              var ref$, results$ = [];
+              for (k in ref$ = pinobj) {
+                v = ref$[k];
+                results$.push(k + "=" + encodeURIComponent(v));
+              }
+              return results$;
+            }()))).join('&');
+            emailobj = {
+              subject: "plotdb: " + $scope.chart.name,
+              body: $scope.chart.desc + " : " + this$.link
+            };
+            this$.social.email = (["mailto:?"].concat((function(){
+              var ref$, results$ = [];
+              for (k in ref$ = emailobj) {
+                v = ref$[k];
+                results$.push(k + "=" + encodeURIComponent(v));
+              }
+              return results$;
+            }()))).join('&');
+            linkedinobj = {
+              mini: true,
+              url: this$.link,
+              title: $scope.chart.name + " on PlotDB",
+              summary: $scope.chart.desc,
+              source: "plotdb.com"
+            };
+            this$.social.linkedin = (["http://www.linkedin.com/shareArticle?"].concat((function(){
+              var ref$, results$ = [];
+              for (k in ref$ = linkedinobj) {
+                v = ref$[k];
+                results$.push(k + "=" + encodeURIComponent(v));
+              }
+              return results$;
+            }()))).join('&');
+            twitterobj = {
+              url: this$.link,
+              text: $scope.chart.name + " - " + ($scope.chart.desc || ''),
+              hashtags: "dataviz,chart,visualization",
+              via: "plotdb"
+            };
+            return this$.social.twitter = (["http://twitter.com/intent/tweet?"].concat((function(){
+              var ref$, results$ = [];
+              for (k in ref$ = twitterobj) {
+                v = ref$[k];
+                results$.push(k + "=" + encodeURIComponent(v));
+              }
+              return results$;
+            }()))).join('&');
+          });
+          $scope.$watch('sharePanel.forkable', function(it){
+            var forkable;
+            forkable = this$.isForkable();
+            if (forkable !== this$.forkable && this$.forkable != null) {
+              $scope.chart.permission.value = it
+                ? [{
+                  'switch': 'public',
+                  perm: 'fork'
+                }]
+                : [];
+              return this$.saveHint = true;
+            }
+          });
+          return $scope.$watch('chart.permission.value', function(){
+            var forkable;
+            forkable = this$.isForkable();
+            if (this$.forkable !== forkable && this$.forkable != null) {
+              this$.saveHint = true;
+            }
+            return this$.forkable = forkable;
+          }, true);
+        });
+      },
+      saveHint: false,
+      embedcode: "",
+      link: "",
+      toggle: function(){
+        if (this.init) {
+          this.init();
+        }
+        this.init = null;
+        this.toggled = !this.toggled;
+        return this.saveHint = false;
+      },
+      toggled: false,
+      isPublic: function(){
+        return in$("public", $scope.chart.permission['switch']);
+      },
+      setPrivate: function(){
+        var ref$;
+        ((ref$ = $scope.chart).permission || (ref$.permission = {}))['switch'] = ['private'];
+        return this.saveHint = true;
+      },
+      setPublic: function(){
+        var ref$;
+        ((ref$ = $scope.chart).permission || (ref$.permission = {}))['switch'] = ['public'];
+        return this.saveHint = true;
+      }
+    },
+    coloredit: {
+      config: function(v, idx){
+        return {
+          'class': 'no-palette',
+          context: "context" + idx,
+          exclusive: true,
+          palette: [v.value]
+        };
+      }
+    },
+    paledit: {
+      convert: function(it){
+        return it.map(function(it){
+          return {
+            id: it.key || Math.random() + "",
+            text: it.name,
+            data: it.colors
+          };
+        });
+      },
+      ldcp: null,
+      item: null,
+      fromTheme: function(theme){
+        var themepal, k, v;
+        if (!theme || !theme.config || !theme.config.palette) {
+          return this.list = this.list.filter(function(it){
+            return it.text !== 'Theme';
+          });
+        }
+        themepal = this.list.filter(function(it){
+          return it.text === 'Theme';
+        })[0];
+        if (!themepal) {
+          themepal = {
+            text: 'Theme',
+            id: '456',
+            children: null
+          };
+          this.list = [themepal].concat(this.list);
+        }
+        themepal.children = this.convert((function(){
+          var ref$, results$ = [];
+          for (k in ref$ = theme.config.palette) {
+            v = ref$[k];
+            results$.push((v.name = k, v));
+          }
+          return results$;
+        }()));
+        $('#pal-select option').remove();
+        $('#pal-select optgroup').remove();
+        return $('#pal-select').select2({
+          allowedMethods: ['updateResults'],
+          templateResult: function(state){
+            var color, c;
+            if (!state.data) {
+              return state.text;
+            }
+            color = (function(){
+              var i$, ref$, len$, results$ = [];
+              for (i$ = 0, len$ = (ref$ = state.data).length; i$ < len$; ++i$) {
+                c = ref$[i$];
+                results$.push("<div class='color' " + ("style='background:" + c.hex + ";width:" + 100 / state.data.length + "%'") + "></div>");
+              }
+              return results$;
+            }()).join("");
+            return $(("<div class='palette select'><div class='name'>" + state.text + "</div>") + ("<div class='palette-color'>" + color + "</div></div>"));
+          },
+          data: this.list
+        });
+      },
+      init: function(){
+        var x$, iconPalSelectConfig, this$ = this;
+        this.ldcp = new ldColorPicker(null, {}, $('#palette-editor .editor .ldColorPicker')[0]);
+        this.ldcp.on('change-palette', function(){
+          return setTimeout(function(){
+            return $scope.$apply(function(){
+              return this$.update();
+            });
+          }, 0);
+        });
+        this.list = [{
+          text: 'Default',
+          id: 'default',
+          children: this.convert(paletteService.sample)
+        }];
+        x$ = $('#pal-select');
+        x$.select2(iconPalSelectConfig = {
+          allowedMethods: ['updateResults'],
+          templateResult: function(state){
+            var color, c;
+            if (!state.data) {
+              return state.text;
+            }
+            color = (function(){
+              var i$, ref$, len$, results$ = [];
+              for (i$ = 0, len$ = (ref$ = state.data).length; i$ < len$; ++i$) {
+                c = ref$[i$];
+                results$.push("<div class='color' " + ("style='background:" + c.hex + ";width:" + 100 / state.data.length + "%'") + "></div>");
+              }
+              return results$;
+            }()).join("");
+            return $(("<div class='palette select'><div class='name'>" + state.text + "</div>") + ("<div class='palette-color'>" + color + "</div></div>"));
+          },
+          data: this.list
+        });
+        x$.on('select2:closing', function(e){
+          var i$, ref$, len$, item, ret;
+          for (i$ = 0, len$ = (ref$ = this$.list).length; i$ < len$; ++i$) {
+            item = ref$[i$];
+            ret = item.children.filter(fn$)[0];
+            if (ret) {
+              break;
+            }
+          }
+          if (!ret) {
+            return;
+          }
+          $scope.$apply(function(){
+            return this$.item.value = JSON.parse(JSON.stringify({
+              colors: ret.data
+            }));
+          });
+          return this$.ldcp.setPalette(this$.item.value);
+          function fn$(it){
+            return it.id === $(e.target).val();
+          }
+        });
+        return x$;
+      },
+      update: function(){
+        var ref$, src, des, pairing, i$, to$, i, d, j$, to1$, j, s, len$, pair, unpair;
+        if (this.item) {
+          ref$ = [this.item.value, this.ldcp.getPalette(), []], src = ref$[0], des = ref$[1], pairing = ref$[2];
+          for (i$ = 0, to$ = des.colors.length; i$ < to$; ++i$) {
+            i = i$;
+            d = des.colors[i];
+            for (j$ = 0, to1$ = src.colors.length; j$ < to1$; ++j$) {
+              j = j$;
+              s = src.colors[j];
+              if (s.hex !== d.hex) {
+                continue;
+              }
+              pairing.push([s, d, Math.abs(i - j)]);
+            }
+          }
+          pairing.sort(function(a, b){
+            return a[2] - b[2];
+          });
+          for (i$ = 0, len$ = pairing.length; i$ < len$; ++i$) {
+            pair = pairing[i$];
+            if (pair[0].pair || pair[1].pair) {
+              continue;
+            }
+            pair[0].pair = pair[1];
+            pair[1].pair = pair[0];
+          }
+          unpair = [
+            src.colors.filter(function(it){
+              return !it.pair;
+            }), des.colors.filter(function(it){
+              return !it.pair;
+            })
+          ];
+          for (i$ = 0, to$ = Math.min(unpair[0].length, unpair[1].length); i$ < to$; ++i$) {
+            i = i$;
+            unpair[1][i].pair = unpair[0][i];
+          }
+          src.colors = des.colors.map(function(it){
+            var ref$;
+            if (it.pair) {
+              return ref$ = it.pair, ref$.hex = it.hex, ref$;
+            } else {
+              return it;
+            }
+          });
+          return src.colors.forEach(function(it){
+            var ref$;
+            return ref$ = it.pair, delete it.pair, ref$;
+          });
+        }
+      },
+      toggled: false,
+      toggle: function(){
+        this.toggled = !this.toggled;
+        if (!this.toggled) {
+          return this.update();
+        }
+      },
+      edit: function(item){
+        this.item = item;
+        this.ldcp.setPalette(item.value);
+        return this.toggled = true;
+      }
+    },
+    switchPanel: function(){
+      var this$ = this;
+      return setTimeout(function(){
+        return $scope.$apply(function(){
+          var temp;
+          temp = this$.vis;
+          if (this$.vis === 'preview' && (!this$.lastvis || this$.lastvis === 'preview')) {
+            this$.vis = 'code';
+          } else if (this$.vis === 'preview') {
+            this$.vis = this$.lastvis;
+          } else {
+            this$.vis = 'preview';
+          }
+          this$.lastvis = temp;
+          if (this$.vis === 'preview') {
+            return $scope.codemirror.objs.forEach(function(it){
+              return it.getInputField().blur();
+            });
+          } else {
+            return $scope.codemirror.objs.forEach(function(it){
+              return it.refresh();
+            });
+          }
+        });
+      }, 0);
+    },
+    hidHandler: function(){
+      var this$ = this;
+      $scope.codemirrored = function(editor){
+        return $scope.codemirror.objs.push(editor);
+      };
+      return document.body.addEventListener('keydown', function(e){
+        if ((e.metaKey || e.altKey) && (e.keyCode === 13 || e.which === 13)) {
+          return $scope.$apply(function(){
+            return this$.switchPanel();
+          });
+        }
+      });
+    },
+    checkParam: function(){
+      var ret, key, ref$, location;
+      if (!window.location.search) {
+        return;
+      }
+      if (window.location.search === '?demo') {
+        $scope.chart.doc.content = chartService.sample[1].doc.content;
+        $scope.chart.style.content = chartService.sample[1].style.content;
+        $scope.chart.code.content = chartService.sample[1].code.content;
+        return;
+      }
+      ret = /[?&]k=([sl])([^&#|?]+)/.exec(window.location.search);
+      if (!ret) {
+        return;
+      }
+      key = ret[2];
+      ref$ = [ret[1] === 's' ? 'server' : 'local', ret[2]], location = ref$[0], key = ref$[1];
+      return $scope.load({
+        name: 'chart',
+        location: location
+      }, key);
+    },
+    assets: {
+      measure: function(){
+        return $scope.chart.assets.size = $scope.chart.assets.map(function(it){
+          return it.content.length;
+        }).reduce(function(a, b){
+          return a + b;
+        }, 0);
+      },
+      preview: function(file){
+        var datauri, iframe;
+        this.preview.toggled = true;
+        datauri = ["data:", file.type, ";charset=utf-8;base64,", file.content].join("");
+        iframe = document.createElement("iframe");
+        $('#assets-preview .iframe')[0].innerHTML = "<iframe></iframe>";
+        return $('#assets-preview .iframe iframe')[0].src = datauri;
+      },
+      read: function(fobj){
+        var this$ = this;
+        return new Promise(function(res, rej){
+          var name, that, type, file, fr;
+          name = (that = /([^/]+\.?[^/.]*)$/.exec(fobj.name)) ? that[1] : 'unnamed';
+          type = 'unknown';
+          file = $scope.chart.addFile(name, type, null);
+          fr = new FileReader();
+          fr.onload = function(){
+            var result, idx, type, content, size;
+            result = fr.result;
+            idx = result.indexOf(';');
+            type = result.substring(5, idx);
+            content = result.substring(idx + 8);
+            size = $scope.chart.assets.map(function(it){
+              return (it.content || "").length;
+            }).reduce(function(a, b){
+              return a + b;
+            }, 0) + content.length;
+            if (size > 3000000) {
+              $scope.$apply(function(){
+                plNotify.alert("Assets size limit (3MB) exceeded. won't upload.");
+                $scope.chart.removeFile(file);
+              });
+            }
+            file.type = type;
+            file.content = content;
+            $scope.$applyAsync(function(){
+              return file.type = type, file.content = content, file;
+            });
+            return res(file);
+          };
+          return fr.readAsDataURL(fobj);
+        });
+      },
+      handle: function(files){
+        var i$, len$, file, results$ = [];
+        for (i$ = 0, len$ = files.length; i$ < len$; ++i$) {
+          file = files[i$];
+          results$.push(this.read(file));
+        }
+        return results$;
+      },
+      node: null,
+      init: function(){
+        var x$, this$ = this;
+        x$ = this.node = $('#code-editor-assets input');
+        x$.on('change', function(){
+          return this$.handle(this$.node[0].files);
+        });
+        return x$;
+      }
+    },
+    monitor: function(){
+      var this$ = this;
+      this.assets.init();
+      this.$watch('vis', function(vis){
+        return $scope.editor.focus();
+      });
+      this.$watch('chart.assets', function(){
+        return this$.assets.measure();
+      }, true);
+      this.$watch('chart.doc.content', function(){
+        return this$.countline();
+      });
+      this.$watch('chart.style.content', function(){
+        return this$.countline();
+      });
+      this.$watch('chart.code.content', function(){
+        return this$.countline();
+      });
+      this.$watch('chart.doc.content', function(){
+        return this$.renderAsync();
+      });
+      this.$watch('chart.style.content', function(){
+        return this$.renderAsync();
+      });
+      this.$watch('theme', function(theme){
+        this$.renderAsync();
+        return this$.chart.theme = theme ? theme.key : null;
+      });
+      this.$watch('chart.theme', function(key){
+        return this$.theme = this$.themes.list.filter(function(it){
+          return it.key === key;
+        })[0];
+      });
+      this.$watch('chart.code.content', function(code){
+        if (this$.communicate.parseHandler) {
+          $timeout.cancel(this$.communicate.parseHandler);
+        }
+        return this$.communicate.parseHandler = $timeout(function(){
+          this$.communicate.parseHandler = null;
+          return this$.canvas.window.postMessage({
+            type: 'parse',
+            payload: code
+          }, this$.plotdomain);
+        }, 500);
+      });
+      this.$watch('theme.code.content', function(code){
+        if (!this$.theme) {
+          return;
+        }
+        if (this$.communicate.parseThemeHandler) {
+          $timeout.cancel(this$.communicate.parseThemeHandler);
+        }
+        return this$.communicate.parseThemeHandler = $timeout(function(){
+          this$.communicate.parseThemeHandler = null;
+          return this$.canvas.window.postMessage({
+            type: 'parse-theme',
+            payload: code
+          }, this$.plotdomain);
+        }, 500);
+      });
+      this.$watch('chart.config', function(n, o){
+        var ret, k, v;
+        o == null && (o = {});
+        ret = !!(function(){
+          var ref$, results$ = [];
+          for (k in ref$ = n) {
+            v = ref$[k];
+            results$.push([k, v]);
+          }
+          return results$;
+        }()).filter(function(arg$){
+          var k, v;
+          k = arg$[0], v = arg$[1];
+          return !o[k] || v.value !== o[k].value;
+        }).map(function(){
+          return v.rebindOnChange;
+        }).filter(function(it){
+          return it;
+        }).length;
+        return this$.renderAsync(ret);
+      }, true);
+      this.$watch('chart.key', function(){
+        return this$.sharePanel.link = chartService.sharelink(this$.chart);
+      });
+      $scope.limitscroll($('#data-fields')[0]);
+      return $scope.limitscroll($('#chart-configs')[0]);
+    },
+    communicate: function(){
+      var this$ = this;
+      return window.addEventListener('message', function(arg$){
+        var data;
+        data = arg$.data;
+        return $scope.$apply(function(){
+          var ref$, config, dimension, k, v, typedef, payload, rebind, event, bytes, mime, buf, ints, i$, to$, idx;
+          if (!data || typeof data !== 'object') {
+            return;
+          }
+          if (data.type === 'error') {
+            $('#code-editor-code .CodeMirror-code > .error').removeClass('error');
+            $scope.error.msg = (data.payload || (data.payload = {})).msg || "";
+            $scope.error.lineno = (data.payload || (data.payload = {})).lineno || 0;
+            if ($scope.error.lineno) {
+              return $("#code-editor-code .CodeMirror-code > div:nth-of-type(" + $scope.error.lineno + ")").addClass('error');
+            }
+          } else if (data.type === 'alt-enter') {
+            return $scope.switchPanel();
+          } else if (data.type === 'snapshot') {
+            if (data.payload) {
+              this$.chart.thumbnail = data.payload;
+            }
+            return this$._save();
+          } else if (data.type === 'parse') {
+            ref$ = JSON.parse(data.payload), config = ref$.config, dimension = ref$.dimension;
+            for (k in ref$ = this$.chart.dimension) {
+              v = ref$[k];
+              if (dimension[k] != null) {
+                dimension[k].fields = v.fields;
+              }
+            }
+            for (k in ref$ = this$.chart.config) {
+              v = ref$[k];
+              if (config[k] != null) {
+                config[k].value = v.value;
+              }
+            }
+            for (k in config) {
+              v = config[k];
+              if (!(v.value != null)) {
+                v.value = v['default'];
+              }
+            }
+            ref$ = this$.chart;
+            ref$.config = config;
+            ref$.dimension = dimension;
+            return $scope.render();
+          } else if (data.type === 'parse-theme') {
+            ref$ = JSON.parse(data.payload), config = ref$.config, typedef = ref$.typedef;
+            ref$ = this$.theme;
+            ref$.config = config;
+            ref$.typedef = typedef;
+            this$.applyTheme();
+            return $scope.render();
+          } else if (data.type === 'loaded') {
+            if ($scope.render.payload) {
+              payload = $scope.render.payload;
+              rebind = $scope.render.rebind;
+              this$.canvas.window.postMessage({
+                type: 'render',
+                payload: payload,
+                rebind: rebind
+              }, this$.plotdomain);
+              return $scope.render.payload = null;
+            } else {
+              this$.canvas.window.postMessage({
+                type: 'parse',
+                payload: this$.chart.code.content
+              }, this$.plotdomain);
+              if (this$.theme) {
+                return this$.canvas.window.postMessage({
+                  type: 'parse-theme',
+                  payload: this$.theme.code.content
+                }, this$.plotdomain);
+              }
+            }
+          } else if (data.type === 'click') {
+            if (document.dispatchEvent) {
+              event = document.createEvent('MouseEvents');
+              event.initEvent('click', true, true);
+              event.synthetic = true;
+              return document.dispatchEvent(event);
+            } else {
+              event = document.createEventObject();
+              event.synthetic = true;
+              return document.fireEvent("onclick", event);
+            }
+          } else if (data.type === 'getsvg') {
+            if (!data.payload) {
+              return $scope.download.svg.url = '#';
+            }
+            $scope.download.svg.url = URL.createObjectURL(new Blob([data.payload], {
+              type: 'image/svg+xml'
+            }));
+            return $scope.download.svg.size = data.payload.length;
+          } else if (data.type === 'getpng') {
+            if (!data.payload) {
+              return $scope.download.png.url = '#';
+            }
+            bytes = atob(data.payload.split(',')[1]);
+            mime = data.payload.split(',')[0].split(':')[1].split(';')[0];
+            if (mime !== 'image/png') {
+              return $scope.download.png.url = '#';
+            }
+            buf = new ArrayBuffer(bytes.length);
+            ints = new Uint8Array(buf);
+            for (i$ = 0, to$ = bytes.length; i$ < to$; ++i$) {
+              idx = i$;
+              ints[idx] = bytes.charCodeAt(idx);
+            }
+            $scope.download.png.url = URL.createObjectURL(new Blob([buf], {
+              type: 'image/png'
+            }));
+            return $scope.download.png.size = bytes.length;
+          }
+        });
+      }, false);
+    },
+    fieldAgent: {
+      init: function(){
+        var this$ = this;
+        return $('#field-agent').on('mousewheel', function(){
+          return this$.setPosition();
+        });
+      },
+      data: null,
+      drag: {
+        ging: false,
+        start: function(){
+          return this.ging = true;
+        },
+        end: function(){
+          return this.ging = false;
+        }
+      },
+      setPosition: function(){
+        var box, box2, scroll;
+        if (!this.node) {
+          return;
+        }
+        box = this.node.getBoundingClientRect();
+        box2 = this.node.parentNode.parentNode.getBoundingClientRect();
+        scroll = {
+          left: $('#data-fields').scrollLeft(),
+          top: $('#data-fields').scrollTop()
+        };
+        return $('#field-agent').css({
+          top: (box.top - box2.top + 55 - scroll.top) + "px",
+          left: (box.left - box2.left - scroll.left) + "px",
+          width: box.width + "px",
+          height: box.height + "px"
+        });
+      },
+      setProxy: function(e, data){
+        var ref$, node, this$ = this;
+        if (this.drag.ging) {
+          return;
+        }
+        ref$ = [data, e.target], this.data = ref$[0], node = ref$[1];
+        for (;;) {
+          if (node.getAttribute("class").indexOf('data-field') >= 0) {
+            break;
+          }
+          node = node.parentNode;
+          if (node.nodeName.toLowerCase() === 'body') {
+            return;
+          }
+        }
+        return setTimeout(function(){
+          this$.node = node;
+          return this$.setPosition();
+        }, 0);
+      }
+    },
+    settings: {
+      changed: function(node, field){
+        var ref$, cval, nval;
+        ref$ = [$scope.chart[field], $(node).val()], cval = ref$[0], nval = ref$[1];
+        if (!Array.isArray(cval)) {
+          return cval !== nval;
+        }
+        ref$ = [cval, nval].map(function(it){
+          return (it || []).join(",");
+        }), cval = ref$[0], nval = ref$[1];
+        return cval !== nval;
+      },
+      bind: function(node, field, config){
+        var this$ = this;
+        config == null && (config = {});
+        $(node).select2();
+        $(node).select2(config).on('change', function(){
+          if (this$.changed(node, field)) {
+            return setTimeout(function(){
+              return $scope.$apply(function(){
+                return $scope.chart[field] = $(node).val();
+              });
+            }, 0);
+          }
+        });
+        return $scope.$watch("chart." + field, function(vals){
+          var html, i$, ref$, len$, val;
+          html = "";
+          if (config.tags) {
+            for (i$ = 0, len$ = (ref$ = vals || []).length; i$ < len$; ++i$) {
+              val = ref$[i$];
+              html += $("<option></option>").val(val).text(val)[0].outerHTML;
+            }
+            $(node).html(html);
+          }
+          if (this$.changed(node, field)) {
+            return $(node).val(vals).trigger('change');
+          }
+        });
+      },
+      init: function(){
+        this.bind($('#chart-setting-type'), 'basetype');
+        this.bind($('#chart-setting-encoding'), 'visualencoding');
+        this.bind($('#chart-setting-category'), 'category');
+        return this.bind($('#chart-setting-tags'), 'tags', {
+          tags: true,
+          tokenSeparators: [',']
+        });
+      }
+    },
+    init: function(){
+      this.communicate();
+      this.hidHandler();
+      this.monitor();
+      this.checkParam();
+      this.paledit.init();
+      this.backup.init();
+      this.fieldAgent.init();
+      this.themes.init();
+      return this.settings.init();
+    }
+  });
+  return $scope.init();
+}));
+x$.controller('mychart', ['$scope', '$http', 'dataService', 'chartService'].concat(function($scope, $http, dataService, chartService){
+  return chartService.list().then(function(ret){
+    return $scope.$apply(function(){
+      $scope.charts = ret;
+      return $scope.goto = function(chart){
+        return window.location.href = chartService.link(chart);
+      };
+    });
+  });
+}));
+x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, IOService, dataService, chartService, plNotify){
+  $scope.q = {
+    type: null,
+    enc: null,
+    cat: null,
+    dim: null,
+    order: 'Latest'
+  };
+  $scope.qmap = {
+    type: ["Other", "Bar Chart", "Line Chart", "Pie Chart", "Area Chart", "Bubble Chart", "Radial Chart", "Calendar", "Treemap", "Choropleth", "Cartogram", "Heatmap", "Sankey", "Venn Diagram", "Word Cloud", "Timeline", "Mixed"],
+    enc: ["Other", "Position", "Position ( Non-aligned )", "Length", "Direction", "Angle", "Area", "Volume", "Curvature", "Shade", "Saturation"],
+    cat: ["Other", "Infographics", "Geographics", "Interactive", "Journalism", "Statistics"],
+    dim: [0, 1, 2, 3, 4, 5, "> 5"]
+  };
+  $scope.$watch('q', function(){
+    if (!$scope.fullcharts || !$scope.fullcharts.length) {
+      $scope.fullcharts = $scope.charts;
+    }
+    return $scope.charts = $scope.fullcharts.filter(function(it){
+      return (!$scope.q.type || it.basetype === $scope.q.type) && (!$scope.q.enc || in$($scope.q.enc, it.visualencoding || [])) && (!$scope.q.cat || in$($scope.q.cat, it.category || [])) && (!$scope.q.dim || it.dimlen === $scope.q.dim || ($scope.q.dim === 99 && it.dimlen.length > 5));
+    });
+  }, true);
+  $scope.like = function(chart){
+    var mylikes, ref$, ref1$, v;
+    if (!chart) {
+      return;
+    }
+    mylikes = (ref$ = (ref1$ = $scope.user.data).likes || (ref1$.likes = {})).chart || (ref$.chart = {});
+    v = mylikes[chart.key] = !mylikes[chart.key];
+    return chart.like(v)['catch'](function(){
+      plNotify.error("Can't do favorite. try again later?");
+      return mylikes[chart.key] = !v;
+    });
+  };
+  $scope.charts = [];
+  return Promise.all([
+    new Promise(function(res, rej){
+      return IOService.aux.listLocally({
+        name: 'chart'
+      }, res, rej);
+    }), new Promise(function(res, rej){
+      return IOService.aux.listRemotely({
+        name: 'chart'
+      }, res, rej, "q=all");
+    })
+  ]).then(function(ret){
+    var this$ = this;
+    return $scope.$apply(function(){
+      var hit, i$, to$, i, d, width, results$ = [];
+      $scope.charts = (ret[0].concat(ret[1])).map(function(it){
+        return new chartService.chart(it);
+      });
+      hit = false;
+      for (i$ = 0, to$ = $scope.charts.length; i$ < to$; ++i$) {
+        i = i$;
+        d = $scope.charts[i];
+        width = 320;
+        if (Math.random() > 0.6 && !hit) {
+          width = Math.random() > 0.8 ? 960 : 640;
+          hit = true;
+        }
+        if (i % 3 === 2) {
+          if (!hit) {
+            width = 640;
+          }
+          hit = false;
+        }
+        results$.push(d.width = width);
+      }
+      return results$;
+    });
+  });
+}));
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}
+function in$(x, xs){
+  var i = -1, l = xs.length >>> 0;
+  while (++i < l) if (x === xs[i]) return true;
+  return false;
+}

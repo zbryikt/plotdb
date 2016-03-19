@@ -82,7 +82,7 @@ parse = (payload, type) ->
     else if type == \theme =>
       (module) <- proper-eval payload, false .then
       theme = module.exports
-      payload = JSON.stringify({} <<< theme{config})
+      payload = JSON.stringify({} <<< theme{typedef, config})
       window.parent.postMessage {type: \parse-theme, payload}, plotdomain
 
   catch e
@@ -182,7 +182,9 @@ render = (payload, rebind = true) ->
             thread.dec reboot
             return error-handling "Exception parsing chart config '#k'"
       for k,v of chart.config =>
-        config[k] = if !(config[k]?) or !(config[k].value?) => v.default else config[k].value
+        if !(config[k]?) => config[k] = v.default
+        else if !(config[k].value?) => config[k] = (v or config[k]).default
+        else config[k] = config[k].value
       chart.assets = assetsmap = {}
       for file in assets =>
         raw = atob(file.content)

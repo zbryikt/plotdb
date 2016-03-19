@@ -9,37 +9,25 @@ plotdb.{}theme.sample = do
       code: content: '''
 var module = {};
 module.exports = plotdb.theme.create({
-  config: {
-    palette: {
-      "default": {
-        colors: [
-          {hex: "#ae4948"},
-          {hex: "#256b9e"}
-        ]
-      },
-      "binary": {
-        colors: [
-          {hex: "#ae4948"},
-          {hex: "#256b9e"}
-        ]
-      },
+  typedef: {
+    Color: {
+      "default": "#222",
+      "positive": "#391",
+      "negative": "#b41"
+    },
+    Palette: {
+      "default": { colors: [ {hex: "#ae4948"}, {hex: "#256b9e"} ] },
+      "binary": { colors: [ {hex: "#ae4948"}, {hex: "#256b9e"} ] },
       "diverging": {
         colors: [
-          {hex: "#b81673"},
-          {hex: "#eb7696"},
-          {hex: "#e0e0a0"},
-          {hex: "#83b365"},
-          {hex: "#368239"}
+          {hex: "#b81673"}, {hex: "#eb7696"}, {hex: "#e0e0a0"},
+          {hex: "#83b365"}, {hex: "#368239"}
         ]
       },
       "qualitative": {
         colors: [
-          {hex: "#b43743"},
-          {hex: "#e68061"},
-          {hex: "#f9cb48"},
-          {hex: "#3c6a9c"},
-          {hex: "#0c2a54"},
-          {hex: "#405067"},
+          {hex: "#b43743"}, {hex: "#e68061"}, {hex: "#f9cb48"},
+          {hex: "#3c6a9c"}, {hex: "#0c2a54"}, {hex: "#405067"},
           {hex: "#5a5e84"}
         ]
       },
@@ -112,7 +100,7 @@ line.connect {
 
 
 '''
-    },
+    }/*,
     {
       key: "/theme/sample/:playfair"
       name: "Playfair"
@@ -125,18 +113,16 @@ line.connect {
       key: "/theme/sample/:thereporter"
       name: "The Reporter"
       type: location: \sample, name: \theme
-      /*config: do
-        palette: do
-          type: [plotdb.Palette]
-          value: do
-            name: "The Reporter", key: "D",
-            colors: <[#7a322a #d52c2a #f93634 #dddb83 #ede6de #fdfffa #dbdbdb #48462d]>.map(->{hex:it})
-      */
       code: content: '''
 var module = {};
 module.exports = plotdb.theme.create({
-  config: {
-    palette: {
+  typedef: {
+    Color: {
+      "default": "#7a322a",
+      "positive": "#888376",
+      "negative": "#d52c2a"
+    },
+    Palette: {
       "default": {
         colors: ["#7a322a","#d52c2a","#f93634","#dddb83","#ede6de","#fdfffa","#dbdbdb","#48462d"].map(function(it) { return {hex: it};})
       },
@@ -192,7 +178,7 @@ text {
   background-size: cover;
 }
 '''
-    }
+    }*/
   ]
 
 if module? => module.exports = plotdb.theme.sample
