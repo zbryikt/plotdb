@@ -43,20 +43,8 @@ block body
     .text-center I'm your father!
     br
 
-    .charts(ng-controller="themeList")
-      .chart(ng-repeat="theme in themes",ng-attr-style="display:inline-block;flex:1 1 {{theme.width}}px",ng-click="load(theme)")
-        .chart-img: .ib(ng-attr-style="background-image:url({{theme.thumbnail}})")
-        .chart-desc
-          .title
-            .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
-            span {{theme.name}}
-          .desc {{theme.desc || 'check it yourself!'}}
-        .labels
-          .label(ng-cloak,ng-repeat="tag in theme.tags|tags") {{tag}}
-        .social
-          .author #[i.fa.fa-user] zbryikt
-          .favorite #[i.fa.fa-heart] 15
-          .used #[i.fa.fa-code-fork] 15
+    div(ng-controller="themeList")
+      include ../module/theme/widget/themes.jade
 
     br
     hr

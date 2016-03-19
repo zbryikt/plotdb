@@ -21,14 +21,16 @@ angular.module \plotDB
       load: (type, key, refresh = false) ->
         filter = ->
           it.type.location == type.location and it.type.name == type.name and it.key == key
-        item = @[]items.filter(filter).0
-        if item => return Promise.resolve(item)
+        # remove later; always fetch from server since we now have summary version of list
+        # item = @[]items.filter(filter).0
+        # if item => return Promise.resolve(item)
         (ret) <~ IOService.load type, key .then
         (res, rej) <~ new Promise _
         <~ $rootScope.$apply-async
-        item := @items.filter(filter).0
+        item = (@items or[]).filter(filter).0
         if item => item <<< ret
-        else @items.push item := ret
+        else if @items => @items.push item = ret
+        else @items = [item = ret]
         res item
 
       delete: (item) ->

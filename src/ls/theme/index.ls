@@ -88,8 +88,10 @@ angular.module \plotDB
         @save!
 
       load: (type, key) ->
+        console.log type, key
         theme-service.load type, key
           .then (ret) ~>
+            console.log ret
             @theme <<< ret
             @backup.check!
           .catch (ret) ~> window.location.href = window.location.pathname
@@ -181,10 +183,19 @@ angular.module \plotDB
         set: ->
           $scope.chart = it
           if !it => return
-          $scope.chart.theme = $scope.theme
-          $scope.reset-config!
-          $scope.render!
-          $scope.canvas.window.postMessage {type: \parse-theme, payload: $scope.theme.code.content}, $scope.plotdomain
+          chart-service.load it.type, it.key
+            .then (ret) ~>
+              $scope.chart = new chartService.chart(ret)
+              $scope.chart.theme = $scope.theme
+              $scope.reset-config!
+              $scope.render!
+              $scope.canvas.window.postMessage {
+                type: \parse-theme, payload: $scope.theme.code.content
+              }, $scope.plotdomain
+            .catch (ret) ~>
+              console.error ret
+              plNotify.send \error, "failed to load chart. please try reloading"
+
         init: ->
           (ret) <~ chart-service.list!then
           <~ $scope.$apply
