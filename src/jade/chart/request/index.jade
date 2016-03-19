@@ -18,9 +18,17 @@ block body
       .btn.btn-success Make a Request
     br
     br
+    .panel.panel-default: .panel-body
+      h3 Make a Request
+      label Upload a reference image and describe what you want it to be by text
+      textarea.form-control(rows="10")
+      div(style="margin-top:5px;")
+        .btn.btn-default: i.fa.fa-paperclip
+        .pull-right: .btn.btn-default Submit
+    br
+    br
     .text-center
-      h3 Requests
-      p want to do other a chart? let's find out!
+      p or check out requests from others...
     hr
     .text-right
       div(style="width:200px;display:inline-block")
@@ -28,8 +36,4 @@ block body
           input.form-control(type="text",placeholder="keyword")
           span.input-group-btn
             .btn.btn-default: i.fa.fa-search
-    div(style="display:flex;flex-wrap:wrap")
-      each i in [1,2,3,4,5,6,7,8,9]
-        div(style="width:240px;min-height:40px;background:#fff;border:1px solid #ccc;box-shadow:0 1px 2px rgba(0,0,0,0.2);border-radius:3px;padding:5px;margin:10px 10px;flex:1 1 auto")
-          div(style="font-weight:900;font-size:1.2em;") want to build a voronoi treemap like this one...
-
+    include ../widget/request.jade

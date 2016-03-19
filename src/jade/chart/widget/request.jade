@@ -1,0 +1,17 @@
+.charts
+  each i in [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9]
+    .chart(style="display:inline-block;flex:1 1 240px")
+      .chart-img(ng-click="load(chart)")
+        .ib(ng-attr-style="background-image:url('/s/chart/'+chart.key}}?{{chart.modifiedTime}})")
+      .chart-desc(ng-click="load(chart)")
+        .title
+          .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
+          span Can this be done in ..
+        .desc I need this to be built with blah and ...
+      .labels
+        .label choropleth
+      .social
+        a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] novice
+        .favorite(ng-click="like(chart)", ng-class="{'active':user.data && user.data.likes.chart[chart.key]}") #[i.fa.fa-heart] 0
+
+
