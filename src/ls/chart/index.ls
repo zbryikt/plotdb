@@ -246,7 +246,7 @@ angular.module \plotDB
             ), 2000 # response to final change after 2 sec.
           ), true
           # don't guard changes in 3 seconds.
-          $timeout (~> 
+          $timeout (~>
             @guard = true
             $scope.unsaved = false
           ), 3000
@@ -791,3 +791,7 @@ angular.module \plotDB
         if !hit => width = 640
         hit = false
       d.width = width #if Math.random() > 0.8 => 640 else 320
+
+    if window.location.search =>
+      map = d3.nest!key(->it.0).map(window.location.search.replace(\?,'').split(\&).map(->it.split \=))
+      for k,v of $scope.q => if map[k] => $scope.q[k] = map[k].0.1

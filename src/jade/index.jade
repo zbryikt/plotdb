@@ -11,11 +11,11 @@ block head
 block body
   //-#landing(style="background-image:url(/assets/img/test/landing.png);background-size:cover")
   #subnav-top: .ib
-    span Infographics
-    span Geographic
-    span Interactive
-    span Journalism
-    span Statistics
+    a(href="/chart/explore/?cat=1") Infographics
+    a(href="/chart/explore/?cat=2") Geographic
+    a(href="/chart/explore/?cat=4") Journalism
+    a(href="/chart/explore/?cat=5") Statistics
+    a(href="/chart/explore/?cat=6") Business
   #landing
     svg#landing-svg
     img(src="/assets/img/logo-alt.png",style="top:50%;position:relative;z-index:2")
@@ -44,14 +44,16 @@ block body
         h3 Full Control
         span #[b source code] and #[b stylesheet] in your hand. #[br] Customize as You Can!
     br
-
   #root
     br
+    h2.text-center Choose a Visualization and Start!
+    .text-center Instead of step-by-step, we do this in a #[b top-down] style - choose a finished visualization then modify it.
     br
-    h2.text-center Visualizations
-    .text-center Pick your favorite and visualize in seconds.
     br
     div(ng-controller="chartList")
+      div(style="height:52px")
+      #chart-filter.scroll-stick(data-top="85")
+        include chart/widget/search.jade
       include chart/widget/charts.jade
 
     br

@@ -1502,7 +1502,7 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
   ]).then(function(ret){
     var this$ = this;
     return $scope.$apply(function(){
-      var hit, i$, to$, i, d, width, results$ = [];
+      var hit, i$, to$, i, d, width, map, k, ref$, v, results$ = [];
       $scope.charts = (ret[0].concat(ret[1])).map(function(it){
         return new chartService.chart(it);
       });
@@ -1521,9 +1521,22 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
           }
           hit = false;
         }
-        results$.push(d.width = width);
+        d.width = width;
       }
-      return results$;
+      if (window.location.search) {
+        map = d3.nest().key(function(it){
+          return it[0];
+        }).map(window.location.search.replace('?', '').split('&').map(function(it){
+          return it.split('=');
+        }));
+        for (k in ref$ = $scope.q) {
+          v = ref$[k];
+          if (map[k]) {
+            results$.push($scope.q[k] = map[k][0][1]);
+          }
+        }
+        return results$;
+      }
     });
   });
 }));

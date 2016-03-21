@@ -125,6 +125,10 @@ angular.module \plotDB
     $(\#authpanel).on \shown.bs.modal, -> $scope.$apply -> $scope.auth.show = true
     $(\#authpanel).on \hidden.bs.modal, -> $scope.$apply -> $scope.auth.show = false
 
+    window.scrollstickers = $(\.scroll-stick)
+      ..map ->
+        @maxtop = parseInt @.getAttribute("data-top")
+        @init-top = @offsetTop
     window.addEventListener \scroll, (it) ->
       scroll-top = $(window).scroll-top!
       if scroll-top < 60 =>
@@ -133,6 +137,16 @@ angular.module \plotDB
       else =>
         $(\#nav-top)addClass \dim
         $(\#subnav-top)addClass \dim
+      for node in window.scrollstickers =>
+        console.log scroll-top + node.maxtop, node.offsetTop, node.init-top, node.sticked
+        if scroll-top + node.maxtop >= node.offsetTop and !node.sticked =>
+          node.sticked = true
+          node.style.top = "#{node.maxtop}px"
+          $(node).addClass(\sticked)
+        else if scroll-top + node.maxtop < node.init-top and node.sticked =>
+          node.sticked = false
+          node.style.top = \initial
+          $(node).removeClass(\sticked)
     #if ga? => $scope.$watch 'user.data', (-> ga \set, \dimension1, $scope.user.data.key), true
 
     /* temporarily code for mockup */
