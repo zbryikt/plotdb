@@ -58,7 +58,6 @@ angular.module \plotDB
         window: document.getElementById(\chart-renderer).contentWindow
     $scope <<< do # Functions
       _save: (nothumb = false)->
-        delete $scope.unsaved
         #TODO anonymouse handling
         if @theme.owner != $scope.user.data.key =>
           key = (if @chart.type.location == \server => @chart.key else null)
@@ -75,6 +74,7 @@ angular.module \plotDB
             if refresh or !window.location.search => window.location.href = link
             if $scope.save.handle => $timeout.cancel $scope.save.handle
             $scope.save.handle = null
+            $scope.backup.unguard 3000
           .catch (err) ~> $scope.$apply ->
             plNotify.aux.error.io \save, \theme, e
             console.error "[save theme]", err
@@ -99,8 +99,7 @@ angular.module \plotDB
           .then (ret) ~>
             @theme = new themeService.theme(@theme <<< ret)
             @backup.check!
-            # don't guard changes in 3 seconds.
-            $timeout (~> delete @unsaved), 3000
+            $scope.backup.unguard 3000
           .catch (ret) ~>
             console.error ret
             plNotify.send \error, "failed to load theme. please try reloading"
@@ -173,7 +172,7 @@ angular.module \plotDB
               @chart.config[k].value = preset[@chart.config[k].hint]
           for k,v of @theme.config =>
             if !@chart.config[k] => @chart.config[k] = {_bytheme: true} <<< v
-            else if @chart.config[k].type.0 != v.type.0 => continue
+            else if @chart.config[k].type.0.name != v.type.0.name => continue
             else @chart.config[k].value = v.default
         if @theme => @paledit.from-theme @theme
 
@@ -181,6 +180,12 @@ angular.module \plotDB
       backup: do
         enabled: false
         guard: false
+        unguard: (delay) ->
+          @guard = false
+          $timeout ( ~>
+            @guard = true
+            delete $scope.unsaved
+          ), delay
         init: ->
           $scope.$watch 'theme', (~>
             $scope.unsaved = true
@@ -192,10 +197,7 @@ angular.module \plotDB
             ), 2000 # response to final change after 2 sec.
           ), true
           # don't guard changes in 3 seconds.
-          $timeout (~>
-            @guard = true
-            $scope.unsaved = false
-          ), 3000
+          @unguard 3000
           window.onbeforeunload = ~>
             if !@guard or !$scope.unsaved => return null
             return "You have unsaved changes. Still wanna leave?"
@@ -374,7 +376,7 @@ angular.module \plotDB
           @save-hint = true
       coloredit: do
         config: (v, idx) -> do
-          class: \no-palette
+          class: "no-palette text-input"
           context: "context#idx"
           exclusive: true
           palette: [v.value]

@@ -111,7 +111,6 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
     _save: function(nothumb){
       var key, ref$, refresh, this$ = this;
       nothumb == null && (nothumb = false);
-      delete $scope.unsaved;
       if (this.theme.owner !== $scope.user.data.key) {
         key = this.chart.type.location === 'server' ? this.chart.key : null;
         ref$ = this.theme;
@@ -138,7 +137,8 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
           if ($scope.save.handle) {
             $timeout.cancel($scope.save.handle);
           }
-          return $scope.save.handle = null;
+          $scope.save.handle = null;
+          return $scope.backup.unguard(3000);
         });
       })['catch'](function(err){
         return $scope.$apply(function(){
@@ -183,10 +183,7 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
       return themeService.load(type, key).then(function(ret){
         this$.theme = new themeService.theme(import$(this$.theme, ret));
         this$.backup.check();
-        return $timeout(function(){
-          var ref$;
-          return ref$ = this$.unsaved, delete this$.unsaved, ref$;
-        }, 3000);
+        return $scope.backup.unguard(3000);
       })['catch'](function(ret){
         console.error(ret);
         plNotify.send('error', "failed to load theme. please try reloading");
@@ -356,7 +353,7 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
             this.chart.config[k] = import$({
               _bytheme: true
             }, v);
-          } else if (this.chart.config[k].type[0] !== v.type[0]) {
+          } else if (this.chart.config[k].type[0].name !== v.type[0].name) {
             continue;
           } else {
             this.chart.config[k].value = v['default'];
@@ -372,6 +369,15 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
     backup: {
       enabled: false,
       guard: false,
+      unguard: function(delay){
+        var this$ = this;
+        this.guard = false;
+        return $timeout(function(){
+          var ref$;
+          this$.guard = true;
+          return ref$ = $scope.unsaved, delete $scope.unsaved, ref$;
+        }, delay);
+      },
       init: function(){
         var this$ = this;
         $scope.$watch('theme', function(){
@@ -387,10 +393,7 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
             return $scope.theme.backup().then(function(){});
           }, 2000);
         }, true);
-        $timeout(function(){
-          this$.guard = true;
-          return $scope.unsaved = false;
-        }, 3000);
+        this.unguard(3000);
         return window.onbeforeunload = function(){
           if (!this$.guard || !$scope.unsaved) {
             return null;
@@ -687,7 +690,7 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
     coloredit: {
       config: function(v, idx){
         return {
-          'class': 'no-palette',
+          'class': "no-palette text-input",
           context: "context" + idx,
           exclusive: true,
           palette: [v.value]

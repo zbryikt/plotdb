@@ -57,7 +57,11 @@ import$(plotdb, {
     test: function(it){
       return !/(rgba?|hsla?)\([0-9.,]+\)|#[0-9a-f]{3,6}|[a-z0-9]+/.exec(it.trim());
     },
-    'default': '#dc4521'
+    'default': '#dc4521',
+    subtype: {
+      negative: "negative",
+      positive: "positive"
+    }
   },
   Palette: {
     name: 'Palette',
