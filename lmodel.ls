@@ -35,6 +35,8 @@ base.theme = new model do
     doc: {type: base.file}
     style: {type: base.file}
     code: {type: base.file}
+    likes: {required: false, type: model.type.number}
+    parent: { required: false, type: model.type.key({type: base.theme})}
     createdTime: {required: false, type: model.type.date}
     modifiedTime: {required: false, type: model.type.date}
 

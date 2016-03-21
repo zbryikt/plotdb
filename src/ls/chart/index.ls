@@ -93,6 +93,7 @@ angular.module \plotDB
         window: document.getElementById(\chart-renderer).contentWindow
     $scope <<< do # Functions
       _save: (nothumb = false)->
+        delete $scope.unsaved
         #TODO anonymouse handling
         if @chart.owner != $scope.user.data.key =>
           key = (if @chart.type.location == \server => @chart.key else null)
@@ -100,8 +101,6 @@ angular.module \plotDB
           # clone will set parent beforehand. so we only set it if necessary.
           if key => @chart <<< {parent: key}
         refresh = if !@chart.key => true else false
-        if !Array.isArray(@chart.tags) => @chart.tags = (@chart.tags or "").split \,
-        #if Array.isArray(@chart.tags) => @chart.tags = @chart.tags.join(",")
         @chart.save!
           .then (ret) ~>
             <~ $scope.$apply
@@ -135,7 +134,9 @@ angular.module \plotDB
           .then (ret) ~>
             @chart = new chartService.chart(@chart <<< ret)
             @backup.check!
-          .catch (ret) ~> 
+            # don't guard changes in 3 seconds.
+            $timeout (~> delete @unsaved), 3000
+          .catch (ret) ~>
             console.error ret
             plNotify.send \error, "failed to load chart. please try reloading"
             if ret.1 == \forbidden => window.location.href = window.location.pathname
@@ -233,8 +234,10 @@ angular.module \plotDB
     $scope <<< do # Behaviors
       backup: do
         enabled: false
+        guard: false
         init: ->
           $scope.$watch 'chart', (~>
+            $scope.unsaved = true
             if !@enabled => return
             if @handle => $timeout.cancel @handle
             @handle = $timeout (~>
@@ -242,6 +245,14 @@ angular.module \plotDB
               <~ $scope.chart.backup!then
             ), 2000 # response to final change after 2 sec.
           ), true
+          # don't guard changes in 3 seconds.
+          $timeout (~> 
+            @guard = true
+            $scope.unsaved = false
+          ), 3000
+          window.onbeforeunload = ~>
+            if !@guard or !$scope.unsaved => return null
+            return "You have unsaved changes. Still wanna leave?"
         recover: ->
           if !@last or !@last.object => return
           $scope.chart.recover @last.object

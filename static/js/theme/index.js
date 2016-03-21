@@ -44,6 +44,8 @@ x$.service('themeService', ['$rootScope', '$http', 'IOService', 'sampleTheme', '
     assets: [],
     thumbnail: null,
     isType: false,
+    likes: 0,
+    parent: null,
     addFile: function(name, type, content){
       var file;
       content == null && (content = null);
@@ -107,13 +109,18 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
   });
   import$($scope, {
     _save: function(nothumb){
-      var ref$, refresh, this$ = this;
+      var key, ref$, refresh, this$ = this;
       nothumb == null && (nothumb = false);
+      delete $scope.unsaved;
       if (this.theme.owner !== $scope.user.data.key) {
+        key = this.chart.type.location === 'server' ? this.chart.key : null;
         ref$ = this.theme;
         ref$.key = null;
         ref$.owner = null;
         ref$.permission = themeService.theme.prototype.permission;
+        if (key) {
+          this.theme.parent = key;
+        }
       }
       refresh = !this.theme.key ? true : false;
       return this.theme.save().then(function(ret){
@@ -161,20 +168,28 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
       }, this.plotdomain);
     },
     clone: function(){
-      var ref$;
+      var key, ref$;
       this.theme.name = this.theme.name + " - Copy";
+      key = this.chart.type.location === 'server' ? this.chart.key : null;
       ref$ = this.theme;
       ref$.key = null;
       ref$.owner = null;
+      ref$.parent = key;
       ref$.permission = chartService.chart.prototype.permission;
       return this.save();
     },
     load: function(type, key){
       var this$ = this;
       return themeService.load(type, key).then(function(ret){
-        import$(this$.theme, ret);
-        return this$.backup.check();
+        this$.theme = new themeService.theme(import$(this$.theme, ret));
+        this$.backup.check();
+        return $timeout(function(){
+          var ref$;
+          return ref$ = this$.unsaved, delete this$.unsaved, ref$;
+        }, 3000);
       })['catch'](function(ret){
+        console.error(ret);
+        plNotify.send('error', "failed to load theme. please try reloading");
         return window.location.href = window.location.pathname;
       });
     },
@@ -356,9 +371,11 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
   import$($scope, {
     backup: {
       enabled: false,
+      guard: false,
       init: function(){
         var this$ = this;
-        return $scope.$watch('theme', function(){
+        $scope.$watch('theme', function(){
+          $scope.unsaved = true;
           if (!this$.enabled) {
             return;
           }
@@ -370,6 +387,16 @@ x$.controller('themeEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
             return $scope.theme.backup().then(function(){});
           }, 2000);
         }, true);
+        $timeout(function(){
+          this$.guard = true;
+          return $scope.unsaved = false;
+        }, 3000);
+        return window.onbeforeunload = function(){
+          if (!this$.guard || !$scope.unsaved) {
+            return null;
+          }
+          return "You have unsaved changes. Still wanna leave?";
+        };
       },
       recover: function(){
         var this$ = this;

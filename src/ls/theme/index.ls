@@ -23,6 +23,8 @@ angular.module \plotDB
       assets: []
       thumbnail: null
       isType: false
+      likes: 0
+      parent: null
       add-file: (name, type, content = null) ->
         file = {name, type, content}
         @assets.push file
@@ -56,9 +58,13 @@ angular.module \plotDB
         window: document.getElementById(\chart-renderer).contentWindow
     $scope <<< do # Functions
       _save: (nothumb = false)->
+        delete $scope.unsaved
         #TODO anonymouse handling
         if @theme.owner != $scope.user.data.key =>
+          key = (if @chart.type.location == \server => @chart.key else null)
           @theme <<< {key: null, owner: null, permission: theme-service.theme.prototype.permission}
+          # clone will set parent beforehand. so we only set it if necessary.
+          if key => @theme <<< {parent: key}
         refresh = if !@theme.key => true else false
         @theme.save!
           .then (ret) ~>
@@ -84,15 +90,21 @@ angular.module \plotDB
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
       clone: -> # clone forcely. same as save() when user is not the chart's owner
         @theme.name = "#{@theme.name} - Copy"
-        @theme <<< {key: null, owner: null, permission: chartService.chart.prototype.permission}
+        key = (if @chart.type.location == \server => @chart.key else null)
+        @theme <<< {key: null, owner: null, parent: key, permission: chartService.chart.prototype.permission}
         @save!
 
       load: (type, key) ->
         theme-service.load type, key
           .then (ret) ~>
-            @theme <<< ret
+            @theme = new themeService.theme(@theme <<< ret)
             @backup.check!
-          .catch (ret) ~> window.location.href = window.location.pathname
+            # don't guard changes in 3 seconds.
+            $timeout (~> delete @unsaved), 3000
+          .catch (ret) ~>
+            console.error ret
+            plNotify.send \error, "failed to load theme. please try reloading"
+            window.location.href = window.location.pathname
       delete: ->
         if !@theme.key => return
         @delete.handle = true
@@ -168,8 +180,10 @@ angular.module \plotDB
     $scope <<< do # Behaviors
       backup: do
         enabled: false
+        guard: false
         init: ->
           $scope.$watch 'theme', (~>
+            $scope.unsaved = true
             if !@enabled => return
             if @handle => $timeout.cancel @handle
             @handle = $timeout (~>
@@ -177,6 +191,14 @@ angular.module \plotDB
               <~ $scope.theme.backup!then
             ), 2000 # response to final change after 2 sec.
           ), true
+          # don't guard changes in 3 seconds.
+          $timeout (~>
+            @guard = true
+            $scope.unsaved = false
+          ), 3000
+          window.onbeforeunload = ~>
+            if !@guard or !$scope.unsaved => return null
+            return "You have unsaved changes. Still wanna leave?"
         recover: ->
           if !@last or !@last.object => return
           $scope.theme.recover @last.object

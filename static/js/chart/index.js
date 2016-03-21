@@ -214,6 +214,7 @@ x$.controller('chartEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
     _save: function(nothumb){
       var key, ref$, refresh, this$ = this;
       nothumb == null && (nothumb = false);
+      delete $scope.unsaved;
       if (this.chart.owner !== $scope.user.data.key) {
         key = this.chart.type.location === 'server' ? this.chart.key : null;
         ref$ = this.chart;
@@ -225,9 +226,6 @@ x$.controller('chartEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
         }
       }
       refresh = !this.chart.key ? true : false;
-      if (!Array.isArray(this.chart.tags)) {
-        this.chart.tags = (this.chart.tags || "").split(',');
-      }
       return this.chart.save().then(function(ret){
         return $scope.$apply(function(){
           var link;
@@ -287,7 +285,11 @@ x$.controller('chartEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
       var this$ = this;
       return chartService.load(type, key).then(function(ret){
         this$.chart = new chartService.chart(import$(this$.chart, ret));
-        return this$.backup.check();
+        this$.backup.check();
+        return $timeout(function(){
+          var ref$;
+          return ref$ = this$.unsaved, delete this$.unsaved, ref$;
+        }, 3000);
       })['catch'](function(ret){
         console.error(ret);
         plNotify.send('error', "failed to load chart. please try reloading");
@@ -500,9 +502,11 @@ x$.controller('chartEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
   import$($scope, {
     backup: {
       enabled: false,
+      guard: false,
       init: function(){
         var this$ = this;
-        return $scope.$watch('chart', function(){
+        $scope.$watch('chart', function(){
+          $scope.unsaved = true;
           if (!this$.enabled) {
             return;
           }
@@ -514,6 +518,16 @@ x$.controller('chartEditor', ['$scope', '$http', '$timeout', '$interval', 'dataS
             return $scope.chart.backup().then(function(){});
           }, 2000);
         }, true);
+        $timeout(function(){
+          this$.guard = true;
+          return $scope.unsaved = false;
+        }, 3000);
+        return window.onbeforeunload = function(){
+          if (!this$.guard || !$scope.unsaved) {
+            return null;
+          }
+          return "You have unsaved changes. Still wanna leave?";
+        };
       },
       recover: function(){
         var this$ = this;
