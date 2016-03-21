@@ -491,8 +491,9 @@ block body
                   small {{field.type}}
 
         .col-sm-9
-          #datamap-hint(ng-cloak,ng-class="{'step1': !chosen.key, 'step2': chosen.key}")
-            p(ng-show="!chosen.key") #[i.fa.fa-arrow-left] select a file to map data
+          #datamap-hint.step2(ng-cloak)
+            //-,ng-class="{'step1': !chosen.key, 'step2': chosen.key}")
+            //-p(ng-show="!chosen.key") #[i.fa.fa-arrow-left] select a file to map data
             p(ng-show="chosen.key")
               i.fa.fa-arrow-right
               br
