@@ -4,3 +4,4 @@ node_modules/
 secret.ls
 static/s/
 !.gitignore
+npm-debug.log
