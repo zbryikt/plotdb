@@ -1,6 +1,6 @@
 require! <[fs path bluebird crypto LiveScript]>
 require! <[express body-parser express-session connect-multiparty]>
-require! <[passport passport-local passport-facebook]>
+require! <[passport passport-local passport-facebook passport-google-oauth2]>
 require! <[nodemailer nodemailer-smtp-transport]>
 require! <[./aux ./watch]>
 
@@ -42,6 +42,17 @@ backend = do
       usernameField: \email
       passwordField: \passwd
     },(u,p,done) ~> get-user u, p, true, null, done
+
+    passport.use new passport-google-oauth2.Strategy(
+      do
+        clientID: config.google.clientID
+        clientSecret: config.google.clientSecret
+        callbackURL: "/u/auth/google/callback"
+        passReqToCallback: true
+        profileFields: ['id', 'displayName', 'link', 'emails']
+      , (request, access-token, refresh-token, profile, done) ~>
+        @getUser profile.emails.0.value, null, false, profile, done
+    )
 
     passport.use new passport-facebook.Strategy(
       do
@@ -95,6 +106,10 @@ backend = do
       ..get \/logout, (req, res) ->
         req.logout!
         res.redirect \/
+      ..get \/auth/google, passport.authenticate \google, {scope: ['email']}
+      ..get \/auth/google/callback, passport.authenticate \google, do
+        successRedirect: \/
+        failureRedirect: \/u/403
       ..get \/auth/facebook, passport.authenticate \facebook, {scope: ['email']}
       ..get \/auth/facebook/callback, passport.authenticate \facebook, do
         successRedirect: \/
