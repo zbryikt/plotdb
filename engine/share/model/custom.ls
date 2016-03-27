@@ -1,6 +1,5 @@
-require! <[bluebird ./backend/model]>
+require! <[./engine/share/model/]>
 
-store = null
 base = {}
 
 base.dataset = new model do
@@ -68,6 +67,4 @@ chart-config = do
 
 base.chart = new model chart-config
 
-module.exports = (storeOuter) ->
-  store := storeOuter
-  base
+module.exports = base
