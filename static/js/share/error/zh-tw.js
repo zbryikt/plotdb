@@ -1,0 +1,1 @@
+module.exports={404:"找不到檔案"};

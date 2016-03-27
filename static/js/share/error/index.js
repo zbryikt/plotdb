@@ -1,0 +1,1 @@
+module.exports={404:"file not found",414:function(o){return"your file size ( "+o+" ) is too long. "}};
