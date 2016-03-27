@@ -1,6 +1,8 @@
 module.exports = do
-  url: \http://your-domain/
-  name: \your-project-name
+  url: \http://plotdb.io/
+  name: \plotdb
   debug: true
   facebook:
-    clientID: \1485497741698395
+    clientID: \1546734828988373
+  google:
+    clientID: \608695485854-bh8mqncpi8ofl1pprl940gti2cdbhgf8.apps.googleusercontent.com
