@@ -8,7 +8,7 @@ require! <[./aux ./watch]>
 backend = do
   update-user: (req) -> req.logIn req.user, ->
   #session-store: (backend) -> @ <<< backend.dd.session-store!
-  init: (config, authio) -> new Promise (res, rej) ~>
+  init: (config, authio) -> new bluebird (res, rej) ~>
     @config = config
     session-store = -> @ <<< authio.session
     session-store.prototype = express-session.Store.prototype

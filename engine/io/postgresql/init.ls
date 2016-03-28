@@ -1,31 +1,42 @@
 require! <[../../../secret ../postgresql pg]>
 
-sessions-table = """create table if not exists sessions (
+init-sessions-table = """create table if not exists sessions (
   key text not null unique primary key,
   detail jsonb
 )"""
-users-table = """create table if not exists users (
+
+init-users-table = """create table if not exists users (
   key serial primary key,
-  username text,
-  password text,
+  username text constraint nlen check (char_length(name) <= 100),
+  password text constraint pwlen check (char_length(password) <= 100),
   usepasswd boolean,
-  displayname text,
-  createdTime timestamp,
+  displayname text, constraint displaynamelength check (chart_length(displayname) <= 100),
+  "createdTime" timestamp,
+  "lastActive" timestamp,
   detail jsonb
 )"""
 
-themes-table = """create table if not exists themes (
+
+#refer to chart is deferred and update using alter table"
+init-themes-table = """create table if not exists themes (
   key serial primary key,
-  name text,
-  description text,
+  owner int references users(key),
+  parent int references themes(key),
+  name text constraint nlen check (char_length(name) <= 100),
+  description text constraint dlen check (char_length(description) <= 500),
   tags text[],
-  likes int,
-  createdTime timestamp,
-  modifiedTime timestamp,
-  payload json
+  likes int constraint likecount check ( likes >=0 ),
+  searchable boolean,
+  "createdTime" timestamp,
+  "modifiedTime" timestamp,
+  doc jsonb,
+  style jsonb,
+  code jsonb,
+  assets jsonb,
+  permission jsonb
 )"""
 
-charts-table = """create table if not exists charts (
+init-charts-table = """create table if not exists charts (
   key serial primary key,
   owner int references users(key),
   theme int references themes(key),
@@ -37,10 +48,12 @@ charts-table = """create table if not exists charts (
   tags text[],
   likes int,
   dimlen int,
-  createdTime timestamp,
-  modifiedTime timestamp,
+  "createdTime" timestamp,
+  "modifiedTime" timestamp,
   payload json
 )"""
+
+alter-themes-table = """alter table theme add column chart int references charts(key)"""
 
 client = new pg.Client secret.io-pg.uri
 (e) <- client.connect
@@ -52,7 +65,9 @@ query = (q) -> new Promise (res, rej) ->
   if e => rej e
   res r
 
-query users-table 
-  .then -> query sessions-table
+query init-users-table 
+  .then -> query init-sessions-table
+  .then -> query init-themes-table
   .then -> client.end!
+  .catch -> [console.log(it), client.end!]
   

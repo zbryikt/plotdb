@@ -21,8 +21,8 @@ ret = (config) ->
         user = {username, password, usepasswd, displayname, detail, createdTime: new Date!}
         @query [
           "insert into users"
-          "(username,password,usepasswd,displayname,detail) values"
-          "('#username','#password',#usepasswd,'#displayname',$1)"
+          "(username,password,usepasswd,displayname,createdtime,detail) values"
+          "('#username','#password',#usepasswd,'#displayname','#{new Date!}',$1)"
         ].join(" "), [detail] .then ~> return user
     session: do
       get: (sid, cb) ~>

@@ -10,21 +10,26 @@ angular.module \plotDB
       thumblink: (theme) -> "/theme/thumb/?k=#{theme.type.location.charAt(0)}#{theme.key}"
       #TODO better mechanism for switching domain ( dev, staging and production )
       sharelink: (theme) -> "https://plotdb.com#{@link(theme)}"
-    object = ->
+    object = (src) ->
+      @ <<< do
+        name: \untitled
+        description: null, tags: null
+        theme: null
+        doc: {name: 'document', type: 'html', content: service.sample.0.{}doc.content or ""}
+        style: {name: 'stylesheet', type: 'css', content: service.sample.0.{}style.content or ""}
+        code: {name: 'code', type: 'javascript', content: service.sample.0.{}code.content or ""}
+        config: {}
+        dimension: {}
+        assets: []
+        #thumbnail: null
+        #isType: false
+        likes: 0
+        parent: null
+      @ <<< src
+      if !Array.isArray(@assets) => @assets = []
+      @
+
     object.prototype = do
-      name: \untitled
-      desc: null, tags: null
-      theme: null
-      doc: {name: 'document', type: 'html', content: service.sample.0.{}doc.content or ""}
-      style: {name: 'stylesheet', type: 'css', content: service.sample.0.{}style.content or ""}
-      code: {name: 'code', type: 'javascript', content: service.sample.0.{}code.content or ""}
-      config: {}
-      dimension: {}
-      assets: []
-      thumbnail: null
-      isType: false
-      likes: 0
-      parent: null
       add-file: (name, type, content = null) ->
         file = {name, type, content}
         @assets.push file
@@ -58,9 +63,10 @@ angular.module \plotDB
         window: document.getElementById(\chart-renderer).contentWindow
     $scope <<< do # Functions
       _save: (nothumb = false)->
+        console.log @theme
         #TODO anonymouse handling
         if @theme.owner != $scope.user.data.key =>
-          key = (if @chart.type.location == \server => @chart.key else null)
+          key = (if @theme.type.location == \server => @theme.key else null)
           @theme <<< {key: null, owner: null, permission: theme-service.theme.prototype.permission}
           # clone will set parent beforehand. so we only set it if necessary.
           if key => @theme <<< {parent: key}
@@ -76,7 +82,7 @@ angular.module \plotDB
             $scope.save.handle = null
             $scope.backup.unguard 3000
           .catch (err) ~> $scope.$apply ->
-            plNotify.aux.error.io \save, \theme, e
+            plNotify.aux.error.io \save, \theme, err.0
             console.error "[save theme]", err
             if $scope.save.handle => $timeout.cancel $scope.save.handle
             $scope.save.handle = null
@@ -100,6 +106,7 @@ angular.module \plotDB
             @theme = new themeService.theme(@theme <<< ret)
             @backup.check!
             $scope.backup.unguard 3000
+            $scope.countline!
           .catch (ret) ~>
             console.error ret
             plNotify.send \error, "failed to load theme. please try reloading"

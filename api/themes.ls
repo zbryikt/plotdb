@@ -1,0 +1,113 @@
+require! <[../engine/aux ../engine/share/model/]>
+(engine,io) <- (->module.exports = it)  _
+
+themetype = model.type.theme
+
+engine.router.api.get "/theme/", (req, res) ->
+  if !req.user => return res.send "[]"
+  io.query [
+    'select users.displayname as "ownerName",themes.*'
+    "from themes,users where users.key = themes.owner and themes.owner = #{req.user.key}"
+  ].join(" ")
+    .then -> res.send it.rows
+    .catch -> 
+      console.log e
+      res.send "[]"
+
+engine.router.api.get "/theme/:id", (req, res) ->
+  io.query [
+    'select users.displayname as "ownerName", themes.*'
+    'from users,themes where users.key = owner and'
+    "themes.key=#{req.params.id} limit 1"
+  ].join(" ")
+    .then (it={}) ->
+      theme = it.[]rows.0
+      if !theme => return aux.r404 res
+      if (theme.{}permission.[]switch.indexOf(\public) < 0)
+      and (!req.user or theme.owner != req.user.key) => return aux.r403 res, "forbidden"
+      return res.json theme
+    .catch -> return aux.r403 res
+
+engine.router.api.post "/theme/", (req, res) ->
+  if !req.user => return aux.r403 res
+  data = req.body <<< {owner: req.user.key}
+  ret = themetype.lint data
+  if ret.0 => return aux.r400 res, ret
+  data = themetype.clean data
+  io.query([
+    'insert into themes',
+    ('(name,owner,chart,description,tags,likes,searchable,' +
+    '"createdTime","modifiedTime",doc,style,code,assets,permission)'),
+    'values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)',
+    'returning key'
+  ].join(" "),[
+    data.name or "untitled", req.user.key,
+    data.chart or null,
+    data.description or "check it out by yourself!", data.tags,
+    0, data.searchable, new Date!toUTCString!, new Date!toUTCString!,
+    data.doc, data.style, data.code, data.assets, data.permission
+  ])
+    .then (r={}) -> 
+      key = r.[]rows.0.key
+      data.key = key
+      res.send data
+    .catch -> 
+      console.error it.stack
+      aux.r403 res
+
+
+
+engine.router.api.put "/theme/:id", (req, res) ~>
+  if !req.user => aux.r403 res
+  data = req.body
+  if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
+
+  io.query "select * from themes where key = #{req.params.id} limit 1"
+    .then (r = {}) ->
+      theme = r.rows.0
+      if !theme => return aux.r404 res
+      if theme.owner != req.user.key => return aux.r403 res
+      data <<< do
+        owner: req.user.key
+        key: req.params.id
+        modifiedTime: new Date!toUTCString!
+      ret = themetype.lint(data)
+      if ret.0 => return aux.r400 res, ret
+      data := themetype.clean data
+
+      io.query([
+        'update themes set'
+        ('(name,owner,chart,description,tags,likes,searchable,' +
+        '"createdTime","modifiedTime",doc,style,code,assets,permission)'),
+        '= ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)',
+        "where key = #{req.params.id}"
+      ].join(" "),[
+        data.name or "untitled", req.user.key,
+        data.chart or null,
+        data.description or "check it out by yourself!", data.tags,
+        0, data.searchable, new Date!toUTCString!, new Date!toUTCString!,
+        data.doc, data.style, data.code, data.assets, data.permission
+      ])
+        .then (r={}) -> res.send data
+        .catch -> 
+          console.error it.stack
+          aux.r403 res
+
+    .catch ->
+      console.error it.stack
+      return aux.r403 res
+
+
+/*
+  @read req.params.id
+    ..then (ret) ~>
+      if !ret => return aux.r404 res
+      data = req.body
+      if ret.owner != req.user.key => return aux.r403 res
+      data <<< owner: req.user.key, key: req.params.id
+      ret = @lint(data)
+      if ret.0 => return aux.r400 res, ret
+      data = @clean data
+      data.save!then (ret) -> res.send ret
+    ..catch -> return aux.r403 res
+    */
