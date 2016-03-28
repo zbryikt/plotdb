@@ -1,5 +1,5 @@
 require! <[fs path]>
-require! <[./global]>
+require! <[./global ./users]>
 module.exports = (engine) ->
   global engine
-
+  users engine

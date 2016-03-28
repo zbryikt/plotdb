@@ -1,4 +1,4 @@
-require! <[pg bluebird]>
+require! <[pg bluebird crypto]>
 
 ret = (config) ->
   @config = config
@@ -7,21 +7,23 @@ ret = (config) ->
       get: (username, password, usepasswd, detail) ~>
         pw = if usepasswd => crypto.createHash(\md5).update(password).digest(\hex) else ""
         @query "select * from users where username = '#username'"
-          .then (users) ~>
+          .then (users = {}) ~>
+            user = (users.[]rows.0)
+            if !user => return @authio.user.create username, pw, usepasswd, detail
             if user and (usepasswd or user.usepasswd) and user.password != pw => return Promise.reject!
-            if !user => return @create username, password, usepasswd, detail
+            return user
           .then (user) ~>
             delete user.password
             return user
-      create: (username, password, usepasswd, detail) ~>
+      create: (username, password, usepasswd, detail = {}) ~>
         displayname = if detail => detail.displayname or detail.username
         if !displayname => displayname = username.replace(/@.+$/, "")
         user = {username, password, usepasswd, displayname, detail, createdTime: new Date!}
         @query [
           "insert into users"
           "(username,password,usepasswd,displayname,detail) values"
-          "('#username','#password',#usdpasswd,displayname,$1)"
-        ].join(" "), detail .then ~> return user
+          "('#username','#password',#usepasswd,'#displayname',$1)"
+        ].join(" "), [detail] .then ~> return user
     session: do
       get: (sid, cb) ~>
         @query "select * from sessions where key=$1", [sid]

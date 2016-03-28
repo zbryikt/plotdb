@@ -33,9 +33,9 @@ backend = do
 
     get-user = (u, p, usep, detail, done) ->
       authio.user.get u, p, usep, detail
-        .then -> done null, false, it
+        .then -> done null, it
         .catch -> 
-          msg = if user.usepassword => "incorrect email or password" else "did you login with facebook?"
+          msg = if usep => "incorrect email or password" else "did you login with social account?"
           done null, false, {message: msg}
 
     passport.use new passport-local.Strategy {
