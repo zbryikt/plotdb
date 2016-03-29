@@ -132,7 +132,7 @@ backend = do
     if !@config.debug => 
       (err, req, res, next) <- @app.use
       -> if err => res.status 500 .render '500' else next!
-    if @config.watch => watch.start!
+    if @config.watch => watch.start @config
     server = @app.listen @config.port, -> console.log "listening on port #{server.address!port}"
 
 module.exports = backend

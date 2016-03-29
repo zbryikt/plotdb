@@ -13,7 +13,7 @@ newer = (f1, f2) ->
   (fs.stat-sync(f1).mtime - fs.stat-sync(f2).mtime) > 0
 
 mkdir-recurse = ->
-  if !fs.exists-sync(it) => 
+  if !fs.exists-sync(it) =>
     mkdir-recurse path.dirname it
     fs.mkdir-sync it
 
@@ -45,7 +45,7 @@ src-tree = (matcher, morpher) ->
 
 jade-tree = src-tree(
   (-> if /^ *include (.+)| *extends (.+)/.exec(it) => (that.1 or that.2) else null),
-  ((it, dir) -> 
+  ((it, dir) ->
     if /^\//.exec it => it = path.join(('../' * dir.split(/src\/jade\//)[* - 1].split(\/).length),it)
     it.replace(/(.jade)?$/, ".jade")
   )
@@ -67,13 +67,14 @@ filecache = {}
 base = do
   ignore-list: [/^(.+\/)*?\.[^/]+$/]
   ignore-func: (f) -> @ignore-list.filter(-> it.exec f.replace(cwd-re, "")replace(/^\.\/+/, ""))length
-  start: ->
+  start: (config) ->
+    @config = config
     <[src src/ls src/styl static static/css static/js]>.map ->
       if !fs.exists-sync it => fs.mkdir-sync it
     watcher = chokidar.watch 'src', ignored: (~> @ignore-func it), persistent: true
       .on \add, ~> @watch-handler it
       .on \change, ~> @watch-handler it
-  watch-handler: (d) -> 
+  watch-handler: (d) ->
     setTimeout (~> @_watch-handler d), 500
   _watch-handler: ->
     if !it or /node_modules|\.swp$/.exec(it)=> return
@@ -114,7 +115,12 @@ base = do
         mkdir-recurse path.dirname(des)
         fs.write-file-sync(
           des,
-          uglify-js.minify(lsc.compile(fs.read-file-sync(src)toString!,{bare:true}),{fromString:true}).code
+          (
+            if @config.debug =>
+              lsc.compile(fs.read-file-sync(src)toString!,{bare:true})
+            else =>
+              uglify-js.minify(lsc.compile(fs.read-file-sync(src)toString!,{bare:true}),{fromString:true}).code
+          )
         )
         console.log "[BUILD] #src --> #des"
       catch
@@ -141,14 +147,14 @@ base = do
             .define 'index', (a, b) ->
               a = (a.string or a.val).split(' ')
               return new stylus.nodes.Unit(a.indexOf b.val)
-            .render (e, css) ->
+            .render (e, css) ~>
               if e =>
                 console.log "[BUILD]   #src failed: "
                 console.log "  >>>", e.name
                 console.log "  >>>", e.message
               else =>
                 mkdir-recurse path.dirname(des)
-                css = uglify-css.processString css, uglyComments: true
+                if !@config.debug => css = uglify-css.processString css, uglyComments: true
                 fs.write-file-sync des, css
                 console.log "[BUILD]   #src --> #des"
         catch
