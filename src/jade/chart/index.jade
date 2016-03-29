@@ -26,10 +26,10 @@ block body
         input.form-control(placeholder="Chart Name", ng-model="chart.name")
         br
         label Descriptiont
-        textarea.form-control(placeholder="Chart Description", ng-model="chart.desc",rows="3")
+        textarea.form-control(placeholder="Chart Description", ng-model="chart.description",rows="3")
         br
         label Base Chart Type
-        div: select#chart-setting-type.form-control(multiple="multiple")
+        div: select#chart-setting-type.form-control(multiple="multiple",ngselect2,ng-model="chart.basetype")
           option(value="1") Bar Chart
           option(value="2") Line Chart
           option(value="3") Pie Chart
@@ -51,7 +51,7 @@ block body
           option(value="99") Other
         br
         label Visual Encoding
-        div: select#chart-setting-encoding.form-control(multiple="multiple")
+        div: select#chart-setting-encoding.form-control(multiple="multiple",ngselect2,ng-model="chart.visualencoding")
           option(value="1") Position
           option(value="2") Position ( Non-aligned )
           option(value="3") Length
@@ -65,7 +65,7 @@ block body
           option(value="99") Other
         br
         label Chart Category
-        div: select#chart-setting-category.form-control(multiple="multiple")
+        div: select#chart-setting-category.form-control(multiple="multiple",ngselect2,ng-model="chart.category")
           option(value="1") Infographics
           option(value="2") Geographics
           option(value="4") Journalism
@@ -76,6 +76,7 @@ block body
         br
         label Tags
         div: select#chart-setting-tags.form-control(multiple="multiple",
+        ngselect2,ng-model="chart.tags",istag="true",
         placeholder="comma separated values, like 'population,economics'")
         br
         label Backups
@@ -243,7 +244,7 @@ block body
                 input.form-control(type="text",ng-model="chart.name",placeholder="Project Name")
             .chart-config
               textarea#chart-desc-input.form-control(placeholder="Theme description",
-              ng-model="chart.desc",ng-class="{'hidden':editor.fullscreen.toggled}")
+              ng-model="chart.description",ng-class="{'hidden':editor.fullscreen.toggled}")
 
             #chart-action.btn-group(style="width:100%")
               .btn.btn-default.loader(ng-disabled="!chart.name",ng-click="save()",

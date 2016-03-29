@@ -1,6 +1,6 @@
 require! <[fs path pg bluebird]>
 require! <[../engine/share/model/ ../engine/io/postgresql ../secret]>
-require! <[../engine/io/postgres/aux]>
+require! <[../engine/io/postgresql/aux]>
 
 charttype = model.type.chart
 

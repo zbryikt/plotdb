@@ -22,7 +22,7 @@ block body
         input.form-control(placeholder="Chart Name", ng-model="theme.name")
         br
         label Descriptiont
-        textarea.form-control(placeholder="Chart Description", ng-model="theme.desc",rows="3")
+        textarea.form-control(placeholder="Chart Description", ng-model="theme.description",rows="3")
         br
         label Tags
         input.form-control(placeholder="comma separated values, like 'population,economics'", ng-model="theme.tags")
@@ -192,7 +192,7 @@ block body
                 input.form-control(type="text",ng-model="theme.name",placeholder="Project Name")
             .chart-config
               textarea#theme-desc-input.form-control(placeholder="Chart description",
-              ng-model="theme.desc",ng-class="{'hidden':editor.fullscreen.toggled}")
+              ng-model="theme.description",ng-class="{'hidden':editor.fullscreen.toggled}")
 
             #chart-action.btn-group(style="width:100%")
               .btn.btn-default.loader(ng-disabled="!theme.name",ng-click="save()",

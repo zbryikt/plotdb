@@ -17,7 +17,7 @@ block body
           .title
             .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
             span {{theme.name}}
-          .desc {{theme.desc || 'check it yourself!'}}
+          .desc {{theme.description || 'check it yourself!'}}
         .labels
           .label(ng-cloak,ng-repeat="tag in theme.tags|tags") {{tag}}
         .social

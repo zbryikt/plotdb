@@ -26,12 +26,7 @@ aux = do
         | \key     => data[k]
         | \array   =>
           subtype = v.type.config.type.type.name
-          if subtype == \string =>
-            (-> 
-              it = (if typeof(it) == \string => it.split \, else (it or [])).filter(->it)
-              "{" + it.filter(->it?).map(->"'#it'").join(",") + "}"
-            ) data[k]
-          else if subtype == \number =>
+          if subtype == \string or subtype == \number =>
             (-> 
               it = (if typeof(it) == \string => it.split \, else (it or [])).filter(->it)
               "{" + it.filter(->it?).join(",") + "}"
