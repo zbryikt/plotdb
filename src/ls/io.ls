@@ -13,12 +13,12 @@ angular.module \plotDB
           item.key = key
           @usedkey[key] = true
         if item.key and !(item.key in list) => list.push item.key
-        item[if !item.createdTime => "createdTime" else "modifiedTime"] = new Date!getTime!
+        item[if !item.createdtime => "createdtime" else "modifiedtime"] = new Date!getTime!
         localStorage.setItem("/db/list/#{item.type.name}", angular.toJson(list))
         localStorage.setItem("/db/#{item.type.name}/#{item.key}", angular.toJson(item))
         res item
       save-remotely: (item, res, rej) ->
-        item[if !item.createdTime => "createdTime" else "modifiedTime"] = new Date!getTime!
+        item[if !item.createdtime => "createdtime" else "modifiedtime"] = new Date!getTime!
         config = {data: item} <<< if item.key => 
           {url: "/d/#{item.type.name}/#{item.key}", method: \PUT}
         else {url: "/d/#{item.type.name}", method: \POST}

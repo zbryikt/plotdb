@@ -13,22 +13,30 @@ angular.module \plotDB
       #TODO better mechanism for switching domain ( dev, staging and production )
       #sharelink: (chart) -> "https://plotdb.com/v/chart/#{chart.key}"
       sharelink: (chart) -> "http://localhost/v/chart/#{chart.key}"
-    object = ->
-      if typeof(@tags) == \string => @tags = @tags.split \,
+    object = (src) ->
+      @ <<< do
+        name: \untitled
+        owner: null
+        theme: null
+        parent: null
+        description: null
+        basetype: []
+        visualencoding: []
+        category: []
+        tags: []
+        likes: 0
+        searchable: false
+        doc: {name: 'document', type: 'html', content: service.sample.0.doc.content}
+        style: {name: 'stylesheet', type: 'css', content: service.sample.0.style.content}
+        code: {name: 'code', type: 'javascript', content: service.sample.0.code.content}
+        assets: []
+        config: {}
+        dimension: {}
+      @ <<< src
+      @
+
     object.prototype = do
-      name: \untitled
-      desc: null, tags: []
-      theme: null
-      doc: {name: 'document', type: 'html', content: service.sample.0.doc.content}
-      style: {name: 'stylesheet', type: 'css', content: service.sample.0.style.content}
-      code: {name: 'code', type: 'javascript', content: service.sample.0.code.content}
-      config: {}
-      dimension: {}
-      assets: []
-      thumbnail: null
-      isType: false
-      likes: 0
-      parent: null
+
       like: (v) -> new Promise (res, rej) ~>
         @likes = @likes + (if v => 1 else -1) >? 0
         $http {url: "/d/chart/#{@key}/like", method: \PUT}
@@ -111,7 +119,7 @@ angular.module \plotDB
             $scope.save.handle = null
             $scope.backup.unguard 3000
           .catch (err) ~> $scope.$apply ->
-            plNotify.aux.error.io \save, \chart, e
+            plNotify.aux.error.io \save, \chart, err
             console.error "[save chart]", err
             if $scope.save.handle => $timeout.cancel $scope.save.handle
             $scope.save.handle = null
@@ -350,7 +358,7 @@ angular.module \plotDB
               link: @link
               name: $scope.chart.name
               redirect_uri: \http://plotdb.com/
-              description: $scope.chart.desc or ""
+              description: $scope.chart.description or ""
             @social.facebook = ([ "https://www.facebook.com/dialog/feed?" ] ++
               ["#k=#{encodeURIComponent(v)}" for k,v of fbobj]
             ).join(\&)
@@ -358,14 +366,14 @@ angular.module \plotDB
             pinobj = do
               url: @link
               media: @thumblink
-              description: $scope.chart.desc or ""
+              description: $scope.chart.description or ""
             @social.pinterest = (["https://www.pinterest.com/pin/create/button/?"] ++
               ["#k=#{encodeURIComponent(v)}" for k,v of pinobj]
             ).join(\&)
 
             emailobj = do
               subject: "plotdb: #{$scope.chart.name}"
-              body: "#{$scope.chart.desc} : #{@link}"
+              body: "#{$scope.chart.description} : #{@link}"
             @social.email = (["mailto:?"] ++
               ["#k=#{encodeURIComponent(v)}" for k,v of emailobj]
             ).join(\&)
@@ -374,7 +382,7 @@ angular.module \plotDB
               mini: true
               url: @link
               title: "#{$scope.chart.name} on PlotDB"
-              summary: $scope.chart.desc
+              summary: $scope.chart.description
               source: "plotdb.com"
             @social.linkedin = (["http://www.linkedin.com/shareArticle?"] ++
               ["#k=#{encodeURIComponent(v)}" for k,v of linkedinobj]
@@ -382,7 +390,7 @@ angular.module \plotDB
 
             twitterobj = do
               url: @link
-              text: "#{$scope.chart.name} - #{$scope.chart.desc or ''}"
+              text: "#{$scope.chart.name} - #{$scope.chart.description or ''}"
               hashtags: "dataviz,chart,visualization"
               via: "plotdb"
             @social.twitter = (["http://twitter.com/intent/tweet?"] ++
@@ -761,7 +769,7 @@ angular.module \plotDB
       if !$scope.fullcharts or !$scope.fullcharts.length => $scope.fullcharts = $scope.charts
       $scope.charts = $scope.fullcharts.filter ->
         return (
-          (!$scope.q.type or it.basetype == $scope.q.type) and
+          (!$scope.q.type or ($scope.q.type in (it.basetype or []))) and
           (!$scope.q.enc or ($scope.q.enc in (it.visualencoding or []))) and
           (!$scope.q.cat or ($scope.q.cat in (it.category or []))) and
           (!$scope.q.dim or it.dimlen == $scope.q.dim or ($scope.q.dim == 99 and it.dimlen.length > 5))

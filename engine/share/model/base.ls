@@ -152,8 +152,8 @@ model.type <<< do
       password: {type: model.type.string}
       usepasswd: {type: model.type.boolean}
       displayname: {max: 30, min: 3, required: true, type: model.type.string}
-      desc: {max: 1000, type: model.type.string}
-      create_date: {type: model.type.date}
+      description: {max: 1000, type: model.type.string}
+      createdtime: {type: model.type.date}
       public_email: {type: model.type.boolean}
       avatar: {max: 300, type: model.type.string}
 

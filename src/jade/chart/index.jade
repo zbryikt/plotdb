@@ -29,7 +29,7 @@ block body
         textarea.form-control(placeholder="Chart Description", ng-model="chart.desc",rows="3")
         br
         label Base Chart Type
-        div: select#chart-setting-type.form-control
+        div: select#chart-setting-type.form-control(multiple="multiple")
           option(value="1") Bar Chart
           option(value="2") Line Chart
           option(value="3") Pie Chart

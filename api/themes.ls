@@ -10,7 +10,7 @@ engine.router.api.get "/theme/", (req, res) ->
     "from themes,users where users.key = themes.owner and themes.owner = #{req.user.key}"
   ].join(" ")
     .then -> res.send it.rows
-    .catch -> 
+    .catch ->
       console.log e
       res.send "[]"
 
@@ -36,22 +36,25 @@ engine.router.api.post "/theme/", (req, res) ->
   data = themetype.clean data
   io.query([
     'insert into themes',
-    ('(name,owner,chart,description,tags,likes,searchable,' +
-    '"createdTime","modifiedTime",doc,style,code,assets,permission)'),
-    'values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)',
+    ('(' + <[
+      name owner chart parent description
+      tags likes searchable createdtime modifiedtime
+      doc style code assets permission
+    ]>.join(",") + ')'),
+    'values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)',
     'returning key'
   ].join(" "),[
     data.name or "untitled", req.user.key,
-    data.chart or null,
+    data.chart or null, data.parent or null,
     data.description or "check it out by yourself!", data.tags,
     0, data.searchable, new Date!toUTCString!, new Date!toUTCString!,
     data.doc, data.style, data.code, data.assets, data.permission
   ])
-    .then (r={}) -> 
+    .then (r={}) ->
       key = r.[]rows.0.key
       data.key = key
       res.send data
-    .catch -> 
+    .catch ->
       console.error it.stack
       aux.r403 res
 
@@ -70,7 +73,7 @@ engine.router.api.put "/theme/:id", (req, res) ~>
       data <<< do
         owner: req.user.key
         key: req.params.id
-        modifiedTime: new Date!toUTCString!
+        modifiedtime: new Date!toUTCString!
       ret = themetype.lint(data)
       if ret.0 => return aux.r400 res, ret
       data := themetype.clean data
@@ -78,7 +81,7 @@ engine.router.api.put "/theme/:id", (req, res) ~>
       io.query([
         'update themes set'
         ('(name,owner,chart,description,tags,likes,searchable,' +
-        '"createdTime","modifiedTime",doc,style,code,assets,permission)'),
+        'createdtime,modifiedtime,doc,style,code,assets,permission)'),
         '= ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)',
         "where key = #{req.params.id}"
       ].join(" "),[
@@ -89,7 +92,7 @@ engine.router.api.put "/theme/:id", (req, res) ~>
         data.doc, data.style, data.code, data.assets, data.permission
       ])
         .then (r={}) -> res.send data
-        .catch -> 
+        .catch ->
           console.error it.stack
           aux.r403 res
 
@@ -97,17 +100,3 @@ engine.router.api.put "/theme/:id", (req, res) ~>
       console.error it.stack
       return aux.r403 res
 
-
-/*
-  @read req.params.id
-    ..then (ret) ~>
-      if !ret => return aux.r404 res
-      data = req.body
-      if ret.owner != req.user.key => return aux.r403 res
-      data <<< owner: req.user.key, key: req.params.id
-      ret = @lint(data)
-      if ret.0 => return aux.r400 res, ret
-      data = @clean data
-      data.save!then (ret) -> res.send ret
-    ..catch -> return aux.r403 res
-    */

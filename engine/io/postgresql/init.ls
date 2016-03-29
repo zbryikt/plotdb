@@ -27,8 +27,8 @@ init-themes-table = """create table if not exists themes (
   tags text[],
   likes int constraint likecount check ( likes >=0 ),
   searchable boolean,
-  "createdTime" timestamp,
-  "modifiedTime" timestamp,
+  createdtime timestamp,
+  modifiedtime timestamp,
   doc jsonb,
   style jsonb,
   code jsonb,
@@ -38,19 +38,25 @@ init-themes-table = """create table if not exists themes (
 
 init-charts-table = """create table if not exists charts (
   key serial primary key,
+  name text,
   owner int references users(key),
   theme int references themes(key),
-  name text,
+  parent int references charts(key),
   description text,
-  basetype text,
+  basetype text[],
   visualencoding text[],
   category text[],
   tags text[],
   likes int,
+  searchable boolean,
   dimlen int,
-  "createdTime" timestamp,
-  "modifiedTime" timestamp,
-  payload json
+  createdtime timestamp,
+  modifiedtime timestamp,
+  doc jsonb,
+  style jsonb,
+  code jsonb,
+  assets jsonb,
+  permissions jsonb
 )"""
 
 alter-themes-table = """alter table theme add column chart int references charts(key)"""
@@ -68,6 +74,7 @@ query = (q) -> new Promise (res, rej) ->
 query init-users-table 
   .then -> query init-sessions-table
   .then -> query init-themes-table
+  .then -> query init-charts-table
   .then -> client.end!
   .catch -> [console.log(it), client.end!]
   

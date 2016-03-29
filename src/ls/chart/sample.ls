@@ -2,7 +2,7 @@ angular.module \plotDB
   ..service \sampleChart, <[$rootScope]> ++ ($rootScope) ->
     ret = [
       {
-        name: "Empty Chart", desc: "a boilerplate for visualization"
+        name: "Empty Chart", description: "a boilerplate for visualization"
         permission: {}
         key: "/chart/sample/:empty"
         owner: null
@@ -48,7 +48,7 @@ module.exports = plotdb.chart.create({
 
       },
       {
-        name: "Bubble Chart", desc: "a simple bubble chart"
+        name: "Bubble Chart", description: "a simple bubble chart"
         permission: {}
         key: "/chart/sample/:bubble"
         owner: null
