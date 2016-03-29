@@ -56,23 +56,24 @@ angular.module \plotDB
         )
         res @items
 
-    baseObject = (config) -> @ <<< config
+    baseObject = (name, config) ->
+      @ <<< do
+        type: {location: \server, name}
+        owner: null
+        key: null
+        permission: {switch: [], value: []}
+      @ <<< config
 
     baseService = do
-      wrapper: (callee) -> (config) ->
-        baseObject.call @, config
+      wrapper: (name, callee) -> (config) ->
+        baseObject.call @, name, config
         callee.call @, config
         @
       derive: (name, service, callee) ->
         service = {} <<< service-skeleton <<< service
         service.type = name
-        service[name] = service.Object = @wrapper callee
-
+        service[name] = service.Object = @wrapper name, callee
         baseObject.prototype = do
-          type: {location: \server, name}
-          owner: null
-          key: null
-          permission: {switch: [], value: []}
           save: -> service.save @ .then (ret) ~> @key = ret.key
           load: -> service.load @type, @key .then (ret) ~> @ <<< ret
           delete: -> service.delete @

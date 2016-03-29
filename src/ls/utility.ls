@@ -17,7 +17,6 @@ angular.module \plotDB
           $(e).select2 config .on \change, ~>
             if changed! => setTimeout (-> s.$apply -> s.model = $(e)val!),0
           s.$watch 'model', (vals) ~>
-            vals = vals.map -> it.replace /'/g, ""
             html = ""
             # escaped html from jquery.
             # jquery.val won't help select2 build option tags so we have to do this by ourselves

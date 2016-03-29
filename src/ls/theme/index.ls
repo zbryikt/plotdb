@@ -46,6 +46,7 @@ angular.module \plotDB
   ($scope, $http, $timeout, $interval, data-service, chart-service, palette-service, theme-service, plNotify) ->
     $scope <<< do # Variables
       theme: new theme-service.theme!
+      chart: null
       showsrc: true
       vis: \preview
       lastvis: null
@@ -57,20 +58,19 @@ angular.module \plotDB
         style: lineWrapping: true, lineNumbers: true, viewportMargin: Infinity, mode: \css
         doc:   lineWrapping: true, lineNumbers: true, viewportMargin: Infinity, mode: \xml
         objs: []
-      chart: null
       canvas: do
         node: document.getElementById(\chart-renderer)
         window: document.getElementById(\chart-renderer).contentWindow
     $scope <<< do # Functions
       _save: (nothumb = false)->
-        console.log @theme
-        #TODO anonymouse handling
+
         if @theme.owner != $scope.user.data.key =>
           key = (if @theme.type.location == \server => @theme.key else null)
           @theme <<< {key: null, owner: null, permission: theme-service.theme.prototype.permission}
           # clone will set parent beforehand. so we only set it if necessary.
           if key => @theme <<< {parent: key}
         refresh = if !@theme.key => true else false
+
         @theme.save!
           .then (ret) ~>
             <~ $scope.$apply
@@ -82,7 +82,7 @@ angular.module \plotDB
             $scope.save.handle = null
             $scope.backup.unguard 3000
           .catch (err) ~> $scope.$apply ->
-            plNotify.aux.error.io \save, \theme, err.0
+            plNotify.aux.error.io \save, \theme, err
             console.error "[save theme]", err
             if $scope.save.handle => $timeout.cancel $scope.save.handle
             $scope.save.handle = null
@@ -99,7 +99,6 @@ angular.module \plotDB
         key = (if @chart.type.location == \server => @chart.key else null)
         @theme <<< {key: null, owner: null, parent: key, permission: chartService.chart.prototype.permission}
         @save!
-
       load: (type, key) ->
         theme-service.load type, key
           .then (ret) ~>
