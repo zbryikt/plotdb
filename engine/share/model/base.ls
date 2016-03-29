@@ -84,9 +84,11 @@ model = ((config)->
 # simple type
 model.type = {} <<< do
   boolean: new model do
+    name: \boolean
     lint: -> [!(!it or (typeof(it) == typeof(true)))]
 
   string: new model do
+    name: \string
     lint: -> [!(typeof(it) == typeof("") or typeof(it) == typeof(1))]
     range: ({min,max}, value) -> 
       length = "#value".length
@@ -95,17 +97,22 @@ model.type = {} <<< do
       return [false]
 
   email: new model do
+    name: \email
     lint: -> [!(it and typeof(it)==typeof("") and /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+/.exec(it))]
 
   number: new model do
+    name: \number
     lint: -> [!(typeof(it) == typeof(0))]
 
   date: new model do
+    name: \date
     lint: ->
       if typeof(it) == typeof("") and !isNaN(new Date(it)) and it.length < 50 => return [false]
       return [isNaN(it)]
 
   array: (m) -> new model do
+    name: \array
+    type: m
     lint: (obj) -> 
       if typeof(obj) != typeof([]) or isNaN(parseInt(obj.length)) => return [true]
       ret = (for idx from 0 til obj.length => [idx, m.type.lint(obj[idx])]).filter(-> it.1.0)[0]
@@ -113,10 +120,14 @@ model.type = {} <<< do
       return [true, ret.0, ret.1]
 
   key: (m) -> new model do
+    name: \key
+    type: m
     lint: (obj) ->
       if typeof(obj) == typeof({}) or typeof(obj) == typeof("") or typeof(obj) == typeof(0) => return [false]
       return [true,null,\type]
   keys: (m) -> new model do
+    name: \keys
+    type: m
     lint: (obj) -> 
       if typeof(obj) != typeof([]) or isNaN(parseInt(obj.length)) => return [true]
       ret = (for idx from 0 til obj.length => [idx, obj[idx]]).filter(->!it.1)[0]
@@ -124,6 +135,7 @@ model.type = {} <<< do
       return [true, ret.0, ret.1]
 
   id: new model do
+    name: \id
     lint: -> [false]
 
 # complex type

@@ -108,6 +108,7 @@ angular.module \plotDB
           # clone will set parent beforehand. so we only set it if necessary.
           if key => @chart <<< {parent: key}
         refresh = if !@chart.key => true else false
+        @chart.dimlen = [k for k of @chart.dimension].length
         @chart.save!
           .then (ret) ~>
             <~ $scope.$apply

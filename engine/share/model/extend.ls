@@ -49,24 +49,25 @@ base = (model) ->
       name: {max: 100, min: 1, required: true, type: model.type.string}
       owner: {required: true, type: model.type.key({type:model.type.user})}
       theme: {required: false, type: model.type.key({type:base.theme})}
-      description: {max: 200, min: 1, required: false, type: model.type.string}
-      basetype: {max: 20, min: 1, required: false, type: model.type.string}
-      visualencoding: { max: 10, required: false, type: model.type.array({max: 20, min: 1, type: model.type.string})}
-      category: { max: 10, required: false, type: model.type.array({max: 20, min: 1, type: model.type.string})}
-      tags: { required: false, type: model.type.array({max: 50, min: 1, type: model.type.string})}
+      parent: { required: false, type: model.type.key({type: base.chart})}
+      description: {max: 200, required: false, type: model.type.string}
+      basetype: {max: 20, required: false, type: model.type.array({max: 20, type: model.type.string})}
+      visualencoding: { max: 10, required: false, type: model.type.array({max: 20, type: model.type.string})}
+      category: { max: 10, required: false, type: model.type.array({max: 20, type: model.type.string})}
+      tags: { required: false, type: model.type.array({max: 50, type: model.type.string})}
       likes: {required: false, type: model.type.number}
       searchable: { required: false, type: model.type.boolean }
+      dimlen: { required: true, type: model.type.number }
+      createdtime: {required: false, type: model.type.date}
+      modifiedtime: {required: false, type: model.type.date}
       doc: {type: base.file}
       style: {type: base.file}
       code: {type: base.file}
       assets: {required: false, type: model.type.array({type: base.file})}
-      config: {require: false}
-      dimension: {require: false}
-      data: {required: false}
-      parent: { required: false, type: model.type.key({type: base.chart})}
       permission: {required: false, type: model.type.permission}
-      createdtime: {required: false, type: model.type.date}
-      modifiedtime: {required: false, type: model.type.date}
+      #config: {require: false}
+      #dimension: {require: false}
+      #data: {required: false}
 
   base.chart = new model chart-config
   base

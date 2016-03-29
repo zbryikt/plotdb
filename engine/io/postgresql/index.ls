@@ -1,4 +1,4 @@
-require! <[pg bluebird crypto]>
+require! <[pg bluebird crypto ./aux]>
 
 ret = (config) ->
   @config = config
@@ -57,6 +57,7 @@ ret.prototype = do
     _query client, q, params
       .then (r) -> [ done!, res r]
       .catch -> rej it
+  aux: aux
 
 module.exports = ret
 
