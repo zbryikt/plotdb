@@ -30,6 +30,7 @@ engine.router.api.get "/chart/:id", (req, res) ->
       console.error it.stack
       return aux.r403 res
 
+#TODO save thumbnail
 engine.router.api.post "/chart/", (req, res) ->
   if !req.user => return aux.r403 res
   data = req.body <<< {owner: req.user.key}
@@ -49,6 +50,7 @@ engine.router.api.post "/chart/", (req, res) ->
       console.error it.stack
       aux.r403 res
 
+#TODO save thumbnail
 engine.router.api.put "/chart/:id", (req, res) ~>
   if !req.user => aux.r403 res
   data = req.body
