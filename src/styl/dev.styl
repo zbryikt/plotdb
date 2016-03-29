@@ -356,10 +356,10 @@
     height: 100%
     left: 0
     top: 0
-    z-index: index(order, 'chartedit-box')
+    z-index: index(order, 'edit-box')
     opacity: 0.01
     &.active
-      z-index: index(order, 'chartedit-box-active')
+      z-index: index(order, 'edit-box-active')
       opacity: 1.0
   .CodeMirror
     z-index: index(order, 'codemirror')
@@ -464,21 +464,21 @@
     display: block
 
 #code-editor.active
-  z-index: index(order, 'chartedit-active')
+  z-index: index(order, 'edit-active')
 
 #visualization-canvas2.active
-  z-index: index(order, 'chartedit-active')
+  z-index: index(order, 'edit-active')
   opacity: 1
 
 #code-editor.fullscreen
-  z-index: index(order, 'chartedit-fullscreen')
+  z-index: index(order, 'edit-fullscreen')
 #visualization-canvas2.fullscreen
-  z-index: index(order, 'chartedit-fullscreen')
+  z-index: index(order, 'edit-fullscreen')
 
 #code-editor.fullscreen.active
-  z-index: index(order, 'chartedit-fullscreen-active')
+  z-index: index(order, 'edit-fullscreen-active')
 #visualization-canvas2.fullscreen.active
-  z-index: index(order, 'chartedit-fullscreen-active')
+  z-index: index(order, 'edit-fullscreen-active')
 
 #fullscreen-dimmer
   display: none

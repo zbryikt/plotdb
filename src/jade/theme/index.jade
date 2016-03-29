@@ -12,7 +12,7 @@ mixin SaveFork
 block head
 block body
   div &nbsp;
-  #root(ng-controller="themeEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
+  #root(ng-controller="plEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
     #setting-modal(ng-cloak,ng-show="settingPanel.toggled"): .ib
       .closebtn(ng-click="settingPanel.toggle()")
       h3 Settings
@@ -109,15 +109,15 @@ block body
                 span(style="font-size:12px;margin-left:5px;") Open in New Window
             input.form-control(ng-cloak,disabled,
             ng-show="!sharePanel.isPublic()",placeholder="set theme public to get share link")
-            input#themeedit-sharelink.form-control(ng-cloak,type="text",ng-model="sharePanel.link",
+            input#edit-sharelink.form-control(ng-cloak,type="text",ng-model="sharePanel.link",
             placeholder="share link for this theme",ng-show="sharePanel.isPublic()",
-            data-clipboard-target="#themeedit-sharelink")
+            data-clipboard-target="#edit-sharelink")
             br
             label Embed Code
             textarea.form-control(ng-cloak,disabled,rows="3",
             ng-show="!sharePanel.isPublic()",placeholder="set theme public to get embed code")
-            textarea#themeedit-embedcode.form-control(ng-cloak,rows="3",ng-show="sharePanel.isPublic()",
-            data-clipboard-target="#themeedit-embedcode",ng-model="sharePanel.embedcode")
+            textarea#edit-embedcode.form-control(ng-cloak,rows="3",ng-show="sharePanel.isPublic()",
+            data-clipboard-target="#edit-embedcode",ng-model="sharePanel.embedcode")
         hr(style="margin-bottom:10px")
         .pull-right
           .save-hint-btn.btn.btn-default.loader(ng-disabled="!theme.name",ng-click="save();sharePanel.saveHint=false",

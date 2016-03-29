@@ -1,5 +1,5 @@
 angular.module \plotDB
-  ..controller \chartEditor,
+  ..controller \plEditor,
   <[$scope $http $timeout $interval dataService chartService paletteService themeService plNotify]> ++
   ($scope, $http, $timeout, $interval, data-service, chart-service, paletteService, themeService, plNotify) ->
     #########  Variables  ################################################################
