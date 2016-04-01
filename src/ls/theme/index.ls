@@ -6,8 +6,8 @@ angular.module \plotDB
   ($rootScope, $http, IOService, sampleTheme, baseService, plNotify, eventBus) ->
     service = do
       sample: sampleTheme
-      link: (theme) -> "/theme/?k=#{theme.type.location.charAt(0)}#{theme.key}"
-      thumblink: (theme) -> "/theme/thumb/?k=#{theme.type.location.charAt(0)}#{theme.key}"
+      link: (theme) -> "/theme/?k=#{theme._type.location.charAt(0)}#{theme.key}"
+      thumblink: (theme) -> "/theme/thumb/?k=#{theme._type.location.charAt(0)}#{theme.key}"
       #TODO better mechanism for switching domain ( dev, staging and production )
       sharelink: (theme) -> "https://plotdb.com#{@link(theme)}"
     object = (src) ->
@@ -66,8 +66,8 @@ angular.module \plotDB
       _save: (nothumb = false)->
 
         if @theme.owner != $scope.user.data.key =>
-          key = (if @theme.type.location == \server => @theme.key else null)
-          @theme <<< {key: null, owner: null, permission: theme-service.theme.prototype.permission}
+          key = (if @theme._type.location == \server => @theme.key else null)
+          @theme <<< {key: null, owner: null, permission: theme-service.theme.proto_type.permission}
           # clone will set parent beforehand. so we only set it if necessary.
           if key => @theme <<< {parent: key}
         refresh = if !@theme.key => true else false
@@ -97,11 +97,11 @@ angular.module \plotDB
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
       clone: -> # clone forcely. same as save() when user is not the chart's owner
         @theme.name = "#{@theme.name} - Copy"
-        key = (if @chart.type.location == \server => @chart.key else null)
+        key = (if @chart._type.location == \server => @chart.key else null)
         @theme <<< {key: null, owner: null, parent: key, permission: chartService.chart.prototype.permission}
         @save!
-      load: (type, key) ->
-        theme-service.load type, key
+      load: (_type, key) ->
+        theme-service.load _type, key
           .then (ret) ~>
             @theme = new themeService.theme(@theme <<< ret)
             @backup.check!
@@ -128,7 +128,7 @@ angular.module \plotDB
       migrate: ->
         if !@theme.key => return
         cloned = @theme.clone!
-        cloned.type.location = (if @theme.type.location == \local => \server else \local)
+        cloned._type.location = (if @theme._type.location == \local => \server else \local)
         <~ cloned.save!then
         <~ @theme.delete!then
         $scope.theme = cloned
@@ -226,7 +226,7 @@ angular.module \plotDB
         set: ->
           $scope.chart = it
           if !it => return
-          chart-service.load it.type, it.key
+          chart-service.load it._type, it.key
             .then (ret) ~>
               $scope.chart = new chartService.chart(ret)
               $scope.chart.theme = $scope.theme

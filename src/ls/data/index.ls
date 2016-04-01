@@ -12,19 +12,21 @@ angular.module \plotDB
         size: 0
         update: ->
           @ <<< {rows: 0, size: 0}
-          for item in service.items => if item.type.location == \local =>
+          for item in service.items => if item._type.location == \local =>
             @rows += item.rows
             @size += item.size
     # we can construct directly from a json(field), or from a dataset
-    Field = (name, dataset = null, field = null) ->
-      if !field and dataset => field = dataset.fields.filter(->it.name == name).0
-      if field => @ <<< field
+    #Field = (name, dataset = null, field = null) ->
+    Field = (config) ->
+      @ <<< config
+      #if !field and dataset => field = dataset.fields.filter(->it.name == name).0
+      #if field => @ <<< field
       # use _ as a little trick to prevent things to be stringify
-      @ <<< {name, _: ->}
-      if dataset => @set-dataset dataset
+      #@ <<< {name, _: ->}
+      #if dataset => @set-dataset dataset
       @
     Field.prototype = do
-      dataset: type: {}, key: null
+      dataset: _type: {}, key: null
       name: null, type: null
       #toJson: -> angular.toJson(@{name, type} <<< {dataset: @dataset{type, key}})
       #TODO this might be called individually. should propagate to dataset?
@@ -38,16 +40,16 @@ angular.module \plotDB
         #if !dataset.type or !dataset.key => return Promise.reject(null)
         #(ret) <~ dataService.load dataset.type, dataset.key .then
         @_.dataset = dataset
-        if dataset and dataset.type and dataset.key =>
-          @dataset <<< dataset{type, key} <<< {name: dataset.name}
-        else @dataset.type <<< {type: {}, key: null, name: null}
+        if dataset and dataset._type and dataset.key =>
+          @dataset <<< dataset{_type, key} <<< {name: dataset.name}
+        else @dataset._type <<< {_type: {}, key: null, name: null}
         Promise.resolve(dataset)
       get-dataset: -> # provide dataset or null for standalone field
         if @_.dataset => return Promise.resolve(that)
-        if !@dataset.type or !@dataset.key => return Promise.resolve(null)
-        (ret) <~ dataService.load @dataset.type, @dataset.key .then
+        if !@dataset._type or !@dataset.key => return Promise.resolve(null)
+        (ret) <~ dataService.load @dataset._type, @dataset.key .then
         @_.dataset = ret
-        @dataset <<< ret{type, key} <<< {name: ret.name}
+        @dataset <<< ret{_type, key} <<< {name: ret.name}
         @_.dataset
       settype: ->
         types = <[Boolean Percent Number Date String]> ++ [null]
@@ -59,26 +61,42 @@ angular.module \plotDB
 
     #TODO: Dataset: save: update field dataset type and key
     Dataset = ->
-      @fields = [new Field(f.name, @, f) for f in @fields or []]
-      @save = ->
-        @fields.map(->delete it.data)
-        <~ Dataset.prototype.save.call(@).then
-        @fields.map ~> it.dataset <<< @{type,key}
-        @update!
-      @load = ->
-        <~ Dataset.prototype.load.call(@).then
-        Dataset.call @
-      @update!
+      @ <<< do
+        name: "" description: ""
+        type: "static", format: "csv"
+        owner: null, createdtime: new Date!, modifiedtime: new Date!
+        permission: { switch: [], value: []}
+        fields: []
+      #@fields = [new Field(f.name, @, f) for f in @fields or []]
+      #@save = ->
+      #  @fields.map(->delete it.data)
+      #  <~ Dataset.prototype.save.call(@).then
+      #  @fields.map ~> it.dataset <<< @{_type,key}
+      #  @update!
+      #@load = ->
+      #  <~ Dataset.prototype.load.call(@).then
+      #  Dataset.call @
+      #@update!
       @
 
     Dataset.prototype = do
-      bind: (field) -> #TODO connect dataset and standalone field
-      update: (data = null) ->
-        if data => @data = data
-        if !@data => @data = []
+      set-fields: (fields = null) ->
+        if fields and typeof(fields) == \object =>
+          fields = for k,v of (fields or []) => 
+            new Field {name: k, data: v, dataset: @key, datasetname: @name, location: @_type.location}
+          for f1 in @fields => for f2 in fields =>
+            if f1.name != f2.name => continue
+            f2 <<< f1
+          @ <<< fields: fields, rows: (@fields.0 or {}).[]data.length, size: 0
+          for f1 in @fields => @size += (f1.data or "").length
+
+      update: ->
+        #if data => @data = data
+        #if !@data => @data = []
         #TODO support more type
         # CSV dataset use first row as field name
-        names = [k for k of @data.0]
+        #names = [k for k of @data.0]
+        /*
         promises = for i from 0 til names.length
           if @fields[i] => that else @fields.push new Field(names[i], @)
           @fields[i].name = names[i]
@@ -89,6 +107,7 @@ angular.module \plotDB
         @size = angular.toJson(@data).length
         @rows = @data.length
         #if @key => for item in @fields => item.dataset = @key
+        */
     dataService = baseService.derive name, service, Dataset
     dataService
 
@@ -101,23 +120,31 @@ angular.module \plotDB
 
     $scope.name = null
     $scope.save = (locally = false) ->
-      if !$scope.name => return
-      if !$scope.user.data or !$scope.user.data.key => return $scope.auth.toggle true
-      if $scope.dataset and $scope.dataset.type.location != (if locally => \local else \server) => return
-      $scope.parse.run true
-      if !$scope.dataset =>
+      if !$scope.dataset or !$scope.dataset.name => return
+      if !$scope.user.authed! => return $scope.auth.toggle true
+      column-length = [k for k of $scope.parse.{}result].length
+      if column-length >= 20 =>
+        return plNotify.send \danger, "maximal 20 columns is allowed. you have #{column-length}"
+      <- $scope.parse.run true .then
+      $scope.dataset._type.location = (if locally => \local else \server)
+
+      /*if !$scope.dataset =>
         config = do
           name: $scope.name
-          type: location: (if locally => \local else \server), name: \dataset
+          _type: location: (if locally => \local else \server), name: \dataset
           owner: null
           permission: switch: <[public]>, value: []
           datatype: \csv #TODO support more types
         $scope.dataset = new dataService.dataset config
       $scope.dataset.name = $scope.name
-      <~ $scope.dataset.update $scope.parse.result .then
+      */
+      #<~ $scope.dataset.update $scope.parse.result .then
+      $scope.dataset.set-fields $scope.parse.result
       $scope.dataset.save!
         .then -> $scope.$apply -> plNotify.send \success, "dataset saved"
-        .catch (e) -> $scope.$apply -> plNotify.aux.error.io \save, \data, e
+        .catch (e) -> 
+          console.log e.stack
+          $scope.$apply -> plNotify.aux.error.io \save, \data, e
     $scope.load-dataset = (dataset) ->
       $scope.dataset = dataset
       $scope.name = dataset.name
@@ -137,7 +164,7 @@ angular.module \plotDB
       result: null
       loading: false
       handle: null
-      run: (force = false) ->
+      run: (force = false) -> new Promise (res, rej) ~>
         @loading = true
         _ = ~>
           @ <<< {handle: null, result: {}}
@@ -148,6 +175,7 @@ angular.module \plotDB
               values = [v for k,v of @result] or []
               <~ $scope.$apply
               @ <<< {loading: false, fields: values.length, rows: (values.0 or []).length}
+              res @result
         if @handle => $timeout.cancel @handle
         if force => return _!
         else @handle = $timeout (~> _! ), (if force => 0 else 1000)

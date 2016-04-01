@@ -9,10 +9,10 @@ x$.service('themeService', ['$rootScope', '$http', 'IOService', 'sampleTheme', '
   service = {
     sample: sampleTheme,
     link: function(theme){
-      return "/theme/?k=" + theme.type.location.charAt(0) + theme.key;
+      return "/theme/?k=" + theme._type.location.charAt(0) + theme.key;
     },
     thumblink: function(theme){
-      return "/theme/thumb/?k=" + theme.type.location.charAt(0) + theme.key;
+      return "/theme/thumb/?k=" + theme._type.location.charAt(0) + theme.key;
     },
     sharelink: function(theme){
       return "https://plotdb.com" + this.link(theme);

@@ -33,6 +33,14 @@ base = function(model){
         required: false,
         type: model.type.string
       },
+      rows: {
+        require: true,
+        type: model.type.number
+      },
+      size: {
+        require: true,
+        type: model.type.number
+      },
       tags: {
         required: false,
         type: model.type.array({
@@ -60,13 +68,16 @@ base = function(model){
       permission: {
         type: model.type.permission
       },
-      origin: {
+      type: {
+        required: true,
         type: model.type.string
       },
       format: {
+        required: true,
         type: model.type.string
       },
       config: {
+        required: false,
         max: 1024,
         type: base.json
       }
@@ -80,6 +91,14 @@ base = function(model){
         type: model.type.key({
           type: base.dataset
         })
+      },
+      datasetname: {
+        required: true,
+        type: model.type.string
+      },
+      location: {
+        require: true,
+        type: model.type.string
       },
       name: {
         type: model.type.string

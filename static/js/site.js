@@ -99,7 +99,10 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     ? that[1]
     : window.location.href;
   $scope.user = {
-    data: global.user
+    data: global.user,
+    authed: function(){
+      return this.data && this.data.key;
+    }
   };
   $scope.dataService = dataService;
   $scope.limitscroll = function(node){

@@ -21,7 +21,7 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
         this.size = 0;
         for (i$ = 0, len$ = (ref$ = service.items).length; i$ < len$; ++i$) {
           item = ref$[i$];
-          if (item.type.location === 'local') {
+          if (item._type.location === 'local') {
             this.rows += item.rows;
             results$.push(this.size += item.size);
           }
@@ -30,27 +30,13 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
       }
     }
   };
-  Field = function(name, dataset, field){
-    dataset == null && (dataset = null);
-    field == null && (field = null);
-    if (!field && dataset) {
-      field = dataset.fields.filter(function(it){
-        return it.name === name;
-      })[0];
-    }
-    if (field) {
-      import$(this, field);
-    }
-    this.name = name;
-    this._ = function(){};
-    if (dataset) {
-      this.setDataset(dataset);
-    }
+  Field = function(config){
+    import$(this, config);
     return this;
   };
   Field.prototype = {
     dataset: {
-      type: {},
+      _type: {},
       key: null
     },
     name: null,
@@ -71,11 +57,11 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
       var ref$;
       dataset == null && (dataset = null);
       this._.dataset = dataset;
-      if (dataset && dataset.type && dataset.key) {
-        (ref$ = this.dataset, ref$.type = dataset.type, ref$.key = dataset.key, ref$).name = dataset.name;
+      if (dataset && dataset._type && dataset.key) {
+        (ref$ = this.dataset, ref$._type = dataset._type, ref$.key = dataset.key, ref$).name = dataset.name;
       } else {
-        ref$ = this.dataset.type;
-        ref$.type = {};
+        ref$ = this.dataset._type;
+        ref$._type = {};
         ref$.key = null;
         ref$.name = null;
       }
@@ -86,13 +72,13 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
       if (that = this._.dataset) {
         return Promise.resolve(that);
       }
-      if (!this.dataset.type || !this.dataset.key) {
+      if (!this.dataset._type || !this.dataset.key) {
         return Promise.resolve(null);
       }
-      return dataService.load(this.dataset.type, this.dataset.key).then(function(ret){
+      return dataService.load(this.dataset._type, this.dataset.key).then(function(ret){
         var ref$;
         this$._.dataset = ret;
-        (ref$ = this$.dataset, ref$.type = ret.type, ref$.key = ret.key, ref$).name = ret.name;
+        (ref$ = this$.dataset, ref$._type = ret._type, ref$.key = ret.key, ref$).name = ret.name;
         return this$._.dataset;
       });
     },
@@ -118,69 +104,60 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
     }
   };
   Dataset = function(){
-    var res$, i$, ref$, len$, f;
-    res$ = [];
-    for (i$ = 0, len$ = (ref$ = this.fields || []).length; i$ < len$; ++i$) {
-      f = ref$[i$];
-      res$.push(new Field(f.name, this, f));
-    }
-    this.fields = res$;
-    this.save = function(){
-      var this$ = this;
-      this.fields.map(function(it){
-        var ref$;
-        return ref$ = it.data, delete it.data, ref$;
-      });
-      return Dataset.prototype.save.call(this).then(function(){
-        this$.fields.map(function(it){
-          var ref$;
-          return ref$ = it.dataset, ref$.type = this$.type, ref$.key = this$.key, ref$;
-        });
-        return this$.update();
-      });
-    };
-    this.load = function(){
-      var this$ = this;
-      return Dataset.prototype.load.call(this).then(function(){
-        return Dataset.call(this$);
-      });
-    };
-    this.update();
+    import$(this, {
+      name: "",
+      description: "",
+      type: "static",
+      format: "csv",
+      owner: null,
+      createdtime: new Date(),
+      modifiedtime: new Date(),
+      permission: {
+        'switch': [],
+        value: []
+      },
+      fields: []
+    });
     return this;
   };
   Dataset.prototype = {
-    bind: function(field){},
-    update: function(data){
-      var names, res$, k, promises, i$, to$, i, that, this$ = this;
-      data == null && (data = null);
-      if (data) {
-        this.data = data;
-      }
-      if (!this.data) {
-        this.data = [];
-      }
-      res$ = [];
-      for (k in this.data[0]) {
-        res$.push(k);
-      }
-      names = res$;
-      res$ = [];
-      for (i$ = 0, to$ = names.length; i$ < to$; ++i$) {
-        i = i$;
-        if (that = this.fields[i]) {
-          that;
-        } else {
-          this.fields.push(new Field(names[i], this));
+    setFields: function(fields){
+      var res$, k, ref$, v, i$, len$, f1, j$, len1$, f2, results$ = [];
+      fields == null && (fields = null);
+      if (fields && typeof fields === 'object') {
+        res$ = [];
+        for (k in ref$ = fields || []) {
+          v = ref$[k];
+          res$.push(new Field({
+            name: k,
+            data: v,
+            dataset: this.key,
+            datasetname: this.name,
+            location: this._type.location
+          }));
         }
-        this.fields[i].name = names[i];
-        res$.push(this.fields[i].update());
+        fields = res$;
+        for (i$ = 0, len$ = (ref$ = this.fields).length; i$ < len$; ++i$) {
+          f1 = ref$[i$];
+          for (j$ = 0, len1$ = fields.length; j$ < len1$; ++j$) {
+            f2 = fields[j$];
+            if (f1.name !== f2.name) {
+              continue;
+            }
+            import$(f2, f1);
+          }
+        }
+        this.fields = fields;
+        this.rows = ((ref$ = this.fields[0] || {}).data || (ref$.data = [])).length;
+        this.size = 0;
+        for (i$ = 0, len$ = (ref$ = this.fields).length; i$ < len$; ++i$) {
+          f1 = ref$[i$];
+          results$.push(this.size += (f1.data || "").length);
+        }
+        return results$;
       }
-      promises = res$;
-      return Promise.all(promises).then(function(){
-        this$.size = angular.toJson(this$.data).length;
-        return this$.rows = this$.data.length;
-      });
-    }
+    },
+    update: function(){}
   };
   dataService = baseService.derive(name, service, Dataset);
   return dataService;
@@ -192,41 +169,43 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
   });
   $scope.name = null;
   $scope.save = function(locally){
-    var config, this$ = this;
+    var columnLength, k;
     locally == null && (locally = false);
-    if (!$scope.name) {
+    if (!$scope.dataset || !$scope.dataset.name) {
       return;
     }
-    if (!$scope.user.data || !$scope.user.data.key) {
+    if (!$scope.user.authed()) {
       return $scope.auth.toggle(true);
     }
-    if ($scope.dataset && $scope.dataset.type.location !== (locally ? 'local' : 'server')) {
-      return;
+    columnLength = (function(){
+      var ref$, results$ = [];
+      for (k in (ref$ = $scope.parse).result || (ref$.result = {})) {
+        results$.push(k);
+      }
+      return results$;
+    }()).length;
+    if (columnLength >= 20) {
+      return plNotify.send('danger', "maximal 20 columns is allowed. you have " + columnLength);
     }
-    $scope.parse.run(true);
-    if (!$scope.dataset) {
-      config = {
-        name: $scope.name,
-        type: {
-          location: locally ? 'local' : 'server',
-          name: 'dataset'
-        },
-        owner: null,
-        permission: {
-          'switch': ['public'],
-          value: []
-        },
-        datatype: 'csv'
-      };
-      $scope.dataset = new dataService.dataset(config);
-    }
-    $scope.dataset.name = $scope.name;
-    return $scope.dataset.update($scope.parse.result).then(function(){
+    return $scope.parse.run(true).then(function(){
+      $scope.dataset._type.location = locally ? 'local' : 'server';
+      /*if !$scope.dataset =>
+        config = do
+          name: $scope.name
+          _type: location: (if locally => \local else \server), name: \dataset
+          owner: null
+          permission: switch: <[public]>, value: []
+          datatype: \csv #TODO support more types
+        $scope.dataset = new dataService.dataset config
+      $scope.dataset.name = $scope.name
+      */
+      $scope.dataset.setFields($scope.parse.result);
       return $scope.dataset.save().then(function(){
         return $scope.$apply(function(){
           return plNotify.send('success', "dataset saved");
         });
       })['catch'](function(e){
+        console.log(e.stack);
         return $scope.$apply(function(){
           return plNotify.aux.error.io('save', 'data', e);
         });
@@ -265,55 +244,61 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     loading: false,
     handle: null,
     run: function(force){
-      var _, this$ = this;
+      var this$ = this;
       force == null && (force = false);
-      this.loading = true;
-      _ = function(){
-        this$.handle = null;
-        this$.result = {};
-        return Papa.parse($scope.rawdata || "", {
-          worker: true,
-          header: true,
-          step: function(arg$){
-            var rows, i$, len$, row, lresult$, k, v, ref$, results$ = [];
-            rows = arg$.data;
-            for (i$ = 0, len$ = rows.length; i$ < len$; ++i$) {
-              row = rows[i$];
-              lresult$ = [];
-              for (k in row) {
-                v = row[k];
-                lresult$.push(((ref$ = this$.result)[k] || (ref$[k] = [])).push(v));
-              }
-              results$.push(lresult$);
-            }
-            return results$;
-          },
-          complete: function(){
-            var values, k, v;
-            values = (function(){
-              var ref$, results$ = [];
-              for (k in ref$ = this.result) {
-                v = ref$[k];
-                results$.push(v);
+      return new Promise(function(res, rej){
+        var _;
+        this$.loading = true;
+        _ = function(){
+          this$.handle = null;
+          this$.result = {};
+          return Papa.parse($scope.rawdata || "", {
+            worker: true,
+            header: true,
+            step: function(arg$){
+              var rows, i$, len$, row, lresult$, k, v, ref$, results$ = [];
+              rows = arg$.data;
+              for (i$ = 0, len$ = rows.length; i$ < len$; ++i$) {
+                row = rows[i$];
+                lresult$ = [];
+                for (k in row) {
+                  v = row[k];
+                  lresult$.push(((ref$ = this$.result)[k] || (ref$[k] = [])).push(v));
+                }
+                results$.push(lresult$);
               }
               return results$;
-            }.call(this$)) || [];
-            return $scope.$apply(function(){
-              return this$.loading = false, this$.fields = values.length, this$.rows = (values[0] || []).length, this$;
-            });
-          }
-        });
-      };
-      if (this.handle) {
-        $timeout.cancel(this.handle);
-      }
-      if (force) {
-        return _();
-      } else {
-        return this.handle = $timeout(function(){
+            },
+            complete: function(){
+              var values, k, v;
+              values = (function(){
+                var ref$, results$ = [];
+                for (k in ref$ = this.result) {
+                  v = ref$[k];
+                  results$.push(v);
+                }
+                return results$;
+              }.call(this$)) || [];
+              return $scope.$apply(function(){
+                this$.loading = false;
+                this$.fields = values.length;
+                this$.rows = (values[0] || []).length;
+                return res(this$.result);
+              });
+            }
+          });
+        };
+        if (this$.handle) {
+          $timeout.cancel(this$.handle);
+        }
+        if (force) {
           return _();
-        }, force ? 0 : 1000);
-      }
+        } else {
+          return this$.handle = $timeout(function(){
+            return _();
+          }, force ? 0 : 1000);
+        }
+      });
     }
   };
   $scope.parser = {

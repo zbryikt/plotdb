@@ -6,7 +6,7 @@ angular.module \plotDB
         permission: {}
         key: "/chart/sample/:empty"
         owner: null
-        type: location: \sample, name: \cahrt
+        _type: location: \sample, name: \cahrt
         config: { padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: true}}
         dimension: {value: {type: [plotdb.Number], require: true, desc: "" }}
         assets: []
@@ -52,7 +52,7 @@ module.exports = plotdb.chart.create({
         permission: {}
         key: "/chart/sample/:bubble"
         owner: null
-        type: location: \sample, name: \cahrt
+        _type: location: \sample, name: \cahrt
         config: {
           padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: true},
           palette: { name: "Palette", type: [plotdb.Palette], default: plotdb.Palette.default}

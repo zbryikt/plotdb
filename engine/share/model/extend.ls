@@ -3,6 +3,7 @@ base = (model) ->
   base.json = new model do
     name: \json
 
+  #TODO: add transformer
   base.dataset = new model do
     name: \dataset
     types: <[csv json]>
@@ -12,20 +13,24 @@ base = (model) ->
       parent: { required: false, type: model.type.key({type: base.theme})}
       name: {max: 100, min: 1, required: true, type: model.type.string}
       description: {max: 512, required: false, type: model.type.string}
+      rows: { require: true, type: model.type.number }
+      size: { require: true, type: model.type.number }
       tags: { required: false, type: model.type.array({max: 50, min: 1, type: model.type.string})}
       likes: {required: false, type: model.type.number}
       searchable: { required: false, type: model.type.boolean }
       createdtime: {required: false, type: model.type.date}
       modifiedtime: {required: false, type: model.type.date}
       permission: {type: model.type.permission}
-      origin: {type: model.type.string} # static / dynamic / realtime
-      format: {type: model.type.string} # csv / json
-      config: {max: 1024, type: base.json} # for dynamic / realtime configuration
+      type: {required: true, type: model.type.string} # static / dynamic / realtime
+      format: {required: true, type: model.type.string} # csv / json
+      config: {required: false, max: 1024, type: base.json} # for dynamic / realtime configuration
 
   base.datafield = new model do
     name: \datafield
     base:
       dataset: {required: true, type: model.type.key({type:base.dataset})}
+      datasetname: { required: true, type: model.type.string }
+      location: { require: true, type: model.type.string }
       name: { type: model.type.string}
       datatype: { type: model.type.string}
       hash: { type: model.type.string} # check if data changed
@@ -83,6 +88,7 @@ base = (model) ->
       #config: {require: false}
       #dimension: {require: false}
       #data: {required: false}
+      #TODO: add mapping or binding for dataset fields in chart
 
   base.chart = new model chart-config
   base

@@ -54,7 +54,7 @@ angular.module \plotDB
             if @save.handle => $timeout.cancel @save.handle
             @save.handle = null
       save: ->
-        if !$scope.user.data or !$scope.user.data.key => return $scope.auth.toggle true
+        if !$scope.user.authed! => return $scope.auth.toggle true
         if @save.handle => return
         @save.handle = $timeout (~>
           @save.handle = null

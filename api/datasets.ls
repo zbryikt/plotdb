@@ -10,7 +10,7 @@ engine.router.api.get "/dataset/:id", (req, res) ->
     .then (r = {}) ->
       dataset = r.[]rows.0
       if !dataset => return aux.r404 res
-      if ((!req.user or req.user.key != dataset.key) and dataset.{]permission.[]switch.indexOf(\public) < 0) =>
+      if ((!req.user or req.user.key != dataset.key) and dataset.{}permission.[]switch.indexOf(\public) < 0) =>
         return aux.r403 res
       io.query "select * from datafields where datafields.dataset = $1", [dataset.key]
         .then (r = {}) ->
@@ -26,14 +26,14 @@ engine.router.api.post "/dataset/", (req, res) ->
   data = req.body <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
   fields = data.fields or []
   delete data.fields
-  if !Array.isArray(fields) or fields.length == 0 => return aux.r400 res, [true,"field format incorrect"]
-  #TODO enforce in frontend
-  if fields.length > 20 => return aux.r400 res, [true, "field limit exceed"]
+  if data.type == \static and data.format == \csv =>
+    if !Array.isArray(fields) or fields.length == 0 => return aux.r400 res, [true,"field format incorrect"]
+    #TODO enforce in frontend
+    if fields.length > 20 => return aux.r400 res, [true, "field limit exceed"]
   ret = datasettype.lint data
   if ret.0 => return aux.r400 res, ret
   fields = fields.map (field) ->
     if !field or typeof(field) != \object => return aux.r400 res, [true,"field format incorrect"]
-    field <<< {owner: req.user.key}
     datafieldtype.lint field
     return datafieldtype.clean field
   data = datasettype.clean data
@@ -47,11 +47,11 @@ engine.router.api.post "/dataset/", (req, res) ->
       if fields.length =>
         pairslist = fields.map ->
           it.dataset = key
-          pairs = io.aux.insert.format datasettype, fields
+          pairs = io.aux.insert.format datafieldtype, it
           delete pairs.key
           pairs = io.aux.insert.assemble pairs
         columns = pairslist.0.0
-        size = pairslist.0.1.length
+        size = pairslist.0.2.length
         params = pairslist.map(-> it.2).reduce(((a,b) -> a.concat(b)),[])
         placeholder = (for j from 0 til pairslist.length =>
           "(" + ["$#{i + j * size}" for i from 1 to size].join(",") + ")"
@@ -61,7 +61,9 @@ engine.router.api.post "/dataset/", (req, res) ->
             # only send keys to save bandwidth
             data.fields = r.[]rows
             res.send data
-          .catch -> aux.r403 res
+          .catch ->
+            console.error it.stack
+            aux.r403 res
       else => res.send data
     .catch ->
       console.error it.stack

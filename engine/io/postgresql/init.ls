@@ -16,6 +16,35 @@ init-users-table = """create table if not exists users (
   detail jsonb
 )"""
 
+init-datasets-table = """create table if not exists datasets (
+  key serial primary key,
+  owner int references users(key),
+  parent int references datasets(key),
+  name text constraint nlen check (char_length(name) <= 100),
+  description text constraint dlen check (char_length(description) <= 500),
+  tags text[],
+  likes int constraint likecount check ( likes >=0 ),
+  searchable boolean,
+  createdtime timestamp,
+  modifiedtime timestamp,
+  rows int,
+  size int,
+  type text,
+  format text,
+  config jsonb,
+  permission jsonb
+)"""
+
+init-datafields-table = """create table if not exists datafields (
+  key serial primary key,
+  dataset int references datasets(key),
+  datasetname text,
+  location text,
+  name text,
+  datatype text,
+  hash text,
+  data jsonb
+)"""
 
 #refer to chart is deferred and update using alter table"
 init-themes-table = """create table if not exists themes (
@@ -73,6 +102,8 @@ query = (q) -> new Promise (res, rej) ->
 
 query init-users-table 
   .then -> query init-sessions-table
+  .then -> query init-datasets-table
+  .then -> query init-datafields-table
   .then -> query init-themes-table
   .then -> query init-charts-table
   .then -> client.end!

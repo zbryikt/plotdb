@@ -11,24 +11,6 @@ Currently we expect 2 types of data from each category:
 * CSV ( data formatted in table style )
 * JSON
 
-table datasets
-  key int
-  name text
-  description text
-  type [static dynamic realtime]
-  format [csv json]
-  owner
-  createdtime
-  modifiedtime
-  permission
-
-table datafield
-  key int
-  dataset key
-  datatype text
-  name text
-  data jsonb
-
 payload data
   theme
   chart

@@ -45,7 +45,9 @@ angular.module \plotDB
     $scope.notifications = plNotify.queue
     $scope.alert = plNotify.alert
     $scope.nexturl = if /nexturl=([^&]+)/exec((window.location.search or "")) => that.1 else window.location.href
-    $scope.user = data: global.user
+    $scope.user = do
+      data: global.user
+      authed: -> return @data and @data.key
     $scope.data-service = data-service
     $scope.limitscroll = (node) ->
       prevent = (e) ->

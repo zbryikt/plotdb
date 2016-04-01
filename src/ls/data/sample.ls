@@ -4,7 +4,7 @@ angular.module \plotDB
       {
         key: "/dataset/sample/:crimeawar"
         name: "Deaths in Crimea War, 1854", size: 4667, rows: 25, color: \#ddd
-        type: location: \sample, name: \dataset
+        _type: location: \sample, name: \dataset
         fields: [
           * name: "month", type: \Date
           * name: "army size", type: \Number
@@ -23,7 +23,7 @@ angular.module \plotDB
       {
         key: "/dataset/sample/:joblesstaiwan"
         name: "台灣五都失業率與低收入戶", size: 1765, rows: 71, color: \#ddd
-        type: location: \sample, name: \dataset
+        _type: location: \sample, name: \dataset
         fields: [
           * name: "縣市名", type: \String
           * name: "年度", type: \Date
@@ -38,7 +38,7 @@ angular.module \plotDB
       {
         key: "/dataset/sample/:goldprice2000"
         name: "Gold Price(2000)", size: 481, rows: 12, color: \#ddd
-        type: location: \sample, name: \dataset
+        _type: location: \sample, name: \dataset
         fields: [
           * name: "date", type: \Date
           * name: "price", type: \Number
@@ -51,7 +51,7 @@ angular.module \plotDB
       { 
         key: "/dataset/sample/:population2000"
         name: "World Population(2000)", size: 12355, rows: 287, color: \#ddd
-        type: location: \sample, name: \dataset
+        _type: location: \sample, name: \dataset
         fields: [
           * name: "Country", type: \String
           * name: "Population", type: \Number

@@ -120,7 +120,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
     },
     save: function(){
       var this$ = this;
-      if (!$scope.user.data || !$scope.user.data.key) {
+      if (!$scope.user.authed()) {
         return $scope.auth.toggle(true);
       }
       if (this.save.handle) {

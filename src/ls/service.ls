@@ -18,13 +18,13 @@ angular.module \plotDB
         else @items.splice idx, 1, item
         res item
 
-      load: (type, key, refresh = false) ->
+      load: (_type, key, refresh = false) ->
         filter = ->
-          it.type.location == type.location and it.type.name == type.name and it.key == key
+          it._type.location == _type.location and it._type.name == _type.name and it.key == key
         # remove later; always fetch from server since we now have summary version of list
         # item = @[]items.filter(filter).0
         # if item => return Promise.resolve(item)
-        (ret) <~ IOService.load type, key .then
+        (ret) <~ IOService.load _type, key .then
         (res, rej) <~ new Promise _
         <~ $rootScope.$apply-async
         item = (@items or[]).filter(filter).0
@@ -34,18 +34,18 @@ angular.module \plotDB
         res item
 
       delete: (item) ->
-        (ret) <~ IOService.delete item.type, item.key .then
+        (ret) <~ IOService.delete item._type, item.key .then
         (res, rej) <~ new Promise _
         <~ $rootScope.$apply-async
         idx = @[]items.map(->it.key).indexOf(item.key)
         if idx >= 0 => @items.splice idx, 1
         res ret
 
-      list: (type, filter = {}, force = false) ->
-        if !type => type = {location: \any, name: @type}
+      list: (_type, filter = {}, force = false) ->
+        if !_type => _type = {location: \any, name: @type}
         if @items and !force => return Promise.resolve(@items)
         if !@items => @items = []
-        (ret) <~ IOService.list type .then
+        (ret) <~ IOService.list _type .then
         (res, rej) <~ new Promise _
         <~ $rootScope.$apply-async
         @items.splice 0, @items.length
@@ -58,7 +58,7 @@ angular.module \plotDB
 
     baseObject = (name, config) ->
       @ <<< do
-        type: {location: \server, name}
+        _type: {location: \server, name}
         owner: null
         key: null
         permission: {switch: [], value: []}
@@ -75,7 +75,7 @@ angular.module \plotDB
         service[name] = service.Object = @wrapper name, callee
         baseObject.prototype = do
           save: -> service.save @ .then (ret) ~> @key = ret.key
-          load: -> service.load @type, @key .then (ret) ~> @ <<< ret
+          load: -> service.load @_type, @key .then (ret) ~> @ <<< ret
           delete: -> service.delete @
           clone: ->
             # use JSON parse+stringify to deep clone. be aware of Date format issue:

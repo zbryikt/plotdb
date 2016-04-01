@@ -5,7 +5,7 @@ plotdb.{}theme.sample = do
     {
       key: "/theme/sample/:default"
       name: "Default"
-      type: location: \sample, name: \theme
+      _type: location: \sample, name: \theme
       code: content: '''
 var module = {};
 module.exports = plotdb.theme.create({
@@ -42,7 +42,7 @@ module.exports = plotdb.theme.create({
     {
       key: "/theme/sample/:plotdb"
       name: "PlotDB"
-      type: location: \sample, name: \theme
+      _type: location: \sample, name: \theme
       doc: content: '''
 <link href='https://fonts.googleapis.com/css?family=Lato:200,300,400,700' rel='stylesheet' type='text/css'/>
 '''
@@ -104,7 +104,7 @@ line.connect {
     {
       key: "/theme/sample/:playfair"
       name: "Playfair"
-      type: location: \sample, name: \theme
+      _type: location: \sample, name: \theme
       style: content: """
       body { background: \#eee}
       """
@@ -112,7 +112,7 @@ line.connect {
     {
       key: "/theme/sample/:thereporter"
       name: "The Reporter"
-      type: location: \sample, name: \theme
+      _type: location: \sample, name: \theme
       code: content: '''
 var module = {};
 module.exports = plotdb.theme.create({
