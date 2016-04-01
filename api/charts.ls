@@ -6,21 +6,21 @@ charttype = model.type.chart
 
 engine.router.api.get "/chart/", (req, res) ->
   if !req.user => return res.send "[]"
-  io.query [
+  io.query([
     'select users.displayname as "ownerName",charts.*'
-    "from charts,users where users.key = charts.owner and charts.owner = #{req.user.key}"
-  ].join(" ")
+    "from charts,users where users.key = charts.owner and charts.owner = $1"
+  ].join(" "), [req.user.key])
     .then -> res.send it.rows
     .catch ->
       console.log e
       res.send "[]"
 
 engine.router.api.get "/chart/:id", (req, res) ->
-  io.query [
+  io.query([
     'select users.displayname as "ownerName", charts.*'
     'from users,charts where users.key = owner and'
-    "charts.key=#{req.params.id} limit 1"
-  ].join(" ")
+    "charts.key=$1 limit 1"
+  ].join(" "), [req.params.id])
     .then (it={}) ->
       chart = it.[]rows.0
       if !chart => return aux.r404 res
@@ -65,7 +65,7 @@ engine.router.api.put "/chart/:id", (req, res) ~>
   if !req.user => aux.r403 res
   data = req.body
   if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
-  io.query "select * from charts where key = #{req.params.id} limit 1"
+  io.query "select * from charts where key = $1 limit 1", [req.params.id]
     .then (r = {}) ->
       chart = r.rows.0
       if !chart => return aux.r404 res
@@ -82,7 +82,10 @@ engine.router.api.put "/chart/:id", (req, res) ~>
       pairs = io.aux.insert.format charttype, data
       <[key createdtime]>.map -> delete pairs[it]
       pairs = io.aux.insert.assemble pairs
-      io.query "update charts set #{pairs.0} = #{pairs.1} where key = #{req.params.id}", pairs.2
+      io.query(
+        "update charts set #{pairs.0} = #{pairs.1} where key = $#{pairs.2.length + 1}",
+        pairs.2 ++ [req.params.id]
+      )
         .then (r={}) -> res.send data
         .catch ->
           console.error it.stack
@@ -93,12 +96,12 @@ engine.router.api.put "/chart/:id", (req, res) ~>
 
 engine.router.api.delete "/chart/:id", (req, res) ~>
   if !req.user or !req.params.id => aux.r403 res
-  io.query "select * from charts where key = #{req.params.id} limit 1"
+  io.query "select * from charts where key = $1 limit 1", [req.params.id]
     .then (r = {}) ->
       chart = r.[]rows.0
       if !chart => return aux.r404 res
       if chart.owner != req.user.key => return aux.r403 res
-      io.query "delete from charts where key = #{req.params.id}"
+      io.query "delete from charts where key = $1", [req.params.id]
         .then -> res.send []
     .catch ->
       console.error it.stack
