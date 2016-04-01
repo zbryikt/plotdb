@@ -1,20 +1,34 @@
 base = (model) ->
+
+  base.json = new model do
+    name: \json
+
   base.dataset = new model do
     name: \dataset
-    types: <[csv]>
+    types: <[csv json]>
     default-fields: true
-    lint: ->
-      if !it => return [true]
-      if typeof(it) != 'object' => return [true]
-      if !it.name or typeof(it.name) != 'string' => return [true, null, \name]
-      if !(it.datatype in base.dataset.config.types) => return [true, null, \type]
-      for key in <[createdtime modifiedtime]> =>
-        if !it[key] => continue
-        ret = model.type.date.lint(it[key])
-        if ret.0 => return ret
-      #TODO lint data by type
-      #TODO lint permission
-      return [false]
+    base: do
+      owner: {required: true, type: model.type.key({type:model.type.user})}
+      parent: { required: false, type: model.type.key({type: base.theme})}
+      name: {max: 100, min: 1, required: true, type: model.type.string}
+      description: {max: 512, required: false, type: model.type.string}
+      tags: { required: false, type: model.type.array({max: 50, min: 1, type: model.type.string})}
+      likes: {required: false, type: model.type.number}
+      searchable: { required: false, type: model.type.boolean }
+      createdtime: {required: false, type: model.type.date}
+      modifiedtime: {required: false, type: model.type.date}
+      permission: {type: model.type.permission}
+      origin: {type: model.type.string} # static / dynamic / realtime
+      format: {type: model.type.string} # csv / json
+      config: {max: 1024, type: base.json} # for dynamic / realtime configuration
+
+  base.datafield = new model do
+    name: \datafield
+    base:
+      dataset: {required: true, type: model.type.key({type:base.dataset})}
+      name: { type: model.type.string}
+      hash: { type: model.type.string} # check if data changed
+      data: { type: base.json} 
 
   base.file = new model do
     name: \file

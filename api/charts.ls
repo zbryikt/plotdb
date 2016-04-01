@@ -11,8 +11,8 @@ engine.router.api.get "/chart/", (req, res) ->
     "from charts,users where users.key = charts.owner and charts.owner = $1"
   ].join(" "), [req.user.key])
     .then -> res.send it.rows
-    .catch ->
-      console.log e
+    .catch (e) ->
+      console.log e.stack
       res.send "[]"
 
 engine.router.api.get "/chart/:id", (req, res) ->
@@ -41,10 +41,10 @@ dethumb = (chart) ->
 #TODO save thumbnail
 engine.router.api.post "/chart/", (req, res) ->
   if !req.user => return aux.r403 res
-  data = req.body <<< {owner: req.user.key}
+  if typeof(req.body) != \object => return aux.r400 res
+  data = req.body <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
   [type, thumb] = dethumb data
   if data.key => fs.write-file "static/s/chart/#{data.key}", thumb
-  data.createdtime = new Date!
   ret = charttype.lint data
   if ret.0 => return aux.r400 res, ret
   data = charttype.clean data
@@ -62,7 +62,8 @@ engine.router.api.post "/chart/", (req, res) ->
 
 #TODO save thumbnail
 engine.router.api.put "/chart/:id", (req, res) ~>
-  if !req.user => aux.r403 res
+  if !req.user => return aux.r403 res
+  if typeof(req.body) != \object => return aux.r400 res
   data = req.body
   if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
   io.query "select * from charts where key = $1 limit 1", [req.params.id]
@@ -95,7 +96,7 @@ engine.router.api.put "/chart/:id", (req, res) ~>
       return aux.r403 res
 
 engine.router.api.delete "/chart/:id", (req, res) ~>
-  if !req.user or !req.params.id => aux.r403 res
+  if !req.user => return aux.r403 res
   io.query "select * from charts where key = $1 limit 1", [req.params.id]
     .then (r = {}) ->
       chart = r.[]rows.0

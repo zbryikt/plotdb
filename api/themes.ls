@@ -30,7 +30,8 @@ engine.router.api.get "/theme/:id", (req, res) ->
 
 engine.router.api.post "/theme/", (req, res) ->
   if !req.user => return aux.r403 res
-  data = req.body <<< {owner: req.user.key}
+  if typeof(req.body) != \object => return aux.r400 res
+  data = req.body <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
   ret = themetype.lint data
   if ret.0 => return aux.r400 res, ret
   data = themetype.clean data
@@ -61,7 +62,8 @@ engine.router.api.post "/theme/", (req, res) ->
 
 
 engine.router.api.put "/theme/:id", (req, res) ~>
-  if !req.user => aux.r403 res
+  if !req.user => return aux.r403 res
+  if typeof(req.body) != \object => return aux.r400 res
   data = req.body
   if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
 
