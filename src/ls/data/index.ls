@@ -1,21 +1,8 @@
 angular.module \plotDB
 
-  ..filter \size, -> ->
-    if !it or isNaN(it) => return \0B
-    if it < 1000 => "#{it}B"
-    else if it < 1048576 => "#{parseInt(it / 102.4)/10}KB"
-    else "#{parseInt(it / 104857.6)/10}MB"
-  ..service \plUtil, <[$rootScope]> ++ ($rootScope) ->
-    ret = do
-      format: do
-        size: ->
-          if it < 1000 => "#{it}bytes"
-          else if it < 1048576 => "#{parseInt(it / 102.4)/10}KB"
-          else "#{parseInt(it / 104857.6)/10}MB"
-
   ..service \dataService,
-  <[$rootScope $http IOService sampleData baseService plUtil plNotify eventBus]> ++
-  ($rootScope, $http, IOService, sampleData, baseService, plUtil, plNotify, eventBus) ->
+  <[$rootScope $http IOService sampleData baseService plNotify eventBus]> ++
+  ($rootScope, $http, IOService, sampleData, baseService, plNotify, eventBus) ->
     name = \dataset
     service = do
       sample: sampleData
@@ -107,8 +94,8 @@ angular.module \plotDB
     dataService
 
   ..controller \dataEditCtrl,
-  <[$scope $timeout $http dataService plUtil eventBus plNotify]> ++
-  ($scope, $timeout, $http, data-service, plUtil, eventBus, plNotify) ->
+  <[$scope $timeout $http dataService eventBus plNotify]> ++
+  ($scope, $timeout, $http, data-service, eventBus, plNotify) ->
     $scope.name = null
     $scope.dataset = null
     $scope.save = (locally = false) ->
@@ -136,7 +123,10 @@ angular.module \plotDB
       $scope.data.raw = ([fields.join(",")] ++ dataset.data.map((obj)->fields.map(->obj[it]).join(\,))).join(\\n)
 
     $scope.data = do
-      init: -> $scope.$watch 'data.raw', (->$scope.data.parse!)
+      init: ->
+        $(\#data-edit-textarea)
+          .on \change, -> $scope.$apply -> $scope.data.parse!
+          .on \keydown, -> $scope.$apply -> $scope.data.parse!
       reset: (data = "") ->
         $scope.dataset = null
         $scope.data.raw = data

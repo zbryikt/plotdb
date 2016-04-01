@@ -68,7 +68,7 @@ div(ng-controller="dataEditCtrl")
           i.fa.fa-table
           span &nbsp; google sheet 
     .panel-body
-      textarea.form-control(rows="6",ng-model="data.raw",
+      textarea#data-edit-textarea.form-control(rows="6",ng-model="data.raw",
       placeholder="paste or drag your data here...",
       style="margin-bottom:13px;font-family:monospace;max-width:100%",
       ng-disabled="dataset.type.location=='sample'"

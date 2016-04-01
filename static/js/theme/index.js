@@ -4,7 +4,7 @@ x$ = angular.module('plotDB');
 x$.service('sampleTheme', ['$rootScope'].concat(function($rootScope){
   return plotdb.theme.sample;
 }));
-x$.service('themeService', ['$rootScope', '$http', 'IOService', 'sampleTheme', 'baseService', 'plUtil', 'plNotify', 'eventBus'].concat(function($rootScope, $http, IOService, sampleTheme, baseService, plUtil, plNotify, eventBus){
+x$.service('themeService', ['$rootScope', '$http', 'IOService', 'sampleTheme', 'baseService', 'plNotify', 'eventBus'].concat(function($rootScope, $http, IOService, sampleTheme, baseService, plNotify, eventBus){
   var service, object, themeService;
   service = {
     sample: sampleTheme,

@@ -1,7 +1,4 @@
 angular.module \plotDB
-  ..filter \tags, -> -> if Array.isArray(it) => it else (it or "").split(\,)
-  ..filter \date, -> -> new Date(it)
-  ..filter \length, -> -> [k for k of it].length
   ..service \chartService,
   <[$rootScope $http sampleChart IOService baseService]> ++
   ($rootScope, $http, sampleChart, IOService, baseService) ->

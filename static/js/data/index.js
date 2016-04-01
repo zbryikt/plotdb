@@ -1,1 +1,435 @@
-function import$(t,e){var n={}.hasOwnProperty;for(var a in e)n.call(e,a)&&(t[a]=e[a]);return t}var x$;x$=angular.module("plotDB"),x$.filter("size",function(){return function(t){return!t||isNaN(t)?"0B":1e3>t?t+"B":1048576>t?parseInt(t/102.4)/10+"KB":parseInt(t/104857.6)/10+"MB"}}),x$.service("plUtil",["$rootScope"].concat(function(){var t;return t={format:{size:function(t){return 1e3>t?t+"bytes":1048576>t?parseInt(t/102.4)/10+"KB":parseInt(t/104857.6)/10+"MB"}}}})),x$.service("dataService",["$rootScope","$http","IOService","sampleData","baseService","plUtil","plNotify","eventBus"].concat(function(t,e,n,a,r){var i,s,u,o,l;return i="dataset",s={sample:a,init:function(){var t=this;return this.list().then(function(){return t.localinfo.update()})},localinfo:{rows:0,size:0,update:function(){var t,e,n,a,r=[];for(this.rows=0,this.size=0,t=0,n=(e=s.items).length;n>t;++t)a=e[t],"local"===a.type.location&&(this.rows+=a.rows,r.push(this.size+=a.size));return r}}},u=function(t,e,n){return null==e&&(e=null),null==n&&(n=null),!n&&e&&(n=e.fields.filter(function(e){return e.name===t})[0]),n&&import$(this,n),this.name=t,this._=function(){},e&&this.setDataset(e),this},u.prototype={dataset:{type:{},key:null},name:null,type:null,update:function(){var t=this;return this.getDataset().then(function(e){return e?(t.data=(e.data||(e.data=[])).map(function(e){return e[t.name]}),t.settype()):void 0})},setDataset:function(t){var e;return null==t&&(t=null),this._.dataset=t,t&&t.type&&t.key?(e=this.dataset,e.type=t.type,e.key=t.key,e).name=t.name:(e=this.dataset.type,e.type={},e.key=null,e.name=null),Promise.resolve(t)},getDataset:function(){var t,e=this;return(t=this._.dataset)?Promise.resolve(t):this.dataset.type&&this.dataset.key?l.load(this.dataset.type,this.dataset.key).then(function(t){var n;return e._.dataset=t,(n=e.dataset,n.type=t.type,n.key=t.key,n).name=t.name,e._.dataset}):Promise.resolve(null)},settype:function(){function t(t){return plotdb[i].test(t)}function e(t){return!t}var n,a,r,i;for(n=["Boolean","Percent","Number","Date","String"].concat([null]),a=0,r=n.length;r>a;++a){if(i=n[a],!i)return this.type="String";if(!this.data.map(t).filter(e).length){this.type=i;break}}}},o=function(){var t,e,n,a,r;for(t=[],e=0,a=(n=this.fields||[]).length;a>e;++e)r=n[e],t.push(new u(r.name,this,r));return this.fields=t,this.save=function(){var t=this;return this.fields.map(function(t){var e;return e=t.data,delete t.data,e}),o.prototype.save.call(this).then(function(){return t.fields.map(function(e){var n;return n=e.dataset,n.type=t.type,n.key=t.key,n}),t.update()})},this.load=function(){var t=this;return o.prototype.load.call(this).then(function(){return o.call(t)})},this.update(),this},o.prototype={bind:function(){},update:function(t){var e,n,a,r,i,s,o,l,d=this;null==t&&(t=null),t&&(this.data=t),this.data||(this.data=[]),n=[];for(a in this.data[0])n.push(a);for(e=n,n=[],i=0,s=e.length;s>i;++i)o=i,(l=this.fields[o])||this.fields.push(new u(e[o],this)),this.fields[o].name=e[o],n.push(this.fields[o].update());return r=n,Promise.all(r).then(function(){return d.size=angular.toJson(d.data).length,d.rows=d.data.length})}},l=r.derive(i,s,o)})),x$.controller("dataEditCtrl",["$scope","$timeout","$http","dataService","plUtil","eventBus","plNotify"].concat(function(t,e,n,a,r,i,s){return t.name=null,t.dataset=null,t.save=function(e){var n;if(null==e&&(e=!1),t.name){if(!t.user.data||!t.user.data.key)return t.auth.toggle(!0);if(!t.dataset||t.dataset.type.location===(e?"local":"server"))return t.data.parse(!0),t.dataset||(n={name:t.name,type:{location:e?"local":"server",name:"dataset"},owner:null,permission:{"switch":["public"],value:[]},datatype:"csv"},t.dataset=new a.dataset(n)),t.dataset.name=t.name,t.dataset.update(t.data.parsed).then(function(){return t.dataset.save().then(function(){return t.$apply(function(){return s.send("success","dataset saved")})})["catch"](function(e){return t.$apply(function(){return s.aux.error.io("save","data",e)})})})}},t.loadDataset=function(e){var n;return t.dataset=e,t.name=e.name,n=e.fields.map(function(t){return t.name}),t.data.raw=[n.join(",")].concat(e.data.map(function(t){return n.map(function(e){return t[e]}).join(",")})).join("\n")},t.data={init:function(){return t.$watch("data.raw",function(){return t.data.parse()})},reset:function(e){return null==e&&(e=""),t.dataset=null,t.data.raw=e},raw:"",rows:0,size:0,parsed:null,parse:function(t){var n,a=this;return null==t&&(t=!1),n=function(){return t||(a.handler=null),a.parsed=Papa.parse(a.raw,{header:!0}).data,a.rows=a.parsed.length,a.size=a.raw.length},t?n():(this.handler&&e.cancel(this.handler),this.handler=e(function(){return n()},t?0:1e3))}},t.data.init(),t.parser={encoding:"UTF-8",csv:{toggle:function(){return setTimeout(function(){return $("#data-edit-csv-modal").modal("show")},0)},read:function(){var e,n;return e=$("#data-edit-csv-file")[0].files[0],n=new FileReader,n.onload=function(e){return t.$apply(function(){return t.data.reset(e.target.result.trim())}),$("#data-edit-csv-modal").modal("hide")},n.onerror=function(){},n.readAsText(e,t.parser.encoding)}},gsheet:{url:null,toggle:function(){return setTimeout(function(){return $("#data-edit-gsheet-modal").modal("show")},0)},read:function(){var e,a,r;return(e=/\/d\/([^\/]+)/.exec(t.parser.gsheet.url))?(a=e[1],r="https://spreadsheets.google.com/feeds/list/"+a+"/1/public/values?alt=json",n({url:r,method:"GET"}).success(function(e){var n,a,r,i;n={},e.feed.entry.map(function(t){var e,a,r=[];for(e in t)(a=/^gsx\$(.+)$/.exec(e))&&r.push(n[a[1]]=1);return r}),a=[];for(r in n)a.push(r);return n=a,i=[n.join(",")].concat(e.feed.entry.map(function(t){var e;return function(){var a,r,i,s=[];for(a=0,i=(r=n).length;i>a;++a)e=r[a],s.push((t["gsx$"+e]||{$t:""}).$t);return s}().join(",")})),t.$apply(function(){return t.data.reset(i.join("\n"))}),setTimeout(function(){return $("#data-edit-gsheet-modal").modal("hide")},0)})):void 0}},link:{url:null,toggle:function(){return setTimeout(function(){return $("#data-edit-link-modal").modal("show")},0)},read:function(){return n({url:"http://crossorigin.me/"+t.parser.link.url,method:"GET"}).success(function(e){return t.$apply(function(){return t.data.reset(e.trim())}),$("#data-edit-link-modal").modal("hide")})}}},i.listen("dataset.delete",function(e){return t.dataset.key===e?t.dataset=null:void 0}),i.listen("dataset.edit",function(e){return t.loadDataset(e)})})),x$.controller("dataFiles",["$scope","dataService","plNotify","eventBus"].concat(function(t,e,n,a){return t.datasets=e.datasets,e.list().then(function(e){return t.datasets=e,t.edit=function(t){return a.fire("dataset.edit",t)},t.chosen={dataset:null,key:null},t.toggle=function(t){var e;return t&&this.chosen.key!==t.key?(this.chosen.key=t.key,this.chosen.dataset=t):(e=this.chosen,e.dataset=null,e.key=null,e)},t.remove=function(e){return e["delete"]().then(function(){return t.$apply(function(){return t.datasets=t.datasets.filter(function(t){return t.key!==e.key})})})}})}));
+// Generated by LiveScript 1.3.1
+var x$;
+x$ = angular.module('plotDB');
+x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'baseService', 'plNotify', 'eventBus'].concat(function($rootScope, $http, IOService, sampleData, baseService, plNotify, eventBus){
+  var name, service, Field, Dataset, dataService;
+  name = 'dataset';
+  service = {
+    sample: sampleData,
+    init: function(){
+      var this$ = this;
+      return this.list().then(function(){
+        return this$.localinfo.update();
+      });
+    },
+    localinfo: {
+      rows: 0,
+      size: 0,
+      update: function(){
+        var i$, ref$, len$, item, results$ = [];
+        this.rows = 0;
+        this.size = 0;
+        for (i$ = 0, len$ = (ref$ = service.items).length; i$ < len$; ++i$) {
+          item = ref$[i$];
+          if (item.type.location === 'local') {
+            this.rows += item.rows;
+            results$.push(this.size += item.size);
+          }
+        }
+        return results$;
+      }
+    }
+  };
+  Field = function(name, dataset, field){
+    dataset == null && (dataset = null);
+    field == null && (field = null);
+    if (!field && dataset) {
+      field = dataset.fields.filter(function(it){
+        return it.name === name;
+      })[0];
+    }
+    if (field) {
+      import$(this, field);
+    }
+    this.name = name;
+    this._ = function(){};
+    if (dataset) {
+      this.setDataset(dataset);
+    }
+    return this;
+  };
+  Field.prototype = {
+    dataset: {
+      type: {},
+      key: null
+    },
+    name: null,
+    type: null,
+    update: function(){
+      var this$ = this;
+      return this.getDataset().then(function(dataset){
+        if (!dataset) {
+          return;
+        }
+        this$.data = (dataset.data || (dataset.data = [])).map(function(it){
+          return it[this$.name];
+        });
+        return this$.settype();
+      });
+    },
+    setDataset: function(dataset){
+      var ref$;
+      dataset == null && (dataset = null);
+      this._.dataset = dataset;
+      if (dataset && dataset.type && dataset.key) {
+        (ref$ = this.dataset, ref$.type = dataset.type, ref$.key = dataset.key, ref$).name = dataset.name;
+      } else {
+        ref$ = this.dataset.type;
+        ref$.type = {};
+        ref$.key = null;
+        ref$.name = null;
+      }
+      return Promise.resolve(dataset);
+    },
+    getDataset: function(){
+      var that, this$ = this;
+      if (that = this._.dataset) {
+        return Promise.resolve(that);
+      }
+      if (!this.dataset.type || !this.dataset.key) {
+        return Promise.resolve(null);
+      }
+      return dataService.load(this.dataset.type, this.dataset.key).then(function(ret){
+        var ref$;
+        this$._.dataset = ret;
+        (ref$ = this$.dataset, ref$.type = ret.type, ref$.key = ret.key, ref$).name = ret.name;
+        return this$._.dataset;
+      });
+    },
+    settype: function(){
+      var types, i$, len$, type;
+      types = ['Boolean', 'Percent', 'Number', 'Date', 'String'].concat([null]);
+      for (i$ = 0, len$ = types.length; i$ < len$; ++i$) {
+        type = types[i$];
+        if (!type) {
+          return this.type = 'String';
+        }
+        if (!this.data.map(fn$).filter(fn1$).length) {
+          this.type = type;
+          break;
+        }
+      }
+      function fn$(it){
+        return plotdb[type].test(it);
+      }
+      function fn1$(it){
+        return !it;
+      }
+    }
+  };
+  Dataset = function(){
+    var res$, i$, ref$, len$, f;
+    res$ = [];
+    for (i$ = 0, len$ = (ref$ = this.fields || []).length; i$ < len$; ++i$) {
+      f = ref$[i$];
+      res$.push(new Field(f.name, this, f));
+    }
+    this.fields = res$;
+    this.save = function(){
+      var this$ = this;
+      this.fields.map(function(it){
+        var ref$;
+        return ref$ = it.data, delete it.data, ref$;
+      });
+      return Dataset.prototype.save.call(this).then(function(){
+        this$.fields.map(function(it){
+          var ref$;
+          return ref$ = it.dataset, ref$.type = this$.type, ref$.key = this$.key, ref$;
+        });
+        return this$.update();
+      });
+    };
+    this.load = function(){
+      var this$ = this;
+      return Dataset.prototype.load.call(this).then(function(){
+        return Dataset.call(this$);
+      });
+    };
+    this.update();
+    return this;
+  };
+  Dataset.prototype = {
+    bind: function(field){},
+    update: function(data){
+      var names, res$, k, promises, i$, to$, i, that, this$ = this;
+      data == null && (data = null);
+      if (data) {
+        this.data = data;
+      }
+      if (!this.data) {
+        this.data = [];
+      }
+      res$ = [];
+      for (k in this.data[0]) {
+        res$.push(k);
+      }
+      names = res$;
+      res$ = [];
+      for (i$ = 0, to$ = names.length; i$ < to$; ++i$) {
+        i = i$;
+        if (that = this.fields[i]) {
+          that;
+        } else {
+          this.fields.push(new Field(names[i], this));
+        }
+        this.fields[i].name = names[i];
+        res$.push(this.fields[i].update());
+      }
+      promises = res$;
+      return Promise.all(promises).then(function(){
+        this$.size = angular.toJson(this$.data).length;
+        return this$.rows = this$.data.length;
+      });
+    }
+  };
+  dataService = baseService.derive(name, service, Dataset);
+  return dataService;
+}));
+x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'eventBus', 'plNotify'].concat(function($scope, $timeout, $http, dataService, eventBus, plNotify){
+  $scope.name = null;
+  $scope.dataset = null;
+  $scope.save = function(locally){
+    var config, this$ = this;
+    locally == null && (locally = false);
+    if (!$scope.name) {
+      return;
+    }
+    if (!$scope.user.data || !$scope.user.data.key) {
+      return $scope.auth.toggle(true);
+    }
+    if ($scope.dataset && $scope.dataset.type.location !== (locally ? 'local' : 'server')) {
+      return;
+    }
+    $scope.data.parse(true);
+    if (!$scope.dataset) {
+      config = {
+        name: $scope.name,
+        type: {
+          location: locally ? 'local' : 'server',
+          name: 'dataset'
+        },
+        owner: null,
+        permission: {
+          'switch': ['public'],
+          value: []
+        },
+        datatype: 'csv'
+      };
+      $scope.dataset = new dataService.dataset(config);
+    }
+    $scope.dataset.name = $scope.name;
+    return $scope.dataset.update($scope.data.parsed).then(function(){
+      return $scope.dataset.save().then(function(){
+        return $scope.$apply(function(){
+          return plNotify.send('success', "dataset saved");
+        });
+      })['catch'](function(e){
+        return $scope.$apply(function(){
+          return plNotify.aux.error.io('save', 'data', e);
+        });
+      });
+    });
+  };
+  $scope.loadDataset = function(dataset){
+    var fields;
+    $scope.dataset = dataset;
+    $scope.name = dataset.name;
+    fields = dataset.fields.map(function(it){
+      return it.name;
+    });
+    return $scope.data.raw = ([fields.join(",")].concat(dataset.data.map(function(obj){
+      return fields.map(function(it){
+        return obj[it];
+      }).join(',');
+    }))).join('\n');
+  };
+  $scope.data = {
+    init: function(){
+      return $('#data-edit-textarea').on('change', function(){
+        return $scope.$apply(function(){
+          return $scope.data.parse();
+        });
+      }).on('keydown', function(){
+        return $scope.$apply(function(){
+          return $scope.data.parse();
+        });
+      });
+    },
+    reset: function(data){
+      data == null && (data = "");
+      $scope.dataset = null;
+      return $scope.data.raw = data;
+    },
+    raw: "",
+    rows: 0,
+    size: 0,
+    parsed: null,
+    parse: function(force){
+      var _, this$ = this;
+      force == null && (force = false);
+      _ = function(){
+        if (!force) {
+          this$.handler = null;
+        }
+        this$.parsed = Papa.parse(this$.raw, {
+          header: true
+        }).data;
+        this$.rows = this$.parsed.length;
+        return this$.size = this$.raw.length;
+      };
+      if (force) {
+        return _();
+      }
+      if (this.handler) {
+        $timeout.cancel(this.handler);
+      }
+      return this.handler = $timeout(function(){
+        return _();
+      }, force ? 0 : 1000);
+    }
+  };
+  $scope.data.init();
+  $scope.parser = {
+    encoding: 'UTF-8',
+    csv: {
+      toggle: function(){
+        return setTimeout(function(){
+          return $('#data-edit-csv-modal').modal('show');
+        }, 0);
+      },
+      read: function(){
+        var file, reader;
+        file = $('#data-edit-csv-file')[0].files[0];
+        reader = new FileReader();
+        reader.onload = function(e){
+          $scope.$apply(function(){
+            return $scope.data.reset(e.target.result.trim());
+          });
+          return $('#data-edit-csv-modal').modal('hide');
+        };
+        reader.onerror = function(e){};
+        return reader.readAsText(file, $scope.parser.encoding);
+      }
+    },
+    gsheet: {
+      url: null,
+      toggle: function(){
+        return setTimeout(function(){
+          return $('#data-edit-gsheet-modal').modal('show');
+        }, 0);
+      },
+      read: function(){
+        var ret, key, url;
+        ret = /\/d\/([^\/]+)/.exec($scope.parser.gsheet.url);
+        if (!ret) {
+          return;
+        }
+        key = ret[1];
+        url = "https://spreadsheets.google.com/feeds/list/" + key + "/1/public/values?alt=json";
+        return $http({
+          url: url,
+          method: 'GET'
+        }).success(function(data){
+          var fields, res$, k, lines;
+          fields = {};
+          data.feed.entry.map(function(it){
+            var key, that, results$ = [];
+            for (key in it) {
+              if (that = /^gsx\$(.+)$/.exec(key)) {
+                results$.push(fields[that[1]] = 1);
+              }
+            }
+            return results$;
+          });
+          res$ = [];
+          for (k in fields) {
+            res$.push(k);
+          }
+          fields = res$;
+          lines = [fields.join(',')].concat(data.feed.entry.map(function(it){
+            var key;
+            return (function(){
+              var i$, ref$, len$, results$ = [];
+              for (i$ = 0, len$ = (ref$ = fields).length; i$ < len$; ++i$) {
+                key = ref$[i$];
+                results$.push((it["gsx$" + key] || {
+                  $t: ""
+                }).$t);
+              }
+              return results$;
+            }()).join(',');
+          }));
+          $scope.$apply(function(){
+            return $scope.data.reset(lines.join('\n'));
+          });
+          return setTimeout(function(){
+            return $('#data-edit-gsheet-modal').modal('hide');
+          }, 0);
+        });
+      }
+    },
+    link: {
+      url: null,
+      toggle: function(){
+        return setTimeout(function(){
+          return $('#data-edit-link-modal').modal('show');
+        }, 0);
+      },
+      read: function(){
+        return $http({
+          url: "http://crossorigin.me/" + $scope.parser.link.url,
+          method: 'GET'
+        }).success(function(d){
+          $scope.$apply(function(){
+            return $scope.data.reset(d.trim());
+          });
+          return $('#data-edit-link-modal').modal('hide');
+        });
+      }
+    }
+  };
+  eventBus.listen('dataset.delete', function(key){
+    if ($scope.dataset.key === key) {
+      return $scope.dataset = null;
+    }
+  });
+  return eventBus.listen('dataset.edit', function(dataset){
+    return $scope.loadDataset(dataset);
+  });
+}));
+x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].concat(function($scope, dataService, plNotify, eventBus){
+  $scope.datasets = dataService.datasets;
+  return dataService.list().then(function(ret){
+    $scope.datasets = ret;
+    $scope.edit = function(dataset){
+      return eventBus.fire('dataset.edit', dataset);
+    };
+    $scope.chosen = {
+      dataset: null,
+      key: null
+    };
+    $scope.toggle = function(dataset){
+      var ref$;
+      if (!dataset || this.chosen.key === dataset.key) {
+        return ref$ = this.chosen, ref$.dataset = null, ref$.key = null, ref$;
+      }
+      this.chosen.key = dataset.key;
+      return this.chosen.dataset = dataset;
+    };
+    return $scope.remove = function(dataset){
+      var this$ = this;
+      return dataset['delete']().then(function(){
+        return $scope.$apply(function(){
+          return $scope.datasets = $scope.datasets.filter(function(it){
+            return it.key !== dataset.key;
+          });
+        });
+      });
+    };
+  });
+}));
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}
