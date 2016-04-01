@@ -41,7 +41,7 @@ angular.module \plotDB
 
     themeService = baseService.derive \theme, service, object
     themeService
-/*
+    /*
   ..controller \themeEditor,
   <[$scope $http $timeout $interval dataService chartService paletteService themeService plNotify]> ++
   ($scope, $http, $timeout, $interval, data-service, chart-service, palette-service, theme-service, plNotify) ->

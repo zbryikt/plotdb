@@ -494,7 +494,7 @@ angular.module \plotDB
         $scope.load {name: $scope.type, location}, key
       assets: do
         measure: ->
-          $scope.target.assets.size = $scope.target.assets.map(-> it.content.length ).reduce(((a,b)->a+b),0)
+          $scope.target.[]assets.size = $scope.target.assets.map(-> it.content.length ).reduce(((a,b)->a+b),0)
         preview: (file) ->
           @preview.toggled = true
           datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
@@ -511,7 +511,7 @@ angular.module \plotDB
             idx = result.indexOf(\;)
             type = result.substring(5,idx)
             content = result.substring(idx + 8)
-            size = $scope.target.assets.map(->(it.content or "").length).reduce(((a,b)->a+b),0) + content.length
+            size = $scope.target.[]assets.map(->(it.content or "").length).reduce(((a,b)->a+b),0) + content.length
             if size > 3000000 => $scope.$apply ->
               plNotify.alert "Assets size limit (3MB) exceeded. won't upload."
               $scope.target.remove-file file

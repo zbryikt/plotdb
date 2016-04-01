@@ -1,3 +1,4 @@
+require! <[fs]>
 require! <[../engine/aux ../engine/share/model/]>
 (engine,io) <- (->module.exports = it)  _
 
@@ -30,10 +31,19 @@ engine.router.api.get "/chart/:id", (req, res) ->
       console.error it.stack
       return aux.r403 res
 
+dethumb = (chart) ->
+  thumb = chart.thumbnail.split('base64,')
+  ret = /data:([^;]+);/.exec(thumb.0)
+  if !ret => return null
+  delete chart.thumbnail
+  [type, thumb] = [ret.1, new Buffer(thumb.1, 'base64')]
+
 #TODO save thumbnail
 engine.router.api.post "/chart/", (req, res) ->
   if !req.user => return aux.r403 res
   data = req.body <<< {owner: req.user.key}
+  [type, thumb] = dethumb data
+  if data.key => fs.write-file "static/s/chart/#{data.key}", thumb
   data.createdtime = new Date!
   ret = charttype.lint data
   if ret.0 => return aux.r400 res, ret
@@ -64,6 +74,8 @@ engine.router.api.put "/chart/:id", (req, res) ~>
         owner: req.user.key
         key: req.params.id
         modifiedtime: new Date!toUTCString!
+      [type, thumb] = dethumb data
+      if data.key => fs.write-file "static/s/chart/#{data.key}", thumb
       ret = charttype.lint(data)
       if ret.0 => return aux.r400 res, ret
       data := charttype.clean data
@@ -75,6 +87,19 @@ engine.router.api.put "/chart/:id", (req, res) ~>
         .catch ->
           console.error it.stack
           aux.r403 res
+    .catch ->
+      console.error it.stack
+      return aux.r403 res
+
+engine.router.api.delete "/chart/:id", (req, res) ~>
+  if !req.user or !req.params.id => aux.r403 res
+  io.query "select * from charts where key = #{req.params.id} limit 1"
+    .then (r = {}) ->
+      chart = r.[]rows.0
+      if !chart => return aux.r404 res
+      if chart.owner != req.user.key => return aux.r403 res
+      io.query "delete from charts where key = #{req.params.id}"
+        .then -> res.send []
     .catch ->
       console.error it.stack
       return aux.r403 res

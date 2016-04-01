@@ -955,7 +955,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
     },
     assets: {
       measure: function(){
-        return $scope.target.assets.size = $scope.target.assets.map(function(it){
+        var ref$;
+        return ((ref$ = $scope.target).assets || (ref$.assets = [])).size = $scope.target.assets.map(function(it){
           return it.content.length;
         }).reduce(function(a, b){
           return a + b;
@@ -978,12 +979,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
           file = $scope.target.addFile(name, type, null);
           fr = new FileReader();
           fr.onload = function(){
-            var result, idx, type, content, size;
+            var result, idx, type, content, size, ref$;
             result = fr.result;
             idx = result.indexOf(';');
             type = result.substring(5, idx);
             content = result.substring(idx + 8);
-            size = $scope.target.assets.map(function(it){
+            size = ((ref$ = $scope.target).assets || (ref$.assets = [])).map(function(it){
               return (it.content || "").length;
             }).reduce(function(a, b){
               return a + b;
