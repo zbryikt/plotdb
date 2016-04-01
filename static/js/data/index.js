@@ -186,8 +186,11 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
   return dataService;
 }));
 x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'eventBus', 'plNotify'].concat(function($scope, $timeout, $http, dataService, eventBus, plNotify){
+  import$($scope, {
+    rawdata: "",
+    dataset: null
+  });
   $scope.name = null;
-  $scope.dataset = null;
   $scope.save = function(locally){
     var config, this$ = this;
     locally == null && (locally = false);
@@ -200,7 +203,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     if ($scope.dataset && $scope.dataset.type.location !== (locally ? 'local' : 'server')) {
       return;
     }
-    $scope.data.parse(true);
+    $scope.parse.run(true);
     if (!$scope.dataset) {
       config = {
         name: $scope.name,
@@ -218,7 +221,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       $scope.dataset = new dataService.dataset(config);
     }
     $scope.dataset.name = $scope.name;
-    return $scope.dataset.update($scope.data.parsed).then(function(){
+    return $scope.dataset.update($scope.parse.result).then(function(){
       return $scope.dataset.save().then(function(){
         return $scope.$apply(function(){
           return plNotify.send('success', "dataset saved");
@@ -237,58 +240,82 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     fields = dataset.fields.map(function(it){
       return it.name;
     });
-    return $scope.data.raw = ([fields.join(",")].concat(dataset.data.map(function(obj){
+    return $scope.rawdata = ([fields.join(",")].concat(dataset.data.map(function(obj){
       return fields.map(function(it){
         return obj[it];
       }).join(',');
     }))).join('\n');
   };
-  $scope.data = {
+  import$($scope, {
+    reset: function(rawdata){
+      return $scope.dataset = new dataService.dataset(), $scope.rawdata = rawdata, $scope;
+    },
     init: function(){
-      return $('#data-edit-textarea').on('change', function(){
-        return $scope.$apply(function(){
-          return $scope.data.parse();
-        });
-      }).on('keydown', function(){
-        return $scope.$apply(function(){
-          return $scope.data.parse();
-        });
+      this.reset("");
+      return $scope.$watch('rawdata', function(){
+        return $scope.parse.run();
       });
-    },
-    reset: function(data){
-      data == null && (data = "");
-      $scope.dataset = null;
-      return $scope.data.raw = data;
-    },
-    raw: "",
+    }
+  });
+  $scope.parse = {
     rows: 0,
+    fields: 0,
     size: 0,
-    parsed: null,
-    parse: function(force){
+    result: null,
+    loading: false,
+    handle: null,
+    run: function(force){
       var _, this$ = this;
       force == null && (force = false);
+      this.loading = true;
       _ = function(){
-        if (!force) {
-          this$.handler = null;
-        }
-        this$.parsed = Papa.parse(this$.raw, {
-          header: true
-        }).data;
-        this$.rows = this$.parsed.length;
-        return this$.size = this$.raw.length;
+        this$.handle = null;
+        this$.result = {};
+        return Papa.parse($scope.rawdata || "", {
+          worker: true,
+          header: true,
+          step: function(arg$){
+            var rows, i$, len$, row, lresult$, k, v, ref$, results$ = [];
+            rows = arg$.data;
+            for (i$ = 0, len$ = rows.length; i$ < len$; ++i$) {
+              row = rows[i$];
+              lresult$ = [];
+              for (k in row) {
+                v = row[k];
+                lresult$.push(((ref$ = this$.result)[k] || (ref$[k] = [])).push(v));
+              }
+              results$.push(lresult$);
+            }
+            return results$;
+          },
+          complete: function(){
+            var values, k, v;
+            values = (function(){
+              var ref$, results$ = [];
+              for (k in ref$ = this.result) {
+                v = ref$[k];
+                results$.push(v);
+              }
+              return results$;
+            }.call(this$)) || [];
+            return $scope.$apply(function(){
+              return this$.loading = false, this$.fields = values.length, this$.rows = (values[0] || []).length, this$;
+            });
+          }
+        });
       };
+      if (this.handle) {
+        $timeout.cancel(this.handle);
+      }
       if (force) {
         return _();
+      } else {
+        return this.handle = $timeout(function(){
+          return _();
+        }, force ? 0 : 1000);
       }
-      if (this.handler) {
-        $timeout.cancel(this.handler);
-      }
-      return this.handler = $timeout(function(){
-        return _();
-      }, force ? 0 : 1000);
     }
   };
-  $scope.data.init();
   $scope.parser = {
     encoding: 'UTF-8',
     csv: {
@@ -303,7 +330,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
         reader = new FileReader();
         reader.onload = function(e){
           $scope.$apply(function(){
-            return $scope.data.reset(e.target.result.trim());
+            return $scope.reset(e.target.result.trim());
           });
           return $('#data-edit-csv-modal').modal('hide');
         };
@@ -360,7 +387,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
             }()).join(',');
           }));
           $scope.$apply(function(){
-            return $scope.data.reset(lines.join('\n'));
+            return $scope.reset(lines.join('\n'));
           });
           return setTimeout(function(){
             return $('#data-edit-gsheet-modal').modal('hide');
@@ -381,7 +408,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
           method: 'GET'
         }).success(function(d){
           $scope.$apply(function(){
-            return $scope.data.reset(d.trim());
+            return $scope.reset(d.trim());
           });
           return $('#data-edit-link-modal').modal('hide');
         });
@@ -393,9 +420,10 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       return $scope.dataset = null;
     }
   });
-  return eventBus.listen('dataset.edit', function(dataset){
+  eventBus.listen('dataset.edit', function(dataset){
     return $scope.loadDataset(dataset);
   });
+  return $scope.init();
 }));
 x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].concat(function($scope, dataService, plNotify, eventBus){
   $scope.datasets = dataService.datasets;

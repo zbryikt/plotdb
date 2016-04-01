@@ -84,6 +84,9 @@ base = function(model){
       name: {
         type: model.type.string
       },
+      datatype: {
+        type: model.type.string
+      },
       hash: {
         type: model.type.string
       },

@@ -1,23 +1,22 @@
 angular.module \plotDB
-
   ..service \dataService,
   <[$rootScope $http IOService sampleData baseService plNotify eventBus]> ++
   ($rootScope, $http, IOService, sampleData, baseService, plNotify, eventBus) ->
     name = \dataset
     service = do
       sample: sampleData
-      init: -> 
+      init: ->
         @list!then ~> @localinfo.update!
       localinfo: do
         rows: 0
         size: 0
         update: ->
           @ <<< {rows: 0, size: 0}
-          for item in service.items => if item.type.location == \local => 
+          for item in service.items => if item.type.location == \local =>
             @rows += item.rows
             @size += item.size
     # we can construct directly from a json(field), or from a dataset
-    Field = (name, dataset = null, field = null) -> 
+    Field = (name, dataset = null, field = null) ->
       if !field and dataset => field = dataset.fields.filter(->it.name == name).0
       if field => @ <<< field
       # use _ as a little trick to prevent things to be stringify
@@ -54,7 +53,7 @@ angular.module \plotDB
         types = <[Boolean Percent Number Date String]> ++ [null]
         for type in types =>
           if !type => return @type = \String
-          if !@data.map(-> plotdb[type]test it).filter(->!it).length => 
+          if !@data.map(-> plotdb[type]test it).filter(->!it).length =>
             @type = type
             break
 
@@ -96,13 +95,16 @@ angular.module \plotDB
   ..controller \dataEditCtrl,
   <[$scope $timeout $http dataService eventBus plNotify]> ++
   ($scope, $timeout, $http, data-service, eventBus, plNotify) ->
+    $scope <<< do
+      rawdata: ""
+      dataset: null
+
     $scope.name = null
-    $scope.dataset = null
     $scope.save = (locally = false) ->
       if !$scope.name => return
       if !$scope.user.data or !$scope.user.data.key => return $scope.auth.toggle true
       if $scope.dataset and $scope.dataset.type.location != (if locally => \local else \server) => return
-      $scope.data.parse true
+      $scope.parse.run true
       if !$scope.dataset =>
         config = do
           name: $scope.name
@@ -112,7 +114,7 @@ angular.module \plotDB
           datatype: \csv #TODO support more types
         $scope.dataset = new dataService.dataset config
       $scope.dataset.name = $scope.name
-      <~ $scope.dataset.update $scope.data.parsed .then
+      <~ $scope.dataset.update $scope.parse.result .then
       $scope.dataset.save!
         .then -> $scope.$apply -> plNotify.send \success, "dataset saved"
         .catch (e) -> $scope.$apply -> plNotify.aux.error.io \save, \data, e
@@ -120,30 +122,36 @@ angular.module \plotDB
       $scope.dataset = dataset
       $scope.name = dataset.name
       fields = dataset.fields.map -> it.name
-      $scope.data.raw = ([fields.join(",")] ++ dataset.data.map((obj)->fields.map(->obj[it]).join(\,))).join(\\n)
+      $scope.rawdata = ([fields.join(",")] ++ dataset.data.map((obj)->fields.map(->obj[it]).join(\,))).join(\\n)
 
-    $scope.data = do
+    # =============== Functions  ================
+    $scope <<< do
+      reset: (rawdata) ->
+        $scope <<< {dataset:  new dataService.dataset!, rawdata}
       init: ->
-        $(\#data-edit-textarea)
-          .on \change, -> $scope.$apply -> $scope.data.parse!
-          .on \keydown, -> $scope.$apply -> $scope.data.parse!
-      reset: (data = "") ->
-        $scope.dataset = null
-        $scope.data.raw = data
-      raw: ""
-      rows: 0
-      size: 0
-      parsed: null
-      parse: (force = false) ->
+        @reset ""
+        $scope.$watch 'rawdata', -> $scope.parse.run!
+
+    $scope.parse = do
+      rows: 0, fields: 0, size: 0
+      result: null
+      loading: false
+      handle: null
+      run: (force = false) ->
+        @loading = true
         _ = ~>
-          if !force => @handler = null
-          @parsed = Papa.parse(@raw, {header:true}).data
-          @rows = @parsed.length
-          @size = @raw.length
+          @ <<< {handle: null, result: {}}
+          Papa.parse ($scope.rawdata or ""), do
+            worker: true, header: true
+            step: ({data: rows}) ~> for row in rows => for k,v of row => @result[][k].push v
+            complete: ~>
+              values = [v for k,v of @result] or []
+              <~ $scope.$apply
+              @ <<< {loading: false, fields: values.length, rows: (values.0 or []).length}
+        if @handle => $timeout.cancel @handle
         if force => return _!
-        if @handler => $timeout.cancel @handler
-        @handler = $timeout (~> _! ), (if force => 0 else 1000)
-    $scope.data.init!
+        else @handle = $timeout (~> _! ), (if force => 0 else 1000)
+
     $scope.parser = do
       encoding: \UTF-8
       csv: do
@@ -152,7 +160,7 @@ angular.module \plotDB
           file = $(\#data-edit-csv-file).0.files.0
           reader = new FileReader!
           reader.onload = (e) ->
-            $scope.$apply -> $scope.data.reset e.target.result.trim!
+            $scope.$apply -> $scope.reset e.target.result.trim!
             $(\#data-edit-csv-modal).modal \hide
           reader.onerror = (e) ->
           reader.readAsText(file, $scope.parser.encoding)
@@ -174,7 +182,7 @@ angular.module \plotDB
             lines = [fields.join(\,)] ++ data.feed.entry.map((it) ->
               [(it["gsx$#key"] or {$t:""}).$t for key in fields].join(\,)
             )
-            $scope.$apply -> $scope.data.reset lines.join(\\n)
+            $scope.$apply -> $scope.reset lines.join(\\n)
             setTimeout((->$(\#data-edit-gsheet-modal).modal(\hide)),0)
           #TODO error handling
 
@@ -184,13 +192,15 @@ angular.module \plotDB
         read: ->
           $http url: "http://crossorigin.me/#{$scope.parser.link.url}", method: \GET
           .success (d) ->
-            $scope.$apply -> $scope.data.reset d.trim!
+            $scope.$apply -> $scope.reset d.trim!
             $(\#data-edit-link-modal).modal \hide
           #TODO error handling
     eventBus.listen \dataset.delete, (key) -> if $scope.dataset.key == key => $scope.dataset = null
-    eventBus.listen \dataset.edit, (dataset) -> 
+    eventBus.listen \dataset.edit, (dataset) ->
       #TODO: support more type ( currently CSV structure only )
       $scope.load-dataset dataset
+
+    $scope.init!
 
   ..controller \dataFiles,
   <[$scope dataService plNotify eventBus]> ++
@@ -208,5 +218,5 @@ angular.module \plotDB
         return @chosen <<< {dataset: null, key: null}
       @chosen.key = dataset.key
       @chosen.dataset = dataset
-    $scope.remove = (dataset) -> 
+    $scope.remove = (dataset) ->
       dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)

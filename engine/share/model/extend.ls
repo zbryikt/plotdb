@@ -27,6 +27,7 @@ base = (model) ->
     base:
       dataset: {required: true, type: model.type.key({type:base.dataset})}
       name: { type: model.type.string}
+      datatype: { type: model.type.string}
       hash: { type: model.type.string} # check if data changed
       data: { type: base.json} 
 

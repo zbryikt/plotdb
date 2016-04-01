@@ -68,22 +68,24 @@ div(ng-controller="dataEditCtrl")
           i.fa.fa-table
           span &nbsp; google sheet 
     .panel-body
-      textarea#data-edit-textarea.form-control(rows="6",ng-model="data.raw",
+      textarea#data-edit-textarea.form-control(rows="6",ng-model="rawdata",
       placeholder="paste or drag your data here...",
       style="margin-bottom:13px;font-family:monospace;max-width:100%",
       ng-disabled="dataset.type.location=='sample'"
       )
       .input-group.pull-left(style="width:260px")
-        input.form-control.input-sm(type="input",ng-model="name",placeholder="Dataset Name",
+        input.form-control.input-sm(type="input",ng-model="dataset.name",placeholder="Dataset Name",
         ng-disabled="dataset.type.location=='sample'")
         span.input-group-btn
           .btn.btn-default.btn-sm(
-          ng-disabled="!name || !data.parsed || (dataset.type.location && dataset.type.location!='server')"
+          ng-disabled="!dataset.name || !parse.result || (dataset.type.location && dataset.type.location!='server')"
           ,ng-click="save()") Save
       span &nbsp;
       .btn.btn-sm.btn-default(
-      ng-disabled="!name || !data.parsed || (dataset.type.location && dataset.type.location!='local')",
+      ng-disabled="!dataset.name || !parse.result || (dataset.type.location && dataset.type.location!='local')",
       ng-click="save(true)") Save Locally
-      span(style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px",ng-show="data.parsed && data.rows")
-        | {{data.rows}} rows, {{data.size|size}}
+      span(ng-cloak,ng-class="{'grayed':parse.rows==0}",
+      style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px")
+        | {{parse.rows || 0}} rows, {{parse.fields || 0}} fields, {{(parse.size || 0)|size}}
+      .btn.btn-sm.loader(ng-class="{'loading':parse.loading}",style="padding-left:0") &nbsp;
 

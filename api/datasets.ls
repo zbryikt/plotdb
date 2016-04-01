@@ -6,6 +6,18 @@ datafieldtype = model.type.datafield
 
 engine.router.api.get "/dataset/", (req, res) -> res.json []
 engine.router.api.get "/dataset/:id", (req, res) ->
+  io.query "select * from datasets where datasets.key = $1 limit 1", [req.params.id]
+    .then (r = {}) ->
+      dataset = r.[]rows.0
+      if !dataset => return aux.r404 res
+      if ((!req.user or req.user.key != dataset.key) and dataset.{]permission.[]switch.indexOf(\public) < 0) =>
+        return aux.r403 res
+      io.query "select * from datafields where datafields.dataset = $1", [dataset.key]
+        .then (r = {}) ->
+          dataset.fields = r.[]rows
+          res.json dataset
+        .catch -> aux.r403 res
+    .catch -> aux.r403 res
 
 #TODO remove length check for dynamic dataset
 engine.router.api.post "/dataset/", (req, res) ->
@@ -19,9 +31,9 @@ engine.router.api.post "/dataset/", (req, res) ->
   if fields.length > 20 => return aux.r400 res, [true, "field limit exceed"]
   ret = datasettype.lint data
   if ret.0 => return aux.r400 res, ret
-  fields = fields.map (field) -> 
+  fields = fields.map (field) ->
     if !field or typeof(field) != \object => return aux.r400 res, [true,"field format incorrect"]
-    field <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
+    field <<< {owner: req.user.key}
     datafieldtype.lint field
     return datafieldtype.clean field
   data = datasettype.clean data
@@ -33,7 +45,7 @@ engine.router.api.post "/dataset/", (req, res) ->
       key = r.[]rows.0.key
       data.key = key
       if fields.length =>
-        pairslist = fields.map -> 
+        pairslist = fields.map ->
           it.dataset = key
           pairs = io.aux.insert.format datasettype, fields
           delete pairs.key
@@ -45,7 +57,7 @@ engine.router.api.post "/dataset/", (req, res) ->
           "(" + ["$#{i + j * size}" for i from 1 to size].join(",") + ")"
         ).join(",")
         io.query "insert into datafields #columns values #placeholder", params
-          .then (r = {}) -> 
+          .then (r = {}) ->
             # only send keys to save bandwidth
             data.fields = r.[]rows
             res.send data

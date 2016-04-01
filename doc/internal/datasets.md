@@ -18,11 +18,14 @@ table datasets
   type [static dynamic realtime]
   format [csv json]
   owner
+  createdtime
+  modifiedtime
   permission
 
 table datafield
   key int
   dataset key
+  datatype text
   name text
   data jsonb
 
