@@ -3,7 +3,9 @@ div(ng-controller="dataEditCtrl")
     label.grayed Your Storage Usage
     .progress(style="width:240px")
       .progress-bar.progress-bar-info(style="width:20%;")
-  h3.page-title Create Dataset
+  h3.page-title 
+    span(ng-cloak,ng-show="!dataset.key") Create Dataset
+    span(ng-cloak,ng-show="dataset.key") #[small Dataset] {{dataset.name || "untitled"}}
   p create dataset to use them in your visualization.
   .sep.dark.break
   include widget/create.jade

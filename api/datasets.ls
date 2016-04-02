@@ -13,22 +13,36 @@ engine.router.api.get "/dataset/", (req, res) ->
       console.log it.stack
       return aux.r403 res
 
-engine.router.api.get "/dataset/:id", (req, res) ->
+get-dataset =(req) -> new Promise (res, rej) ->
   io.query "select * from datasets where datasets.key = $1", [req.params.id]
     .then (r = {}) ->
       dataset = r.[]rows.0
-      if !dataset => return aux.r404 res
+      if !dataset => return rej 404
       if ((!req.user or req.user.key != dataset.owner) and dataset.{}permission.[]switch.indexOf(\public) < 0) =>
-        return aux.r403 res
+        return rej 403
       io.query "select * from datafields where datafields.dataset = $1", [dataset.key]
         .then (r = {}) ->
           dataset.fields = r.[]rows
-          res.json dataset
+          res dataset
         .catch -> 
-          console.err it.stack
-          aux.r403 res
+          console.error it.stack
+          return rej 403
     .catch -> 
-      console.err it.stack
+      console.error it.stack
+      return rej 403
+
+engine.app.get "/dataset/:id", (req, res) ->
+  get-dataset req
+    .then (ret) -> res.render 'dataset/index.jade', {dataset:ret}
+    .catch (v) ->
+      if v == 404 => return aux.r403 res, "", true
+      aux.r403 res, "", true
+
+engine.router.api.get "/dataset/:id", (req, res) ->
+  get-dataset req
+    .then (ret) -> res.json ret
+    .catch (v) ->
+      if v == 404 => return aux.r403 res
       aux.r403 res
 
 #TODO remove length check for dynamic dataset

@@ -1,0 +1,33 @@
+#dataset-create-methods .btn {
+  margin-right: 10px;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid rgba(0,0,0,0.2);
+}
+#dataset-create-methods .btn:last-of-type {
+  margin-right: 0;
+}
+#dataset-create-methods .btn.toggle {
+  border: 1px solid #ed1d78;
+  background: #fff;
+}
+#dataset-create-methods .btn img {
+  width: 24px;
+}
+#dataset-create-methods .btn i.fa {
+  vertical-align: middle;
+  font-size: 24px;
+}
+#dataset-editbox textarea {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  font-family: monospace;
+  max-width: 100%;
+  min-height: 220px;
+}
+#dataset-editbox-meta {
+  padding: 10px;
+  border-radius: 0 0 3px 3px;
+  border: 1px solid #ccc;
+  border-top: 0;
+  background: #f9f9f9;
+}
