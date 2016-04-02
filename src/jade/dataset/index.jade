@@ -14,17 +14,5 @@ block head
 block body
   span &nbsp;
   #root.narrow
-    include /dataset/create.jade
-  include /footer.jade
-    //-br
-    //-h4 
-      span Datasets 
-      .input-group.pull-right(style="width:200px")
-        input.form-control.input-sm(type="input",placeholder="search...")
-        span.input-group-btn
-          .btn.btn-default.btn-sm: i.fa.fa-search
-    //-hr
-    //-include /data/files.jade
-    //-br
-      br
-      br
+    include create.jade
+  include ../footer.jade

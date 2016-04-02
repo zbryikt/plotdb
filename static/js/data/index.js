@@ -176,7 +176,8 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
   import$($scope, {
     rawdata: "",
     dataset: null,
-    worker: new Worker("/js/data/worker.js")
+    worker: new Worker("/js/data/worker.js"),
+    loading: false
   });
   $scope.name = null;
   $scope.save = function(locally){
@@ -260,7 +261,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
         switch (payload.type) {
         case "parse.revert":
           $scope.rawdata = payload.data;
-          return $scope.parse.loading = false;
+          return $scope.loading = false;
         }
       };
     },
@@ -268,10 +269,13 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       return $scope.dataset = new dataService.dataset(), $scope.rawdata = rawdata, $scope;
     },
     init: function(){
-      var ret, offset;
+      var ret1, ret2, that, ret, offset;
       this.reset("");
-      ret = /k=([sc])([^&?#]+)/.exec(window.location.search || "");
-      if (ret) {
+      ret1 = /[?&]k=([sc])([^&?#]+)/.exec(window.location.search || "");
+      ret2 = /^\/data(s)et\/([^\/?&]+)\/?/.exec(window.location.pathname || "");
+      if (that = ret1 || ret2) {
+        ret = that;
+        $scope.dataset.key = ret[2];
         $scope.load({
           location: ret[1] === 's' ? 'server' : 'local',
           name: 'dataset'
@@ -296,7 +300,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     loading: false,
     handle: null,
     revert: function(dataset){
-      this.loading = true;
+      $scope.loading = true;
       return $scope.worker.postMessage({
         type: "parse.revert",
         data: dataset
@@ -307,7 +311,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       force == null && (force = false);
       return new Promise(function(res, rej){
         var _;
-        this$.loading = true;
+        $scope.loading = true;
         _ = function(){
           this$.handle = null;
           this$.result = {};
@@ -340,9 +344,9 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
                 return results$;
               }.call(this$)) || [];
               return $scope.$apply(function(){
-                this$.loading = false;
                 this$.fields = values.length;
                 this$.rows = (values[0] || []).length;
+                $scope.loading = false;
                 return res(this$.result);
               });
             }

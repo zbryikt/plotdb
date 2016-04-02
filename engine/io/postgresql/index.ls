@@ -10,7 +10,7 @@ ret = (config) ->
           .then (users = {}) ~>
             user = (users.[]rows.0)
             if !user => return @authio.user.create username, pw, usepasswd, detail
-            if user and (usepasswd or user.usepasswd) and user.password != pw => return Promise.reject!
+            if user and (usepasswd or user.usepasswd) and user.password != pw => return bluebird.reject!
             return user
           .then (user) ~>
             delete user.password
@@ -46,12 +46,12 @@ ret.prototype = do
   query: (a,b=null,c=null) -> 
     if typeof(a) == \string => [client,q,params] = [null,a,b]
     else => [client,q,params] = [a,b,c]
-    _query = (client, q, params=null) -> new Promise (res, rej) ->
+    _query = (client, q, params=null) -> new bluebird (res, rej) ->
       (e,r) <- client.query q, params, _
       if e => return rej e
       return res r
     if client => return _query client, q, params
-    (res, rej) <~ new Promise _
+    (res, rej) <~ new bluebird _
     (err, client, done) <~ pg.connect @config.io-pg.uri, _
     if err => return rej err
     _query client, q, params

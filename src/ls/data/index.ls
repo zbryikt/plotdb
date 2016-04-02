@@ -122,6 +122,7 @@ angular.module \plotDB
       rawdata: ""
       dataset: null
       worker: new Worker("/js/data/worker.js")
+      loading: false
 
     $scope.name = null
     $scope.save = (locally = false) ->
@@ -175,13 +176,16 @@ angular.module \plotDB
           switch payload.type
           | "parse.revert" => 
             $scope.rawdata = payload.data
-            $scope.parse.loading = false
+            $scope.loading = false
       reset: (rawdata) ->
         $scope <<< {dataset:  new dataService.dataset!, rawdata}
       init: ->
         @reset ""
-        ret = /k=([sc])([^&?#]+)/.exec(window.location.search or "")
-        if ret =>
+        ret1 = /[?&]k=([sc])([^&?#]+)/.exec(window.location.search or "")
+        ret2 = /^\/data(s)et\/([^\/?&]+)\/?/.exec(window.location.pathname or "")
+        if ret1 or ret2 =>
+          ret = that
+          $scope.dataset.key = ret.2
           $scope.load {location: (if ret.1 == \s => \server else \local), name: \dataset}, ret.2
         $scope.$watch 'rawdata', -> $scope.parse.run!
         offset = $('#dataset-editbox textarea').offset!
@@ -195,11 +199,11 @@ angular.module \plotDB
       loading: false
       handle: null
       revert: (dataset) -> 
-        @loading = true
+        $scope.loading = true
         $scope.worker.postMessage {type: "parse.revert", data: dataset}
 
       run: (force = false) -> new Promise (res, rej) ~>
-        @loading = true
+        $scope.loading = true
         _ = ~>
           @ <<< {handle: null, result: {}, size: $scope.rawdata.length}
           Papa.parse ($scope.rawdata or ""), do
@@ -208,7 +212,8 @@ angular.module \plotDB
             complete: ~>
               values = [v for k,v of @result] or []
               <~ $scope.$apply
-              @ <<< {loading: false, fields: values.length, rows: (values.0 or []).length}
+              @ <<< {fields: values.length, rows: (values.0 or []).length}
+              $scope.loading = false
               res @result
         if @handle => $timeout.cancel @handle
         if force => return _!

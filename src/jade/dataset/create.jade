@@ -7,8 +7,21 @@ div(ng-controller="dataEditCtrl")
       ng-attr-style="width:{{(user.data.datasize || 0)/ 100000}}%")
         span {{user.data.datasize|size}}
   h3.page-title 
-    span(ng-cloak,ng-show="!dataset.key") Create Dataset
-    span(ng-cloak,ng-show="dataset.key") #[small Dataset] {{dataset.name || "untitled"}}
-  p create dataset to use them in your visualization.
+    if dataset
+      span #[small dataset] #{dataset.name}
+    else
+      span Create Dataset
+
+  if dataset
+    .entries
+      .entry
+        i.fa.fa-list
+        span &nbsp; #{dataset.rows} rows &nbsp; &nbsp; &nbsp;
+      .entry
+        i.fa.fa-archive
+        span(ng-cloak) &nbsp; {{dataset.size|size}}
+  else
+    p create dataset to use them in your visualization.
+
   .sep.dark.break
   include widget/create.jade

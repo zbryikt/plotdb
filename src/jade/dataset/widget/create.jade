@@ -80,4 +80,4 @@ br
     span(ng-cloak,ng-class="{'grayed':parse.rows==0}",
     style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px")
       | {{parse.rows || 0}} rows, {{parse.fields || 0}} fields, size: {{(parse.size || 0)|size}} #[small (estimated)]
-    .btn.btn-sm.loader(ng-class="{'loading':parse.loading}",style="padding-left:0") &nbsp;
+    .btn.btn-sm.loader(ng-class="{'loading':loading}",style="padding-left:0") &nbsp;

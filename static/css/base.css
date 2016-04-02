@@ -684,3 +684,7 @@ a.dropdown-toggle {
   margin-left: auto;
   margin-right: auto;
 }
+.entries .entry {
+  display: inline-block;
+  margin-right: 20px;
+}

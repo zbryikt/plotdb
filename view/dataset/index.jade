@@ -1,6 +1,6 @@
 extends ../module/base.jade
 block vars
-  - var rootid = "errorview"
+  - var rootid = "dataview"
   - var title = 'plotdb'
   - var description = "plotdb"
   - var thumbnail = "http://plotdb.io/assets/img/thumbnail.jpg"
@@ -8,22 +8,10 @@ block vars
   - var url = "http://plotdb.com/"
 block head
   title #{dataset.name} by #{dataset.ownerName}
+  script(type="text/javascript").
+    window.dataset = !{JSON.stringify(dataset)};
 block body
-  div &nbsp;
+  span &nbsp;
   #root.narrow
-
-    h2.page-title
-      small Dataset / 
-      span #{dataset.name}
-    .pull-right
-      span #[i.fa.fa-list] &nbsp; #{dataset.rows} rows
-      span &nbsp; / &nbsp;
-      span #[i.fa.fa-archive] &nbsp; #{dataset.size} B
-    p #{dataset.description || 'no description. click me to edit...'}
-    .sep
-    each field in dataset.fields
-      .field(style="")
-        span #{field.name}
-    br
-    br
-
+    include ../module/dataset/create.jade
+  include ../module/footer.jade

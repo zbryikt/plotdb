@@ -1,4 +1,4 @@
-require! <[../../../secret ../postgresql pg]>
+require! <[../../../secret ../postgresql pg bluebird]>
 
 init-sessions-table = """create table if not exists sessions (
   key text not null unique primary key,
@@ -97,7 +97,7 @@ client = new pg.Client secret.io-pg.uri
 if e => return console.log e
 console.log "connected"
 
-query = (q) -> new Promise (res, rej) ->
+query = (q) -> new bluebird (res, rej) ->
   (e,r) <- client.query q, _
   if e => rej e
   res r
