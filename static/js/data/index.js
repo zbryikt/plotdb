@@ -6,6 +6,12 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
   name = 'dataset';
   service = {
     sample: sampleData,
+    link: function(dataset){
+      if (dataset._type.location === 'server') {
+        return "/dataset/" + dataset.key + "/";
+      }
+      return "/dataset/?k=c" + dataset.key;
+    },
     list: function(){
       return IOService.listRemotely({
         name: 'dataset',
@@ -154,7 +160,7 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
             if (f1.name !== f2.name) {
               continue;
             }
-            import$(f2, f1);
+            f2.key = f1.key;
           }
         }
         this.fields = fields;
@@ -200,24 +206,27 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       return plNotify.send('danger', "maximal 20 columns is allowed. you have " + columnLength);
     }
     return $scope.parse.run(true).then(function(){
+      var isCreate;
       $scope.dataset._type.location = locally ? 'local' : 'server';
-      /*if !$scope.dataset =>
-        config = do
-          name: $scope.name
-          _type: location: (if locally => \local else \server), name: \dataset
-          owner: null
-          permission: switch: <[public]>, value: []
-          datatype: \csv #TODO support more types
-        $scope.dataset = new dataService.dataset config
-      $scope.dataset.name = $scope.name
-      */
+      console.log($scope.parse.result);
       $scope.dataset.setFields($scope.parse.result);
+      isCreate = !$scope.dataset.key ? true : false;
+      $scope.loading = true;
+      console.log($scope.dataset);
       return $scope.dataset.save().then(function(){
-        return $scope.$apply(function(){
+        $scope.$apply(function(){
           return plNotify.send('success', "dataset saved");
         });
+        if (isCreate) {
+          return setTimeout(function(){
+            return window.location.href = dataService.link($scope.dataset);
+          }, 1000);
+        } else {
+          return $scope.loading = false;
+        }
       })['catch'](function(e){
         console.log(e.stack);
+        $scope.loading = false;
         return $scope.$apply(function(){
           return plNotify.aux.error.io('save', 'data', e);
         });
@@ -347,6 +356,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
                 this$.fields = values.length;
                 this$.rows = (values[0] || []).length;
                 $scope.loading = false;
+                console.log(this$.result);
                 return res(this$.result);
               });
             }

@@ -1,6 +1,9 @@
 angular.module \plotDB
   ..filter \tags, -> -> if Array.isArray(it) => it else (it or "").split(\,)
   ..filter \date, -> -> new Date(it)
+  ..filter \datelite, -> ->
+    d = new Date(it)
+    "#{d.getYear! + 1900}/#{d.getMonth! + 1}/#{d.getDate!} #{d.getHours!}:#{d.getMinutes!}"
   ..filter \length, -> -> [k for k of it].length
   ..filter \size, -> ->
     if !it or isNaN(it) => return \0B

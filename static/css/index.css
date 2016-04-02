@@ -704,7 +704,10 @@ a.dropdown-toggle {
 }
 .entries .entry {
   display: inline-block;
-  margin-right: 20px;
+  margin-right: 25px;
+}
+.entries .entry i.fa {
+  margin-right: 6px;
 }
 .page-title {
   padding-top: 20px;

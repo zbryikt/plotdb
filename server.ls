@@ -19,6 +19,7 @@ engine.init config, pgsql.authio
   .then ->
     engine.app.get \/, (req, res) -> res.render 'index.jade'
     api engine, pgsql
+    engine.app.get \/blah, (req, res) -> res.send []
     engine.start!
   .catch ->
     console.log "[Exception] ", it.stack

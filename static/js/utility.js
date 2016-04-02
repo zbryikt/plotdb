@@ -15,6 +15,13 @@ x$.filter('date', function(){
     return new Date(it);
   };
 });
+x$.filter('datelite', function(){
+  return function(it){
+    var d;
+    d = new Date(it);
+    return (d.getYear() + 1900) + "/" + (d.getMonth() + 1) + "/" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes();
+  };
+});
 x$.filter('length', function(){
   return function(it){
     var k;

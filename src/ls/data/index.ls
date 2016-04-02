@@ -5,6 +5,9 @@ angular.module \plotDB
     name = \dataset
     service = do
       sample: sampleData
+      link: (dataset) -> 
+        if dataset._type.location == \server => return "/dataset/#{dataset.key}/"
+        return "/dataset/?k=c#{dataset.key}"
       list: ->
         IOService.list-remotely {name: \dataset, location: \server}
           .then (r) -> r.map -> new Dataset it
@@ -90,7 +93,7 @@ angular.module \plotDB
             new Field {name: k, data: v, dataset: @key, datasetname: @name, location: @_type.location}
           for f1 in @fields => for f2 in fields =>
             if f1.name != f2.name => continue
-            f2 <<< f1
+            f2 <<< f1{key}
           @ <<< fields: fields, rows: (@fields.0 or {}).[]data.length, size: 0
           for f1 in @fields => @size += (f1.data or "").length + (f1.name.length + 1)
 
@@ -133,23 +136,22 @@ angular.module \plotDB
         return plNotify.send \danger, "maximal 20 columns is allowed. you have #{column-length}"
       <- $scope.parse.run true .then
       $scope.dataset._type.location = (if locally => \local else \server)
-
-      /*if !$scope.dataset =>
-        config = do
-          name: $scope.name
-          _type: location: (if locally => \local else \server), name: \dataset
-          owner: null
-          permission: switch: <[public]>, value: []
-          datatype: \csv #TODO support more types
-        $scope.dataset = new dataService.dataset config
-      $scope.dataset.name = $scope.name
-      */
-      #<~ $scope.dataset.update $scope.parse.result .then
+      console.log $scope.parse.result
       $scope.dataset.set-fields $scope.parse.result
+      is-create = if !$scope.dataset.key => true else false
+      $scope.loading = true
+      console.log $scope.dataset
       $scope.dataset.save!
-        .then -> $scope.$apply -> plNotify.send \success, "dataset saved"
+        .then -> 
+          $scope.$apply -> plNotify.send \success, "dataset saved"
+          if is-create => 
+            setTimeout (->
+              window.location.href = data-service.link $scope.dataset
+            ), 1000
+          else => $scope.loading = false
         .catch (e) -> 
           console.log e.stack
+          $scope.loading = false
           $scope.$apply -> plNotify.aux.error.io \save, \data, e
     $scope.load = (_type, key) ->
       data-service.load _type, key
@@ -214,6 +216,7 @@ angular.module \plotDB
               <~ $scope.$apply
               @ <<< {fields: values.length, rows: (values.0 or []).length}
               $scope.loading = false
+              console.log @result
               res @result
         if @handle => $timeout.cancel @handle
         if force => return _!

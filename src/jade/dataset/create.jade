@@ -15,11 +15,14 @@ div(ng-controller="dataEditCtrl")
   if dataset
     .entries
       .entry
+        i.fa.fa-clock-o
+        span(ng-cloak) {{dataset.modifiedtime || dataset.createdtime|datelite}}
+      .entry
         i.fa.fa-list
-        span &nbsp; #{dataset.rows} rows &nbsp; &nbsp; &nbsp;
+        span #{dataset.rows} rows
       .entry
         i.fa.fa-archive
-        span(ng-cloak) &nbsp; {{dataset.size|size}}
+        span(ng-cloak) {{dataset.size|size}}
   else
     p create dataset to use them in your visualization.
 
