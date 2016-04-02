@@ -324,6 +324,9 @@ import$(model.type, {
       public_email: {
         type: model.type.boolean
       },
+      datasize: {
+        type: model.type.number
+      },
       avatar: {
         max: 300,
         type: model.type.string

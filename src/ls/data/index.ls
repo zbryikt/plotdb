@@ -121,6 +121,7 @@ angular.module \plotDB
     $scope <<< do
       rawdata: ""
       dataset: null
+      worker: new Worker("/js/data/worker.js")
 
     $scope.name = null
     $scope.save = (locally = false) ->
@@ -153,6 +154,8 @@ angular.module \plotDB
       data-service.load _type, key
         .then (ret) ~>
           $scope.dataset = new data-service.dataset ret
+          $scope.parse.revert $scope.dataset
+
         .catch (ret) ~>
           console.error ret
           plNotify.send \error, "failed to load data. please try reloading"
@@ -166,25 +169,39 @@ angular.module \plotDB
 
     # =============== Functions  ================
     $scope <<< do
+      communicate: ->
+        $scope.worker.onmessage = ({data: payload}) ->
+          if typeof(payload) != \object => return
+          switch payload.type
+          | "parse.revert" => 
+            $scope.rawdata = payload.data
+            $scope.parse.loading = false
       reset: (rawdata) ->
         $scope <<< {dataset:  new dataService.dataset!, rawdata}
       init: ->
         @reset ""
+        ret = /k=([sc])([^&?#]+)/.exec(window.location.search or "")
+        if ret =>
+          $scope.load {location: (if ret.1 == \s => \server else \local), name: \dataset}, ret.2
         $scope.$watch 'rawdata', -> $scope.parse.run!
         offset = $('#dataset-editbox textarea').offset!
-        $('#dataset-editbox textarea').css({height: "#{window.innerHeight - offset.top - 90}px"})
+        $('#dataset-editbox textarea').css({height: "#{window.innerHeight - offset.top - 140}px"})
         $('[data-toggle="tooltip"]').tooltip!
-        console.log \ok123
+        @communicate!
 
     $scope.parse = do
       rows: 0, fields: 0, size: 0
       result: null
       loading: false
       handle: null
+      revert: (dataset) -> 
+        @loading = true
+        $scope.worker.postMessage {type: "parse.revert", data: dataset}
+
       run: (force = false) -> new Promise (res, rej) ~>
         @loading = true
         _ = ~>
-          @ <<< {handle: null, result: {}}
+          @ <<< {handle: null, result: {}, size: $scope.rawdata.length}
           Papa.parse ($scope.rawdata or ""), do
             worker: true, header: true
             step: ({data: rows}) ~> for row in rows => for k,v of row => @result[][k].push v
@@ -253,7 +270,6 @@ angular.module \plotDB
   ($scope, data-service, plNotify, eventBus) ->
     $scope.datasets = data-service.datasets
     (ret) <- data-service.list!then
-    console.log ret
     $scope.datasets = ret
     $scope.edit = (dataset) -> eventBus.fire \dataset.edit, dataset
     # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large

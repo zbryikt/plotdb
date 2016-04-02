@@ -42,7 +42,7 @@ engine.router.api.get "/dataset/:id", (req, res) ->
   get-dataset req
     .then (ret) -> res.json ret
     .catch (v) ->
-      if v == 404 => return aux.r403 res
+      if v == 404 => return aux.r404 res
       aux.r403 res
 
 #TODO remove length check for dynamic dataset
@@ -50,6 +50,7 @@ engine.router.api.post "/dataset/", (req, res) ->
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => aux.r400 res
   data = req.body <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
+  data.size = JSON.stringify(req.body).length
   fields = data.fields or []
   delete data.fields
   if data.type == \static and data.format == \csv =>
@@ -70,27 +71,36 @@ engine.router.api.post "/dataset/", (req, res) ->
     .then (r={}) ->
       key = r.[]rows.0.key
       data.key = key
-      if fields.length =>
-        pairslist = fields.map ->
-          it.dataset = key
-          pairs = io.aux.insert.format datafieldtype, it
-          delete pairs.key
-          pairs = io.aux.insert.assemble pairs
-        columns = pairslist.0.0
-        size = pairslist.0.2.length
-        params = pairslist.map(-> it.2).reduce(((a,b) -> a.concat(b)),[])
-        placeholder = (for j from 0 til pairslist.length =>
-          "(" + ["$#{i + j * size}" for i from 1 to size].join(",") + ")"
-        ).join(",")
-        io.query "insert into datafields #columns values #placeholder", params
-          .then (r = {}) ->
-            # only send keys to save bandwidth
-            data.fields = r.[]rows
-            res.send data
-          .catch ->
-            console.error it.stack
-            aux.r403 res
-      else => res.send data
+      if !fields.length => return res.send data
+      pairslist = fields.map ->
+        it.dataset = key
+        pairs = io.aux.insert.format datafieldtype, it
+        delete pairs.key
+        pairs = io.aux.insert.assemble pairs
+      columns = pairslist.0.0
+      size = pairslist.0.2.length
+      params = pairslist.map(-> it.2).reduce(((a,b) -> a.concat(b)),[])
+      placeholder = (for j from 0 til pairslist.length =>
+        "(" + ["$#{i + j * size}" for i from 1 to size].join(",") + ")"
+      ).join(",")
+      io.query "insert into datafields #columns values #placeholder", params
+        .then (r = {}) ->
+          # only send keys to save bandwidth
+          data.fields = r.[]rows
+          req.user.datasize = (req.user.datasize or 0) + data.size
+          return io.query "select datasize from users where key=$1", [req.user.key]
+        .then (r) ->
+          user = r.[]rows.0
+          if !user => 
+            console.error "[post dataset: update user failed]"
+            return res.send data
+          datasize = (user.datasize or 0) + data.size
+          io.query "update users set datasize=$1 where key=$2", [datasize, req.user.key]
+            .then ->
+              req.login req.user, -> res.send data
+        .catch ->
+          console.error it.stack
+          aux.r403 res
     .catch ->
       console.error it.stack
       aux.r403 res

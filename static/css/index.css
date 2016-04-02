@@ -689,6 +689,14 @@ a.dropdown-toggle {
 .progress {
   background: #d5d3d0;
 }
+.progress .progress-bar {
+  max-width: 100%;
+  min-width: 2%;
+}
+.progress span {
+  margin-left: 10px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
 #root.narrow {
   max-width: 1200px;
   margin-left: auto;

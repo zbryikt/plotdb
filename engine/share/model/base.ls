@@ -167,6 +167,7 @@ model.type <<< do
       description: {max: 1000, type: model.type.string}
       createdtime: {type: model.type.date}
       public_email: {type: model.type.boolean}
+      datasize: { type: model.type.number }
       avatar: {max: 300, type: model.type.string}
 
 module.exports = model

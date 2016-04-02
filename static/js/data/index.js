@@ -175,7 +175,8 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
 x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'eventBus', 'plNotify'].concat(function($scope, $timeout, $http, dataService, eventBus, plNotify){
   import$($scope, {
     rawdata: "",
-    dataset: null
+    dataset: null,
+    worker: new Worker("/js/data/worker.js")
   });
   $scope.name = null;
   $scope.save = function(locally){
@@ -225,7 +226,8 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
   $scope.load = function(_type, key){
     var this$ = this;
     return dataService.load(_type, key).then(function(ret){
-      return $scope.dataset = new dataService.dataset(ret);
+      $scope.dataset = new dataService.dataset(ret);
+      return $scope.parse.revert($scope.dataset);
     })['catch'](function(ret){
       console.error(ret);
       plNotify.send('error', "failed to load data. please try reloading");
@@ -248,21 +250,42 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     }))).join('\n');
   };
   import$($scope, {
+    communicate: function(){
+      return $scope.worker.onmessage = function(arg$){
+        var payload;
+        payload = arg$.data;
+        if (typeof payload !== 'object') {
+          return;
+        }
+        switch (payload.type) {
+        case "parse.revert":
+          $scope.rawdata = payload.data;
+          return $scope.parse.loading = false;
+        }
+      };
+    },
     reset: function(rawdata){
       return $scope.dataset = new dataService.dataset(), $scope.rawdata = rawdata, $scope;
     },
     init: function(){
-      var offset;
+      var ret, offset;
       this.reset("");
+      ret = /k=([sc])([^&?#]+)/.exec(window.location.search || "");
+      if (ret) {
+        $scope.load({
+          location: ret[1] === 's' ? 'server' : 'local',
+          name: 'dataset'
+        }, ret[2]);
+      }
       $scope.$watch('rawdata', function(){
         return $scope.parse.run();
       });
       offset = $('#dataset-editbox textarea').offset();
       $('#dataset-editbox textarea').css({
-        height: (window.innerHeight - offset.top - 90) + "px"
+        height: (window.innerHeight - offset.top - 140) + "px"
       });
       $('[data-toggle="tooltip"]').tooltip();
-      return console.log('ok123');
+      return this.communicate();
     }
   });
   $scope.parse = {
@@ -272,6 +295,13 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     result: null,
     loading: false,
     handle: null,
+    revert: function(dataset){
+      this.loading = true;
+      return $scope.worker.postMessage({
+        type: "parse.revert",
+        data: dataset
+      });
+    },
     run: function(force){
       var this$ = this;
       force == null && (force = false);
@@ -281,6 +311,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
         _ = function(){
           this$.handle = null;
           this$.result = {};
+          this$.size = $scope.rawdata.length;
           return Papa.parse($scope.rawdata || "", {
             worker: true,
             header: true,
@@ -443,7 +474,6 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
 x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].concat(function($scope, dataService, plNotify, eventBus){
   $scope.datasets = dataService.datasets;
   return dataService.list().then(function(ret){
-    console.log(ret);
     $scope.datasets = ret;
     $scope.edit = function(dataset){
       return eventBus.fire('dataset.edit', dataset);

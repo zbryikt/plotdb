@@ -3,7 +3,7 @@
   background: rgba(255,255,255,0.5);
   border: 1px solid rgba(0,0,0,0.2);
 }
-#dataset-create-methods .btn:last-of-type {
+#dataset-create-methods .btn.pull-right {
   margin-right: 0;
 }
 #dataset-create-methods .btn.toggle {
