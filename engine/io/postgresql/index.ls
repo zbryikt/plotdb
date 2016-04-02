@@ -27,14 +27,17 @@ ret = (config) ->
     session: do
       get: (sid, cb) ~>
         @query "select * from sessions where key=$1", [sid]
-          .then -> 
+          .then ->
             cb null, (it.[]rows.0 or {}).detail
+            return null
           .catch -> [console.error("session.get", it), cb it]
       set: (sid, session, cb) ~>
         @query([
           "insert into sessions (key,detail) values"
           "('#sid', $1) on conflict (key) do update set detail=$1"].join(" "), [session])
-          .then -> cb!
+          .then ->
+            cb!
+            return null
           .catch -> [console.error("session.set", it), cb!]
       destroy: (sid, cb) ~>
         @query "delete from sessions where key = '#sid'"
@@ -43,7 +46,7 @@ ret = (config) ->
   @
 
 ret.prototype = do
-  query: (a,b=null,c=null) -> 
+  query: (a,b=null,c=null) ->
     if typeof(a) == \string => [client,q,params] = [null,a,b]
     else => [client,q,params] = [a,b,c]
     _query = (client, q, params=null) -> new bluebird (res, rej) ->
