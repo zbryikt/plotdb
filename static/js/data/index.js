@@ -258,9 +258,11 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
         return $scope.parse.run();
       });
       offset = $('#dataset-editbox textarea').offset();
-      return $('#dataset-editbox textarea').css({
+      $('#dataset-editbox textarea').css({
         height: (window.innerHeight - offset.top - 90) + "px"
       });
+      $('[data-toggle="tooltip"]').tooltip();
+      return console.log('ok123');
     }
   });
   $scope.parse = {

@@ -173,6 +173,8 @@ angular.module \plotDB
         $scope.$watch 'rawdata', -> $scope.parse.run!
         offset = $('#dataset-editbox textarea').offset!
         $('#dataset-editbox textarea').css({height: "#{window.innerHeight - offset.top - 90}px"})
+        $('[data-toggle="tooltip"]').tooltip!
+        console.log \ok123
 
     $scope.parse = do
       rows: 0, fields: 0, size: 0
