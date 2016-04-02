@@ -13,6 +13,8 @@ base = (model) ->
       parent: { required: false, type: model.type.key({type: base.theme})}
       name: {max: 100, min: 1, required: true, type: model.type.string}
       description: {max: 512, required: false, type: model.type.string}
+      # set after datafield is created
+      #fields: { require: true, type: model.type.array({type: base.datafield}) }
       rows: { require: true, type: model.type.number }
       size: { require: true, type: model.type.number }
       tags: { required: false, type: model.type.array({max: 50, min: 1, type: model.type.string})}
@@ -30,11 +32,13 @@ base = (model) ->
     base:
       dataset: {required: true, type: model.type.key({type:base.dataset})}
       datasetname: { required: true, type: model.type.string }
-      location: { require: true, type: model.type.string }
-      name: { type: model.type.string}
-      datatype: { type: model.type.string}
+      name: { required: true, type: model.type.string }
+      location: { required: true, type: model.type.string }
+      datatype: { type: model.type.string }
       hash: { type: model.type.string} # check if data changed
       data: { type: base.json} 
+  
+  base.dataset.config.base.fields = { require: true, type: model.type.array({type: base.datafield}) }
 
   base.file = new model do
     name: \file

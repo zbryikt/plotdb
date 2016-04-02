@@ -29,6 +29,7 @@ angular.module \plotDB
         assets: []
         config: {}
         dimension: {}
+        _type: {location: \server, name: \chart}
       @ <<< src
       @
 

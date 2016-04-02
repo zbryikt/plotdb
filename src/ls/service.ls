@@ -40,7 +40,8 @@ angular.module \plotDB
         idx = @[]items.map(->it.key).indexOf(item.key)
         if idx >= 0 => @items.splice idx, 1
         res ret
-
+      
+      /*
       list: (_type, filter = {}, force = false) ->
         if !_type => _type = {location: \any, name: @type}
         if @items and !force => return Promise.resolve(@items)
@@ -55,6 +56,7 @@ angular.module \plotDB
           [0, ret.length + @sample.length] ++ (ret ++ @sample).map(~>new @Object it)
         )
         res @items
+      */
 
     baseObject = (name, config) ->
       @ <<< do

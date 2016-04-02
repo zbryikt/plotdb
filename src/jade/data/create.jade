@@ -1,91 +1,9 @@
 div(ng-controller="dataEditCtrl")
-  #data-edit-link-modal.modal.fade(style="margin-top: 100px")
-    .modal-dialog
-      .modal-content
-        .modal-body
-          label Upload CSV by Link:
-          .input-group
-            input.form-control(type="text",style="border: 1px solid #ccc",ng-model="parser.link.url")
-            span.input-group-btn
-              button.btn.btn-default.dropdown-toggle(
-              data-toggle="dropdown",type="button",style="border: 1px solid #ccc;border-radius:0")
-                span Encoding
-                small {{parser.encoding}}&nbsp;
-                span.caret
-              ul.dropdown-menu.dropdown-meu-right
-                li(ng-class="{'active':parser.encoding=='ISO-8859-1'}")
-                  a(ng-click="parser.encoding='ISO-8859-1'") ISO-8859-1
-                li(ng-class="{'active':parser.encoding=='Big5'}"): a(ng-click="parser.encoding='BIG5'") BIG5
-                li(ng-class="{'active':parser.encoding=='GB2312'}"): a(ng-click="parser.encoding='GB2312'") GB2312
-                li(ng-class="{'active':parser.encoding=='UTF-8'}"): a(ng-click="parser.encoding='UTF-8'") UTF-8
-              button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="readLink()") Read
-
-  #data-edit-csv-modal.modal.fade(style="margin-top: 100px")
-    .modal-dialog
-      .modal-content
-        .modal-body
-          label Upload CSV file:
-          .input-group
-            input#data-edit-csv-file.form-control(type="file",style="border: 1px solid #ccc")
-            span.input-group-btn
-              button.btn.btn-default.dropdown-toggle(
-              data-toggle="dropdown",type="button",style="border: 1px solid #ccc;border-radius:0")
-                span Encoding :
-                small {{parser.encoding}}&nbsp;
-                span.caret
-              ul.dropdown-menu.dropdown-meu-right
-                li(ng-class="{'active':parser.encoding=='ISO-8859-1'}")
-                  a(ng-click="parser.encoding='ISO-8859-1'") ISO-8859-1
-                li(ng-class="{'active':parser.encoding=='Big5'}"): a(ng-click="parser.encoding='BIG5'") BIG5
-                li(ng-class="{'active':parser.encoding=='GB2312'}"): a(ng-click="parser.encoding='GB2312'") GB2312
-                li(ng-class="{'active':parser.encoding=='UTF-8'}"): a(ng-click="parser.encoding='UTF-8'") UTF-8
-              button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="parser.csv.read()") Read
-
-  #data-edit-gsheet-modal.modal.fade(style="margin-top: 100px")
-    .modal-dialog
-      .modal-content
-        .modal-body
-          label From Google Spreadsheet URL:
-          .input-group
-            input.form-control(type="text",style="border: 1px solid #ccc",ng-model="parser.gsheet.url")
-            span.input-group-btn
-              button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="parser.gsheet.read()") Read
-
-
-  .panel.panel-default
-    .panel-heading
-      b #[span(ng-if="dataset") Edit]#[span(ng-if="!dataset") Create] Dataset
-      .pull-right
-        .btn.btn-default.btn-xs(ng-click="parser.csv.toggle()")
-          i.fa.fa-upload
-          span &nbsp; upload 
-        span &nbsp;
-        .btn.btn-default.btn-xs(ng-click="parser.link.toggle()")
-          i.fa.fa-cloud
-          span &nbsp; from link 
-        span &nbsp;
-        .btn.btn-default.btn-xs(ng-click="parser.gsheet.toggle()")
-          i.fa.fa-table
-          span &nbsp; google sheet 
-    .panel-body
-      textarea#data-edit-textarea.form-control(rows="6",ng-model="rawdata",
-      placeholder="paste or drag your data here...",
-      style="margin-bottom:13px;font-family:monospace;max-width:100%",
-      ng-disabled="dataset.type.location=='sample'"
-      )
-      .input-group.pull-left(style="width:260px")
-        input.form-control.input-sm(type="input",ng-model="dataset.name",placeholder="Dataset Name",
-        ng-disabled="dataset.type.location=='sample'")
-        span.input-group-btn
-          .btn.btn-default.btn-sm(
-          ng-disabled="!dataset.name || !parse.result || (dataset.type.location && dataset.type.location!='server')"
-          ,ng-click="save()") Save
-      span &nbsp;
-      .btn.btn-sm.btn-default(
-      ng-disabled="!dataset.name || !parse.result || (dataset.type.location && dataset.type.location!='local')",
-      ng-click="save(true)") Save Locally
-      span(ng-cloak,ng-class="{'grayed':parse.rows==0}",
-      style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px")
-        | {{parse.rows || 0}} rows, {{parse.fields || 0}} fields, {{(parse.size || 0)|size}}
-      .btn.btn-sm.loader(ng-class="{'loading':parse.loading}",style="padding-left:0") &nbsp;
-
+  .pull-right(style="margin-top:30px")
+    label.grayed Your Storage Usage
+    .progress(style="width:240px")
+      .progress-bar.progress-bar-info(style="width:20%;")
+  h3.page-title Create Dataset
+  p create dataset to use them in your visualization.
+  .sep.dark.break
+  include widget/create.jade

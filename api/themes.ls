@@ -4,7 +4,8 @@ require! <[../engine/aux ../engine/share/model/]>
 themetype = model.type.theme
 
 engine.router.api.get "/theme/", (req, res) ->
-  if !req.user => return res.send "[]"
+  #TODO consider general dataset api 
+  if !req.user => return res.send []
   io.query [
     'select users.displayname as "ownerName",themes.*'
     "from themes,users where users.key = themes.owner and themes.owner = #{req.user.key}"
@@ -12,13 +13,13 @@ engine.router.api.get "/theme/", (req, res) ->
     .then -> res.send it.rows
     .catch ->
       console.log e
-      res.send "[]"
+      res.send []
 
 engine.router.api.get "/theme/:id", (req, res) ->
   io.query [
     'select users.displayname as "ownerName", themes.*'
     'from users,themes where users.key = owner and'
-    "themes.key=#{req.params.id} limit 1"
+    "themes.key=#{req.params.id}"
   ].join(" ")
     .then (it={}) ->
       theme = it.[]rows.0
@@ -67,7 +68,7 @@ engine.router.api.put "/theme/:id", (req, res) ~>
   data = req.body
   if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
 
-  io.query "select * from themes where key = #{req.params.id} limit 1"
+  io.query "select * from themes where key = #{req.params.id}"
     .then (r = {}) ->
       theme = r.rows.0
       if !theme => return aux.r404 res

@@ -22,6 +22,7 @@ init-datasets-table = """create table if not exists datasets (
   parent int references datasets(key),
   name text constraint nlen check (char_length(name) <= 100),
   description text constraint dlen check (char_length(description) <= 500),
+  fields jsonb,
   tags text[],
   likes int constraint likecount check ( likes >=0 ),
   searchable boolean,

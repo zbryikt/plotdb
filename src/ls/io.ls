@@ -18,7 +18,7 @@ angular.module \plotDB
         localStorage.setItem("/db/#{item._type.name}/#{item.key}", angular.toJson(item))
         res item
       save-remotely: (item, res, rej) ->
-          item[if !item.createdtime => "createdtime" else "modifiedtime"] = new Date!getTime!
+        item[if !item.createdtime => "createdtime" else "modifiedtime"] = new Date!getTime!
         config = {data: item} <<< if item.key => 
           {url: "/d/#{item._type.name}/#{item.key}", method: \PUT}
         else {url: "/d/#{item._type.name}", method: \POST}
@@ -46,18 +46,6 @@ angular.module \plotDB
           .success (ret) -> res ret
           .error (d="") -> rej [true, d.toString!]
 
-      list-locally: (_type, res, rej) ->
-        list = JSON.parse(localStorage.getItem("/db/list/#{_type.name}")) or []
-        ret = []
-        for item in list =>
-          obj = JSON.parse(localStorage.getItem("/db/#{_type.name}/#item"))
-          if obj and obj.key => ret.push obj
-        res ret
-      list-remotely: (_type, res, rej, query = null) ->
-        $http url: "/d/#{_type.name}#{if query => '?'+query else ''}", method: \GET
-          .success (ret) -> res ret
-          .error (d) -> rej [true, d.toString!]
-
       verify-type: (item) ->
         if !item or !item._type or typeof(item._type) != \object => return true
         if !item._type.name or !item._type.location => return true
@@ -75,6 +63,20 @@ angular.module \plotDB
         if _type.location == \local => return aux.load-locally _type, key, res, rej
         else if _type.location == \server => return aux.load-remotely _type, key, res, rej
         else return rej [true, "not support type"]
+
+      list-locally: (_type) -> new Promise (res, rej) ->
+        list = JSON.parse(localStorage.getItem("/db/list/#{_type.name}")) or []
+        ret = []
+        for item in list =>
+          obj = JSON.parse(localStorage.getItem("/db/#{_type.name}/#item"))
+          if obj and obj.key => ret.push obj
+        res ret
+      list-remotely: (_type, query = null) -> new Promise (res, rej) ->
+        $http url: "/d/#{_type.name}#{if query => '?'+query else ''}", method: \GET
+          .success (ret) -> res ret
+          .error (d) -> rej [true, d.toString!]
+
+      /*
       list: (_type, filter = {}) -> new Promise (res, rej) ~>
         if aux.verify-type({_type}) => return rej [true, "type incorrect"]
         if _type.location == \local => return aux.list-locally _type, res, rej
@@ -85,6 +87,7 @@ angular.module \plotDB
             new Promise (res, rej) -> aux.list-remotely _type, res, rej
           ] .then (ret) -> res ret.0 ++ ret.1
         else return rej [true, "not support type"]
+      */
       delete: (_type, key) -> new Promise (res, rej) ~>
         if !_type or !key => return rej [true, "param not sufficient"]
         if _type.location == \local => return aux.delete-locally _type, key, res, rej

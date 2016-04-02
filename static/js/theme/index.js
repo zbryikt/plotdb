@@ -44,7 +44,11 @@ x$.service('themeService', ['$rootScope', '$http', 'IOService', 'sampleTheme', '
       dimension: {},
       assets: [],
       likes: 0,
-      parent: null
+      parent: null,
+      _type: {
+        location: 'server',
+        name: 'theme'
+      }
     });
     import$(this, src);
     if (!Array.isArray(this.assets)) {

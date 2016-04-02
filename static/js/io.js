@@ -35,7 +35,6 @@ x$.service('IOService', ['$rootScope', '$http'].concat(function($rootScope, $htt
     },
     saveRemotely: function(item, res, rej){
       var config;
-      console.log(123);
       item[!item.createdtime ? "createdtime" : "modifiedtime"] = new Date().getTime();
       config = import$({
         data: item
@@ -101,30 +100,6 @@ x$.service('IOService', ['$rootScope', '$http'].concat(function($rootScope, $htt
         return rej([true, d.toString()]);
       });
     },
-    listLocally: function(_type, res, rej){
-      var list, ret, i$, len$, item, obj;
-      list = JSON.parse(localStorage.getItem("/db/list/" + _type.name)) || [];
-      ret = [];
-      for (i$ = 0, len$ = list.length; i$ < len$; ++i$) {
-        item = list[i$];
-        obj = JSON.parse(localStorage.getItem("/db/" + _type.name + "/" + item));
-        if (obj && obj.key) {
-          ret.push(obj);
-        }
-      }
-      return res(ret);
-    },
-    listRemotely: function(_type, res, rej, query){
-      query == null && (query = null);
-      return $http({
-        url: "/d/" + _type.name + (query ? '?' + query : ''),
-        method: 'GET'
-      }).success(function(ret){
-        return res(ret);
-      }).error(function(d){
-        return rej([true, d.toString()]);
-      });
-    },
     verifyType: function(item){
       if (!item || !item._type || typeof item._type !== 'object') {
         return true;
@@ -169,34 +144,46 @@ x$.service('IOService', ['$rootScope', '$http'].concat(function($rootScope, $htt
         }
       });
     },
-    list: function(_type, filter){
-      var this$ = this;
-      filter == null && (filter = {});
+    listLocally: function(_type){
       return new Promise(function(res, rej){
-        if (aux.verifyType({
-          _type: _type
-        })) {
-          return rej([true, "type incorrect"]);
+        var list, ret, i$, len$, item, obj;
+        list = JSON.parse(localStorage.getItem("/db/list/" + _type.name)) || [];
+        ret = [];
+        for (i$ = 0, len$ = list.length; i$ < len$; ++i$) {
+          item = list[i$];
+          obj = JSON.parse(localStorage.getItem("/db/" + _type.name + "/" + item));
+          if (obj && obj.key) {
+            ret.push(obj);
+          }
         }
-        if (_type.location === 'local') {
-          return aux.listLocally(_type, res, rej);
-        } else if (_type.location === 'server') {
-          return aux.listRemotely(_type, res, rej);
-        } else if (_type.location === 'any') {
-          return Promise.all([
-            new Promise(function(res, rej){
-              return aux.listLocally(_type, res, rej);
-            }), new Promise(function(res, rej){
-              return aux.listRemotely(_type, res, rej);
-            })
-          ]).then(function(ret){
-            return res(ret[0].concat(ret[1]));
-          });
-        } else {
-          return rej([true, "not support type"]);
-        }
+        return res(ret);
       });
     },
+    listRemotely: function(_type, query){
+      query == null && (query = null);
+      return new Promise(function(res, rej){
+        return $http({
+          url: "/d/" + _type.name + (query ? '?' + query : ''),
+          method: 'GET'
+        }).success(function(ret){
+          return res(ret);
+        }).error(function(d){
+          return rej([true, d.toString()]);
+        });
+      });
+    }
+    /*
+    list: (_type, filter = {}) -> new Promise (res, rej) ~>
+      if aux.verify-type({_type}) => return rej [true, "type incorrect"]
+      if _type.location == \local => return aux.list-locally _type, res, rej
+      else if _type.location == \server => return aux.list-remotely _type, res, rej
+      else if _type.location == \any =>
+        Promise.all [
+          new Promise (res, rej) -> aux.list-locally _type, res, rej
+          new Promise (res, rej) -> aux.list-remotely _type, res, rej
+        ] .then (ret) -> res ret.0 ++ ret.1
+      else return rej [true, "not support type"]
+    */,
     'delete': function(_type, key){
       var this$ = this;
       return new Promise(function(res, rej){

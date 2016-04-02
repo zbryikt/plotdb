@@ -45,7 +45,11 @@ x$.service('chartService', ['$rootScope', '$http', 'sampleChart', 'IOService', '
       },
       assets: [],
       config: {},
-      dimension: {}
+      dimension: {},
+      _type: {
+        location: 'server',
+        name: 'chart'
+      }
     });
     import$(this, src);
     return this;

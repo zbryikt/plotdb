@@ -75,40 +75,23 @@ x$.service('baseService', ['$rootScope', 'IOService', 'eventBus'].concat(functio
           });
         });
       });
-    },
-    list: function(_type, filter, force){
-      var this$ = this;
-      filter == null && (filter = {});
-      force == null && (force = false);
-      if (!_type) {
-        _type = {
-          location: 'any',
-          name: this.type
-        };
-      }
-      if (this.items && !force) {
-        return Promise.resolve(this.items);
-      }
-      if (!this.items) {
-        this.items = [];
-      }
-      return IOService.list(_type).then(function(ret){
-        return new Promise(function(res, rej){
-          return $rootScope.$applyAsync(function(){
-            this$.items.splice(0, this$.items.length);
-            this$.items.concat(ret.map(function(it){
-              return new this$.Object(it);
-            })).concat((this$.sample || []).map(function(it){
-              return new this$.Object(it);
-            }));
-            Array.prototype.splice.apply(this$.items, [0, ret.length + this$.sample.length].concat((ret.concat(this$.sample)).map(function(it){
-              return new this$.Object(it);
-            })));
-            return res(this$.items);
-          });
-        });
-      });
     }
+    /*
+    list: (_type, filter = {}, force = false) ->
+      if !_type => _type = {location: \any, name: @type}
+      if @items and !force => return Promise.resolve(@items)
+      if !@items => @items = []
+      (ret) <~ IOService.list _type .then
+      (res, rej) <~ new Promise _
+      <~ $rootScope.$apply-async
+      @items.splice 0, @items.length
+      @items.concat(ret.map(~>new @Object(it))).concat((@sample or []).map(~> new @Object(it)))
+      Array.prototype.splice.apply(
+        @items
+        [0, ret.length + @sample.length] ++ (ret ++ @sample).map(~>new @Object it)
+      )
+      res @items
+    */
   };
   baseObject = function(name, config){
     import$(this, {

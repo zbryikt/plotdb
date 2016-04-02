@@ -5,7 +5,8 @@ require! <[../engine/aux ../engine/share/model/]>
 charttype = model.type.chart
 
 engine.router.api.get "/chart/", (req, res) ->
-  if !req.user => return res.send "[]"
+  #TODO consider general dataset api 
+  if !req.user => return res.send []
   io.query([
     'select users.displayname as "ownerName",charts.*'
     "from charts,users where users.key = charts.owner and charts.owner = $1"
@@ -13,13 +14,13 @@ engine.router.api.get "/chart/", (req, res) ->
     .then -> res.send it.rows
     .catch (e) ->
       console.log e.stack
-      res.send "[]"
+      res.send []
 
 engine.router.api.get "/chart/:id", (req, res) ->
   io.query([
     'select users.displayname as "ownerName", charts.*'
     'from users,charts where users.key = owner and'
-    "charts.key=$1 limit 1"
+    "charts.key=$1"
   ].join(" "), [req.params.id])
     .then (it={}) ->
       chart = it.[]rows.0
@@ -66,7 +67,7 @@ engine.router.api.put "/chart/:id", (req, res) ~>
   if typeof(req.body) != \object => return aux.r400 res
   data = req.body
   if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
-  io.query "select * from charts where key = $1 limit 1", [req.params.id]
+  io.query "select * from charts where key = $1", [req.params.id]
     .then (r = {}) ->
       chart = r.rows.0
       if !chart => return aux.r404 res
@@ -97,7 +98,7 @@ engine.router.api.put "/chart/:id", (req, res) ~>
 
 engine.router.api.delete "/chart/:id", (req, res) ~>
   if !req.user => return aux.r403 res
-  io.query "select * from charts where key = $1 limit 1", [req.params.id]
+  io.query "select * from charts where key = $1", [req.params.id]
     .then (r = {}) ->
       chart = r.[]rows.0
       if !chart => return aux.r404 res

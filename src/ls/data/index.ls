@@ -5,8 +5,10 @@ angular.module \plotDB
     name = \dataset
     service = do
       sample: sampleData
-      init: ->
-        @list!then ~> @localinfo.update!
+      list: ->
+        IOService.list-remotely {name: \dataset, location: \server}
+          .then (r) -> r.map -> new Dataset it
+      init: -> #@list!then ~> @localinfo.update!
       localinfo: do
         rows: 0
         size: 0
@@ -60,13 +62,15 @@ angular.module \plotDB
             break
 
     #TODO: Dataset: save: update field dataset type and key
-    Dataset = ->
+    Dataset = (config) ->
       @ <<< do
         name: "" description: ""
         type: "static", format: "csv"
         owner: null, createdtime: new Date!, modifiedtime: new Date!
         permission: { switch: [], value: []}
         fields: []
+        _type: {location: \server, name: \dataset}
+      @ <<< config
       #@fields = [new Field(f.name, @, f) for f in @fields or []]
       #@save = ->
       #  @fields.map(->delete it.data)
@@ -88,7 +92,7 @@ angular.module \plotDB
             if f1.name != f2.name => continue
             f2 <<< f1
           @ <<< fields: fields, rows: (@fields.0 or {}).[]data.length, size: 0
-          for f1 in @fields => @size += (f1.data or "").length
+          for f1 in @fields => @size += (f1.data or "").length + (f1.name.length + 1)
 
       update: ->
         #if data => @data = data
@@ -145,6 +149,15 @@ angular.module \plotDB
         .catch (e) -> 
           console.log e.stack
           $scope.$apply -> plNotify.aux.error.io \save, \data, e
+    $scope.load = (_type, key) ->
+      data-service.load _type, key
+        .then (ret) ~>
+          $scope.dataset = new data-service.dataset ret
+        .catch (ret) ~>
+          console.error ret
+          plNotify.send \error, "failed to load data. please try reloading"
+          #TODO check at server time?
+          if ret.1 == \forbidden => window.location.href = \/403.html #window.location.pathname
     $scope.load-dataset = (dataset) ->
       $scope.dataset = dataset
       $scope.name = dataset.name
@@ -158,6 +171,8 @@ angular.module \plotDB
       init: ->
         @reset ""
         $scope.$watch 'rawdata', -> $scope.parse.run!
+        offset = $('#dataset-editbox textarea').offset!
+        $('#dataset-editbox textarea').css({height: "#{window.innerHeight - offset.top - 90}px"})
 
     $scope.parse = do
       rows: 0, fields: 0, size: 0
@@ -216,17 +231,18 @@ angular.module \plotDB
 
       link: do
         url: null
-        toggle: -> setTimeout((->$(\#data-edit-link-modal).modal(\show)),0)
+        toggle: -> setTimeout((->$(\#dataset-edit-link-modal).modal(\show)),0)
         read: ->
           $http url: "http://crossorigin.me/#{$scope.parser.link.url}", method: \GET
           .success (d) ->
             $scope.$apply -> $scope.reset d.trim!
-            $(\#data-edit-link-modal).modal \hide
+            $(\#dataset-edit-link-modal).modal \hide
           #TODO error handling
     eventBus.listen \dataset.delete, (key) -> if $scope.dataset.key == key => $scope.dataset = null
     eventBus.listen \dataset.edit, (dataset) ->
       #TODO: support more type ( currently CSV structure only )
-      $scope.load-dataset dataset
+      console.log dataset._type, dataset.key
+      $scope.load dataset._type, dataset.key
 
     $scope.init!
 
@@ -235,6 +251,7 @@ angular.module \plotDB
   ($scope, data-service, plNotify, eventBus) ->
     $scope.datasets = data-service.datasets
     (ret) <- data-service.list!then
+    console.log ret
     $scope.datasets = ret
     $scope.edit = (dataset) -> eventBus.fire \dataset.edit, dataset
     # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large

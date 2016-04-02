@@ -4,20 +4,32 @@ require! <[../engine/aux ../engine/share/model/]>
 datasettype = model.type.dataset
 datafieldtype = model.type.datafield
 
-engine.router.api.get "/dataset/", (req, res) -> res.json []
+engine.router.api.get "/dataset/", (req, res) ->
+  #TODO consider general dataset api 
+  if !req.user => return res.json []
+  io.query "select * from datasets where datasets.owner = $1", [req.user.key]
+    .then (r = {}) -> return res.json r.[]rows
+    .catch ->
+      console.log it.stack
+      return aux.r403 res
+
 engine.router.api.get "/dataset/:id", (req, res) ->
-  io.query "select * from datasets where datasets.key = $1 limit 1", [req.params.id]
+  io.query "select * from datasets where datasets.key = $1", [req.params.id]
     .then (r = {}) ->
       dataset = r.[]rows.0
       if !dataset => return aux.r404 res
-      if ((!req.user or req.user.key != dataset.key) and dataset.{}permission.[]switch.indexOf(\public) < 0) =>
+      if ((!req.user or req.user.key != dataset.owner) and dataset.{}permission.[]switch.indexOf(\public) < 0) =>
         return aux.r403 res
       io.query "select * from datafields where datafields.dataset = $1", [dataset.key]
         .then (r = {}) ->
           dataset.fields = r.[]rows
           res.json dataset
-        .catch -> aux.r403 res
-    .catch -> aux.r403 res
+        .catch -> 
+          console.err it.stack
+          aux.r403 res
+    .catch -> 
+      console.err it.stack
+      aux.r403 res
 
 #TODO remove length check for dynamic dataset
 engine.router.api.post "/dataset/", (req, res) ->
@@ -28,7 +40,6 @@ engine.router.api.post "/dataset/", (req, res) ->
   delete data.fields
   if data.type == \static and data.format == \csv =>
     if !Array.isArray(fields) or fields.length == 0 => return aux.r400 res, [true,"field format incorrect"]
-    #TODO enforce in frontend
     if fields.length > 20 => return aux.r400 res, [true, "field limit exceed"]
   ret = datasettype.lint data
   if ret.0 => return aux.r400 res, ret
@@ -37,6 +48,7 @@ engine.router.api.post "/dataset/", (req, res) ->
     datafieldtype.lint field
     return datafieldtype.clean field
   data = datasettype.clean data
+  data.fields = fields.map -> it{name, datatype}
   pairs = io.aux.insert.format datasettype, data
   delete pairs.key
   pairs = io.aux.insert.assemble pairs
@@ -71,6 +83,17 @@ engine.router.api.post "/dataset/", (req, res) ->
 
 engine.router.api.put "/dataset/:id", (req, res) ->
   if !req.user or !req.params.id => aux.r403 res
+
 engine.router.api.delete "/dataset/:id", (req, res) ->
   if !req.user or !req.params.id => aux.r403 res
-  io.query "delete from datasets where key = $1",
+  io.query "select key,owner from datasets where key = $1", [req.params.id]
+    .then (r) ->
+      dataset = r.[]rows.0
+      if !dataset or dataset.owner != req.user.key => return aux.r403 res
+      Promise.all [
+        io.query "delete from datafields where dataset = $1", [req.params.id]
+        io.query "delete from datasets where key = $1", [req.params.id]
+      ] .then -> res.send!
+    .catch ->
+      console.error it.stack
+      aux.r403 res

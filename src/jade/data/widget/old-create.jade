@@ -1,0 +1,39 @@
+//-.panel.panel-default
+  //-.panel-heading
+    b #[span(ng-if="dataset") Edit]#[span(ng-if="!dataset") Create] Dataset
+    .pull-right
+      .btn.btn-default.btn-xs(ng-click="parser.csv.toggle()")
+        i.fa.fa-upload
+        span &nbsp; upload 
+      span &nbsp;
+      .btn.btn-default.btn-xs(ng-click="parser.link.toggle()")
+        i.fa.fa-cloud
+        span &nbsp; from link 
+      span &nbsp;
+      .btn.btn-default.btn-xs(ng-click="parser.gsheet.toggle()")
+        i.fa.fa-table
+        span &nbsp; google sheet 
+  .panel-body
+    textarea#data-edit-textarea.form-control(rows="6",ng-model="rawdata",
+    placeholder="paste or drag your data here...",
+    style="margin-bottom:13px;font-family:monospace;max-width:100%",
+    ng-disabled="dataset.type.location=='sample'"
+    )
+    .input-group.pull-left(style="width:260px")
+      input.form-control.input-sm(type="input",ng-model="dataset.name",placeholder="Dataset Name",
+      ng-disabled="dataset.type.location=='sample'")
+      span.input-group-btn
+        .btn.btn-default.btn-sm(
+        ng-disabled="!dataset.name || !parse.result || (dataset.type.location && dataset.type.location!='server')"
+        ,ng-click="save()") Save
+    span &nbsp;
+    .btn.btn-sm.btn-default(
+    ng-disabled="!dataset.name || !parse.result || (dataset.type.location && dataset.type.location!='local')",
+    ng-click="save(true)") Save Locally
+    span(ng-cloak,ng-class="{'grayed':parse.rows==0}",
+    style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px")
+      | {{parse.rows || 0}} rows, {{parse.fields || 0}} fields, {{(parse.size || 0)|size}}
+    .btn.btn-sm.loader(ng-class="{'loading':parse.loading}",style="padding-left:0") &nbsp;
+
+
+

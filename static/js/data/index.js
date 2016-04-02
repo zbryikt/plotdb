@@ -6,12 +6,17 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
   name = 'dataset';
   service = {
     sample: sampleData,
-    init: function(){
-      var this$ = this;
-      return this.list().then(function(){
-        return this$.localinfo.update();
+    list: function(){
+      return IOService.listRemotely({
+        name: 'dataset',
+        location: 'server'
+      }).then(function(r){
+        return r.map(function(it){
+          return new Dataset(it);
+        });
       });
     },
+    init: function(){},
     localinfo: {
       rows: 0,
       size: 0,
@@ -103,7 +108,7 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
       }
     }
   };
-  Dataset = function(){
+  Dataset = function(config){
     import$(this, {
       name: "",
       description: "",
@@ -116,8 +121,13 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
         'switch': [],
         value: []
       },
-      fields: []
+      fields: [],
+      _type: {
+        location: 'server',
+        name: 'dataset'
+      }
     });
+    import$(this, config);
     return this;
   };
   Dataset.prototype = {
@@ -152,7 +162,7 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
         this.size = 0;
         for (i$ = 0, len$ = (ref$ = this.fields).length; i$ < len$; ++i$) {
           f1 = ref$[i$];
-          results$.push(this.size += (f1.data || "").length);
+          results$.push(this.size += (f1.data || "").length + (f1.name.length + 1));
         }
         return results$;
       }
@@ -212,6 +222,18 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       });
     });
   };
+  $scope.load = function(_type, key){
+    var this$ = this;
+    return dataService.load(_type, key).then(function(ret){
+      return $scope.dataset = new dataService.dataset(ret);
+    })['catch'](function(ret){
+      console.error(ret);
+      plNotify.send('error', "failed to load data. please try reloading");
+      if (ret[1] === 'forbidden') {
+        return window.location.href = '/403.html';
+      }
+    });
+  };
   $scope.loadDataset = function(dataset){
     var fields;
     $scope.dataset = dataset;
@@ -230,9 +252,14 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       return $scope.dataset = new dataService.dataset(), $scope.rawdata = rawdata, $scope;
     },
     init: function(){
+      var offset;
       this.reset("");
-      return $scope.$watch('rawdata', function(){
+      $scope.$watch('rawdata', function(){
         return $scope.parse.run();
+      });
+      offset = $('#dataset-editbox textarea').offset();
+      return $('#dataset-editbox textarea').css({
+        height: (window.innerHeight - offset.top - 90) + "px"
       });
     }
   });
@@ -384,7 +411,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       url: null,
       toggle: function(){
         return setTimeout(function(){
-          return $('#data-edit-link-modal').modal('show');
+          return $('#dataset-edit-link-modal').modal('show');
         }, 0);
       },
       read: function(){
@@ -395,7 +422,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
           $scope.$apply(function(){
             return $scope.reset(d.trim());
           });
-          return $('#data-edit-link-modal').modal('hide');
+          return $('#dataset-edit-link-modal').modal('hide');
         });
       }
     }
@@ -406,13 +433,15 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     }
   });
   eventBus.listen('dataset.edit', function(dataset){
-    return $scope.loadDataset(dataset);
+    console.log(dataset._type, dataset.key);
+    return $scope.load(dataset._type, dataset.key);
   });
   return $scope.init();
 }));
 x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].concat(function($scope, dataService, plNotify, eventBus){
   $scope.datasets = dataService.datasets;
   return dataService.list().then(function(ret){
+    console.log(ret);
     $scope.datasets = ret;
     $scope.edit = function(dataset){
       return eventBus.fire('dataset.edit', dataset);

@@ -15,7 +15,14 @@
               li: a(href="/chart/") New Chart
               li: a(href="/chart/?demo") Demo Chart
 
-          li#nav-data: a(href="/data/") DATA
+          li#nav-dataset.dropdown
+            a.dropdown-toggle(href="#",data-toggle="dropdown") DATASET #[span.caret]
+            ul.dropdown-menu
+              //-li: a(href="/data/explore/") Explore
+              li: a(href="/data/me.html",ng-cloak,ng-show="user.data") My Dataset
+              li.divider
+              li: a(href="/data/") New Dataset
+
           li#nav-theme.dropdown
             a.dropdown-toggle(href="#",data-toggle="dropdown") THEME #[span.caret]
             ul.dropdown-menu

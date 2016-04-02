@@ -96,11 +96,12 @@ base = function(model){
         required: true,
         type: model.type.string
       },
-      location: {
-        require: true,
+      name: {
+        required: true,
         type: model.type.string
       },
-      name: {
+      location: {
+        required: true,
         type: model.type.string
       },
       datatype: {
@@ -114,6 +115,12 @@ base = function(model){
       }
     }
   });
+  base.dataset.config.base.fields = {
+    require: true,
+    type: model.type.array({
+      type: base.datafield
+    })
+  };
   base.file = new model({
     name: 'file',
     base: {

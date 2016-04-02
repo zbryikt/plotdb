@@ -25,6 +25,7 @@ angular.module \plotDB
         #isType: false
         likes: 0
         parent: null
+        _type: {location: \server, name: \theme}
       @ <<< src
       if !Array.isArray(@assets) => @assets = []
       @
