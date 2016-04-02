@@ -1,11 +1,5 @@
 div(ng-controller="dataEditCtrl")
-  .pull-right(style="margin-top:30px")
-    label.grayed Your Storage Usage
-    .progress(style="width:240px")
-      .progress-bar.progress-bar-info(
-      ng-class="{'progress-bar-info': ((user.data.datasize || 0) / 100000 < 50), 'progress-bar-warning': ((user.data.datasize || 0) / 100000 > 50)}",
-      ng-attr-style="width:{{(user.data.datasize || 0)/ 100000}}%")
-        span {{user.data.datasize|size}}
+  include widget/usage.jade
   h3.page-title 
     if dataset
       span #[small dataset] #{dataset.name}
@@ -23,6 +17,9 @@ div(ng-controller="dataEditCtrl")
       .entry
         i.fa.fa-archive
         span(ng-cloak) {{dataset.size|size}}
+      .entry.text-danger.clickable(ng-cxlick="delete(dataset)")
+        i.fa.fa-close
+        span Delete
   else
     p create dataset to use them in your visualization.
 

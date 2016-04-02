@@ -1,0 +1,21 @@
+div(ng-controller="datasetList")
+  .dataset(ng-repeat="dataset in datasets")
+    h3 #[i.fa.fa-database]&nbsp; #[a(ng-attr-href="/dataset/{{dataset.key}}/") {{dataset.name}}]
+    .entries
+      .entry
+        i.fa.fa-clock-o
+        span &nbsp; {{dataset.modifiedtime|datelite}}
+      .entry
+        i.fa.fa-list
+        span &nbsp; {{dataset.rows}} rows
+      .entry
+        i.fa.fa-archive
+        span &nbsp; {{dataset.size|size}}
+    .fields(style="display:flex;display:-webkit-flex;flex-wrap:wrap;")
+      .field(ng-repeat="field in dataset.fields",
+      style="margin:5px 5px 5px 0;border-radius:3px;background:#fff;padding:5px;border:1px solid #ccc;width:220px;flex: 0 0 auto")
+        h4(style="margin:0") {{field.name}}
+        small {{field.datatype || 'string'}}
+
+    br
+    br

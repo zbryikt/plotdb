@@ -240,10 +240,21 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       return $scope.parse.revert($scope.dataset);
     })['catch'](function(ret){
       console.error(ret);
-      plNotify.send('error', "failed to load data. please try reloading");
+      plNotify.send('error', "failed to load dataset. please try reloading");
       if (ret[1] === 'forbidden') {
         return window.location.href = '/403.html';
       }
+    });
+  };
+  $scope['delete'] = function(dataset){
+    return dataset['delete']().then(function(){
+      plNotify.send('success', "dataset deleted");
+      return $timeout(function(){
+        return window.location.href = "/dataset/";
+      }, 1300);
+    })['catch'](function(ret){
+      console.error(ret);
+      return plNotify.send('error', "failed to delete dataset. please try later.");
     });
   };
   $scope.loadDataset = function(dataset){
@@ -514,6 +525,13 @@ x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].con
         });
       });
     };
+  });
+}));
+x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].concat(function($scope, dataService, plNotify, eventBus){
+  return dataService.list().then(function(datasets){
+    return $scope.$apply(function(){
+      return $scope.datasets = datasets;
+    });
   });
 }));
 function import$(obj, src){

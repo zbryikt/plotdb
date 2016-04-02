@@ -161,9 +161,18 @@ angular.module \plotDB
 
         .catch (ret) ~>
           console.error ret
-          plNotify.send \error, "failed to load data. please try reloading"
+          plNotify.send \error, "failed to load dataset. please try reloading"
           #TODO check at server time?
           if ret.1 == \forbidden => window.location.href = \/403.html #window.location.pathname
+    $scope.delete = (dataset) ->
+      dataset.delete!
+        .then -> 
+          plNotify.send \success, "dataset deleted"
+          $timeout (-> window.location.href = "/dataset/" ), 1300
+        .catch (ret) ->
+          console.error ret
+          plNotify.send \error, "failed to delete dataset. please try later."
+
     $scope.load-dataset = (dataset) ->
       $scope.dataset = dataset
       $scope.name = dataset.name
@@ -291,3 +300,9 @@ angular.module \plotDB
       @chosen.dataset = dataset
     $scope.remove = (dataset) ->
       dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)
+  ..controller \datasetList, 
+  <[$scope dataService plNotify eventBus]> ++
+  ($scope, data-service, plNotify, eventBus) ->
+    data-service.list!
+      .then (datasets) -> 
+        $scope.$apply -> $scope.datasets = datasets

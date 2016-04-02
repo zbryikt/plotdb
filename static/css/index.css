@@ -703,11 +703,15 @@ a.dropdown-toggle {
   margin-right: auto;
 }
 .entries .entry {
+  min-width: 60px;
   display: inline-block;
   margin-right: 25px;
 }
 .entries .entry i.fa {
   margin-right: 6px;
+}
+.clickable {
+  cursor: pointer;
 }
 .page-title {
   padding-top: 20px;

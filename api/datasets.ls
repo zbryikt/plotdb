@@ -48,6 +48,21 @@ engine.router.api.get "/dataset/:id", (req, res) ->
       if e.status == 404 => return aux.r404 res
       aux.r403 res
 
+update-size = (req, delta) -> new bluebird (res, rej) ->
+  io.query "select datasize from users where users.key = $1", [req.user.key]
+    .then (r) ->
+      user = r.[]rows.0
+      if !user => 
+        console.error "[post dataset: update user failed]"
+        return res!
+      datasize = ((user.datasize or 0) + delta) >? 0
+      io.query "update users set datasize = $1 where users.key=$2", [datasize, req.user.key]
+        .then -> req.login req.user, -> res!
+    .catch ->
+      console.error it.stack
+      rej it
+
+
 #TODO remove length check for dynamic dataset
 save-dataset = (req, res, okey = null) ->
   if !req.user => return aux.r403 res
@@ -127,6 +142,9 @@ save-dataset = (req, res, okey = null) ->
             )
             return bluebird.all(promises)
           .then (r = {}) ->
+            update-size req, data.size - (if cur => cur.size else 0)
+              .then -> res.send data
+            /*
             # only send keys to save bandwidth
             data.fields = r.[]rows
             req.user.datasize = (req.user.datasize or 0) + data.size
@@ -142,6 +160,7 @@ save-dataset = (req, res, okey = null) ->
               .then ->
                 req.login req.user, -> res.send data
                 return null
+            */
           .catch ->
             console.error it.stack
             aux.r403 res
@@ -164,6 +183,7 @@ engine.router.api.delete "/dataset/:id", (req, res) ->
     .then (r) ->
       dataset = r.[]rows.0
       if !dataset or dataset.owner != req.user.key => return aux.r403 res
+      update-size req, -dataset.size
       bluebird.all [
         io.query "delete from datafields where dataset = $1", [req.params.id]
         io.query "delete from datasets where key = $1", [req.params.id]
