@@ -428,10 +428,10 @@ block body
 
         .col-sm-3(ng-cloak)
           #data-fields.data-fields(style="height:337px;width:100%;overflow-y:scroll;")
-            .dataset(style="border:none",ng-show="!chosen.key")
+            .dataset.compact(style="border:none",ng-show="!chosen.key")
               b choose a dataset to start
               div: small {{datasets.length}} datasets
-            .dataset(style="border:none",ng-show="chosen.key")
+            .dataset.compact(style="border:none",ng-show="chosen.key")
               b drag field to dimension
               div: small {{chosen.dataset.fields.length}} datasets
 
@@ -439,7 +439,7 @@ block body
             ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="chosen.key")
               span {{fieldAgent.data.name}}
               small {{fieldAgent.data.type}}
-            .dataset(ng-repeat="dataset in datasets",style="cursor:pointer",
+            .dataset.compact(ng-repeat="dataset in datasets",style="cursor:pointer",
             ng-class="{'extend':chosen.key == dataset.key,'mini':chosen.key != dataset.key && chosen.key}")
               div(ng-click="toggle(dataset)")
                 .closebtn.inner(ng-cloak,ng-show="chosen.key == dataset.key")

@@ -131,7 +131,7 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
   };
   Dataset.prototype = {
     setFields: function(fields){
-      var norm, res$, k, v, i$, ref$, len$, f1, j$, len1$, f2, this$ = this, results$ = [];
+      var res$, k, v, i$, ref$, len$, f1, j$, len1$, f2, this$ = this, results$ = [];
       fields == null && (fields = null);
       if (!fields || typeof fields !== 'object') {
         return;
@@ -145,8 +145,9 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
             data: v
           });
         }
-        norm = res$;
+        fields = res$;
       }
+      console.log(fields);
       fields = fields.map(function(it){
         return new Field((it.dataset = this$.key, it.datasetname = this$.name, it.location = this$._type.location, it));
       });

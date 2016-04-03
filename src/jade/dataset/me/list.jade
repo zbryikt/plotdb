@@ -1,5 +1,76 @@
 div(ng-controller="datasetList")
-  .dataset(ng-repeat="dataset in datasets")
+
+  //-.dataset-entry
+    .dse-thumb
+      img(src="/assets/img/dataset/grid.png")
+      .text-center CSV
+    .dse-title
+      .grayed dataset
+      h3(style="margin:0 0 4px"): a England Crimean War 1854
+      p this is a sample dataset for demo purpose. try it out!
+    .sep.light
+    .dse-props
+      .dse-prop
+         .dse-prop-icon: i.fa.fa-user
+         .dse-prop-data #[.grayed owner] #[span zbryikt]
+      .dse-prop
+         .dse-prop-icon: i.fa.fa-clock-o
+         .dse-prop-data #[.grayed create date] #[span 2016/4/2 15:49]
+      .dse-prop
+         .dse-prop-icon: i.fa.fa-list
+         .dse-prop-data #[.grayed rows] #[span 36 rows]
+      .dse-prop
+         .dse-prop-icon: i.fa.fa-save
+         .dse-prop-data #[.grayed size] #[span 12.5KB]
+    .dse-fields
+      label 5 data fields
+      .dse-fields-inner
+        .dse-field
+          .dse-prop-icon: i.fa.fa-sort-alpha-asc
+          .dse-prop-data #[.grayed string] #[span player name]
+        .dse-field
+          .dse-prop-icon: i.fa.fa-sort-numeric-asc
+          .dse-prop-data #[.grayed number] #[span final score]
+        .dse-field
+          .dse-prop-icon: i.fa.fa-clock-o
+          .dse-prop-data #[.grayed date] #[span play date]
+        .dse-field
+          .dse-prop-icon: i.fa.fa-sort-alpha-asc
+          .dse-prop-data #[.grayed string] #[span play category]
+
+  .dataset-entry(ng-repeat="dataset in datasets")
+    .dse-ctrl.pull-right
+      i.fa.fa-share
+      i.fa.fa-trash
+    .dse-thumb
+      img(src="/assets/img/dataset/grid.png")
+      .text-center CSV
+    .dse-title
+      .grayed dataset
+      h3(style="margin:0 0 4px"): a(ng-cloak) {{dataset.name}}
+      p(ng-cloak) {{dataset.description || 'no description. '}}
+    .sep.light.nogap
+    .dse-props
+      .dse-prop
+         .dse-prop-icon: i.fa.fa-user
+         .dse-prop-data(ng-cloak) #[.grayed owner] #[span {{dataset.owner}}]
+      .dse-prop
+         .dse-prop-icon: i.fa.fa-clock-o
+         .dse-prop-data(ng-cloak) #[.grayed create date] #[span {{dataset.createdtime|datelite}}]
+      .dse-prop
+         .dse-prop-icon: i.fa.fa-list
+         .dse-prop-data(ng-cloak) #[.grayed rows] #[span {{dataset.rows}} rows]
+      .dse-prop
+         .dse-prop-icon: i.fa.fa-save
+         .dse-prop-data(ng-cloak) #[.grayed size] #[span {{dataset.size|size}}]
+    .dse-fields
+      label(ng-cloak) {{dataset.fields.length}} data fields
+      .dse-fields-inner
+        .dse-field(ng-repeat="field in dataset.fields")
+          .dse-prop-icon: i.fa.fa-sort-alpha-asc
+          .dse-prop-data #[.grayed {{field.datatype || 'any'}}] #[span {{field.name}}]
+
+  //-.dataset.large(ng-repeat="dataset in datasets")
     h3 #[i.fa.fa-database]&nbsp; #[a(ng-attr-href="/dataset/{{dataset.key}}/") {{dataset.name}}]
     .entries
       .entry
@@ -11,11 +82,10 @@ div(ng-controller="datasetList")
       .entry
         i.fa.fa-archive
         span &nbsp; {{dataset.size|size}}
+    .sep.light
+    label(style="margin-bottom:0") fields
     .fields(style="display:flex;display:-webkit-flex;flex-wrap:wrap;")
       .field(ng-repeat="field in dataset.fields",
       style="margin:5px 5px 5px 0;border-radius:3px;background:#fff;padding:5px;border:1px solid #ccc;width:220px;flex: 0 0 auto")
         h4(style="margin:0") {{field.name}}
         small {{field.datatype || 'string'}}
-
-    br
-    br

@@ -109,7 +109,8 @@ angular.module \plotDB
     Dataset.prototype = do
       set-fields: (fields = null) ->
         if !fields or typeof(fields) != \object => return
-        if !Array.isArray(fields) => norm = [{name: k, data: v} for k,v of fields]
+        if !Array.isArray(fields) => fields = [{name: k, data: v} for k,v of fields]
+        console.log fields
         fields = fields.map ~>
           new Field it <<< {dataset: @key, datasetname: @name, location: @_type.location}
         for f1 in @fields => for f2 in fields =>
