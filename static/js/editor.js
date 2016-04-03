@@ -271,6 +271,24 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
         return this$.render(rebind);
       }, 500);
     },
+    parse: {
+      send: function(name){
+        if (!$scope[name]) {
+          return;
+        }
+        this[name].pending = true;
+        return $scope.canvas.window.postMessage({
+          type: "parse-" + name,
+          payload: $scope[name].code.content
+        }, $scope.plotdomain);
+      },
+      chart: function(){
+        return this.send('chart');
+      },
+      theme: function(){
+        return this.send('theme');
+      }
+    },
     countline: function(){
       var this$ = this;
       return ['code', 'style', 'doc'].map(function(it){
@@ -441,10 +459,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
           $scope.chart.theme = $scope.theme;
           $scope.resetConfig();
           $scope.render();
-          return $scope.canvas.window.postMessage({
-            type: 'parse-theme',
-            payload: $scope.theme.code.content
-          }, $scope.plotdomain);
+          return $scope.parse.theme();
         })['catch'](function(ret){
           console.error(ret);
           return plNotify.send('error', "failed to load chart. please try reloading");
@@ -1079,10 +1094,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
         }
         return this$.communicate.parseHandler = $timeout(function(){
           this$.communicate.parseHandler = null;
-          return this$.canvas.window.postMessage({
-            type: 'parse',
-            payload: code
-          }, this$.plotdomain);
+          return $scope.parse.chart();
         }, 500);
       });
       this.$watch('theme.code.content', function(code){
@@ -1094,10 +1106,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
         }
         return this$.communicate.parseThemeHandler = $timeout(function(){
           this$.communicate.parseThemeHandler = null;
-          return this$.canvas.window.postMessage({
-            type: 'parse-theme',
-            payload: code
-          }, this$.plotdomain);
+          return $scope.parse.theme();
         }, 500);
       });
       this.$watch('chart.config', function(n, o){
@@ -1135,7 +1144,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
         var data;
         data = arg$.data;
         return $scope.$apply(function(){
-          var ref$, config, dimension, k, v, typedef, payload, rebind, event, bytes, mime, buf, ints, i$, to$, idx;
+          var ref$, config, dimension, k, v, typedef, ref1$, event, bytes, mime, buf, ints, i$, to$, idx;
           if (!data || typeof data !== 'object') {
             return;
           }
@@ -1153,7 +1162,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
               this$.target.thumbnail = data.payload;
             }
             return this$._save();
-          } else if (data.type === 'parse') {
+          } else if (data.type === 'parse-chart') {
+            $scope.parse.chart.pending = false;
             ref$ = JSON.parse(data.payload), config = ref$.config, dimension = ref$.dimension;
             for (k in ref$ = this$.chart.dimension) {
               v = ref$[k];
@@ -1178,6 +1188,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
             ref$.dimension = dimension;
             return $scope.render();
           } else if (data.type === 'parse-theme') {
+            $scope.parse.theme.pending = false;
             ref$ = JSON.parse(data.payload), config = ref$.config, typedef = ref$.typedef;
             ref$ = this$.theme;
             ref$.config = config;
@@ -1189,25 +1200,28 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
               return;
             }
             if ($scope.render.payload) {
-              payload = $scope.render.payload;
-              rebind = $scope.render.rebind;
-              this$.canvas.window.postMessage({
-                type: 'render',
-                payload: payload,
-                rebind: rebind
-              }, this$.plotdomain);
-              return $scope.render.payload = null;
-            } else {
-              this$.canvas.window.postMessage({
-                type: 'parse',
-                payload: this$.chart.code.content
-              }, this$.plotdomain);
+              this$.canvas.window.postMessage((ref1$ = {
+                type: 'render'
+              }, ref1$.payload = (ref$ = $scope.render).payload, ref1$.rebind = ref$.rebind, ref1$), this$.plotdomain);
+              $scope.render.payload = null;
+            }
+            if ($scope.parse.chart.pending) {
+              if (this$.chart) {
+                this$.canvas.window.postMessage({
+                  type: 'parse-chart',
+                  payload: this$.chart.code.content
+                }, this$.plotdomain);
+              }
+              $scope.parse.chart.pending = null;
+            }
+            if ($scope.parse.theme.pending) {
               if (this$.theme) {
-                return this$.canvas.window.postMessage({
+                this$.canvas.window.postMessage({
                   type: 'parse-theme',
                   payload: this$.theme.code.content
                 }, this$.plotdomain);
               }
+              return $scope.parse.theme.pending = null;
             }
           } else if (data.type === 'click') {
             if (document.dispatchEvent) {

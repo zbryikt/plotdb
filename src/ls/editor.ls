@@ -135,6 +135,17 @@ angular.module \plotDB
           @render-async.handler = null
           @render rebind
         ), 500
+      parse: do
+        send: (name) -> 
+          if !$scope[name] => return
+          @[name]pending = true
+          $scope.canvas.window.postMessage(
+            { type: "parse-#name", payload: $scope[name].code.content }
+            $scope.plotdomain
+          )
+        chart: -> @send \chart
+        theme: -> @send \theme
+
       countline: ->
         <~ <[code style doc]>.map
         @target[it].lines = @target[it].content.split(\\n).length
@@ -223,9 +234,10 @@ angular.module \plotDB
               $scope.chart.theme = $scope.theme
               $scope.reset-config!
               $scope.render!
-              $scope.canvas.window.postMessage {
-                type: \parse-theme, payload: $scope.theme.code.content
-              }, $scope.plotdomain
+              $scope.parse.theme!
+              #TBR $scope.canvas.window.postMessage {
+              #  type: \parse-theme, payload: $scope.theme.code.content
+              #}, $scope.plotdomain
             .catch (ret) ~>
               console.error ret
               plNotify.send \error, "failed to load chart. please try reloading"
@@ -549,14 +561,16 @@ angular.module \plotDB
           if @communicate.parse-handler => $timeout.cancel @communicate.parse-handler
           @communicate.parse-handler = $timeout (~>
             @communicate.parse-handler = null
-            @canvas.window.postMessage {type: \parse, payload: code}, @plotdomain
+            $scope.parse.chart!
+            #TBR @canvas.window.postMessage {type: \parse, payload: code}, @plotdomain
           ), 500
         @$watch 'theme.code.content', (code) ~>
           if !@theme => return
           if @communicate.parse-theme-handler => $timeout.cancel @communicate.parse-theme-handler
           @communicate.parse-theme-handler = $timeout (~>
             @communicate.parse-theme-handler = null
-            @canvas.window.postMessage {type: \parse-theme, payload: code}, @plotdomain
+            $scope.parse.theme!
+            #TBR @canvas.window.postMessage {type: \parse-theme, payload: code}, @plotdomain
           ), 500
         @$watch 'chart.config', ((n,o={}) ~>
           ret = !!([[k,v] for k,v of n]
@@ -584,7 +598,8 @@ angular.module \plotDB
           if data.payload => @target.thumbnail = data.payload
           @_save!
 
-        else if data.type == \parse =>
+        else if data.type == \parse-chart =>
+          $scope.parse.chart.pending = false
           {config,dimension} = JSON.parse(data.payload)
           for k,v of @chart.dimension => if dimension[k]? => dimension[k].fields = v.fields
           for k,v of @chart.config => if config[k]? => config[k].value = v.value
@@ -592,6 +607,7 @@ angular.module \plotDB
           @chart <<< {config, dimension}
           $scope.render!
         else if data.type == \parse-theme =>
+          $scope.parse.theme.pending = false
           {config,typedef} = JSON.parse(data.payload)
           @theme <<< {config,typedef}
           @apply-theme!
@@ -599,13 +615,16 @@ angular.module \plotDB
         else if data.type == \loaded =>
           if !@chart => return
           if $scope.render.payload =>
-            payload = $scope.render.payload
-            rebind = $scope.render.rebind
-            @canvas.window.postMessage {type: \render, payload, rebind}, @plotdomain
+            @canvas.window.postMessage {type: \render} <<< $scope.render{payload,rebind}, @plotdomain
             $scope.render.payload = null
-          else
-            @canvas.window.postMessage {type: \parse, payload: @chart.code.content}, @plotdomain
+          if $scope.parse.chart.pending =>
+            if @chart => @canvas.window.postMessage {type: \parse-chart, payload: @chart.code.content}, @plotdomain
+            $scope.parse.chart.pending = null
+          if $scope.parse.theme.pending =>
             if @theme => @canvas.window.postMessage {type: \parse-theme, payload: @theme.code.content}, @plotdomain
+            $scope.parse.theme.pending = null
+          #@canvas.window.postMessage {type: \parse, payload: @chart.code.content}, @plotdomain
+          #if @theme => @canvas.window.postMessage {type: \parse-theme, payload: @theme.code.content}, @plotdomain
         else if data.type == \click =>
           if document.dispatchEvent
             event = document.createEvent \MouseEvents

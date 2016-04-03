@@ -31,7 +31,7 @@ $(document).ready(function(){
       return snapshot(evt.data.type);
     } else if (evt.data.type === 'render') {
       return render(evt.data.payload, evt.data.rebind);
-    } else if (evt.data.type === 'parse') {
+    } else if (evt.data.type === 'parse-chart') {
       return parse(evt.data.payload, 'chart');
     } else if (evt.data.type === 'parse-theme') {
       return parse(evt.data.payload, 'theme');
@@ -139,7 +139,7 @@ $(document).ready(function(){
           chart = module.exports;
           payload = JSON.stringify((ref$ = {}, ref$.dimension = chart.dimension, ref$.config = chart.config, ref$));
           return window.parent.postMessage({
-            type: 'parse',
+            type: 'parse-chart',
             payload: payload
           }, plotdomain);
         });

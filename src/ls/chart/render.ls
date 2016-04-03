@@ -15,7 +15,7 @@ window.thread = do
 dispatcher = (evt) ->
   if (evt.data.type in <[snapshot getsvg getpng]>) => snapshot evt.data.type
   else if evt.data.type == \render => render evt.data.payload, evt.data.rebind
-  else if evt.data.type == \parse => parse evt.data.payload, \chart
+  else if evt.data.type == \parse-chart => parse evt.data.payload, \chart
   else if evt.data.type == \parse-theme => parse evt.data.payload, \theme
   else if evt.data.type == \reload => window.location.reload!
   else if evt.data.type == \colorblind-emu => colorblind evt.data.payload
@@ -78,7 +78,7 @@ parse = (payload, type) ->
       (module) <- proper-eval payload, false .then
       chart = module.exports
       payload = JSON.stringify({} <<< chart{dimension, config})
-      window.parent.postMessage {type: \parse, payload}, plotdomain
+      window.parent.postMessage {type: \parse-chart, payload}, plotdomain
     else if type == \theme =>
       (module) <- proper-eval payload, false .then
       theme = module.exports
