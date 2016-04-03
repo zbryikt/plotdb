@@ -12,6 +12,16 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
       }
       return "/dataset/?k=c" + dataset.key;
     },
+    cache: {},
+    cachedLoad: function(_type, key){
+      if (_type.location === 'local') {
+        return this.load(_type, key);
+      }
+      if (this.cache[key]) {
+        Promise.resolve(this.cache[key]);
+      }
+      return this.load(_type, key);
+    },
     list: function(){
       return IOService.listRemotely({
         name: 'dataset',
@@ -42,77 +52,59 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
     }
   };
   Field = function(config){
-    import$(this, config);
+    import$((this.dataset = null, this.location = 'server', this.name = null, this.datatype = null, this.data = [], this), config);
     return this;
   };
   Field.prototype = {
-    dataset: {
-      _type: {},
-      key: null
-    },
-    name: null,
-    type: null,
     update: function(){
       var this$ = this;
-      return this.getDataset().then(function(dataset){
-        if (!dataset) {
-          return;
+      return dataService.cachedLoad({
+        location: this.location,
+        name: 'dataset'
+      }, this.dataset).then(function(dataset){
+        var matched;
+        matched = dataset.fields.filter(function(it){
+          return it.name === this$.name;
+        })[0];
+        if (!matched) {
+          return console.error("failed to update field data");
         }
-        this$.data = (dataset.data || (dataset.data = [])).map(function(it){
-          return it[this$.name];
-        });
-        return this$.settype();
+        import$(this$, matched);
+        return console.log(this$);
       });
-    },
-    setDataset: function(dataset){
-      var ref$;
-      dataset == null && (dataset = null);
-      this._.dataset = dataset;
-      if (dataset && dataset._type && dataset.key) {
-        (ref$ = this.dataset, ref$._type = dataset._type, ref$.key = dataset.key, ref$).name = dataset.name;
-      } else {
-        ref$ = this.dataset._type;
-        ref$._type = {};
-        ref$.key = null;
-        ref$.name = null;
-      }
-      return Promise.resolve(dataset);
-    },
-    getDataset: function(){
-      var that, this$ = this;
-      if (that = this._.dataset) {
-        return Promise.resolve(that);
-      }
-      if (!this.dataset._type || !this.dataset.key) {
-        return Promise.resolve(null);
-      }
-      return dataService.load(this.dataset._type, this.dataset.key).then(function(ret){
-        var ref$;
-        this$._.dataset = ret;
-        (ref$ = this$.dataset, ref$._type = ret._type, ref$.key = ret.key, ref$).name = ret.name;
-        return this$._.dataset;
-      });
-    },
-    settype: function(){
-      var types, i$, len$, type;
-      types = ['Boolean', 'Percent', 'Number', 'Date', 'String'].concat([null]);
-      for (i$ = 0, len$ = types.length; i$ < len$; ++i$) {
-        type = types[i$];
-        if (!type) {
-          return this.type = 'String';
-        }
-        if (!this.data.map(fn$).filter(fn1$).length) {
-          this.type = type;
-          break;
-        }
-      }
-      function fn$(it){
-        return plotdb[type].test(it);
-      }
-      function fn1$(it){
-        return !it;
-      }
     }
+    /*
+    #toJson: -> angular.toJson(@{name, type} <<< {dataset: @dataset{type, key}})
+    #TODO this might be called individually. should propagate to dataset?
+    update: ->
+      # failed only if remote dataset fetching failed
+      (dataset) <~ @get-dataset!then
+      if !dataset => return # standalone field won't need to update
+      @data = dataset.[]data.map(~>it[@name])
+      @settype!
+    set-dataset: (dataset = null) -> # set null to clear dataset
+      #if !dataset.type or !dataset.key => return Promise.reject(null)
+      #(ret) <~ dataService.load dataset.type, dataset.key .then
+      @_.dataset = dataset
+      if dataset and dataset._type and dataset.key =>
+        @dataset <<< dataset{_type, key} <<< {name: dataset.name}
+      else @dataset._type <<< {_type: {}, key: null, name: null}
+      Promise.resolve(dataset)
+    get-dataset: -> # provide dataset or null for standalone field
+      if @_.dataset => return Promise.resolve(that)
+      if !@dataset._type or !@dataset.key => return Promise.resolve(null)
+      (ret) <~ dataService.load @dataset._type, @dataset.key .then
+      @_.dataset = ret
+      @dataset <<< ret{_type, key} <<< {name: ret.name}
+      @_.dataset
+    settype: ->
+      types = <[Boolean Percent Number Date String]> ++ [null]
+      for type in types =>
+        if !type => return @type = \String
+        if !@data.map(-> plotdb[type]test it).filter(->!it).length =>
+          @type = type
+          break
+    */
   };
   Dataset = function(config){
     import$(this, {
@@ -134,44 +126,48 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
       }
     });
     import$(this, config);
+    this.setFields(this.fields);
     return this;
   };
   Dataset.prototype = {
     setFields: function(fields){
-      var res$, k, ref$, v, i$, len$, f1, j$, len1$, f2, results$ = [];
+      var norm, res$, k, v, i$, ref$, len$, f1, j$, len1$, f2, this$ = this, results$ = [];
       fields == null && (fields = null);
-      if (fields && typeof fields === 'object') {
-        res$ = [];
-        for (k in ref$ = fields || []) {
-          v = ref$[k];
-          res$.push(new Field({
-            name: k,
-            data: v,
-            dataset: this.key,
-            datasetname: this.name,
-            location: this._type.location
-          }));
-        }
-        fields = res$;
-        for (i$ = 0, len$ = (ref$ = this.fields).length; i$ < len$; ++i$) {
-          f1 = ref$[i$];
-          for (j$ = 0, len1$ = fields.length; j$ < len1$; ++j$) {
-            f2 = fields[j$];
-            if (f1.name !== f2.name) {
-              continue;
-            }
-            f2.key = f1.key;
-          }
-        }
-        this.fields = fields;
-        this.rows = ((ref$ = this.fields[0] || {}).data || (ref$.data = [])).length;
-        this.size = 0;
-        for (i$ = 0, len$ = (ref$ = this.fields).length; i$ < len$; ++i$) {
-          f1 = ref$[i$];
-          results$.push(this.size += (f1.data || "").length + (f1.name.length + 1));
-        }
-        return results$;
+      if (!fields || typeof fields !== 'object') {
+        return;
       }
+      if (!Array.isArray(fields)) {
+        res$ = [];
+        for (k in fields) {
+          v = fields[k];
+          res$.push({
+            name: k,
+            data: v
+          });
+        }
+        norm = res$;
+      }
+      fields = fields.map(function(it){
+        return new Field((it.dataset = this$.key, it.datasetname = this$.name, it.location = this$._type.location, it));
+      });
+      for (i$ = 0, len$ = (ref$ = this.fields).length; i$ < len$; ++i$) {
+        f1 = ref$[i$];
+        for (j$ = 0, len1$ = fields.length; j$ < len1$; ++j$) {
+          f2 = fields[j$];
+          if (f1.name !== f2.name) {
+            continue;
+          }
+          f2.key = f1.key;
+        }
+      }
+      this.fields = fields;
+      this.rows = ((ref$ = this.fields[0] || {}).data || (ref$.data = [])).length;
+      this.size = 0;
+      for (i$ = 0, len$ = (ref$ = this.fields).length; i$ < len$; ++i$) {
+        f1 = ref$[i$];
+        results$.push(this.size += (f1.data || "").length + (f1.name.length + 1));
+      }
+      return results$;
     },
     update: function(){}
   };

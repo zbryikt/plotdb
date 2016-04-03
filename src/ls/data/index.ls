@@ -8,6 +8,11 @@ angular.module \plotDB
       link: (dataset) -> 
         if dataset._type.location == \server => return "/dataset/#{dataset.key}/"
         return "/dataset/?k=c#{dataset.key}"
+      cache: {}
+      cachedLoad: (_type, key) ->
+        if _type.location == \local => return @load _type, key
+        if @cache[key] => Promise.resolve(@cache[key])
+        @load _type, key
       list: ->
         IOService.list-remotely {name: \dataset, location: \server}
           .then (r) -> r.map -> new Dataset it
@@ -23,7 +28,13 @@ angular.module \plotDB
     # we can construct directly from a json(field), or from a dataset
     #Field = (name, dataset = null, field = null) ->
     Field = (config) ->
-      @ <<< config
+      @ <<< {
+        dataset: null
+        location: \server
+        name: null
+        datatype: null
+        data: []
+      } <<< config
       #if !field and dataset => field = dataset.fields.filter(->it.name == name).0
       #if field => @ <<< field
       # use _ as a little trick to prevent things to be stringify
@@ -31,8 +42,14 @@ angular.module \plotDB
       #if dataset => @set-dataset dataset
       @
     Field.prototype = do
-      dataset: _type: {}, key: null
-      name: null, type: null
+      update: ->
+        data-service.cachedLoad {location: @location, name: \dataset}, @dataset
+          .then (dataset) ~>
+            matched = dataset.fields.filter(~>it.name == @name).0
+            if !matched => return console.error "failed to update field data"
+            @ <<< matched
+            console.log @
+      /*
       #toJson: -> angular.toJson(@{name, type} <<< {dataset: @dataset{type, key}})
       #TODO this might be called individually. should propagate to dataset?
       update: ->
@@ -63,6 +80,7 @@ angular.module \plotDB
           if !@data.map(-> plotdb[type]test it).filter(->!it).length =>
             @type = type
             break
+      */
 
     #TODO: Dataset: save: update field dataset type and key
     Dataset = (config) ->
@@ -74,6 +92,8 @@ angular.module \plotDB
         fields: []
         _type: {location: \server, name: \dataset}
       @ <<< config
+      @set-fields @fields
+      #@fields.map ~> new Field(it <<< {dataset: @key, location: @_type.location})
       #@fields = [new Field(f.name, @, f) for f in @fields or []]
       #@save = ->
       #  @fields.map(->delete it.data)
@@ -88,14 +108,15 @@ angular.module \plotDB
 
     Dataset.prototype = do
       set-fields: (fields = null) ->
-        if fields and typeof(fields) == \object =>
-          fields = for k,v of (fields or []) => 
-            new Field {name: k, data: v, dataset: @key, datasetname: @name, location: @_type.location}
-          for f1 in @fields => for f2 in fields =>
-            if f1.name != f2.name => continue
-            f2 <<< f1{key}
-          @ <<< fields: fields, rows: (@fields.0 or {}).[]data.length, size: 0
-          for f1 in @fields => @size += (f1.data or "").length + (f1.name.length + 1)
+        if !fields or typeof(fields) != \object => return
+        if !Array.isArray(fields) => norm = [{name: k, data: v} for k,v of fields]
+        fields = fields.map ~>
+          new Field it <<< {dataset: @key, datasetname: @name, location: @_type.location}
+        for f1 in @fields => for f2 in fields =>
+          if f1.name != f2.name => continue
+          f2 <<< f1{key}
+        @ <<< fields: fields, rows: (@fields.0 or {}).[]data.length, size: 0
+        for f1 in @fields => @size += (f1.data or "").length + (f1.name.length + 1)
 
       update: ->
         #if data => @data = data
