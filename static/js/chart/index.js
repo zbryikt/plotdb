@@ -199,21 +199,13 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
     });
   };
   $scope.charts = [];
-  return Promise.all([
-    new Promise(function(res, rej){
-      return IOService.aux.listLocally({
-        name: 'chart'
-      }, res, rej);
-    }), new Promise(function(res, rej){
-      return IOService.aux.listRemotely({
-        name: 'chart'
-      }, res, rej, "q=all");
-    })
-  ]).then(function(ret){
+  return IOService.listRemotely({
+    name: 'chart'
+  }, "q=all").then(function(ret){
     var this$ = this;
     return $scope.$apply(function(){
       var hit, i$, to$, i, d, width, map, k, ref$, v, results$ = [];
-      $scope.charts = (ret[0].concat(ret[1])).map(function(it){
+      $scope.charts = ret.map(function(it){
         return new chartService.chart(it);
       });
       hit = false;

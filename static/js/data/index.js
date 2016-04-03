@@ -291,7 +291,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     init: function(){
       var ret1, ret2, that, ret, offset;
       this.reset("");
-      ret1 = /[?&]k=([sc])([^&?#]+)/.exec(window.location.search || "");
+      ret1 = /\/dataset\//.exec(window.location.pathname) ? /[?&]k=([sc])([^&?#]+)/.exec(window.location.search || "") : null;
       ret2 = /^\/data(s)et\/([^\/?&]+)\/?/.exec(window.location.pathname || "");
       if (that = ret1 || ret2) {
         ret = that;
@@ -528,11 +528,33 @@ x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].con
   });
 }));
 x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].concat(function($scope, dataService, plNotify, eventBus){
-  return dataService.list().then(function(datasets){
+  dataService.list().then(function(datasets){
     return $scope.$apply(function(){
       return $scope.datasets = datasets;
     });
   });
+  $scope.chosen = {
+    dataset: null,
+    key: null
+  };
+  $scope.toggle = function(dataset){
+    var ref$;
+    if (!dataset || this.chosen.key === dataset.key) {
+      return ref$ = this.chosen, ref$.dataset = null, ref$.key = null, ref$;
+    }
+    this.chosen.key = dataset.key;
+    return this.chosen.dataset = dataset;
+  };
+  return $scope.remove = function(dataset){
+    var this$ = this;
+    return dataset['delete']().then(function(){
+      return $scope.$apply(function(){
+        return $scope.datasets = $scope.datasets.filter(function(it){
+          return it.key !== dataset.key;
+        });
+      });
+    });
+  };
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

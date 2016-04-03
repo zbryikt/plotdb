@@ -416,48 +416,22 @@ block body
           iframe#chart-renderer(src="http://localhost/render.html",
           style="width:100%;height:100%;border:none")
 
-    #binding-panel(ng-controller="dataFiles",style="position:relative")
-      .pull-right(style="margin-top:5px;cursor:pointer",ng-click="showDataEditModal=!!!showDataEditModal") #[i.fa.fa-plus-circle] Add Dataset
-      div(style="font-weight:bold;font-size:1.5em") Data Mapping
-      hr(style="margin:5px 0")
-      //- try list functions in a navbar. will we use this?
-      //-.navbar.navbar-default
-        .navbar-collapse.collapse
-          ul.nav.navbar-nav
-            li: a my dataset #[span.caret]
-            li: a sample dataset #[span.caret]
-
-          //-form.navbar-form.navbar-left
-            select.form-control(style="width:100px")
-            .input-group
-              input.form-control(type="text")
-              .input-group-btn: .btn.btn-default GO
-          ul.nav.navbar-nav.pull-right
-            li: a ... or
-            li: a(href="#") upload #[i.fa.fa-upload]
-            li: a(href="#") google sheet #[i.fa.fa-cloud]
-            li: a(href="#") key in #[i.fa.fa-edit]
-
+    #binding-panel.relpos.panel.panel-default(ng-controller="datasetList"): .panel-body
+      .pull-right.clickable(style="margin-top:5px;",
+      ng-click="showDataEditModal=!!!showDataEditModal") #[i.fa.fa-plus-circle] Add Dataset
+      h3 Data Mapping
+      .sep.light
       .row
         #data-edit-modal(ng-cloak,ng-show="showDataEditModal"): .ib
           .closebtn(ng-click="showDataEditModal=!!!showDataEditModal")
           include /dataset/create.jade
-          label Datasets
-          hr(style="margin-top:5px")
-          .data-files(style="display:flex;overflow-y:100px;flex-wrap:wrap")
-            .data-file(ng-repeat="file in datasets",style="flex:1 1 200px;cursor:pointer"): div
-              .title {{file.name}}
-              .desc {{file.size|size}}, {{file.rows}} rows
-          .clearfix
-          hr
-          .pull-right: .btn.btn-default(ng-click="showDataEditModal=!!!showDataEditModal") Close
 
         .col-sm-3(ng-cloak)
           #data-fields.data-fields(style="height:337px;width:100%;overflow-y:scroll;")
-            .data-file(style="border:none",ng-show="!chosen.key")
+            .dataset(style="border:none",ng-show="!chosen.key")
               b choose a dataset to start
               div: small {{datasets.length}} datasets
-            .data-file(style="border:none",ng-show="chosen.key")
+            .dataset(style="border:none",ng-show="chosen.key")
               b drag field to dimension
               div: small {{chosen.dataset.fields.length}} datasets
 
@@ -465,34 +439,15 @@ block body
             ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="chosen.key")
               span {{fieldAgent.data.name}}
               small {{fieldAgent.data.type}}
-            .data-file(ng-repeat="file in datasets",style="cursor:pointer",
-            ng-class="{'extend':chosen.key == file.key,'mini':chosen.key != file.key && chosen.key}")
-              div(ng-click="toggle(file)")
-                .closebtn.inner(ng-cloak,ng-show="chosen.key == file.key")
-                .title {{file.name}}
-                .desc {{file.size|size}}, {{file.rows}} rows
+            .dataset(ng-repeat="dataset in datasets",style="cursor:pointer",
+            ng-class="{'extend':chosen.key == dataset.key,'mini':chosen.key != dataset.key && chosen.key}")
+              div(ng-click="toggle(dataset)")
+                .closebtn.inner(ng-cloak,ng-show="chosen.key == dataset.key")
+                .title {{dataset.name}}
+                .desc {{dataset.size|size}}, {{dataset.rows}} rows, {{dataset.fields.length}} fields
               div
-                .data-field(ng-repeat="field in file.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
-                ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field")
-                  span {{field.name}}
-                  small {{field.type}}
-
-          //-.data-fields(ng-controller="dataFiles")
-            //-.data-file(style="border:none",ng-show="activelength")
-              b drag field to dimension
-              div: small 7 fields
-
-
-            #field-agent.data-field(ng-drag="true",ng-drag-data="fieldAgent.data",ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="activelength")
-              span {{fieldAgent.data.name}}
-              small {{fieldAgent.data.type}}
-            //-.data-file(ng-repeat="file in datasets",ng-show="file.toggle",style="width:100%")
-              .closebtn(ng-click="file.toggle=!!!file.toggle")
-              .title {{file.name}}
-              .desc {{file.size}}, {{file.rows}} rows
-              div(style="max-height:230px;overflow:scroll")
-                .data-field(ng-repeat="field in file.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
-                ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field")
+                .data-field(ng-repeat="field in dataset.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
+                ng-attr-style="background:{{dataset.color}}",ng-drag="true",ng-drag-data="field")
                   span {{field.name}}
                   small {{field.type}}
 
@@ -522,51 +477,6 @@ block body
                 small in dataset "{{field.dataset.name}}"
             .dimension.flexend
 
-    //-.panel.panel-default: .panel-body
-      .row
-        .col-sm-12
-          label Data Mapping
-          .data-fields(ng-controller="dataFiles")
-            .data-file(ng-repeat="file in datasets",style="cursor:pointer",
-            ng-click="file.toggle=!!!file.toggle",ng-class="{'active':file.toggle}")
-              .title {{file.name}}
-              .desc {{file.size}}, {{file.rows}} rows
-            .data-file.data-file-new
-              .title(style="line-height:2.5em",
-              ng-click="showDataCreateModal=!!!showDataCreateModal") add new dataset ...
-            br.clearfix
-          #data-create-modal(ng-show="showDataCreateModal")
-            include /data/create.jade
-      hr
-      .row
-        .col-sm-4(style="position:relative")
-          label Data Fields
-          .data-fields(ng-controller="dataFiles")
-            .data-file(ng-repeat="file in datasets",ng-show="file.toggle")
-              .closebtn(ng-click="file.toggle=!!!file.toggle")
-              .title {{file.name}}
-              .desc {{file.size}}, {{file.rows}} rows
-              .data-field(ng-repeat="field in file.fields",
-              ng-attr-style="background:{{file.color}}",ng-drag="true",ng-drag-data="field")
-                span {{field.name}}
-                small {{field.type}}
-            br.clearfix
-          img(src="/assets/img/drag.png",style="position:absolute;right:10px;z-index:0")
-        .col-sm-8
-          label Dimensions
-          .dimensions
-            .dimension(ng-cloak,ng-repeat="(name,dim) in chart.dimension",ng-drop="true",
-            ng-drop-success="dimension.bind($event,dim,$data)")
-              .require(ng-show="dim.require"): i.fa.fa-asterisk
-              .title {{name}}
-              .desc
-                span(ng-show="dim.desc") {{dim.desc}} #[br]
-                i accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]
-              .data-field(ng-repeat="field in dim.fields")
-                .closebtn(ng-click="dimension.unbind($event, dim, field)")
-                span {{field.name}}
-                small {{field.type}}
-            .dimension.flexend
     .row(ng-show="target.key && target.owner == user.data.key")
       .col-sm-12
         .panel.panel-default
@@ -578,9 +488,4 @@ block body
                 p.text-center(ng-cloak) Permanently delete this {{type}}. Are you sure?
                 .text-center
                   .btn.btn-danger.loader(ng-click="delete()",ng-class="{'loading':delete.handle}") Yes, Delete it
-              //-TODO remove migrate
-              //-div(ng-cloak,ng-show="target.type.location=='local'",style="flex: 1 1 0")
-                .text-center: label Migrate
-                p.text-center(ng-cloak) Permanently move this {{type}} from local to server. Are you sure?
-                .text-center: .btn.btn-warning(ng-click="migrate()") Yes, Move it
   include /footer.jade

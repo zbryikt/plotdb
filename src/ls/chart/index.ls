@@ -130,12 +130,13 @@ angular.module \plotDB
         mylikes[chart.key] = !v
 
     $scope.charts = []
-    (ret) <- Promise.all [
-      new Promise (res, rej) -> IO-service.aux.list-locally {name: \chart}, res, rej
-      new Promise (res, rej) -> IO-service.aux.list-remotely {name: \chart}, res, rej, "q=all"
-    ] .then
+    #(ret) <- Promise.all [
+    #  #new Promise (res, rej) -> IO-service.aux.list-locally {name: \chart}, res, rej
+    #  new Promise (res, rej) -> IO-service.list-remotely {name: \chart}, res, rej, "q=all"
+    #] .then
+    (ret) <- IO-service.list-remotely {name: \chart}, "q=all" .then
     <~ $scope.$apply
-    $scope.charts = ( ret.0 ++ ret.1 ).map -> new chartService.chart(it)
+    $scope.charts = ( ret ).map -> new chartService.chart(it)
     hit = false
     for i from 0 til $scope.charts.length =>
       d = $scope.charts[i]

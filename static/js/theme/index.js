@@ -16,6 +16,16 @@ x$.service('themeService', ['$rootScope', '$http', 'IOService', 'sampleTheme', '
     },
     sharelink: function(theme){
       return "https://plotdb.com" + this.link(theme);
+    },
+    list: function(){
+      return IOService.listRemotely({
+        name: 'theme',
+        location: 'server'
+      }).then(function(r){
+        return r.map(function(it){
+          return new object(it);
+        });
+      });
     }
   };
   object = function(src){

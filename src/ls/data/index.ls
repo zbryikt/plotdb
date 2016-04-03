@@ -192,7 +192,13 @@ angular.module \plotDB
         $scope <<< {dataset:  new dataService.dataset!, rawdata}
       init: ->
         @reset ""
-        ret1 = /[?&]k=([sc])([^&?#]+)/.exec(window.location.search or "")
+        # e.g.: /dataset/?k=s123 )
+        ret1 = (
+          if /\/dataset\//.exec(window.location.pathname) =>
+            /[?&]k=([sc])([^&?#]+)/.exec(window.location.search or "")
+          else => null
+        )
+        # e.g.: /dataset/123/
         ret2 = /^\/data(s)et\/([^\/?&]+)\/?/.exec(window.location.pathname or "")
         if ret1 or ret2 =>
           ret = that
@@ -289,6 +295,7 @@ angular.module \plotDB
     (ret) <- data-service.list!then
     $scope.datasets = ret
     $scope.edit = (dataset) -> eventBus.fire \dataset.edit, dataset
+
     # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large
     $scope.chosen = do
       dataset: null
@@ -300,9 +307,21 @@ angular.module \plotDB
       @chosen.dataset = dataset
     $scope.remove = (dataset) ->
       dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)
+
   ..controller \datasetList, 
   <[$scope dataService plNotify eventBus]> ++
   ($scope, data-service, plNotify, eventBus) ->
     data-service.list!
       .then (datasets) -> 
         $scope.$apply -> $scope.datasets = datasets
+    # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large
+    $scope.chosen = do
+      dataset: null
+      key: null
+    $scope.toggle = (dataset) ->
+      if !dataset or @chosen.key == dataset.key =>
+        return @chosen <<< {dataset: null, key: null}
+      @chosen.key = dataset.key
+      @chosen.dataset = dataset
+    $scope.remove = (dataset) ->
+      dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)

@@ -10,6 +10,10 @@ angular.module \plotDB
       thumblink: (theme) -> "/theme/thumb/?k=#{theme._type.location.charAt(0)}#{theme.key}"
       #TODO better mechanism for switching domain ( dev, staging and production )
       sharelink: (theme) -> "https://plotdb.com#{@link(theme)}"
+      list: ->
+        IOService.list-remotely {name: \theme, location: \server}
+          .then (r) -> r.map -> new object it
+
     object = (src) ->
       @ <<< do
         name: \untitled
