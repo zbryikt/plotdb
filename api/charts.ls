@@ -33,6 +33,7 @@ engine.router.api.get "/chart/:id", (req, res) ->
       return aux.r403 res
 
 dethumb = (chart) ->
+  if !chart.thumbnail => return null
   thumb = chart.thumbnail.split('base64,')
   ret = /data:([^;]+);/.exec(thumb.0)
   if !ret => return null
