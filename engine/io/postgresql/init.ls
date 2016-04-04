@@ -80,6 +80,7 @@ init-charts-table = """create table if not exists charts (
   tags text[],
   likes int,
   searchable boolean,
+  dimension jsonb,
   dimlen int,
   createdtime timestamp,
   modifiedtime timestamp,
