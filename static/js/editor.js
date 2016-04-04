@@ -39,10 +39,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
       window: document.getElementById('chart-renderer').contentWindow
     },
     type: null,
-    target: null,
     service: null
   });
   import$($scope, {
+    target: function(){
+      return this[this.type];
+    },
     mode: {
       set: function(value){
         return import$($scope, (function(){
@@ -51,14 +53,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
             return {
               value: value,
               type: 'chart',
-              target: $scope.chart,
               service: chartService
             };
           case 'theme':
             return {
               value: value,
               type: 'theme',
-              target: $scope.theme,
               service: themeService
             };
           }
@@ -68,9 +68,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
     _save: function(nothumb){
       var key, ref$, refresh, k, this$ = this;
       nothumb == null && (nothumb = false);
-      if (this.target.owner !== this.user.data.key) {
-        key = this.target.type.location === 'server' ? this.target.key : null;
-        ref$ = this.target;
+      if (this.target().owner !== this.user.data.key) {
+        key = this.target()._type.location === 'server' ? this.target().key : null;
+        ref$ = this.target();
         ref$.key = null;
         ref$.owner = null;
         ref$.permission = {
@@ -78,18 +78,20 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
           value: []
         };
         if (key) {
-          this.target.parent = key;
+          this.target().parent = key;
         }
       }
-      refresh = !this.target.key ? true : false;
-      this.target.dimlen = (function(){
-        var results$ = [];
-        for (k in this.target.dimension || {}) {
-          results$.push(k);
-        }
-        return results$;
-      }.call(this)).length;
-      return this.target.save().then(function(ret){
+      refresh = !this.target().key ? true : false;
+      if (this.target().dimension) {
+        this.target().dimlen = (function(){
+          var results$ = [];
+          for (k in this.target().dimension || {}) {
+            results$.push(k);
+          }
+          return results$;
+        }.call(this)).length;
+      }
+      return this.target().save().then(function(ret){
         return this$.$apply(function(){
           var link;
           if (nothumb) {
@@ -97,7 +99,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
           } else {
             plNotify.send('success', "chart saved");
           }
-          link = this$.service.link(this$.target);
+          link = this$.service.link(this$.target());
           if (refresh || !window.location.search) {
             window.location.href = link;
           }
@@ -136,9 +138,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
     },
     clone: function(){
       var key, ref$;
-      this.target.name = this.target.name + " - Copy";
-      key = this.target.type.location === 'server' ? this.target.key : null;
-      ref$ = this.target;
+      this.target().name = this.target().name + " - Copy";
+      key = this.target()._type.location === 'server' ? this.target().key : null;
+      ref$ = this.target();
       ref$.key = null;
       ref$.owner = null;
       ref$.parent = key;
@@ -165,13 +167,13 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
     },
     'delete': function(){
       var this$ = this;
-      if (!this.target.key) {
+      if (!this.target().key) {
         return;
       }
       this['delete'].handle = true;
-      return this.target['delete']().then(function(ret){
+      return this.target()['delete']().then(function(ret){
         plNotify.send('success', this$.type + " deleted");
-        this$.target = new this$.service[this$.type]();
+        this$[this$.type] = new this$.service[this$.type]();
         setTimeout(function(){
           return window.location.href = "/" + this$.type + "/me.html";
         }, 1000);
@@ -190,17 +192,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
         }
         return results$;
       }
-    }
-    /* TODO: remove. no more local chart.
-    migrate: ->
-      if !@chart.key => return
-      cloned = @chart.clone!
-      cloned.type.location = (if @chart.type.location == \local => \server else \local)
-      <~ cloned.save!then
-      <~ @chart.delete!then
-      $scope.chart = cloned
-      window.location.href = chartService.link $scope.chart
-    */,
+    },
     dimension: {
       bind: function(event, dimension, field){
         var this$ = this;
@@ -292,8 +284,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
     countline: function(){
       var this$ = this;
       return ['code', 'style', 'doc'].map(function(it){
-        this$.target[it].lines = this$.target[it].content.split('\n').length;
-        return this$.target[it].size = this$.target[it].content.length;
+        this$.target()[it].lines = this$.target()[it].content.split('\n').length;
+        return this$.target()[it].size = this$.target()[it].content.length;
       });
     },
     download: {
@@ -319,7 +311,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
       },
       plotdb: function(){
         var payload;
-        payload = angular.toJson($scope.target);
+        payload = angular.toJson($scope.target());
         this.plotdb.url = URL.createObjectURL(new Blob([payload], {
           type: 'application/json'
         }));
@@ -405,7 +397,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
           }
           return this$.handle = $timeout(function(){
             this$.handle = null;
-            return $scope.target.backup().then(function(){});
+            return $scope.target().backup().then(function(){});
           }, 2000);
         }, true);
         this.unguard(3000);
@@ -421,9 +413,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
         if (!this.last || !this.last.object) {
           return;
         }
-        $scope.target.recover(this.last.object);
+        $scope.target().recover(this.last.object);
         this.enabled = false;
-        return $scope.target.cleanBackups().then(function(){
+        return $scope.target().cleanBackups().then(function(){
           return $scope.$apply(function(){
             return this$.check();
           });
@@ -431,7 +423,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
       },
       check: function(){
         var this$ = this;
-        return $scope.target.backups().then(function(ret){
+        return $scope.target().backups().then(function(ret){
           return $scope.$apply(function(){
             this$.list = ret;
             this$.last = ret[0];
@@ -559,7 +551,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
       },
       isForkable: function(){
         var perms, ref$, forkable;
-        perms = (ref$ = $scope.target.permission).value || (ref$.value = []);
+        perms = (ref$ = $scope.target().permission).value || (ref$.value = []);
         return forkable = !!perms.filter(function(it){
           return it.perm === 'fork' && it['switch'] === 'public';
         }).length;
@@ -594,12 +586,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
             fbobj = {
               app_id: '1546734828988373',
               display: 'popup',
-              caption: $scope.target.name,
+              caption: $scope.target().name,
               picture: this$.thumblink,
               link: this$.link,
-              name: $scope.target.name,
+              name: $scope.target().name,
               redirect_uri: 'http://plotdb.com/',
-              description: $scope.target.description || ""
+              description: $scope.target().description || ""
             };
             this$.social.facebook = (["https://www.facebook.com/dialog/feed?"].concat((function(){
               var ref$, results$ = [];
@@ -612,7 +604,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
             pinobj = {
               url: this$.link,
               media: this$.thumblink,
-              description: $scope.target.description || ""
+              description: $scope.target().description || ""
             };
             this$.social.pinterest = (["https://www.pinterest.com/pin/create/button/?"].concat((function(){
               var ref$, results$ = [];
@@ -623,8 +615,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
               return results$;
             }()))).join('&');
             emailobj = {
-              subject: "plotdb: " + $scope.target.name,
-              body: $scope.target.description + " : " + this$.link
+              subject: "plotdb: " + $scope.target().name,
+              body: $scope.target().description + " : " + this$.link
             };
             this$.social.email = (["mailto:?"].concat((function(){
               var ref$, results$ = [];
@@ -637,8 +629,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
             linkedinobj = {
               mini: true,
               url: this$.link,
-              title: $scope.target.name + " on PlotDB",
-              summary: $scope.target.description,
+              title: $scope.target().name + " on PlotDB",
+              summary: $scope.target().description,
               source: "plotdb.com"
             };
             this$.social.linkedin = (["http://www.linkedin.com/shareArticle?"].concat((function(){
@@ -651,7 +643,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
             }()))).join('&');
             twitterobj = {
               url: this$.link,
-              text: $scope.target.name + " - " + ($scope.target.description || ''),
+              text: $scope.target().name + " - " + ($scope.target().description || ''),
               hashtags: "dataviz,chart,visualization",
               via: "plotdb"
             };
@@ -668,7 +660,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
             var forkable;
             forkable = this$.isForkable();
             if (forkable !== this$.forkable && this$.forkable != null) {
-              $scope.target.permission.value = it
+              $scope.target().permission.value = it
                 ? [{
                   'switch': 'public',
                   perm: 'fork'
@@ -700,16 +692,16 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
       },
       toggled: false,
       isPublic: function(){
-        return in$("public", $scope.target.permission['switch']);
+        return in$("public", $scope.target().permission['switch']);
       },
       setPrivate: function(){
         var ref$;
-        ((ref$ = $scope.target).permission || (ref$.permission = {}))['switch'] = ['private'];
+        ((ref$ = $scope.target()).permission || (ref$.permission = {}))['switch'] = ['private'];
         return this.saveHint = true;
       },
       setPublic: function(){
         var ref$;
-        ((ref$ = $scope.target).permission || (ref$.permission = {}))['switch'] = ['public'];
+        ((ref$ = $scope.target()).permission || (ref$.permission = {}))['switch'] = ['public'];
         return this.saveHint = true;
       }
     },
@@ -952,9 +944,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
         return;
       }
       if (window.location.search === '?demo') {
-        $scope.target.doc.content = $scope.service.sample[1].doc.content;
-        $scope.target.style.content = $scope.service.sample[1].style.content;
-        $scope.target.code.content = $scope.service.sample[1].code.content;
+        $scope.target().doc.content = $scope.service.sample[1].doc.content;
+        $scope.target().style.content = $scope.service.sample[1].style.content;
+        $scope.target().code.content = $scope.service.sample[1].code.content;
         return;
       }
       ret = /[?&]k=([sl])([^&#|?]+)/.exec(window.location.search);
@@ -971,7 +963,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
     assets: {
       measure: function(){
         var ref$;
-        return ((ref$ = $scope.target).assets || (ref$.assets = [])).size = $scope.target.assets.map(function(it){
+        return ((ref$ = $scope.target()).assets || (ref$.assets = [])).size = $scope.target().assets.map(function(it){
           return it.content.length;
         }).reduce(function(a, b){
           return a + b;
@@ -991,7 +983,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
           var name, that, type, file, fr;
           name = (that = /([^/]+\.?[^/.]*)$/.exec(fobj.name)) ? that[1] : 'unnamed';
           type = 'unknown';
-          file = $scope.target.addFile(name, type, null);
+          file = $scope.target().addFile(name, type, null);
           fr = new FileReader();
           fr.onload = function(){
             var result, idx, type, content, size, ref$;
@@ -999,7 +991,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
             idx = result.indexOf(';');
             type = result.substring(5, idx);
             content = result.substring(idx + 8);
-            size = ((ref$ = $scope.target).assets || (ref$.assets = [])).map(function(it){
+            size = ((ref$ = $scope.target()).assets || (ref$.assets = [])).map(function(it){
               return (it.content || "").length;
             }).reduce(function(a, b){
               return a + b;
@@ -1007,7 +999,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
             if (size > 3000000) {
               $scope.$apply(function(){
                 plNotify.alert("Assets size limit (3MB) exceeded. won't upload.");
-                $scope.target.removeFile(file);
+                $scope.target().removeFile(file);
               });
             }
             file.type = type;
@@ -1131,7 +1123,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
         return this$.renderAsync(ret);
       }, true);
       this.$watch(this.type + ".key", function(){
-        return this$.sharePanel.link = chartService.sharelink(this$.target);
+        return this$.sharePanel.link = chartService.sharelink(this$.target());
       });
       if ($('#data-fields')[0]) {
         $scope.limitscroll;
@@ -1159,7 +1151,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
             return $scope.switchPanel();
           } else if (data.type === 'snapshot') {
             if (data.payload) {
-              this$.target.thumbnail = data.payload;
+              this$.target().thumbnail = data.payload;
             }
             return this$._save();
           } else if (data.type === 'parse-chart') {

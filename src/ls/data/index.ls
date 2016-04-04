@@ -48,7 +48,6 @@ angular.module \plotDB
             matched = dataset.fields.filter(~>it.name == @name).0
             if !matched => return console.error "failed to update field data"
             @ <<< matched
-            console.log @
       /*
       #toJson: -> angular.toJson(@{name, type} <<< {dataset: @dataset{type, key}})
       #TODO this might be called individually. should propagate to dataset?
@@ -110,7 +109,6 @@ angular.module \plotDB
       set-fields: (fields = null) ->
         if !fields or typeof(fields) != \object => return
         if !Array.isArray(fields) => fields = [{name: k, data: v} for k,v of fields]
-        console.log fields
         fields = fields.map ~>
           new Field it <<< {dataset: @key, datasetname: @name, location: @_type.location}
         for f1 in @fields => for f2 in fields =>
@@ -137,6 +135,7 @@ angular.module \plotDB
         @rows = @data.length
         #if @key => for item in @fields => item.dataset = @key
         */
+    service.Field = Field
     dataService = baseService.derive name, service, Dataset
     dataService
 
@@ -158,11 +157,9 @@ angular.module \plotDB
         return plNotify.send \danger, "maximal 20 columns is allowed. you have #{column-length}"
       <- $scope.parse.run true .then
       $scope.dataset._type.location = (if locally => \local else \server)
-      console.log $scope.parse.result
       $scope.dataset.set-fields $scope.parse.result
       is-create = if !$scope.dataset.key => true else false
       $scope.loading = true
-      console.log $scope.dataset
       $scope.dataset.save!
         .then -> 
           $scope.$apply -> plNotify.send \success, "dataset saved"
@@ -253,7 +250,6 @@ angular.module \plotDB
               <~ $scope.$apply
               @ <<< {fields: values.length, rows: (values.0 or []).length}
               $scope.loading = false
-              console.log @result
               res @result
         if @handle => $timeout.cancel @handle
         if force => return _!
@@ -305,7 +301,6 @@ angular.module \plotDB
     eventBus.listen \dataset.delete, (key) -> if $scope.dataset.key == key => $scope.dataset = null
     eventBus.listen \dataset.edit, (dataset) ->
       #TODO: support more type ( currently CSV structure only )
-      console.log dataset._type, dataset.key
       $scope.load dataset._type, dataset.key
 
     $scope.init!

@@ -69,8 +69,7 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
         if (!matched) {
           return console.error("failed to update field data");
         }
-        import$(this$, matched);
-        return console.log(this$);
+        return import$(this$, matched);
       });
     }
     /*
@@ -147,7 +146,6 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
         }
         fields = res$;
       }
-      console.log(fields);
       fields = fields.map(function(it){
         return new Field((it.dataset = this$.key, it.datasetname = this$.name, it.location = this$._type.location, it));
       });
@@ -172,6 +170,7 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
     },
     update: function(){}
   };
+  service.Field = Field;
   dataService = baseService.derive(name, service, Dataset);
   return dataService;
 }));
@@ -205,11 +204,9 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     return $scope.parse.run(true).then(function(){
       var isCreate;
       $scope.dataset._type.location = locally ? 'local' : 'server';
-      console.log($scope.parse.result);
       $scope.dataset.setFields($scope.parse.result);
       isCreate = !$scope.dataset.key ? true : false;
       $scope.loading = true;
-      console.log($scope.dataset);
       return $scope.dataset.save().then(function(){
         $scope.$apply(function(){
           return plNotify.send('success', "dataset saved");
@@ -364,7 +361,6 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
                 this$.fields = values.length;
                 this$.rows = (values[0] || []).length;
                 $scope.loading = false;
-                console.log(this$.result);
                 return res(this$.result);
               });
             }
@@ -488,7 +484,6 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     }
   });
   eventBus.listen('dataset.edit', function(dataset){
-    console.log(dataset._type, dataset.key);
     return $scope.load(dataset._type, dataset.key);
   });
   return $scope.init();

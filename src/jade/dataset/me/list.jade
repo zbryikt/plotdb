@@ -1,43 +1,4 @@
 div(ng-controller="datasetList")
-
-  //-.dataset-entry
-    .dse-thumb
-      img(src="/assets/img/dataset/grid.png")
-      .text-center CSV
-    .dse-title
-      .grayed dataset
-      h3(style="margin:0 0 4px"): a England Crimean War 1854
-      p this is a sample dataset for demo purpose. try it out!
-    .sep.light
-    .dse-props
-      .dse-prop
-         .dse-prop-icon: i.fa.fa-user
-         .dse-prop-data #[.grayed owner] #[span zbryikt]
-      .dse-prop
-         .dse-prop-icon: i.fa.fa-clock-o
-         .dse-prop-data #[.grayed create date] #[span 2016/4/2 15:49]
-      .dse-prop
-         .dse-prop-icon: i.fa.fa-list
-         .dse-prop-data #[.grayed rows] #[span 36 rows]
-      .dse-prop
-         .dse-prop-icon: i.fa.fa-save
-         .dse-prop-data #[.grayed size] #[span 12.5KB]
-    .dse-fields
-      label 5 data fields
-      .dse-fields-inner
-        .dse-field
-          .dse-prop-icon: i.fa.fa-sort-alpha-asc
-          .dse-prop-data #[.grayed string] #[span player name]
-        .dse-field
-          .dse-prop-icon: i.fa.fa-sort-numeric-asc
-          .dse-prop-data #[.grayed number] #[span final score]
-        .dse-field
-          .dse-prop-icon: i.fa.fa-clock-o
-          .dse-prop-data #[.grayed date] #[span play date]
-        .dse-field
-          .dse-prop-icon: i.fa.fa-sort-alpha-asc
-          .dse-prop-data #[.grayed string] #[span play category]
-
   .dataset-entry(ng-repeat="dataset in datasets")
     .dse-ctrl.pull-right
       i.fa.fa-share
@@ -48,7 +9,7 @@ div(ng-controller="datasetList")
         .text-center CSV
       .dse-title
         .grayed dataset
-        h3(style="margin:0 0 4px"): a(ng-cloak) {{dataset.name}}
+        h3(style="margin:0 0 4px"): a(ng-cloak,ng-attr-href="/dataset/{{dataset.key}}/") {{dataset.name}}
         .dse-desc(ng-cloak) {{dataset.description || 'no description. '}}
     .dse-content
       .dse-props

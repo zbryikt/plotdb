@@ -21,29 +21,29 @@ angular.module \plotDB
         node: document.getElementById(\chart-renderer)
         window: document.getElementById(\chart-renderer).contentWindow
       type: null     # chart or theme
-      target: null   # $scope.chart or $scope.theme
       service: null  # chart-service or theme-service
 
     #########  Functions  ################################################################
     $scope <<< do
+      target: -> @[@type]
       mode: set: (value) ->
         $scope <<< switch value
-        | \chart => {value, type: \chart, target: $scope.chart, service: chart-service}
-        | \theme => {value, type: \theme, target: $scope.theme, service: theme-service}
+        | \chart => {value, type: \chart, service: chart-service}
+        | \theme => {value, type: \theme, service: theme-service}
       _save: (nothumb = false)->
-        if @target.owner != @user.data.key =>
-          key = (if @target.type.location == \server => @target.key else null)
-          @target <<< {key: null, owner: null, permission: {switch: [], value: []}}
+        if @target!.owner != @user.data.key =>
+          key = (if @target!._type.location == \server => @target!.key else null)
+          @target! <<< {key: null, owner: null, permission: {switch: [], value: []}}
           # clone will set parent beforehand. so we only set it if necessary.
-          if key => @target <<< {parent: key}
-        refresh = if !@target.key => true else false
-        @target.dimlen = [k for k of @target.dimension or {}].length
-        @target.save!
+          if key => @target! <<< {parent: key}
+        refresh = if !@target!.key => true else false
+        if @target!.dimension => @target!.dimlen = [k for k of @target!.dimension or {}].length
+        @target!.save!
           .then (ret) ~>
             <~ @$apply
             if nothumb => plNotify.send \warning, "chart saved, but thumbnail failed to update"
               else plNotify.send \success, "chart saved"
-            link = @service.link @target
+            link = @service.link @target!
             if refresh or !window.location.search => window.location.href = link
             if @save.handle => $timeout.cancel @save.handle
             @save.handle = null
@@ -62,9 +62,9 @@ angular.module \plotDB
         ), 3000
         @canvas.window.postMessage {type: \snapshot}, @plotdomain
       clone: -> # clone forcely. same as save() when user is not the chart's owner
-        @target.name = "#{@target.name} - Copy"
-        key = (if @target.type.location == \server => @target.key else null)
-        @target <<< {key: null, owner: null, parent: key, permission: {switch: [], value: []}}
+        @target!.name = "#{@target!.name} - Copy"
+        key = (if @target!._type.location == \server => @target!.key else null)
+        @target! <<< {key: null, owner: null, parent: key, permission: {switch: [], value: []}}
         @save!
       load: (type, key) ->
         @service.load type, key
@@ -79,12 +79,12 @@ angular.module \plotDB
             #TODO check at server time?
             if ret.1 == \forbidden => window.location.href = \/403.html #window.location.pathname
       delete: ->
-        if !@target.key => return
+        if !@target!.key => return
         @delete.handle = true
-        @target.delete!
+        @target!.delete!
           .then (ret) ~>
             plNotify.send \success, "#{@type} deleted"
-            @target = new @service[@type]!
+            @[@type] = new @service[@type]!
             #TODO check future URL correctness
             setTimeout (~> window.location.href = "/#{@type}/me.html"), 1000
             @delete.handle = false
@@ -92,16 +92,6 @@ angular.module \plotDB
             plNotify.send \error, "failed to delete #{@type}"
             @delete.handle = false
       reset-config: -> if @chart => for k,v of @chart.config => v.value = v.default
-      /* TODO: remove. no more local chart.
-      migrate: ->
-        if !@chart.key => return
-        cloned = @chart.clone!
-        cloned.type.location = (if @chart.type.location == \local => \server else \local)
-        <~ cloned.save!then
-        <~ @chart.delete!then
-        $scope.chart = cloned
-        window.location.href = chartService.link $scope.chart
-      */
       #TODO review binding process
       dimension: do
         bind: (event, dimension, field = {}) ->
@@ -148,15 +138,15 @@ angular.module \plotDB
 
       countline: ->
         <~ <[code style doc]>.map
-        @target[it].lines = @target[it].content.split(\\n).length
-        @target[it].size = @target[it].content.length
+        @target![it].lines = @target![it].content.split(\\n).length
+        @target![it].size = @target![it].content.length
       download: do
         prepare: -> <[svg png plotdb]>.map (n) ~>
           setTimeout (~> $scope.$apply ~> [@[n].url = '', @[n]!]), 300
         svg: -> $scope.canvas.window.postMessage {type: \getsvg}, $scope.plotdomain
         png: -> $scope.canvas.window.postMessage {type: \getpng}, $scope.plotdomain
         plotdb: ->
-          payload = angular.toJson($scope.target)
+          payload = angular.toJson($scope.target!)
           @plotdb.url = URL.createObjectURL new Blob [payload], {type: \application/json}
           @plotdb.size = payload.length
       colorblind: do
@@ -202,7 +192,7 @@ angular.module \plotDB
             if @handle => $timeout.cancel @handle
             @handle = $timeout (~>
               @handle = null
-              <~ $scope.target.backup!then
+              <~ $scope.target!.backup!then
             ), 2000 # response to final change after 2 sec.
           ), true
           # don't guard changes in 3 seconds.
@@ -212,12 +202,12 @@ angular.module \plotDB
             return "You have unsaved changes. Still wanna leave?"
         recover: ->
           if !@last or !@last.object => return
-          $scope.target.recover @last.object
+          $scope.target!.recover @last.object
           # disable backup until recheck to prevent backup triggered by recover.
           @enabled = false
-          $scope.target.cleanBackups!then ~> $scope.$apply ~> @check!
+          $scope.target!.cleanBackups!then ~> $scope.$apply ~> @check!
         check: ->
-          $scope.target.backups!
+          $scope.target!.backups!
             .then (ret) ~> $scope.$apply ~>
               @ <<< {list: ret, last: ret.0}
               # disable backup for 4 sec to prevent triggered by init / recover.
@@ -304,7 +294,7 @@ angular.module \plotDB
         social: do
           facebook: null
         is-forkable: ->
-          perms = $scope.target.permission.[]value
+          perms = $scope.target!.permission.[]value
           forkable = !!perms.filter(->it.perm == \fork and it.switch == \public).length
         init: ->
           #TODO must also update jade file ( chartedit -> edit )
@@ -323,12 +313,12 @@ angular.module \plotDB
               #TODO verify
               app_id: \1546734828988373
               display: \popup
-              caption: $scope.target.name
+              caption: $scope.target!.name
               picture: @thumblink
               link: @link
-              name: $scope.target.name
+              name: $scope.target!.name
               redirect_uri: \http://plotdb.com/
-              description: $scope.target.description or ""
+              description: $scope.target!.description or ""
             @social.facebook = ([ "https://www.facebook.com/dialog/feed?" ] ++
               ["#k=#{encodeURIComponent(v)}" for k,v of fbobj]
             ).join(\&)
@@ -336,14 +326,14 @@ angular.module \plotDB
             pinobj = do
               url: @link
               media: @thumblink
-              description: $scope.target.description or ""
+              description: $scope.target!.description or ""
             @social.pinterest = (["https://www.pinterest.com/pin/create/button/?"] ++
               ["#k=#{encodeURIComponent(v)}" for k,v of pinobj]
             ).join(\&)
 
             emailobj = do
-              subject: "plotdb: #{$scope.target.name}"
-              body: "#{$scope.target.description} : #{@link}"
+              subject: "plotdb: #{$scope.target!.name}"
+              body: "#{$scope.target!.description} : #{@link}"
             @social.email = (["mailto:?"] ++
               ["#k=#{encodeURIComponent(v)}" for k,v of emailobj]
             ).join(\&)
@@ -351,8 +341,8 @@ angular.module \plotDB
             linkedinobj = do
               mini: true
               url: @link
-              title: "#{$scope.target.name} on PlotDB"
-              summary: $scope.target.description
+              title: "#{$scope.target!.name} on PlotDB"
+              summary: $scope.target!.description
               source: "plotdb.com"
             @social.linkedin = (["http://www.linkedin.com/shareArticle?"] ++
               ["#k=#{encodeURIComponent(v)}" for k,v of linkedinobj]
@@ -360,7 +350,7 @@ angular.module \plotDB
 
             twitterobj = do
               url: @link
-              text: "#{$scope.target.name} - #{$scope.target.description or ''}"
+              text: "#{$scope.target!.name} - #{$scope.target!.description or ''}"
               hashtags: "dataviz,chart,visualization"
               via: "plotdb"
             @social.twitter = (["http://twitter.com/intent/tweet?"] ++
@@ -370,7 +360,7 @@ angular.module \plotDB
           $scope.$watch 'sharePanel.forkable', ~>
             forkable = @is-forkable!
             if forkable != @forkable and @forkable? =>
-              $scope.target.permission.value = if it => [{switch: \public, perm: \fork}] else []
+              $scope.target!.permission.value = if it => [{switch: \public, perm: \fork}] else []
               @save-hint = true
           $scope.$watch "#{$scope.type}.permission.value", (~>
             forkable = @is-forkable!
@@ -386,12 +376,12 @@ angular.module \plotDB
           @toggled = !!!@toggled
           @save-hint = false
         toggled: false
-        is-public: -> ("public" in $scope.target.permission.switch)
+        is-public: -> ("public" in $scope.target!.permission.switch)
         set-private: ->
-          $scope.target.{}permission.switch = <[private]>
+          $scope.target!.{}permission.switch = <[private]>
           @save-hint = true
         set-public: ->
-          $scope.target.{}permission.switch = <[public]>
+          $scope.target!.{}permission.switch = <[public]>
           @save-hint = true
       coloredit: do
         config: (v, idx) -> do
@@ -495,9 +485,9 @@ angular.module \plotDB
       check-param: ->
         if !window.location.search => return
         if window.location.search == \?demo =>
-          $scope.target.doc.content = $scope.service.sample.1.doc.content
-          $scope.target.style.content = $scope.service.sample.1.style.content
-          $scope.target.code.content = $scope.service.sample.1.code.content
+          $scope.target!.doc.content = $scope.service.sample.1.doc.content
+          $scope.target!.style.content = $scope.service.sample.1.style.content
+          $scope.target!.code.content = $scope.service.sample.1.code.content
           return
         ret = /[?&]k=([sl])([^&#|?]+)/.exec(window.location.search)
         if !ret => return
@@ -506,7 +496,7 @@ angular.module \plotDB
         $scope.load {name: $scope.type, location}, key
       assets: do
         measure: ->
-          $scope.target.[]assets.size = $scope.target.assets.map(-> it.content.length ).reduce(((a,b)->a+b),0)
+          $scope.target!.[]assets.size = $scope.target!.assets.map(-> it.content.length ).reduce(((a,b)->a+b),0)
         preview: (file) ->
           @preview.toggled = true
           datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
@@ -516,17 +506,17 @@ angular.module \plotDB
         read: (fobj) -> new Promise (res, rej) ~>
           name = if /([^/]+\.?[^/.]*)$/.exec(fobj.name) => that.1 else \unnamed
           type = \unknown
-          file = $scope.target.add-file name, type, null
+          file = $scope.target!.add-file name, type, null
           fr = new FileReader!
           fr.onload = ->
             result = fr.result
             idx = result.indexOf(\;)
             type = result.substring(5,idx)
             content = result.substring(idx + 8)
-            size = $scope.target.[]assets.map(->(it.content or "").length).reduce(((a,b)->a+b),0) + content.length
+            size = $scope.target!.[]assets.map(->(it.content or "").length).reduce(((a,b)->a+b),0) + content.length
             if size > 3000000 => $scope.$apply ->
               plNotify.alert "Assets size limit (3MB) exceeded. won't upload."
-              $scope.target.remove-file file
+              $scope.target!.remove-file file
               return
             file <<< {type, content}
             $scope.$apply-async -> file <<< {type, content}
@@ -579,7 +569,7 @@ angular.module \plotDB
             .filter(->it).length)
           @render-async ret
         ), true
-        @$watch "#{@type}.key", (~> @share-panel.link = chartService.sharelink @target)
+        @$watch "#{@type}.key", (~> @share-panel.link = chartService.sharelink @target!)
         if $('#data-fields').0 => $scope.limitscroll
         $scope.limitscroll $('#chart-configs').0
       communicate: -> # talk with canvas window
@@ -595,7 +585,7 @@ angular.module \plotDB
         else if data.type == \alt-enter => $scope.switch-panel!
         else if data.type == \snapshot =>
           #TODO need sanity check
-          if data.payload => @target.thumbnail = data.payload
+          if data.payload => @target!.thumbnail = data.payload
           @_save!
 
         else if data.type == \parse-chart =>

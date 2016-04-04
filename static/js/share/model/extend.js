@@ -289,6 +289,10 @@ base = function(model){
         required: true,
         type: model.type.number
       },
+      dimension: {
+        required: false,
+        type: base.json
+      },
       createdtime: {
         required: false,
         type: model.type.date

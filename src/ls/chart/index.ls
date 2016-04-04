@@ -1,7 +1,7 @@
 angular.module \plotDB
   ..service \chartService,
-  <[$rootScope $http sampleChart IOService baseService]> ++
-  ($rootScope, $http, sampleChart, IOService, baseService) ->
+  <[$rootScope $http sampleChart IOService baseService dataService]> ++
+  ($rootScope, $http, sampleChart, IOService, baseService, dataService) ->
     service = do
       sample: sampleChart
       #link: (chart) -> "/chart/?k=#{chart._type.location}|#{chart._type.name}|#{chart.key}"
@@ -31,9 +31,18 @@ angular.module \plotDB
         dimension: {}
         _type: {location: \server, name: \chart}
       @ <<< src
+      for k,v of (@dimension or {}) => v.fields = (v.fields or []).map ->
+        field = new dataService.Field it
+        field.update!
+        field
       @
 
     object.prototype = do
+      save: ->
+        # we need to track used fields but not keep data.
+        payload = JSON.parse(angular.toJson(@))
+        for k,v of payload.dimension => (v.fields or []).forEach -> delete it.data
+        chart-service.save payload .then (ret) ~> @key = ret.key
 
       like: (v) -> new Promise (res, rej) ~>
         @likes = @likes + (if v => 1 else -1) >? 0
@@ -73,7 +82,6 @@ angular.module \plotDB
               if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
               else ret[k] = parseFloat(ret[k])
           @data.push ret
-
     chartService = baseService.derive \chart ,service, object
     chartService
 
