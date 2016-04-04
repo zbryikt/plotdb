@@ -656,6 +656,9 @@ width: 100%;
   margin: 7px auto;
   height: 0;
 }
+.sep.nogap {
+  margin: 0 auto;
+}
 .sep.dark {
   border-top: 1px solid rgba(0,0,0,0.4);
 }

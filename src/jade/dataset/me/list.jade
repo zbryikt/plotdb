@@ -42,33 +42,35 @@ div(ng-controller="datasetList")
     .dse-ctrl.pull-right
       i.fa.fa-share
       i.fa.fa-trash
-    .dse-thumb
-      img(src="/assets/img/dataset/grid.png")
-      .text-center CSV
-    .dse-title
-      .grayed dataset
-      h3(style="margin:0 0 4px"): a(ng-cloak) {{dataset.name}}
-      p(ng-cloak) {{dataset.description || 'no description. '}}
-    .sep.light.nogap
-    .dse-props
-      .dse-prop
-         .dse-prop-icon: i.fa.fa-user
-         .dse-prop-data(ng-cloak) #[.grayed owner] #[span {{dataset.owner}}]
-      .dse-prop
-         .dse-prop-icon: i.fa.fa-clock-o
-         .dse-prop-data(ng-cloak) #[.grayed create date] #[span {{dataset.createdtime|datelite}}]
-      .dse-prop
-         .dse-prop-icon: i.fa.fa-list
-         .dse-prop-data(ng-cloak) #[.grayed rows] #[span {{dataset.rows}} rows]
-      .dse-prop
-         .dse-prop-icon: i.fa.fa-save
-         .dse-prop-data(ng-cloak) #[.grayed size] #[span {{dataset.size|size}}]
-    .dse-fields
-      label(ng-cloak) {{dataset.fields.length}} data fields
-      .dse-fields-inner
-        .dse-field(ng-repeat="field in dataset.fields")
-          .dse-prop-icon: i.fa.fa-sort-alpha-asc
-          .dse-prop-data #[.grayed {{field.datatype || 'any'}}] #[span {{field.name}}]
+    .dse-head
+      .dse-thumb
+        img(src="/assets/img/dataset/grid.png")
+        .text-center CSV
+      .dse-title
+        .grayed dataset
+        h3(style="margin:0 0 4px"): a(ng-cloak) {{dataset.name}}
+        .dse-desc(ng-cloak) {{dataset.description || 'no description. '}}
+    .dse-content
+      .dse-props
+        .dse-label properties
+        .dse-prop
+           .dse-prop-icon: i.fa.fa-user
+           .dse-prop-data(ng-cloak) #[.grayed owner] #[span {{dataset.owner}}]
+        .dse-prop
+           .dse-prop-icon: i.fa.fa-clock-o
+           .dse-prop-data(ng-cloak) #[.grayed create date] #[span {{dataset.createdtime|datelite}}]
+        .dse-prop
+           .dse-prop-icon: i.fa.fa-list
+           .dse-prop-data(ng-cloak) #[.grayed rows] #[span {{dataset.rows}} rows]
+        .dse-prop
+           .dse-prop-icon: i.fa.fa-save
+           .dse-prop-data(ng-cloak) #[.grayed size] #[span {{dataset.size|size}}]
+      .dse-fields
+        .dse-label(ng-cloak) {{dataset.fields.length}} data fields
+        .dse-fields-inner
+          .dse-field(ng-repeat="field in dataset.fields")
+            .dse-prop-icon: i.fa.fa-sort-alpha-asc
+            .dse-prop-data #[.grayed {{field.datatype || 'any'}}] #[span {{field.name}}]
 
   //-.dataset.large(ng-repeat="dataset in datasets")
     h3 #[i.fa.fa-database]&nbsp; #[a(ng-attr-href="/dataset/{{dataset.key}}/") {{dataset.name}}]

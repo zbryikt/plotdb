@@ -3,17 +3,38 @@
 
 .dataset-entry
   background: color["bklite"]
-  padding: 15px
+  padding: 0
   border: 1px solid #ccc
   box-shadow: shadow["panel"]
-  margin-bottom: 10px
+  margin-bottom: 20px
   max-width: 800px
+  position: relative
   .grayed
     line-height: 15px
     font-size: 12px
 
+.dse-head
+  background: #fff
+  padding: 15px
+  border-bottom: 1px solid #ccc
+  .dse-description
+    margin: 0
+
+.dse-label
+  width: 100%
+  display: block
+  height: 32px
+  text-align: center
+  font-weight: 900
+  border-bottom: 1px solid #ccc
+  background: #eee
+  padding: 5px
+  margin-bottom: 17px
+
 .dse-ctrl
-  margin: -5px -3px 0 0
+  position: absolute
+  top: 5px
+  right: 10px
   i.fa
     margin-left: 10px
 .dse-thumb
@@ -31,6 +52,10 @@
     padding: 2px 0
     height: 15px
 
+.dse-content
+  flexbox()
+  flex-wrap(nowrap)
+
 .dse-title
   display: inline-block
   vertical-align: top
@@ -38,13 +63,15 @@
   width: 200px
   border-right: 1px solid #ccc
   display: inline-block
+  flex(0 0 auto)
+  padding-bottom: 20px
 
 .dse-prop
   margin: 10px 0
 .dse-prop-icon
   display: inline-block
-  margin-right: 15px
-  width: 38px
+  margin-right: 10px
+  width: 58px
   text-align: right
   i.fa
     margin: 14px 5px 0 0
@@ -56,12 +83,14 @@
 
 .dse-fields
   display: inline-block
-  margin: 10px 0 0 20px
   vertical-align: top
-  max-width: 540px
+  flex(1 1 auto)
+
 .dse-fields-inner
-  display: flex
-  flex-wrap: wrap
+  flexbox()
+  flex-wrap(wrap)
+  padding: 0 10px
+
 .dse-field
   background: #fff
   box-shadow: 0 1px 3px rgba(0,0,0,0.1)
@@ -69,7 +98,7 @@
   padding: 4px 18px 4px 0
   border-radius: 2px
   flex(1 1 auto)
-  margin: 0 10px 10px 0
+  margin: 0 5px 10px 5px
   min-width: 115px
   white-space: nowrap
   .dse-prop-icon

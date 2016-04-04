@@ -14,9 +14,6 @@ body {
   padding-top: 0;
   min-height: 100%;
 }
- {
-  width: 100%;
-}
 #notifications {
   position: fixed;
   bottom: 10px;
@@ -2030,18 +2027,40 @@ small.hint {
 }
 .dataset-entry {
   background: #f9f9f9;
-  padding: 15px;
+  padding: 0;
   border: 1px solid #ccc;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   max-width: 800px;
+  position: relative;
 }
 .dataset-entry .grayed {
   line-height: 15px;
   font-size: 12px;
 }
+.dse-head {
+  background: #fff;
+  padding: 15px;
+  border-bottom: 1px solid #ccc;
+}
+.dse-head .dse-description {
+  margin: 0;
+}
+.dse-label {
+  width: 100%;
+  display: block;
+  height: 32px;
+  text-align: center;
+  font-weight: 900;
+  border-bottom: 1px solid #ccc;
+  background: #eee;
+  padding: 5px;
+  margin-bottom: 17px;
+}
 .dse-ctrl {
-  margin: -5px -3px 0 0;
+  position: absolute;
+  top: 5px;
+  right: 10px;
 }
 .dse-ctrl i.fa {
   margin-left: 10px;
@@ -2063,6 +2082,12 @@ small.hint {
   padding: 2px 0;
   height: 15px;
 }
+.dse-content {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+}
 .dse-title {
   display: inline-block;
   vertical-align: top;
@@ -2071,14 +2096,17 @@ small.hint {
   width: 200px;
   border-right: 1px solid #ccc;
   display: inline-block;
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
+  padding-bottom: 20px;
 }
 .dse-prop {
   margin: 10px 0;
 }
 .dse-prop-icon {
   display: inline-block;
-  margin-right: 15px;
-  width: 38px;
+  margin-right: 10px;
+  width: 58px;
   text-align: right;
 }
 .dse-prop-icon i.fa {
@@ -2093,14 +2121,16 @@ small.hint {
 }
 .dse-fields {
   display: inline-block;
-  margin: 10px 0 0 20px;
   vertical-align: top;
-  max-width: 540px;
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 .dse-fields-inner {
+  display: -webkit-flex;
   display: flex;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
+  padding: 0 10px;
 }
 .dse-field {
   background: #fff;
@@ -2110,7 +2140,7 @@ small.hint {
   border-radius: 2px;
   -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
-  margin: 0 10px 10px 0;
+  margin: 0 5px 10px 5px;
   min-width: 115px;
   white-space: nowrap;
 }
