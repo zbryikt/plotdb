@@ -12,8 +12,8 @@ init-users-table = """create table if not exists users (
   usepasswd boolean,
   displayname text, constraint displaynamelength check (chart_length(displayname) <= 100),
   datasize int,
-  "createdTime" timestamp,
-  "lastActive" timestamp,
+  createdtime timestamp,
+  lastActive timestamp,
   detail jsonb
 )"""
 

@@ -162,6 +162,21 @@ x$.service('IOService', ['$rootScope', '$http'].concat(function($rootScope, $htt
     listRemotely: function(_type, query){
       query == null && (query = null);
       return new Promise(function(res, rej){
+        var k, v;
+        query = typeof query === 'object' ? (function(){
+          var ref$, results$ = [];
+          for (k in ref$ = query) {
+            v = ref$[k];
+            results$.push([k, v]);
+          }
+          return results$;
+        }()).filter(function(it){
+          return it[1];
+        }).map(function(arg$){
+          var k, v;
+          k = arg$[0], v = arg$[1];
+          return k + "=" + (Array.isArray(v) ? v.join(',') : v);
+        }).join("&") : query;
         return $http({
           url: "/d/" + _type.name + (query ? '?' + query : ''),
           method: 'GET'

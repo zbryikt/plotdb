@@ -175,7 +175,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', 'dataServ
         plNotify.send('success', this$.type + " deleted");
         this$[this$.type] = new this$.service[this$.type]();
         setTimeout(function(){
-          return window.location.href = "/" + this$.type + "/me.html";
+          return window.location.href = "/" + this$.type + "/me/";
         }, 1000);
         return this$['delete'].handle = false;
       })['catch'](function(err){

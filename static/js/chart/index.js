@@ -181,16 +181,13 @@ x$.service('chartService', ['$rootScope', '$http', 'sampleChart', 'IOService', '
   return chartService;
 }));
 x$.controller('mychart', ['$scope', '$http', 'dataService', 'chartService'].concat(function($scope, $http, dataService, chartService){
-  return chartService.list().then(function(ret){
-    return $scope.$apply(function(){
-      $scope.charts = ret;
-      return $scope.goto = function(chart){
-        return window.location.href = chartService.link(chart);
-      };
-    });
-  });
+  return $scope.q = {
+    owner: $scope.user.data ? $scope.user.data.key : null
+  };
 }));
 x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, IOService, dataService, chartService, plNotify){
+  var map, k, ref$, v, results$ = [];
+  $scope.charts = [];
   $scope.q = {
     type: null,
     enc: null,
@@ -198,19 +195,48 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
     dim: null,
     order: 'Latest'
   };
+  if ($scope.$parent.q) {
+    import$($scope.q, $scope.$parent.q);
+  }
   $scope.qmap = {
     type: ["Other", "Bar Chart", "Line Chart", "Pie Chart", "Area Chart", "Bubble Chart", "Radial Chart", "Calendar", "Treemap", "Choropleth", "Cartogram", "Heatmap", "Sankey", "Venn Diagram", "Word Cloud", "Timeline", "Mixed"],
     enc: ["Other", "Position", "Position ( Non-aligned )", "Length", "Direction", "Angle", "Area", "Volume", "Curvature", "Shade", "Saturation"],
     cat: ["Other", "Infographics", "Geographics", "Interactive", "Journalism", "Statistics"],
     dim: [0, 1, 2, 3, 4, 5, "> 5"]
   };
-  $scope.$watch('q', function(){
-    if (!$scope.fullcharts || !$scope.fullcharts.length) {
-      $scope.fullcharts = $scope.charts;
-    }
-    return $scope.charts = $scope.fullcharts.filter(function(it){
-      return (!$scope.q.type || in$($scope.q.type, it.basetype || [])) && (!$scope.q.enc || in$($scope.q.enc, it.visualencoding || [])) && (!$scope.q.cat || in$($scope.q.cat, it.category || [])) && (!$scope.q.dim || it.dimlen === $scope.q.dim || ($scope.q.dim === 99 && it.dimlen.length > 5));
+  $scope.load = function(){
+    return IOService.listRemotely({
+      name: 'chart'
+    }, $scope.q).then(function(ret){
+      var this$ = this;
+      return $scope.$apply(function(){
+        var hit, i$, to$, i, d, width, results$ = [];
+        $scope.charts = ret.map(function(it){
+          return new chartService.chart(it);
+        });
+        hit = false;
+        for (i$ = 0, to$ = $scope.charts.length; i$ < to$; ++i$) {
+          i = i$;
+          d = $scope.charts[i];
+          width = 320;
+          if (Math.random() > 0.6 && !hit) {
+            width = Math.random() > 0.8 ? 960 : 640;
+            hit = true;
+          }
+          if (i % 3 === 2) {
+            if (!hit) {
+              width = 640;
+            }
+            hit = false;
+          }
+          results$.push(d.width = width);
+        }
+        return results$;
+      });
     });
+  };
+  $scope.$watch('q', function(){
+    return $scope.load();
   }, true);
   $scope.like = function(chart){
     var mylikes, ref$, ref1$, v;
@@ -224,57 +250,23 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
       return mylikes[chart.key] = !v;
     });
   };
-  $scope.charts = [];
-  return IOService.listRemotely({
-    name: 'chart'
-  }, "q=all").then(function(ret){
-    var this$ = this;
-    return $scope.$apply(function(){
-      var hit, i$, to$, i, d, width, map, k, ref$, v, results$ = [];
-      $scope.charts = ret.map(function(it){
-        return new chartService.chart(it);
-      });
-      hit = false;
-      for (i$ = 0, to$ = $scope.charts.length; i$ < to$; ++i$) {
-        i = i$;
-        d = $scope.charts[i];
-        width = 320;
-        if (Math.random() > 0.6 && !hit) {
-          width = Math.random() > 0.8 ? 960 : 640;
-          hit = true;
-        }
-        if (i % 3 === 2) {
-          if (!hit) {
-            width = 640;
-          }
-          hit = false;
-        }
-        d.width = width;
+  if (window.location.search) {
+    map = d3.nest().key(function(it){
+      return it[0];
+    }).map(window.location.search.replace('?', '').split('&').map(function(it){
+      return it.split('=');
+    }));
+    for (k in ref$ = $scope.q) {
+      v = ref$[k];
+      if (map[k]) {
+        results$.push($scope.q[k] = map[k][0][1]);
       }
-      if (window.location.search) {
-        map = d3.nest().key(function(it){
-          return it[0];
-        }).map(window.location.search.replace('?', '').split('&').map(function(it){
-          return it.split('=');
-        }));
-        for (k in ref$ = $scope.q) {
-          v = ref$[k];
-          if (map[k]) {
-            results$.push($scope.q[k] = map[k][0][1]);
-          }
-        }
-        return results$;
-      }
-    });
-  });
+    }
+    return results$;
+  }
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
   return obj;
-}
-function in$(x, xs){
-  var i = -1, l = xs.length >>> 0;
-  while (++i < l) if (x === xs[i]) return true;
-  return false;
 }

@@ -86,7 +86,7 @@ angular.module \plotDB
             plNotify.send \success, "#{@type} deleted"
             @[@type] = new @service[@type]!
             #TODO check future URL correctness
-            setTimeout (~> window.location.href = "/#{@type}/me.html"), 1000
+            setTimeout (~> window.location.href = "/#{@type}/me/"), 1000
             @delete.handle = false
           .catch (err) ~>
             plNotify.send \error, "failed to delete #{@type}"

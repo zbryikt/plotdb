@@ -124,7 +124,7 @@ angular.module \plotDB
             plNotify.send \success, "theme deleted"
             @theme = new themeService.theme!
             #TODO check future URL correctness
-            setTimeout (-> window.location.href = "/theme/me.html"), 1000
+            setTimeout (-> window.location.href = "/theme/me/"), 1000
             @delete.handle = false
           .catch (err) ~>
             plNotify.send \error, "failed to delete theme"

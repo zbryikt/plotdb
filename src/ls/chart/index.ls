@@ -88,19 +88,20 @@ angular.module \plotDB
   ..controller \mychart,
   <[$scope $http dataService chartService]> ++
   ($scope, $http, data-service, chart-service) ->
-    (ret) <- chart-service.list!then
-    <- $scope.$apply
-    $scope.charts = ret
-    $scope.goto = (chart) -> window.location.href = chartService.link chart
+    $scope.q = do
+      owner: (if $scope.user.data => $scope.user.data.key else null)
   ..controller \chartList,
   <[$scope $http IOService dataService chartService plNotify]> ++
   ($scope, $http, IO-service, data-service, chart-service, plNotify) ->
+    $scope.charts = []
     $scope.q = do
       type: null
       enc: null
       cat: null
       dim: null
       order: \Latest
+    
+    if $scope.$parent.q => $scope.q <<< $scope.$parent.q
     $scope.qmap = do
       type: [
         "Other" "Bar Chart" "Line Chart" "Pie Chart"
@@ -119,16 +120,23 @@ angular.module \plotDB
         0 1 2 3 4 5 "> 5"
       ]
 
-    $scope.$watch 'q', (->
-      if !$scope.fullcharts or !$scope.fullcharts.length => $scope.fullcharts = $scope.charts
-      $scope.charts = $scope.fullcharts.filter ->
-        return (
-          (!$scope.q.type or ($scope.q.type in (it.basetype or []))) and
-          (!$scope.q.enc or ($scope.q.enc in (it.visualencoding or []))) and
-          (!$scope.q.cat or ($scope.q.cat in (it.category or []))) and
-          (!$scope.q.dim or it.dimlen == $scope.q.dim or ($scope.q.dim == 99 and it.dimlen.length > 5))
-        )
-    ), true
+    $scope.load = ->
+      (ret) <- IO-service.list-remotely {name: \chart}, $scope.q .then
+      <~ $scope.$apply
+      $scope.charts = ( ret ).map -> new chartService.chart(it)
+      hit = false
+      for i from 0 til $scope.charts.length =>
+        d = $scope.charts[i]
+        width = 320
+        if Math.random! > 0.6 and !hit =>
+          width = (if Math.random! > 0.8 => 960 else 640)
+          hit = true
+        if i % 3 == 2 =>
+          if !hit => width = 640
+          hit = false
+        d.width = width #if Math.random() > 0.8 => 640 else 320
+
+    $scope.$watch 'q', (-> $scope.load!), true
     $scope.like = (chart) ->
       if !chart => return
       mylikes = $scope.user.data.{}likes.{}chart
@@ -136,26 +144,6 @@ angular.module \plotDB
       chart.like v .catch ->
         plNotify.error "Can't do favorite. try again later?"
         mylikes[chart.key] = !v
-
-    $scope.charts = []
-    #(ret) <- Promise.all [
-    #  #new Promise (res, rej) -> IO-service.aux.list-locally {name: \chart}, res, rej
-    #  new Promise (res, rej) -> IO-service.list-remotely {name: \chart}, res, rej, "q=all"
-    #] .then
-    (ret) <- IO-service.list-remotely {name: \chart}, "q=all" .then
-    <~ $scope.$apply
-    $scope.charts = ( ret ).map -> new chartService.chart(it)
-    hit = false
-    for i from 0 til $scope.charts.length =>
-      d = $scope.charts[i]
-      width = 320
-      if Math.random! > 0.6 and !hit =>
-        width = (if Math.random! > 0.8 => 960 else 640)
-        hit = true
-      if i % 3 == 2 =>
-        if !hit => width = 640
-        hit = false
-      d.width = width #if Math.random() > 0.8 => 640 else 320
 
     if window.location.search =>
       map = d3.nest!key(->it.0).map(window.location.search.replace(\?,'').split(\&).map(->it.split \=))

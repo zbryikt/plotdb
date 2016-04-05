@@ -1,0 +1,25 @@
+extends /base.jade
+block vars
+  - var rootid = "chartview"
+  - var title = 'plotdb'
+  - var description = "plotdb"
+  - var thumbnail = "http://plotdb.io/assets/img/thumbnail.jpg"
+  - var thumbtype = "image/jpg"
+  - var url = "http://plotdb.com/"
+block head
+block body
+  div &nbsp;
+  #root(style="max-width:1200px;margin-left:auto;margin-right:auto")
+    div(ng-controller="mychart"): div(ng-controller="chartList")
+      include ../widget/charts.jade
+      div(ng-cloak,ng-show="charts.length==0")
+        br
+        br
+        br
+        .text-center looks like you don't have any charts yet... why not fork from #[a(href="/chart/explore") one]? #[i.fa.fa-smile-o]
+        br
+        br
+        br
+    .sep.dark
+  br
+  include ../../footer.jade

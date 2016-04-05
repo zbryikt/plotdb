@@ -72,6 +72,11 @@ angular.module \plotDB
           if obj and obj.key => ret.push obj
         res ret
       list-remotely: (_type, query = null) -> new Promise (res, rej) ->
+        query := if typeof(query) == \object =>
+          [[k,v] for k,v of query]
+            .filter(->it.1)
+            .map(([k,v])-> "#k=#{if Array.isArray(v) => v.join(\,) else v}").join("&")
+        else query
         $http url: "/d/#{_type.name}#{if query => '?'+query else ''}", method: \GET
           .success (ret) -> res ret
           .error (d) -> rej [true, d.toString!]
