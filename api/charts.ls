@@ -46,7 +46,7 @@ engine.router.api.post "/chart/", (req, res) ->
   if typeof(req.body) != \object => return aux.r400 res
   data = req.body <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
   [type, thumb] = dethumb data
-  if data.key => fs.write-file "static/s/chart/#{data.key}", thumb
+  if data.key => fs.write-file "static/s/chart/#{data.key}.png", thumb
   ret = charttype.lint data
   if ret.0 => return aux.r400 res, ret
   data = charttype.clean data
