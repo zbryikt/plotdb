@@ -734,6 +734,11 @@ a.dropdown-toggle {
 .panel > .panel-body > h3:first-of-type {
   margin-top: 0;
 }
+.flexend {
+  opacity: 0;
+  -webkit-flex: 100 0 auto !important;
+  flex: 100 0 auto !important;
+}
 .page-title {
   padding-top: 20px;
 }
@@ -1074,6 +1079,7 @@ a.dropdown-toggle {
   background-size: initial;
 }
 .chart .chart-img {
+  display: block;
   border-radius: 0;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
@@ -1107,16 +1113,22 @@ a.dropdown-toggle {
 }
 .chart .labels {
   margin: 0 10px 5px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
 }
 .chart .labels .label {
   padding: 1px 6px 2px;
   color: #fff;
   background-color: #aaa;
-  margin-right: 5px;
+  margin: 0 5px 5px 0;
   font-weight: 200;
   letter-spacing: 1px;
   font-size: 12px;
   text-shadow: 0 0px 1px rgba(0,0,0,0.2);
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 .chart .social {
   position: absolute;
@@ -1144,11 +1156,6 @@ a.dropdown-toggle {
   float: right;
   color: #666;
   cursor: pointer;
-}
-.flexend {
-  opacity: 0;
-  -webkit-flex: 8 8 auto !important;
-  flex: 8 8 auto !important;
 }
 #chart-modal {
   display: none;

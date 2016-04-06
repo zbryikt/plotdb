@@ -204,7 +204,10 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
     cat: ["Other", "Infographics", "Geographics", "Interactive", "Journalism", "Statistics"],
     dim: [0, 1, 2, 3, 4, 5, "> 5"]
   };
-  $scope.load = function(){
+  $scope.link = function(it){
+    return chartService.link(it);
+  };
+  $scope.loadList = function(){
     return IOService.listRemotely({
       name: 'chart'
     }, $scope.q).then(function(ret){
@@ -236,7 +239,7 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
     });
   };
   $scope.$watch('q', function(){
-    return $scope.load();
+    return $scope.loadList();
   }, true);
   $scope.like = function(chart){
     var mylikes, ref$, ref1$, v;

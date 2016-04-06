@@ -1,17 +1,17 @@
 .charts
   .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
-    .chart-img(ng-click="load(chart)")
-      //- TODO remove chart.thumbnail once all charts are updated.
-      .ib(ng-attr-style="background-image:url({{chart.thumbnail || '/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime}})")
-    .chart-desc(ng-click="load(chart)")
-      .title
+    a.chart-img(ng-attr-href="{{link(chart)}}",style="display:block")
+      .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime}})")
+    .chart-desc
+      a.title(ng-attr-href="{{link(chart)}}")
         .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
         span {{chart.name}}
       .desc {{chart.description || 'check it yourself!'}}
     .labels
       .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
+      .flexend
     .social
-      a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownerName}}
+      a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownerName}} #[i.fa.fa-eye(ng-sshow="chart.searchable")]
       .favorite(ng-click="like(chart)", ng-class="{'active':user.data && user.data.likes.chart[chart.key]}") #[i.fa.fa-heart] {{chart.likes || 0}}
       //-.used #[i.fa.fa-code-fork] 15
 

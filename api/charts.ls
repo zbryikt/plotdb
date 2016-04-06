@@ -14,12 +14,15 @@ engine.router.api.get "/chart/", (req, res) ->
   equal = do
     dimlen: req.query.dim
     owner: req.query.owner
+  if !equal.owner or req.query.owner != req.user.key =>
+    equal.searchable = true
   overlap = [[k,v] for k,v of overlap].filter(->it.1 and it.1.length)
-  equal = [[k,v] for k,v of equal].filter(->it.1 and it.1.length)
+  equal = [[k,v] for k,v of equal].filter(->it.1)
   conditions = (
     overlap.map((d,i) -> ["charts.#{d.0} && ",d.1]) ++
     equal.map((d,i) -> ["charts.#{d.0} = ",d.1])
   ).map((d,i) -> ["#{d.0} $#{i + 1}", d.1])
+
   io.query([
     'select users.displayname as "ownerName",charts.*'
     ["from charts,users where users.key = charts.owner","#{conditions.map(->it.0).join(" and ")}"]
@@ -93,7 +96,7 @@ engine.router.api.put "/chart/:id", (req, res) ~>
         key: req.params.id
         modifiedtime: new Date!toUTCString!
       [type, thumb] = dethumb data
-      if data.key => fs.write-file "static/s/chart/#{data.key}", thumb
+      if data.key => fs.write-file "static/s/chart/#{data.key}.png", thumb
       ret = charttype.lint(data)
       if ret.0 => return aux.r400 res, ret
       data := charttype.clean data

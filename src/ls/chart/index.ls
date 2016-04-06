@@ -119,8 +119,8 @@ angular.module \plotDB
       dim: [
         0 1 2 3 4 5 "> 5"
       ]
-
-    $scope.load = ->
+    $scope.link = -> chart-service.link it
+    $scope.load-list = ->
       (ret) <- IO-service.list-remotely {name: \chart}, $scope.q .then
       <~ $scope.$apply
       $scope.charts = ( ret ).map -> new chartService.chart(it)
@@ -136,7 +136,7 @@ angular.module \plotDB
           hit = false
         d.width = width #if Math.random() > 0.8 => 640 else 320
 
-    $scope.$watch 'q', (-> $scope.load!), true
+    $scope.$watch 'q', (-> $scope.load-list!), true
     $scope.like = (chart) ->
       if !chart => return
       mylikes = $scope.user.data.{}likes.{}chart
