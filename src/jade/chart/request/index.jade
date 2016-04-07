@@ -7,9 +7,29 @@ block vars
   - var thumbtype = "image/jpg"
   - var url = "http://plotdb.com/"
 block head
+  link(rel="stylesheet",type="text/css",href="/assets/medium-editor/5.15.1/css/medium-editor.min.css")
+  link(rel="stylesheet",type="text/css",href="/assets/medium-editor/5.15.1/css/themes/beagle.min.css")
+  link(rel="stylesheet",type="text/css",href="/assets/medium-insert/2.2.4/css/frontend.min.css")
+  link(rel="stylesheet",type="text/css",href="/assets/medium-insert/2.2.4/css/base.min.css")
+  script(type="text/javascript",src="/assets/medium-editor/5.15.1/js/medium-editor.min.js")
+  script(type="text/javascript",src="/assets/medium-list/1.0.5/medium-editor-list-min.js")
+  script(type="text/javascript",src="/assets/handlebars/4.0.5/handlebars.runtime.min.js")
+  script(type="text/javascript",src="/assets/jquery-sortable/0.9.13/jquery-sortable-min.js")
+  script(type="text/javascript",src="/assets/blueimp-file-upload/9.11.2/jquery.ui.widget.js")
+  script(type="text/javascript",src="/assets/blueimp-file-upload/9.11.2/jquery.iframe-transport.js")
+  script(type="text/javascript",src="/assets/blueimp-file-upload/9.11.2/jquery.fileupload.js")
+  script(type="text/javascript",src="/assets/medium-insert/2.2.4/js/index.min.js")
+  script(type="text/javascript",src="/js/request.js")
 block body
   div &nbsp;
-  #root(ng-controller="chartEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
+  #root.narrow(ng-controller="plRequest")
+    h3.page-title Request a Chart
+    p You can make a charting request here. let the professionals help you work it out!
+    .sep.dark.break
+    label what kind of chart you want to build?
+    input.form-control
+    #request-editor
+      .editable
     br
     .text-center
       h3 Request a Chart
@@ -20,6 +40,8 @@ block body
     br
     .panel.panel-default: .panel-body
       h3 Make a Request
+      #editable
+        h3 I want to make a chart ...
       label Upload a reference image and describe what you want it to be by text
       textarea.form-control(rows="10")
       div(style="margin-top:5px;")
