@@ -1,4 +1,5 @@
-plotdomain = \http://localhost
+plotdb-domain = "#{window.config.urlschema}#{window.config.domain}"
+
 plotdb.viewer = do
   render: (payload) ->
     chart = module.exports

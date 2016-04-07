@@ -1,15 +1,17 @@
 angular.module \plotDB
   ..controller \plEditor,
-  <[$scope $http $timeout $interval dataService chartService paletteService themeService plNotify]> ++
-  ($scope, $http, $timeout, $interval, data-service, chart-service, paletteService, themeService, plNotify) ->
+  <[$scope $http $timeout $interval $sce plConfig dataService chartService paletteService themeService plNotify]> ++
+  ($scope,$http,$timeout,$interval,$sce,plConfig,data-service,chart-service,paletteService,themeService,plNotify) ->
     #########  Variables  ################################################################
     $scope <<< do
+      plConfig: plConfig
       theme: new theme-service.theme! #TODO defer create. consider theme and chart
       chart: new chart-service.chart!
       showsrc: true
       vis: \preview
       lastvis: null
-      plotdomain: \http://localhost/ #TODO check plotdomain source
+      plotdb-domain: "#{plConfig.urlschema}#{plConfig.domainIO}"
+      plotdb-renderer: $sce.trustAsResourceUrl("#{plConfig.urlschema}#{plConfig.domainIO}/render.html")
       error: {msg: null, lineno: 0}
       codemirror: do
         #NOTE viewportMargin = Infinity might cause performance issue when file is large.
@@ -60,7 +62,7 @@ angular.module \plotDB
           @save.handle = null
           @_save true
         ), 3000
-        @canvas.window.postMessage {type: \snapshot}, @plotdomain
+        @canvas.window.postMessage {type: \snapshot}, @plotdb-domain
       clone: -> # clone forcely. same as save() when user is not the chart's owner
         @target!.name = "#{@target!.name} - Copy"
         key = (if @target!._type.location == \server => @target!.key else null)
@@ -116,8 +118,8 @@ angular.module \plotDB
         # trigger a full reload of renderer in case any previous code ( such as timeout recursive )
         # and actually render it once loaded
         $scope.render <<< {payload, rebind}
-        if !rebind => @canvas.window.postMessage {type: \render, payload, rebind}, @plotdomain
-        else @canvas.window.postMessage {type: \reload}, @plotdomain
+        if !rebind => @canvas.window.postMessage {type: \render, payload, rebind}, @plotdb-domain
+        else @canvas.window.postMessage {type: \reload}, @plotdb-domain
       render-async: (rebind = true)  ->
         if !@chart => return
         if @render-async.handler => $timeout.cancel @render-async.handler
@@ -131,7 +133,7 @@ angular.module \plotDB
           @[name]pending = true
           $scope.canvas.window.postMessage(
             { type: "parse-#name", payload: $scope[name].code.content }
-            $scope.plotdomain
+            $scope.plotdb-domain
           )
         chart: -> @send \chart
         theme: -> @send \theme
@@ -143,8 +145,8 @@ angular.module \plotDB
       download: do
         prepare: -> <[svg png plotdb]>.map (n) ~>
           setTimeout (~> $scope.$apply ~> [@[n].url = '', @[n]!]), 300
-        svg: -> $scope.canvas.window.postMessage {type: \getsvg}, $scope.plotdomain
-        png: -> $scope.canvas.window.postMessage {type: \getpng}, $scope.plotdomain
+        svg: -> $scope.canvas.window.postMessage {type: \getsvg}, $scope.plotdb-domain
+        png: -> $scope.canvas.window.postMessage {type: \getpng}, $scope.plotdb-domain
         plotdb: ->
           payload = angular.toJson($scope.target!)
           @plotdb.url = URL.createObjectURL new Blob [payload], {type: \application/json}
@@ -158,7 +160,7 @@ angular.module \plotDB
         set: ->
           if !(it in @vals) => return
           @val = it
-          $scope.canvas.window.postMessage {type: \colorblind-emu, payload: it}, $scope.plotdomain
+          $scope.canvas.window.postMessage {type: \colorblind-emu, payload: it}, $scope.plotdb-domain
       apply-theme: ->
         if @chart and @theme =>
           for k,v of @chart.config => if v._bytheme => delete @chart.config[k]
@@ -227,7 +229,7 @@ angular.module \plotDB
               $scope.parse.theme!
               #TBR $scope.canvas.window.postMessage {
               #  type: \parse-theme, payload: $scope.theme.code.content
-              #}, $scope.plotdomain
+              #}, $scope.plotdb-domain
             .catch (ret) ~>
               console.error ret
               plNotify.send \error, "failed to load chart. please try reloading"
@@ -552,7 +554,7 @@ angular.module \plotDB
           @communicate.parse-handler = $timeout (~>
             @communicate.parse-handler = null
             $scope.parse.chart!
-            #TBR @canvas.window.postMessage {type: \parse, payload: code}, @plotdomain
+            #TBR @canvas.window.postMessage {type: \parse, payload: code}, @plotdb-domain
           ), 500
         @$watch 'theme.code.content', (code) ~>
           if !@theme => return
@@ -560,7 +562,7 @@ angular.module \plotDB
           @communicate.parse-theme-handler = $timeout (~>
             @communicate.parse-theme-handler = null
             $scope.parse.theme!
-            #TBR @canvas.window.postMessage {type: \parse-theme, payload: code}, @plotdomain
+            #TBR @canvas.window.postMessage {type: \parse-theme, payload: code}, @plotdb-domain
           ), 500
         @$watch 'chart.config', ((n,o={}) ~>
           ret = !!([[k,v] for k,v of n]
@@ -605,16 +607,16 @@ angular.module \plotDB
         else if data.type == \loaded =>
           if !@chart => return
           if $scope.render.payload =>
-            @canvas.window.postMessage {type: \render} <<< $scope.render{payload,rebind}, @plotdomain
+            @canvas.window.postMessage {type: \render} <<< $scope.render{payload,rebind}, @plotdb-domain
             $scope.render.payload = null
           if $scope.parse.chart.pending =>
-            if @chart => @canvas.window.postMessage {type: \parse-chart, payload: @chart.code.content}, @plotdomain
+            if @chart => @canvas.window.postMessage {type: \parse-chart, payload: @chart.code.content}, @plotdb-domain
             $scope.parse.chart.pending = null
           if $scope.parse.theme.pending =>
-            if @theme => @canvas.window.postMessage {type: \parse-theme, payload: @theme.code.content}, @plotdomain
+            if @theme => @canvas.window.postMessage {type: \parse-theme, payload: @theme.code.content}, @plotdb-domain
             $scope.parse.theme.pending = null
-          #@canvas.window.postMessage {type: \parse, payload: @chart.code.content}, @plotdomain
-          #if @theme => @canvas.window.postMessage {type: \parse-theme, payload: @theme.code.content}, @plotdomain
+          #@canvas.window.postMessage {type: \parse, payload: @chart.code.content}, @plotdb-domain
+          #if @theme => @canvas.window.postMessage {type: \parse-theme, payload: @theme.code.content}, @plotdb-domain
         else if data.type == \click =>
           if document.dispatchEvent
             event = document.createEvent \MouseEvents

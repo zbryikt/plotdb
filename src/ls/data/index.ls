@@ -1,7 +1,7 @@
 angular.module \plotDB
   ..service \dataService,
-  <[$rootScope $http IOService sampleData baseService plNotify eventBus]> ++
-  ($rootScope, $http, IOService, sampleData, baseService, plNotify, eventBus) ->
+  <[$rootScope $http IOService sampleData baseService plNotify eventBus plConfig]> ++
+  ($rootScope, $http, IOService, sampleData, baseService, plNotify, eventBus, plConfig) ->
     name = \dataset
     service = do
       sample: sampleData

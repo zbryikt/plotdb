@@ -306,8 +306,7 @@ block body
                 i.glyphicon.glyphicon-fullscreen(ng-show="!editor.fullscreen.toggled")
                 i.glyphicon.glyphicon-resize-small(ng-show="editor.fullscreen.toggled")
             .btn.btn-default(ng-click="vis='code'") Edit Code #[small.hint Alt-Enter]
-
-          iframe#chart-renderer(src="http://localhost/render.html",
+          iframe#chart-renderer(ng-attr-src="{{plotdbRenderer}}",
           style="width:100%;height:100%;border:none;")
 
     .row(ng-show="theme.key && theme.owner == user.data.key")

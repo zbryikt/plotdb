@@ -2,7 +2,7 @@
 var x$, onSignIn;
 x$ = angular.module('plotDB');
 x$.config(['$compileProvider'].concat(function($compileProvider){
-  return $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob:|https?:\/\/plotdb\.com\/|http:\/\/localhost\/|https:\/\/www\.facebook\.com\/|https:\/\/www\.pinterest\.com\/|mailto:\?|http:\/\/www\.linkedin\.com\/|http:\/\/twitter\.com\/)|#/);
+  return $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob:|https?:\/\/plotdb\.com\/|https?:\/\/plotdb\.io\/|http:\/\/localhost\/|https:\/\/www\.facebook\.com\/|https:\/\/www\.pinterest\.com\/|mailto:\?|http:\/\/www\.linkedin\.com\/|http:\/\/twitter\.com\/)|#/);
 }));
 x$.service('eventBus', ['$rootScope'].concat(function($rootScope){
   var ret;

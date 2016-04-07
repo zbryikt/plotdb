@@ -1,8 +1,8 @@
-plotdomain = \http://localhost/
+plotdb-domain = "#{window.plConfig.urlschema}#{window.plConfig.domain}"
 
 # bubbling up click outside renderer. for ColorPicker
 window.addEventListener \click, ->
-  window.parent.postMessage {type: \click, payload: ""}, plotdomain
+  window.parent.postMessage {type: \click, payload: ""}, plotdb-domain
 
 window.thread = do
   count: 0
@@ -62,7 +62,7 @@ error-handling = (e, lineno = 0) ->
   if msg.length > 1024 => msg = msg.substring(0,1024) + "..."
   lines = msg.split(\\n)
   if lines.length > 4 => msg = lines.splice(0,4).join(\\n)
-  window.parent.postMessage {type: \error, payload: {msg, lineno}}, plotdomain
+  window.parent.postMessage {type: \error, payload: {msg, lineno}}, plotdb-domain
 
 colorblind = (payload) ->
   val = <[normal protanopia protanomaly deuteranopia deuteranomaly tritanopia
@@ -78,12 +78,12 @@ parse = (payload, type) ->
       (module) <- proper-eval payload, false .then
       chart = module.exports
       payload = JSON.stringify({} <<< chart{dimension, config})
-      window.parent.postMessage {type: \parse-chart, payload}, plotdomain
+      window.parent.postMessage {type: \parse-chart, payload}, plotdb-domain
     else if type == \theme =>
       (module) <- proper-eval payload, false .then
       theme = module.exports
       payload = JSON.stringify({} <<< theme{typedef, config})
-      window.parent.postMessage {type: \parse-theme, payload}, plotdomain
+      window.parent.postMessage {type: \parse-theme, payload}, plotdb-domain
 
   catch e
     error-handling e
@@ -114,19 +114,19 @@ snapshot = (type='snapshot') ->
     {width, height} = svgnode.getBoundingClientRect!
     svg = svgnode.outerHTML
     if type == \getsvg =>
-      return window.parent.postMessage {type: \getsvg, payload: svg}, plotdomain
+      return window.parent.postMessage {type: \getsvg, payload: svg}, plotdb-domain
     img = new Image!
     img.onload = ->
       newHeight = (if height > width => width else height )
       canvas = document.createElement("canvas") <<< {width, height: newHeight}
       canvas.getContext \2d .drawImage img, 0, 0, width, newHeight, 0, 0, width, newHeight
-      window.parent.postMessage {type, payload: canvas.toDataURL!}, plotdomain
+      window.parent.postMessage {type, payload: canvas.toDataURL!}, plotdb-domain
     # btoa doesn't work for utf-8 string
     encoded = base64.encode(utf8.encode(svg))
     img.src = "data:image/svg+xml;charset=utf-8;base64," + encoded
   catch e
     console.log e
-    window.parent.postMessage {type, payload: null}, plotdomain
+    window.parent.postMessage {type, payload: null}, plotdb-domain
 
 render = (payload, rebind = true) ->
   [code,style,doc] = <[code style doc]>.map(->payload.{}chart[it].content)
@@ -208,7 +208,7 @@ render = (payload, rebind = true) ->
       if rebind or reboot => chart.bind!
       chart.render!
       module.exec-error = false
-      window.parent.postMessage {type: \error, payload: window.error-message or ""}, plotdomain
+      window.parent.postMessage {type: \error, payload: window.error-message or ""}, plotdb-domain
     .catch (e) ->
       module.exec-error = true
       thread.dec reboot
@@ -231,9 +231,9 @@ window.addEventListener \resize, ->
 
 window.addEventListener \keydown, (e) ->
   if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) =>
-    window.parent.postMessage {type: \alt-enter}, plotdomain
+    window.parent.postMessage {type: \alt-enter}, plotdb-domain
 
-window.parent.postMessage {type: \loaded}, plotdomain
+window.parent.postMessage {type: \loaded}, plotdb-domain
 
 # dont enable it for now
 /*
