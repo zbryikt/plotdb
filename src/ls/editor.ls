@@ -1,7 +1,6 @@
 angular.module \plotDB
   ..controller \plEditor,
-  <[$scope $http $timeout $interval $sce plConfig dataService chartService paletteService themeService plNotify]> ++
-  ($scope,$http,$timeout,$interval,$sce,plConfig,data-service,chart-service,paletteService,themeService,plNotify) ->
+  <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify) ->
     #########  Variables  ################################################################
     $scope <<< do
       plConfig: plConfig
@@ -40,11 +39,12 @@ angular.module \plotDB
           if key => @target! <<< {parent: key}
         refresh = if !@target!.key => true else false
         if @target!.dimension => @target!.dimlen = [k for k of @target!.dimension or {}].length
+        console.log 1234
         @target!.save!
           .then (ret) ~>
             <~ @$apply
-            if nothumb => plNotify.send \warning, "chart saved, but thumbnail failed to update"
-              else plNotify.send \success, "chart saved"
+            if nothumb => plNotify.send \warning, "#{@type} saved, but thumbnail failed to update"
+              else plNotify.send \success, "#{@type} saved"
             link = @service.link @target!
             if refresh or !window.location.search => window.location.href = link
             if @save.handle => $timeout.cancel @save.handle
@@ -220,7 +220,14 @@ angular.module \plotDB
         set: ->
           $scope.chart = it
           if !it => return
-          chart-service.load it.type, it.key
+          if it._type.location == \sample => #Better way ? integrate with chart-service.load?
+            $scope.chart = new chart-service.chart(it)
+            $scope.chart.theme = $scope.theme
+            $scope.reset-config!
+            $scope.render!
+            $scope.parse.theme!
+            return
+          chart-service.load it._type, it.key
             .then (ret) ~>
               $scope.chart = new chart-service.chart(ret)
               $scope.chart.theme = $scope.theme
@@ -234,9 +241,16 @@ angular.module \plotDB
               console.error ret
               plNotify.send \error, "failed to load chart. please try reloading"
         init: ->
-          (ret) <~ chart-service.list!then
-          <~ $scope.$apply
-          @list = chart-service.sample.map(-> new chart-service.chart it) ++ ret
+          IO-service.list-remotely(
+            {name: \chart}
+            {owner: (if $scope.user.data => $scope.user.data.key else -1)}
+          )
+            .then (ret) ~>
+              <~ $scope.$apply
+              @list = (chart-service.sample ++ ret).map -> new chartService.chart(it)
+            .catch ->
+              console.error e
+              plNotify.send \error, "failed to load chart list. use sample chart instead"
       themes:
         list: theme-service.sample
         set: -> $scope.theme = it
@@ -681,5 +695,5 @@ angular.module \plotDB
         if @type == \theme => @charts.init!
         if @type == \chart => @themes.init!
 
-    $scope.mode.set \chart
+    $scope.mode.set \theme
     $scope.init!

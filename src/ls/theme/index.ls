@@ -666,14 +666,22 @@ angular.module \plotDB
   ..controller \themeList,
   <[$scope $http IOService dataService themeService]> ++
   ($scope, $http, IO-service, data-service, theme-service) ->
-    $scope.themes = []
-    (ret) <- Promise.all [
-      new Promise (res, rej) -> IO-service.aux.list-locally {name: \theme}, res, rej
-      new Promise (res, rej) -> IO-service.aux.list-remotely {name: \theme}, res, rej, "q=all"
-    ] .then
-    <~ $scope.$apply
-    $scope.themes = ( ret.0 ++ ret.1 )
-    $scope.themes.forEach (it) ->
-      it.width = if Math.random() > 0.8 => 640 else 320
     $scope.load = (theme) -> window.location.href = theme-service.link theme
-
+    $scope.load-list = ->
+      $scope.loading = true
+      (ret) <- IO-service.list-remotely {name: \theme}, {} .then
+      <~ $scope.$apply
+      $scope.themes = ( ret ).map -> new themeService.theme(it)
+      $scope.loading = false
+      hit = false
+      for i from 0 til $scope.themes.length =>
+        d = $scope.themes[i]
+        width = 320
+        if Math.random! > 0.6 and !hit =>
+          width = (if Math.random! > 0.8 => 960 else 640)
+          hit = true
+        if i % 3 == 2 =>
+          if !hit => width = 640
+          hit = false
+        d.width = width
+    $scope.load-list!

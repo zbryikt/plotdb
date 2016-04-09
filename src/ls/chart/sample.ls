@@ -4,7 +4,7 @@ angular.module \plotDB
       {
         name: "Empty Chart", description: "a boilerplate for visualization"
         permission: {}
-        key: "/chart/sample/:empty"
+        key: 1
         owner: null
         _type: location: \sample, name: \cahrt
         config: { padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: true}}
@@ -50,7 +50,7 @@ module.exports = plotdb.chart.create({
       {
         name: "Bubble Chart", description: "a simple bubble chart"
         permission: {}
-        key: "/chart/sample/:bubble"
+        key: 2
         owner: null
         _type: location: \sample, name: \cahrt
         config: {

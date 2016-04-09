@@ -1,1 +1,78 @@
-#chart-explore-bar{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.1);border:1px solid #ccc;font-size:1.2em;margin-top:60px;font-family:'Lato','Helvetica Neue',Helvetica,sans-serif}#chart-explore-bar .navbar-nav>li>a:hover{color:#ed1d78}#chart-explore-bar .navbar-nav>li.open>a{background:#ed1d78;color:#fff}#chart-explore-bar .dropdown-menu>li>a:hover,#chart-explore-bar .dropdown-menu>li>a:focus{color:#fff;background:#ed1d78}
+#chart-explore-bar {
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  border: 1px solid #ccc;
+  font-size: 1.2em;
+  font-family: 'Lato', 'Helvetica Neue', Helvetica, sans-serif;
+}
+#chart-explore-bar .navbar-nav > li > a:hover {
+  color: #ed1d78;
+}
+#chart-explore-bar .navbar-nav > li.open > a {
+  background: #ed1d78;
+  color: #fff;
+}
+#chart-explore-bar .dropdown-menu > li > a:hover,
+#chart-explore-bar .dropdown-menu > li > a:focus {
+  color: #fff;
+  background: #ed1d78;
+}
+#chart-explore-bar li.dropdown {
+  display: inline-block;
+}
+#chart-explore-bar li.dropdown a {
+  padding: 5px 15px;
+  color: #222;
+}
+#chart-explore-bar li.dropdown a small {
+  display: block;
+  font-size: 0.7em;
+  line-height: 1.3em;
+  color: #777;
+}
+#chart-explore-bar li.dropdown a span {
+  line-height: 1.5em;
+}
+#chart-explore-bar ul.dropdown-menu li.active a {
+  color: #fff;
+  background: #ed1d78;
+}
+#chart-filter {
+  margin-top: -52px;
+}
+#chart-filter #chart-explore-bar {
+  margin-bottom: 0;
+}
+#chart-filter.sticked {
+  width: 96%;
+  left: 2%;
+  z-index: 3;
+  margin-top: 0;
+}
+#chart-filter.sticked #chart-explore-bar {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+@media (max-width: 768px) {
+  #chart-filter {
+    left: 0;
+    width: 100%;
+    margin-top: -30px;
+  }
+  #chart-explore-bar li.dropdown a {
+    font-size: 0.9em;
+    padding: 5px 8px;
+  }
+  #chart-explore-bar form {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  #chart-explore-bar ul.nav.navbar-nav {
+    text-align: center;
+  }
+  #chart-explore-bar .navbar-nav .open .dropdown-menu {
+    position: absolute;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+  }
+}

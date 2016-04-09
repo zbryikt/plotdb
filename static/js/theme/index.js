@@ -91,29 +91,43 @@ x$.service('themeService', ['$rootScope', '$http', 'IOService', 'sampleTheme', '
   return themeService;
 }));
 x$.controller('themeList', ['$scope', '$http', 'IOService', 'dataService', 'themeService'].concat(function($scope, $http, IOService, dataService, themeService){
-  $scope.themes = [];
-  return Promise.all([
-    new Promise(function(res, rej){
-      return IOService.aux.listLocally({
-        name: 'theme'
-      }, res, rej);
-    }), new Promise(function(res, rej){
-      return IOService.aux.listRemotely({
-        name: 'theme'
-      }, res, rej, "q=all");
-    })
-  ]).then(function(ret){
-    var this$ = this;
-    return $scope.$apply(function(){
-      $scope.themes = ret[0].concat(ret[1]);
-      $scope.themes.forEach(function(it){
-        return it.width = Math.random() > 0.8 ? 640 : 320;
+  $scope.load = function(theme){
+    return window.location.href = themeService.link(theme);
+  };
+  $scope.loadList = function(){
+    $scope.loading = true;
+    return IOService.listRemotely({
+      name: 'theme'
+    }, {}).then(function(ret){
+      var this$ = this;
+      return $scope.$apply(function(){
+        var hit, i$, to$, i, d, width, results$ = [];
+        $scope.themes = ret.map(function(it){
+          return new themeService.theme(it);
+        });
+        $scope.loading = false;
+        hit = false;
+        for (i$ = 0, to$ = $scope.themes.length; i$ < to$; ++i$) {
+          i = i$;
+          d = $scope.themes[i];
+          width = 320;
+          if (Math.random() > 0.6 && !hit) {
+            width = Math.random() > 0.8 ? 960 : 640;
+            hit = true;
+          }
+          if (i % 3 === 2) {
+            if (!hit) {
+              width = 640;
+            }
+            hit = false;
+          }
+          results$.push(d.width = width);
+        }
+        return results$;
       });
-      return $scope.load = function(theme){
-        return window.location.href = themeService.link(theme);
-      };
     });
-  });
+  };
+  return $scope.loadList();
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

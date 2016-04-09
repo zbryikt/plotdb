@@ -60,8 +60,6 @@ engine.router.api.post "/theme/", (req, res) ->
       console.error it.stack
       aux.r403 res
 
-
-
 engine.router.api.put "/theme/:id", (req, res) ~>
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res

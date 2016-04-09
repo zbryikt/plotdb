@@ -1,3 +1,9 @@
+.spc1 {
+  height: 0;
+}
+.spc1:after {
+  content: " ";
+}
 #notifications {
   position: fixed;
   bottom: 10px;
@@ -621,6 +627,23 @@ width: 100%;
   -ms-user-select: none;
   user-select: none;
 }
+.loader:after {
+  content: " ";
+  display: none;
+  width: 20px;
+  height: 100%;
+  background: url("/assets/img/loading.gif") center center no-repeat;
+}
+.loader.alone.lg {
+  width: 100px;
+  height: 100px;
+}
+.loader.alone.lg:after {
+  width: 100px;
+  height: 100px;
+  background-size: cover;
+  background: url("/assets/img/loading-lg.svg") center center no-repeat;
+}
 .btn.loader {
   position: relative;
   padding-left: 35px;
@@ -630,17 +653,11 @@ width: 100%;
   position: absolute;
   right: 10px;
   top: 0;
-  content: " ";
-  display: none;
-  width: 20px;
-  height: 100%;
-  background: url("/assets/img/loading.gif") center center no-repeat;
-  float: right;
 }
 .btn.btn-danger.loader:after {
   background: url("/assets/img/loading-danger.gif") center center no-repeat;
 }
-.btn.loader.loading:after {
+.loader.loading:after {
   display: block;
 }
 .margin-break {
@@ -720,4 +737,8 @@ a.dropdown-toggle {
   opacity: 0;
   -webkit-flex: 100 0 auto !important;
   flex: 100 0 auto !important;
+}
+.block-center {
+  margin-left: auto;
+  margin-right: auto;
 }

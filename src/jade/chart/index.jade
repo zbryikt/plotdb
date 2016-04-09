@@ -239,7 +239,7 @@ block body
       .col-sm-3
         #config-panel.plpanel
           #chart-settings
-            label {{type}}
+            label(ng-cloak) {{type}}
             .chart-config
               .input-group
                 span.input-group-addon name
@@ -275,7 +275,7 @@ block body
             label Config
             .pull-right: a(href="#",ng-click="resetConfig()") reset
             .chart-config(ng-cloak)
-              .btn-group
+              .btn-group(ng-show="type=='chart'")
                 span.input-group-addon Theme
                 .dropdown
                   .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
@@ -284,6 +284,15 @@ block body
                   ul.dropdown-menu
                     li: a(ng-click="themes.set(null)") No Theme
                     li(ng-repeat="item in themes.list"): a(ng-click="themes.set(item)") {{item.name}}
+              .btn-group(ng-show="type=='theme'")
+                span.input-group-addon Chart
+                .dropdown
+                  .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                    span {{chart.name || 'No Chart'}}
+                    i.fa.fa-caret-down
+                  ul.dropdown-menu
+                    li: a(ng-click="charts.set(null)") No Chart
+                    li(ng-repeat="item in charts.list"): a(ng-click="charts.set(item)") {{item.name}}
 
             .chart-config(ng-cloak,ng-repeat="(name,v) in chart.config",ng-show="!v._bytheme")
               .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color'")
@@ -415,7 +424,7 @@ block body
           iframe#chart-renderer(ng-attr-src="{{plotdbRenderer}}",
           style="width:100%;height:100%;border:none")
 
-    #binding-panel.relpos.panel.panel-default(ng-controller="datasetList"): .panel-body
+    #binding-panel.relpos.panel.panel-default(ng-controller="datasetList",ng-show="type=='chart'",ng-cloak): .panel-body
       .pull-right.clickable(style="margin-top:5px;",
       ng-click="showDataEditModal=!!!showDataEditModal") #[i.fa.fa-plus-circle] Add Dataset
       h3 Data Mapping
@@ -476,7 +485,7 @@ block body
                 small in dataset "{{field.datasetname}}"
             .dimension.flexend
 
-    .row(ng-show="target().key && target().owner == user.data.key")
+    .row(ng-show="target().key && target().owner == user.data.key",ng-cloak)
       .col-sm-12
         .panel.panel-default
           .panel-heading: label Danger Zone

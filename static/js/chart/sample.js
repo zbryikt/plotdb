@@ -8,7 +8,7 @@ x$.service('sampleChart', ['$rootScope'].concat(function($rootScope){
       name: "Empty Chart",
       description: "a boilerplate for visualization",
       permission: {},
-      key: "/chart/sample/:empty",
+      key: 1,
       owner: null,
       _type: {
         location: 'sample',
@@ -43,7 +43,7 @@ x$.service('sampleChart', ['$rootScope'].concat(function($rootScope){
       name: "Bubble Chart",
       description: "a simple bubble chart",
       permission: {},
-      key: "/chart/sample/:bubble",
+      key: 2,
       owner: null,
       _type: {
         location: 'sample',
