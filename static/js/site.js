@@ -251,7 +251,6 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     }
     for (i$ = 0, len$ = (ref$ = window.scrollstickers).length; i$ < len$; ++i$) {
       node = ref$[i$];
-      console.log(scrollTop + node.maxtop, node.offsetTop, node.initTop, node.sticked);
       if (scrollTop + node.maxtop >= node.offsetTop && !node.sticked) {
         node.sticked = true;
         node.style.top = node.maxtop + "px";

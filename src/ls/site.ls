@@ -140,7 +140,6 @@ angular.module \plotDB
         $(\#nav-top)addClass \dim
         $(\#subnav-top)addClass \dim
       for node in window.scrollstickers =>
-        console.log scroll-top + node.maxtop, node.offsetTop, node.init-top, node.sticked
         if scroll-top + node.maxtop >= node.offsetTop and !node.sticked =>
           node.sticked = true
           node.style.top = "#{node.maxtop}px"
