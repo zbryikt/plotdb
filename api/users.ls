@@ -1,29 +1,49 @@
-require! <[../engine/aux]>
-(engine) <- (->module.exports = it)  _
+require! <[bluebird crypto]>
+require! <[../engine/aux ../engine/throttle]>
+(engine, io) <- (->module.exports = it)  _
 
+auth-limit = {strategy: \hard, limit: 10, upper-delta: 1800, json: true}
 
-/*
 get-user = (req, key) ->
-  if req.user and req.user.key == key => new bluebird (res, rej) -> res req.user
-  else store.read \user, key
+  if req.user and req.user.key == key => return new bluebird (res, rej) -> res req.user
+  io.query "select * from users where key = $1", [key]
+    .then (r) -> return r.[]rows.0
 
-router.api.post \/me/passwd/, throttle.limit auth-limit,  (req, res) ->
-  if !req.user.usepasswd => return aux.r400 res
-  (cur-user) <- store.read \user, req.user.key .then
-  {oldpasswd,newpasswd} = req.body{oldpasswd, newpasswd}
-  if cur-user.password != (crypto.createHash(\md5).update(oldpasswd).digest(\hex) or "") => return aux.r403 res
-  user = {} <<< cur-user
-  user.password = (crypto.createHash(\md5).update(newpasswd).digest(\hex) or "")
-  model.type.user.clean user
-  user.save!then (ret) -> req.login user, -> res.send!
-
-backend.app.get \/me/, throttle.limit {lower-delta: 2, upper-delta: 6, penalty: 1, limit: 6}, (req, res) ->
+engine.app.get \/me/, throttle.limit {lower-delta: 2, upper-delta: 6, penalty: 1, limit: 6}, (req, res) ->
   if !req.user => return res.redirect "/"
   res.render \me/profile.jade, {user: req.user}
 
-backend.app.get \/me/edit/, (req, res) ->
+engine.app.get \/user/:id, (req, res) ->
+  get-user req, req.params.id
+    .then (user) ->
+      if !user => return aux.r404 res, "user not found", true
+      res.render \me/profile.jade, {user}
+      return null
+    .catch -> return aux.r403 res, "", true
+
+engine.app.get \/me/edit/, (req, res) ->
   if !req.user => return res.redirect "/"
   res.render \me/settings.jade, {user: req.user}
+
+engine.router.api.post \/me/passwd/, throttle.limit auth-limit,  (req, res) ->
+  if !req.user => return aux.r404 res
+  if !req.user.usepasswd => return aux.r400 res
+  get-user req, req.user.key
+    .then (user) ->
+      {oldpasswd,newpasswd} = req.body{oldpasswd, newpasswd}
+      if user.password != (crypto.createHash(\md5).update(oldpasswd).digest(\hex) or "") => return aux.r403 res
+      user.password = (crypto.createHash(\md5).update(newpasswd).digest(\hex) or "")
+      io.query "update users set password = $1", [user.password]
+        .then ->
+          req.login user, -> res.send!
+          return null
+        .catch -> aux.r500 res
+      return null
+    .catch (e) ->
+      console.error e.stack
+      aux.r404 res
+
+/*
 
 backend.app.post \/me/avatar, backend.multi.parser, throttle.limit edit-limit, (req, res) ->
   if !req.files.image => return aux.r400 res
@@ -45,11 +65,6 @@ backend.app.post \/me/avatar, backend.multi.parser, throttle.limit edit-limit, (
   model.type.user.clean(user)
   user.save!then (ret) -> req.login user, -> res.send ret
   backend.multi.clean req, res
-
-backend.app.get \/user/:id, (req, res) ->
-  (user) <- get-user req, req.params.id .then
-  if !user => return aux.r404 res
-  res.render \me/profile.jade, {user}
 
 router.api.put \/user/:id, throttle.limit edit-limit, (req, res) ->
   if !req.user or req.user.key != req.params.id => return aux.r403 res

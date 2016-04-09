@@ -33,36 +33,38 @@ block body
     h2.text-center My Charts
     .text-center You underestimate my power
     br
-    div(ng-controller="chartList")
+    div(ng-controller="userChartList"): div(ng-controller="chartList")
       include ../module/chart/widget/charts.jade
 
     br
     hr
     br
-    h2.text-center My Theme
-    .text-center I'm your father!
-    br
+    //-
+      h2.text-center My Theme
+      .text-center I'm your father!
+      br
 
-    div(ng-controller="themeList")
-      include ../module/theme/widget/themes.jade
+      div(ng-controller="themeList")
+        include ../module/theme/widget/themes.jade
 
-    br
-    hr
-    br
-    h2.text-center My Datasets
-    .text-center there is no data
-    br
-    .well
-      .data-fields(ng-controller="dataFiles")
-        .data-file(ng-repeat="dataset in datasets")
-          .closebtn(ng-show="dataset.type.location!='sample'",ng-click="remove(dataset)")
-          .title(ng-click="edit(dataset)") {{dataset.name}}
-          .desc {{dataset.size|size}}, {{dataset.rows}} rows
-          .data-field(ng-repeat="field in dataset.fields",ng-attr-style="background:{{dataset.color}}",ng-drag="true",ng-drag-data="field")
-            span {{field.name}}
-            small {{field.type}}
-        //-.data-file.data-file-new
-          .title add new dataset ...
-        br.clearfix
-      .clearfix
+      br
+      hr
+      br
+      h2.text-center My Datasets
+      .text-center there is no data
+      br
+      .well
+        .data-fields(ng-controller="dataFiles")
+          .data-file(ng-repeat="dataset in datasets")
+            .closebtn(ng-show="dataset.type.location!='sample'",ng-click="remove(dataset)")
+            .title(ng-click="edit(dataset)") {{dataset.name}}
+            .desc {{dataset.size|size}}, {{dataset.rows}} rows
+            .data-field(ng-repeat="field in dataset.fields",ng-attr-style="background:{{dataset.color}}",ng-drag="true",ng-drag-data="field")
+              span {{field.name}}
+              small {{field.type}}
+          //-.data-file.data-file-new
+            .title add new dataset ...
+          br.clearfix
+        .clearfix
+
   include /module/footer.jade

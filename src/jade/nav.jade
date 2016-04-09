@@ -33,7 +33,7 @@
 
         ul.nav.navbar-nav.pull-right
           li#nav-theme: a(href="/chart/request/"): small Request a Chart
-          li#nav-theme: a(href="/doc/"): small Dev Guide
+          //-li#nav-theme: a(href="/doc/"): small Dev Guide
           //-li#nav-localdata: a(href="/",ng-cloak) {{dataService.local.size|size}}, {{dataService.local.rows}} Rows
           li(ng-cloak,ng-show="!user.data"): a#nav-login(href="#",ng-click="auth.show = !!!auth.show")
             i.fa.fa-sign-in

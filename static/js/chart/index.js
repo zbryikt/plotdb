@@ -180,10 +180,15 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
   chartService = baseService.derive('chart', service, object);
   return chartService;
 }));
-x$.controller('mychart', ['$scope', '$http', 'dataService', 'chartService'].concat(function($scope, $http, dataService, chartService){
-  return $scope.q = {
-    owner: $scope.user.data ? $scope.user.data.key : null
+x$.controller('userChartList', ['$scope', '$http', 'dataService', 'chartService'].concat(function($scope, $http, dataService, chartService){
+  var owner, that;
+  owner = /^\/me/.exec(window.location.pathname)
+    ? $scope.user.data ? $scope.user.data.key : null
+    : (that = /^\/user\/([^/]+)/.exec(window.location.pathname)) ? that[1] : null;
+  $scope.q = {
+    owner: owner
   };
+  return console.log($scope.q);
 }));
 x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, IOService, dataService, chartService, plNotify){
   var map, k, ref$, v, results$ = [];

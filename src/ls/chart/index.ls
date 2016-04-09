@@ -85,11 +85,14 @@ angular.module \plotDB
     chartService = baseService.derive \chart ,service, object
     chartService
 
-  ..controller \mychart,
+  ..controller \userChartList,
   <[$scope $http dataService chartService]> ++
   ($scope, $http, data-service, chart-service) ->
-    $scope.q = do
-      owner: (if $scope.user.data => $scope.user.data.key else null)
+    owner = if /^\/me/.exec(window.location.pathname) => (if $scope.user.data => $scope.user.data.key else null)
+    else if /^\/user\/([^/]+)/.exec(window.location.pathname) => that.1
+    else null
+    $scope.q = {owner}
+    console.log $scope.q
   ..controller \chartList,
   <[$scope $http IOService dataService chartService plNotify]> ++
   ($scope, $http, IO-service, data-service, chart-service, plNotify) ->
