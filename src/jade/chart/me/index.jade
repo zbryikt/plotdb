@@ -8,11 +8,18 @@ block vars
   - var url = "http://plotdb.com/"
 block head
 block body
-  div &nbsp;
+  .spc1
   #root(style="max-width:1200px;margin-left:auto;margin-right:auto")
-    div(ng-controller="mychart"): div(ng-controller="chartList")
+    h3.page-title.text-center My Chart
+    br
+    .sep.dark
+    div(ng-controller="userChartList"): div(ng-controller="chartList")
+      div(style="height:52px")
+      #chart-filter.scroll-stick(data-top="75")
+        include ../widget/search.jade
       include ../widget/charts.jade
-      div(ng-cloak,ng-show="charts.length==0")
+      .loader.alone.loading.block-center.lg(ng-class="{'loading': loading}")
+      div(ng-cloak,ng-show="charts.length==0 && !loading")
         br
         br
         br
@@ -20,6 +27,4 @@ block body
         br
         br
         br
-    .sep.dark
-  br
   include ../../footer.jade

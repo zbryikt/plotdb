@@ -182,9 +182,9 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
 }));
 x$.controller('userChartList', ['$scope', '$http', 'dataService', 'chartService'].concat(function($scope, $http, dataService, chartService){
   var owner, that;
-  owner = /^\/me/.exec(window.location.pathname)
-    ? $scope.user.data ? $scope.user.data.key : null
-    : (that = /^\/user\/([^/]+)/.exec(window.location.pathname)) ? that[1] : null;
+  owner = (that = /^\/user\/([^/]+)/.exec(window.location.pathname))
+    ? that[1]
+    : $scope.user.data ? $scope.user.data.key : null;
   $scope.q = {
     owner: owner
   };
@@ -192,6 +192,7 @@ x$.controller('userChartList', ['$scope', '$http', 'dataService', 'chartService'
 }));
 x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, IOService, dataService, chartService, plNotify){
   var map, k, ref$, v, results$ = [];
+  $scope.loading = true;
   $scope.charts = [];
   $scope.q = {
     type: null,
@@ -213,6 +214,7 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
     return chartService.link(it);
   };
   $scope.loadList = function(){
+    $scope.loading = true;
     return IOService.listRemotely({
       name: 'chart'
     }, $scope.q).then(function(ret){
@@ -222,6 +224,7 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
         $scope.charts = ret.map(function(it){
           return new chartService.chart(it);
         });
+        $scope.loading = false;
         hit = false;
         for (i$ = 0, to$ = $scope.charts.length; i$ < to$; ++i$) {
           i = i$;

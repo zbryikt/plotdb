@@ -88,14 +88,14 @@ angular.module \plotDB
   ..controller \userChartList,
   <[$scope $http dataService chartService]> ++
   ($scope, $http, data-service, chart-service) ->
-    owner = if /^\/me/.exec(window.location.pathname) => (if $scope.user.data => $scope.user.data.key else null)
-    else if /^\/user\/([^/]+)/.exec(window.location.pathname) => that.1
-    else null
+    owner = if /^\/user\/([^/]+)/.exec(window.location.pathname) => that.1
+    else => (if $scope.user.data => $scope.user.data.key else null)
     $scope.q = {owner}
     console.log $scope.q
   ..controller \chartList,
   <[$scope $http IOService dataService chartService plNotify]> ++
   ($scope, $http, IO-service, data-service, chart-service, plNotify) ->
+    $scope.loading = true
     $scope.charts = []
     $scope.q = do
       type: null
@@ -124,9 +124,11 @@ angular.module \plotDB
       ]
     $scope.link = -> chart-service.link it
     $scope.load-list = ->
+      $scope.loading = true
       (ret) <- IO-service.list-remotely {name: \chart}, $scope.q .then
       <~ $scope.$apply
       $scope.charts = ( ret ).map -> new chartService.chart(it)
+      $scope.loading = false
       hit = false
       for i from 0 til $scope.charts.length =>
         d = $scope.charts[i]

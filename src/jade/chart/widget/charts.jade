@@ -1,5 +1,5 @@
 .charts
-  .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
+  .chart(ng-cloak,ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
     a.chart-img(ng-attr-href="{{link(chart)}}",style="display:block")
       .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime}})")
     .chart-desc

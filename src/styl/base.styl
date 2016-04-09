@@ -1,6 +1,11 @@
 @import 'basic'
 @import 'vars'
 
+.spc1
+  height: 0
+  &:after
+    content: " "
+
 #notifications
   position: fixed
   bottom: 10px
@@ -111,6 +116,23 @@ li.disabled a
 .checkbox
   no-selection()
 
+.loader
+  &:after
+    content: " "
+    display: none
+    width: 20px
+    height: 100%
+    background: url(/assets/img/loading.gif) center center no-repeat
+
+.loader.alone.lg
+  width: 100px
+  height: 100px
+  &:after
+    width: 100px
+    height: 100px
+    background-size: cover
+    background: url(/assets/img/loading-lg.svg) center center no-repeat
+
 .btn.loader
   position: relative
   padding-left: 35px
@@ -119,15 +141,10 @@ li.disabled a
     position: absolute
     right: 10px
     top: 0
-    content: " "
-    display: none
-    width: 20px
-    height: 100%
-    background: url(/assets/img/loading.gif) center center no-repeat
-    float: right
+
 .btn.btn-danger.loader:after
   background: url(/assets/img/loading-danger.gif) center center no-repeat
-.btn.loader.loading:after
+.loader.loading:after
   display: block
 
 .margin-break
@@ -201,3 +218,7 @@ a.dropdown-toggle
 .flexend
   opacity: 0
   flex(100 0 auto!important)
+
+.block-center
+  margin-left: auto
+  margin-right: auto
