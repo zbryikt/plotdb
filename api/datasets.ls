@@ -5,10 +5,14 @@ datasettype = model.type.dataset
 datafieldtype = model.type.datafield
 
 engine.router.api.get "/dataset/", (req, res) ->
-  #TODO consider general dataset api 
+  #TODO consider general dataset api
   if !req.user => return res.json []
-  io.query "select * from datasets where datasets.owner = $1", [req.user.key]
-    .then (r = {}) -> return res.json r.[]rows
+  io.query([
+    "select *,users.displayname as ownername from datasets,users"
+    "where datasets.owner=users.key and datasets.owner = $1"].join(" "), [req.user.key]
+  )
+    .then (r = {}) ->
+      return res.json r.[]rows
     .catch ->
       console.log it.stack
       return aux.r403 res
@@ -25,16 +29,16 @@ get-dataset =(req,simple=false) -> new bluebird (res, rej) ->
         .then (r = {}) ->
           dataset.fields = r.[]rows
           res dataset
-        .catch -> 
+        .catch ->
           console.error it.stack
           return rej new Error! <<< status: 403
-    .catch -> 
+    .catch ->
       console.error it.stack
       return rej new Error! <<< status: 403
 
 engine.app.get "/dataset/:id", (req, res) ->
   get-dataset req, true
-    .then (ret) -> 
+    .then (ret) ->
       res.render 'dataset/index.jade', {dataset:ret}
       return null
     .catch (e) ->
@@ -52,7 +56,7 @@ update-size = (req, delta) -> new bluebird (res, rej) ->
   io.query "select datasize from users where users.key = $1", [req.user.key]
     .then (r) ->
       user = r.[]rows.0
-      if !user => 
+      if !user =>
         console.error "[post dataset: update user failed]"
         return res!
       datasize = ((user.datasize or 0) + delta) >? 0
@@ -72,7 +76,7 @@ save-dataset = (req, res, okey = null) ->
   promise = (if okey => io.query("select * from datasets where datasets.key = $1", [okey]) else bluebird.resolve(1))
   promise.then (r) ->
     if r != 1 =>
-      cur = r.[]rows.0 
+      cur = r.[]rows.0
       if !cur => return aux.r404 res
       if cur.owner != req.user.key => return aux.r403 res
     else cur = null
@@ -93,7 +97,7 @@ save-dataset = (req, res, okey = null) ->
     pairs = io.aux.insert.format datasettype, data
     delete pairs.key
     pairs = io.aux.insert.assemble pairs
-    (if cur => 
+    (if cur =>
       io.query(
         "update datasets set #{pairs.0} = #{pairs.1} where datasets.key = $#{pairs.2.length + 1}"
         pairs.2 ++ [okey]
@@ -115,7 +119,7 @@ save-dataset = (req, res, okey = null) ->
               it.dataset = key
               pairs = io.aux.insert.format datafieldtype, it
               matched = ofields.filter(->it.name == pairs.name).0
-              if matched => 
+              if matched =>
                 pairs.key = matched.key
                 matched.matched = true
               else delete pairs.key
@@ -130,12 +134,12 @@ save-dataset = (req, res, okey = null) ->
             ).join(",")
             update = pairslist.filter(->it.0?)
             promises = []
-            if insert.length => 
+            if insert.length =>
               promises.push(io.query "insert into datafields #inscol values #placeholder", params)
             promises ++= (for item in update => io.query(
               "update datafields set #upcol = #{item.1.1} where datafields.key = $#{item.1.2.length + 1}"
               item.1.2 ++ [item.0]))
-            promises ++= (for item in ofields.filter(->!it.matched) => 
+            promises ++= (for item in ofields.filter(->!it.matched) =>
               io.query(
                 "delete from datafields where datafields.key = $1", [item.key]
               )
@@ -151,7 +155,7 @@ save-dataset = (req, res, okey = null) ->
             return io.query "select datasize from users where users.key = $1", [req.user.key]
           .then (r) ->
             user = r.[]rows.0
-            if !user => 
+            if !user =>
               console.error "[post dataset: update user failed]"
               return res.send data
             datasize = (user.datasize or 0) + data.size

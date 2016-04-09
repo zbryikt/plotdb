@@ -11,6 +11,6 @@
       .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
       .flexend
     .social
-      a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownerName}} #[i.fa.fa-eye(ng-sshow="chart.searchable")]
+      a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownername}} #[i.fa.fa-eye(ng-sshow="chart.searchable")]
       .favorite(ng-click="like(chart)", ng-class="{'active':user.data && user.data.likes.chart[chart.key]}") #[i.fa.fa-heart] {{chart.likes || 0}}
   .flexend

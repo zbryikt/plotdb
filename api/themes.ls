@@ -7,7 +7,7 @@ engine.router.api.get "/theme/", (req, res) ->
   #TODO consider general dataset api 
   if !req.user => return res.send []
   io.query [
-    'select users.displayname as "ownerName",themes.*'
+    'select users.displayname as ownername,themes.*'
     "from themes,users where users.key = themes.owner and themes.owner = #{req.user.key}"
   ].join(" ")
     .then -> res.send it.rows
@@ -17,7 +17,7 @@ engine.router.api.get "/theme/", (req, res) ->
 
 engine.router.api.get "/theme/:id", (req, res) ->
   io.query [
-    'select users.displayname as "ownerName", themes.*'
+    'select users.displayname as ownername, themes.*'
     'from users,themes where users.key = owner and'
     "themes.key=#{req.params.id}"
   ].join(" ")

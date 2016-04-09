@@ -21,7 +21,7 @@ engine.router.api.get "/chart/", (req, res) ->
     equal.map((d,i) -> ["charts.#{d.0} = ",d.1])
   ).map((d,i) -> ["#{d.0} $#{i + 1}", d.1])
   io.query([
-    'select users.displayname as "ownerName",charts.*'
+    'select users.displayname as ownername,charts.*'
     ["from charts,users where users.key = charts.owner","#{conditions.map(->it.0).join(" and ")}"]
       .filter(->it)
       .join(" and ")
@@ -33,7 +33,7 @@ engine.router.api.get "/chart/", (req, res) ->
 
 engine.router.api.get "/chart/:id", (req, res) ->
   io.query([
-    'select users.displayname as "ownerName", charts.*'
+    'select users.displayname as ownername, charts.*'
     'from users,charts where users.key = owner and'
     "charts.key=$1"
   ].join(" "), [req.params.id])
