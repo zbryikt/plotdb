@@ -8,18 +8,11 @@ block vars
   - var url = "http://plotdb.com/"
 block head
 block body
-  span &nbsp;
+  .spc1
   #root(style="max-width:1200px;margin-left:auto;margin-right:auto;",ng-controller="chartList")
-    div(style="height:52px")
+    div(style="height:60px")
     #chart-filter.scroll-stick(data-top="65")
       include ../widget/search.jade
     include ../widget/charts.jade
-
-    .chart.flexend
-    br
     .text-center: a(href="#") I want MORE! &nbsp; #[i.fa.fa-pie-chart]
-    br
-    hr
-    br
-
   include /footer.jade
