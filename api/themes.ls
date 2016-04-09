@@ -101,3 +101,15 @@ engine.router.api.put "/theme/:id", (req, res) ~>
       console.error it.stack
       return aux.r403 res
 
+engine.router.api.delete "/theme/:id", (req, res) ~>
+  if !req.user => return aux.r403 res
+  io.query "select * from themes where key = $1", [req.params.id]
+    .then (r = {}) ->
+      theme = r.[]rows.0
+      if !theme => return aux.r404 res
+      if theme.owner != req.user.key => return aux.r403 res
+      io.query "delete from themes where key = $1", [req.params.id]
+        .then -> res.send []
+    .catch ->
+      console.error it.stack
+      return aux.r403 res

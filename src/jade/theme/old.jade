@@ -1,0 +1,326 @@
+extends /base.jade
+block vars
+  - var rootid = "themeview"
+  - var title = 'plotdb'
+  - var description = "plotdb"
+  - var thumbnail = "http://plotdb.io/assets/img/thumbnail.jpg"
+  - var thumbtype = "image/jpg"
+  - var url = "http://plotdb.com/"
+mixin SaveFork
+  span(ng-cloak,ng-show="theme.owner==user.data.key") Save
+  span(ng-cloak,ng-show="theme.owner!=user.data.key") Fork
+block head
+block body
+  div &nbsp;
+  #root(ng-controller="plEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
+    #setting-modal(ng-cloak,ng-show="settingPanel.toggled"): .ib
+      .closebtn(ng-click="settingPanel.toggle()")
+      h3 Settings
+      br
+      div(style="width: 80%;margin:auto")
+        label Name
+        input.form-control(placeholder="Chart Name", ng-model="theme.name")
+        br
+        label Descriptiont
+        textarea.form-control(placeholder="Chart Description", ng-model="theme.description",rows="3")
+        br
+        label Tags
+        input.form-control(placeholder="comma separated values, like 'population,economics'", ng-model="theme.tags")
+        br
+        label Backups
+        div(ng-cloak,ng-show="backup.list.length")
+          | backuped at {{backup.last.timestamp|date}}.&nbsp;
+          a(href="#",ng-click="backup.recover()") Recover
+        p.grayed(ng-cloak,ng-show="!backup.list.length") No backup found.
+      div
+        hr(style="margin-bottom:10px")
+        .btn.btn-default(ng-click="clone()") Make a copy
+        .pull-right
+          .save-hint-btn.btn.btn-default.loader(ng-disabled="!theme.name",ng-click="save()",
+          ng-class="{'loading':save.handle}")
+            +SaveFork
+          .btn.btn-default(ng-click="settingPanel.toggle()") Close
+
+    #permission-modal(ng-cloak,ng-show="sharePanel.toggled"): .ib
+      .closebtn(ng-click="sharePanel.toggle()")
+      h3 Share
+      div(ng-cloak,ng-show="!theme.key",
+      style="position:absolute;top:0;left:0;width:100%;height:100%;")
+        div(style="display:table;width:100%;height:100%;"): div(style="display:table-row;width:100%;height:100%")
+          div(style="display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center;color:#888")
+            | This theme is not saved. #[br] Save it to share it. #[br]#[br]#[br]
+            div(style="width:70%;margin:auto;max-width:500px")
+              .text-left: label(style="color:initial") Give Your Theme a Name
+              input.form-control(type="text",ng-model="theme.name",
+              placeholder="Project Name",style="margin-bottom:5px")
+              .btn.btn-default.btn-block.loader(ng-disabled="!theme.name",ng-click="save()",
+              ng-class="{'loading':save.handle}")
+                +SaveFork
+
+      div(ng-cloak,ng-show="theme.type.location=='local' && theme.key",
+      style="position:absolute;top:0;left:0;width:100%;height:100%;")
+        div(style="display:table;width:100%;height:100%;"): div(style="display:table-row;width:100%;height:100%")
+          div(style="display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center;color:#888")
+            | This theme is locally saved. #[br] You need to save it in plotdb.com to share it. #[br]#[br]
+            .btn.btn-default(ng-click="migrate()") OK, move it to the server
+        div(style="position:absolute;bottom:5px;width:100%")
+          hr(style="margin-bottom:10px")
+          .pull-right(style="padding:0px 10px 5px"): .btn.btn-default(ng-click="sharePanel.toggle()") Close
+      div(ng-cloak,ng-show="theme.type.location=='server' && theme.key")
+        br
+        .text-center(style="margin-bottom: 8px"): .btn-group
+          .btn.btn-default(ng-click="sharePanel.setPrivate()",ng-class="{'active':!sharePanel.isPublic()}") Private
+          .btn.btn-default(ng-click="sharePanel.setPublic()",ng-class="{'active':sharePanel.isPublic()}") Public
+        .text-center(ng-show="!sharePanel.isPublic()") Only users with permission can see this theme.
+        .text-center(ng-show="sharePanel.isPublic()") Every one can see this theme.
+
+        .text-center.text-danger(ng-cloak,ng-show="sharePanel.saveHint") Save to apply this change
+        .text-center: .checkbox: label #[input(type="checkbox",ng-model="sharePanel.forkable")] Allow others to fork this work
+        br(ng-show="!sharePanel.saveHint")
+
+        #share-buttons.text-center(style="font-size:2em",ng-class="{'disabled':!sharePanel.isPublic()}")
+          div(ng-show="!sharePanel.isPublic()")
+            i.fa.fa-facebook-square
+            i.fa.fa-twitter-square
+            i.fa.fa-pinterest-square
+            i.fa.fa-linkedin-square
+            i.fa.fa-envelope-square
+          div(ng-show="sharePanel.isPublic()")
+            a(ng-attr-href="{{sharePanel.social.facebook}}",target="_blank")
+              i.fa.fa-facebook-square(style="color:#3b5998")
+            a(ng-attr-href="{{sharePanel.social.twitter}}", target="_blank")
+              i.fa.fa-twitter-square(style="color:#00a0dc")
+            a(ng-attr-href="{{sharePanel.social.pinterest}}",target="_blank")
+              i.fa.fa-pinterest-square(style="color:#bd081c")
+            a(ng-attr-href="{{sharePanel.social.linkedin}}", target="_blank")
+              i.fa.fa-linkedin-square(style="color:#00a0dc")
+            a(ng-attr-href="{{sharePanel.social.email}}",target="_blank")
+              i.fa.fa-envelope-square(style="color:#444")
+
+        hr
+
+        .row
+          .col-sm-10.col-sm-offset-1
+
+            label Link
+            .pull-right(ng-cloak,ng-show="sharePanel.isPublic()")
+              a(ng-attr-href="{{sharePanel.link || '#'}}",target="_blank")
+                i.fa.fa-external-link(style="vertical-align:middle")
+                span(style="font-size:12px;margin-left:5px;") Open in New Window
+            input.form-control(ng-cloak,disabled,
+            ng-show="!sharePanel.isPublic()",placeholder="set theme public to get share link")
+            input#edit-sharelink.form-control(ng-cloak,type="text",ng-model="sharePanel.link",
+            placeholder="share link for this theme",ng-show="sharePanel.isPublic()",
+            data-clipboard-target="#edit-sharelink")
+            br
+            label Embed Code
+            textarea.form-control(ng-cloak,disabled,rows="3",
+            ng-show="!sharePanel.isPublic()",placeholder="set theme public to get embed code")
+            textarea#edit-embedcode.form-control(ng-cloak,rows="3",ng-show="sharePanel.isPublic()",
+            data-clipboard-target="#edit-embedcode",ng-model="sharePanel.embedcode")
+        hr(style="margin-bottom:10px")
+        .pull-right
+          .save-hint-btn.btn.btn-default.loader(ng-disabled="!theme.name",ng-click="save();sharePanel.saveHint=false",
+          ng-class="{'btn-warning':sharePanel.saveHint,'btn-default':!sharepanel.saveHint,'loading':save.handle}")
+            +SaveFork
+          .btn.btn-default(ng-click="sharePanel.toggle()") Close
+        //- Simplify this for now
+        //-
+          .row
+            .col-sm-8.col-sm-offset-2
+              label(style="margin-bottom:10px") Granted List
+              each i in [1,2,3,4,5]
+                .perm(style="line-height:20px;margin-bottom:10px;border-bottom:1px dashed #f9f9f9")
+                  div(style="display:inline-block;vertical-align:middle;line-height:12px;padding:1px;font-size:12px;width:15px;height:15px;border-radius:50%;background:#f00;color:#fff;text-align:center;margin-right:10px") &times;
+                  div(style="width:20px;height:20px;border-radius:50%;background:#999;border:2px solid #444;display:inline-block;vertical-align:middle;margin-right:7px;")
+                  span(style="line-height:20px;") tkirby@gmail.com
+                  .pull-right
+                    each v in [['eye','View','#444'],['edit','Edit','#ddd'],['cogs','Admin','#ddd']]
+                      div(style="display:inline-block;vertical-align:middle;line-height:20px;margin:0 10px;text-align:center;color:#444")
+                        //-i.fa(class="fa-"+v[0],style="font-size:20px;line-height:0")
+                        div(style="font-size:12px;font-family:open sans condensed;line-height:0;font-weight:bold;color:"+v[2])= v[1]
+          hr
+          .input-group(style="width:250px;float:left;margin-right:10px")
+            input.form-control.input-sm
+            span.input-group-btn
+              .btn.btn-default.btn-sm #[i.fa.fa-plus] User
+          .btn.btn-default.btn-sm #[i.fa.fa-plus] Link
+
+    #assets-preview(ng-cloak,ng-show="assets.preview.toggled"): .ib
+      .closebtn.inner(ng-click="assets.preview.toggled=false")
+      .iframe(style="width:100%;height:100%;border:none")
+    include /widget/palette-edit-modal.jade
+    #fullscreen-dimmer(ng-class="{'fullscreen':editor.fullscreen.toggled}")
+    #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
+      #code-tabs
+        .tab.cat.shown(ng-click="showsrc=!!!showsrc")
+          div.text-right #[span src]
+          .desc.text-right
+            i.glyphicon.glyphicon-chevron-right(ng-show="!showsrc")
+            i.glyphicon.glyphicon-chevron-left(ng-show="showsrc")
+        .tab.shown(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'",ng-cloak)
+          div #[span preview]
+          .desc {{theme.dimension|length}} dimensions
+        .tab.src(ng-class="{'active':vis=='code','shown':showsrc}",ng-click="vis='code'",ng-cloak)
+          div #[span code] #[small javascript]
+          .desc {{theme.code.size|size}}, {{theme.code.lines}} lines
+        .tab.src(ng-class="{'active':vis=='stylesheet','shown':showsrc}",ng-click="vis='stylesheet'",ng-cloak)
+          div #[span stylesheet] #[small css]
+          .desc {{theme.style.size|size}}, {{theme.style.lines}} lines
+        .tab.src(ng-class="{'active':vis=='document','shown':showsrc}",ng-click="vis='document'",ng-cloak)
+          div #[span document] #[small html]
+          .desc {{theme.doc.size|size}}, {{theme.doc.lines}} lines
+        .tab.src(ng-class="{'active':vis=='assets','shown':showsrc}",ng-click="vis='assets'",ng-cloak)
+          div #[span assets] #[small]
+          .desc
+            span(ng-cloak,ng-if="!theme.assets.length") no file
+            span(ng-cloak,ng-if="theme.assets.length") {{theme.assets.length}} files, {{theme.assets.size|size}}
+        .pull-right
+          .tab.action(ng-click="settingPanel.toggle()") #[i.fa.fa-cog] #[span settings]
+          .tab.action(ng-show="theme.owner==user.data.key",
+          ng-click="sharePanel.toggle()") #[i.fa.fa-user] #[span share]
+
+
+    .row
+      .col-sm-3
+        #config-panel.plpanel
+          #chart-settings
+            label Theme
+            .chart-config
+              .input-group
+                span.input-group-addon name
+                input.form-control(type="text",ng-model="theme.name",placeholder="Project Name")
+            .chart-config
+              textarea#theme-desc-input.form-control(placeholder="Chart description",
+              ng-model="theme.description",ng-class="{'hidden':editor.fullscreen.toggled}")
+
+            #chart-action.btn-group(style="width:100%")
+              .btn.btn-default.loader(ng-disabled="!theme.name",ng-click="save()",
+              ng-class="{'loading':save.handle}")
+                +SaveFork
+              .dropdown
+                .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
+                  i.fa.fa-download
+                  span.caret
+                ul.dropdown-menu
+                  li.disabled(ng-show="!download.png.url"): a PNG #[img(src="/assets/img/loading.gif")]
+                  li.disabled(ng-show="!download.svg.url"): a SVG #[img(src="/assets/img/loading.gif")]
+                  li.disabled(ng-show="!download.plotdb.url"): a PlotDB.json #[img(src="/assets/img/loading.gif")]
+                  li.disabled(ng-show="download.png.url=='#'"): a PNG #[i.fa.fa-warning.text-danger]
+                  li.disabled(ng-show="download.svg.url=='#'"): a SVG #[i.fa.fa-warning.text-danger]
+                  li(ng-show="download.png.url && download.png.url!='#'")
+                    a(ng-attr-download="{{theme.name}}.png",ng-attr-href="{{download.png.url}}")
+                      | PNG #[small(ng-show="download.png.size") {{download.png.size|size}}]
+                  li(ng-show="download.svg.url && download.svg.url!='#'")
+                    a(ng-attr-download="{{theme.name}}.svg",ng-attr-href="{{download.svg.url}}")
+                      | SVG #[small(ng-show="download.svg.size") {{download.svg.size|size}}]
+                  li(ng-show="download.plotdb.url && download.plotdb.url!='#'")
+                    a(ng-attr-download="{{theme.name}}.plotdb.json",ng-attr-href="{{download.plotdb.url}}")
+                      | PlotDB.json #[small(ng-show="download.plotdb.size") {{download.plotdb.size|size}}]
+          #chart-configs: .ib
+            label Config
+            .pull-right: a(href="#",ng-click="resetConfig()") reset
+            .chart-config(ng-cloak)
+              .btn-group
+                span.input-group-addon Chart
+                .dropdown
+                  .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                    span {{chart.name || 'No Chart'}}
+                    i.fa.fa-caret-down
+                  ul.dropdown-menu
+                    li: a(ng-click="charts.set(null)") No Chart
+                    li(ng-repeat="item in charts.list"): a(ng-click="charts.set(item)") {{item.name}}
+
+            .chart-config(ng-cloak,ng-repeat="(name,v) in chart.config",ng-show="!v._bytheme")
+              .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color'")
+                span.input-group-addon {{v.name || name}}
+                input.form-control(type="text",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value",style="text-align:center")
+              .btn-group(ng-if="v.type[0].name=='Choice'")
+                span.input-group-addon {{v.name || name}}
+                .dropdown
+                  .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                    span {{v.value}}
+                    i.fa.fa-caret-down
+                  ul.dropdown-menu
+                    li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice}}
+
+              //TODO coloredit
+              .btn-group(ng-if="v.type[0].name=='Color'",ng-click="coloredit.edit(v);")
+                span.input-group-addon {{v.name || name}}
+                div(style="display:table-cell;float:left;width:100%;height:100%;border:1px solid #ccc;padding:5px;text-align:center;cursor:pointer;border-top-right-radius:3px;border-bottom-right-radius:3px;")
+                  div(ng-attr-style="background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:24px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v,$index)") &nbsp;
+              //- Palette
+              .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);")
+                span.input-group-addon {{v.name || name}}
+                div(style="display:flex;float:left;width:100%;height:100%;border:1px solid #ccc;padding:5px;text-align:center;cursor:pointer;border-top-right-radius:3px;border-bottom-right-radius:3px;box-shadow:inset 0 1px 1px rgba(0,0,0,.075)")
+                  div(ng-repeat="c in v.value.colors",ng-attr-style="background:{{c.hex}};height:100%;display:inline-block;border-radius:2px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 1px") &nbsp;
+              //- Boolean
+              .btn-group(ng-if="v.type[0].name=='Boolean'")
+                span.input-group-addon {{v.name || name}}
+                .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
+
+      .col-sm-9(style="padding-left:0;position:relative"): .ib(style="position:relative")
+        #code-error(ng-cloak,ng-show="error.msg",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error.msg}}
+        #code-editor(ng-class="editor.class")
+          .closebtn.inner(ng-cloak,ng-click="editor.fullscreen.toggle()",ng-show="editor.fullscreen.toggled")
+          #code-header(ng-class="{'fullscreen':editor.fullscreen.toggled}")
+            .tabs
+              span(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'") #[i.fa.fa-pie-chart] Preview
+              span(ng-class="{'active':vis=='code'}",ng-click="vis='code'") #[i.fa.fa-terminal] Code
+              span(ng-class="{'active':vis=='stylesheet'}",ng-click="vis='stylesheet'") #[i.fa.fa-paint-brush] Stylesheet
+              span(ng-class="{'active':vis=='document'}",ng-click="vis='document'") #[i.fa.fa-code] Document
+              span(ng-class="{'active':vis=='assets'}",ng-click="vis='assets'") #[i.fa.fa-files-o] Assets
+
+          #code-editor-code.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",ng-model="theme.code.content",ui-refrehs="vis",ng-class="{'active':vis=='code'}")
+          #code-editor-style.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",ng-model="theme.style.content",ui-refrehs="vis",ng-class="{'active':vis=='stylesheet'}")
+          #code-editor-doc.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",ng-model="theme.doc.content",ui-refrehs="vis",ng-class="{'active':vis=='document'}")
+          #code-editor-assets.box(ng-cloak,ng-class="{'active':vis=='assets'}")
+            .file.uploader Upload ... #[input(type="file",multiple)]
+            .file(ng-repeat="f in theme.assets",ng-click="assets.preview(f)")
+              .closebtn.outer(ng-click="theme.removeFile(f)")
+              .title {{f.name}}
+              .type #[i {{f.type}}] #[small.pull-right {{(f.content || "").length|size}}]
+          #code-ctrl
+            .btn.btn-default(ng-click="scrollto('#binding-panel')",ng-show="!editor.fullscreen.toggled") Bind Data
+            .btn-group
+              .btn.btn-default(ng-click="editor.color.toggle()") Editor Style
+              .btn.btn-default(ng-click="reset()") Reload
+              .btn.btn-default(ng-click="editor.fullscreen.toggle()")
+                span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave 
+                span
+                  | Fullscreen 
+                  i.glyphicon.glyphicon-fullscreen(ng-show="!editor.fullscreen.toggled")
+                  i.glyphicon.glyphicon-resize-small(ng-show="editor.fullscreen.toggled")
+              .btn.btn-default(ng-click="theme.render();vis='preview'") Preview #[small.hint Alt-Enter]
+
+        #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
+          .closebtn.inner(ng-click="editor.fullscreen.toggle()")
+          .btn.btn-default(style="position:absolute;bottom:5px;left:5px;",ng-show="!editor.fullscreen.toggled",
+          ng-click="scrollto('#binding-panel')") Bind Data
+          .btn-group
+            .btn.btn-default(ng-click="reset()") Reload
+            .btn.btn-default(ng-click="editor.fullscreen.toggle()")
+              span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave 
+              span
+                | Fullscreen 
+                i.glyphicon.glyphicon-fullscreen(ng-show="!editor.fullscreen.toggled")
+                i.glyphicon.glyphicon-resize-small(ng-show="editor.fullscreen.toggled")
+            .btn.btn-default(ng-click="vis='code'") Edit Code #[small.hint Alt-Enter]
+          iframe#chart-renderer(ng-attr-src="{{plotdbRenderer}}",
+          style="width:100%;height:100%;border:none;")
+
+    .row(ng-show="theme.key && theme.owner == user.data.key")
+      .col-sm-12
+        .panel.panel-default
+          .panel-heading: label Danger Zone
+          .panel-body
+            div(style="display:flex")
+              div(style="flex: 1 1 0")
+                .text-center: label Delete
+                p.text-center Permanently delete this theme. Are you sure?
+                .text-center: .btn.btn-danger.loader(ng-click="delete()",ng-class="{'loading':delete.handle}") Yes, Delete it
+              div(ng-cloak,ng-show="theme.type.location=='local'",style="flex: 1 1 0")
+                .text-center: label Migrate
+                p.text-center Permanently move this theme from local to server. Are you sure?
+                .text-center: .btn.btn-warning(ng-click="migrate()") Yes, Move it
+  include /footer.jade

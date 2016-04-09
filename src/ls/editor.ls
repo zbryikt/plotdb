@@ -88,6 +88,7 @@ angular.module \plotDB
             plNotify.send \success, "#{@type} deleted"
             @[@type] = new @service[@type]!
             #TODO check future URL correctness
+            $scope.backup.unguard 10000
             setTimeout (~> window.location.href = "/#{@type}/me/"), 1000
             @delete.handle = false
           .catch (err) ~>
@@ -181,7 +182,7 @@ angular.module \plotDB
       backup: do
         enabled: false
         guard: false
-        unguard: (delay) ->
+        unguard: (delay = 1000) ->
           @guard = false
           $timeout ( ~>
             @guard = true
@@ -695,5 +696,5 @@ angular.module \plotDB
         if @type == \theme => @charts.init!
         if @type == \chart => @themes.init!
 
-    $scope.mode.set \theme
+    $scope.mode.set (if /^\/chart\//.exec(window.location.pathname) => \chart else  \theme)
     $scope.init!

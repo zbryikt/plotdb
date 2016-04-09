@@ -91,6 +91,7 @@ x$.service('themeService', ['$rootScope', '$http', 'IOService', 'sampleTheme', '
   return themeService;
 }));
 x$.controller('themeList', ['$scope', '$http', 'IOService', 'dataService', 'themeService'].concat(function($scope, $http, IOService, dataService, themeService){
+  $scope.loading = true;
   $scope.load = function(theme){
     return window.location.href = themeService.link(theme);
   };

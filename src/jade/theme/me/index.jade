@@ -1,6 +1,6 @@
 extends /base.jade
 block vars
-  - var rootid = "chartview"
+  - var rootid = "themeview"
   - var title = 'plotdb'
   - var description = "plotdb"
   - var thumbnail = "http://plotdb.io/assets/img/thumbnail.jpg"
@@ -10,16 +10,13 @@ block head
 block body
   .spc1
   #root.narrow
-    h3.page-title.text-center My Charts
+    h3.page-title.text-center My Themes
     br
     .sep.dark
-    div(ng-controller="userChartList"): div(ng-controller="chartList")
-      div(style="height:52px")
-      #chart-filter.scroll-stick(data-top="75")
-        include ../widget/search.jade
-      include ../widget/charts.jade
+    div(ng-controller="themeList")
+      include ../widget/themes.jade
       .loader.alone.loading.block-center.lg(ng-class="{'loading': loading}")
-      div(ng-cloak,ng-show="charts.length==0 && !loading")
+      div(ng-cloak,ng-show="themes.length==0 && !loading")
         br
         br
         br

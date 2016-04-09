@@ -177,6 +177,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       return this.target()['delete']().then(function(ret){
         plNotify.send('success', this$.type + " deleted");
         this$[this$.type] = new this$.service[this$.type]();
+        $scope.backup.unguard(10000);
         setTimeout(function(){
           return window.location.href = "/" + this$.type + "/me/";
         }, 1000);
@@ -381,6 +382,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       guard: false,
       unguard: function(delay){
         var this$ = this;
+        delay == null && (delay = 1000);
         this.guard = false;
         return $timeout(function(){
           var ref$;
@@ -1349,7 +1351,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     }
   });
-  $scope.mode.set('theme');
+  $scope.mode.set(/^\/chart\//.exec(window.location.pathname) ? 'chart' : 'theme');
   return $scope.init();
 }));
 function import$(obj, src){

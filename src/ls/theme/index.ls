@@ -666,6 +666,7 @@ angular.module \plotDB
   ..controller \themeList,
   <[$scope $http IOService dataService themeService]> ++
   ($scope, $http, IO-service, data-service, theme-service) ->
+    $scope.loading = true
     $scope.load = (theme) -> window.location.href = theme-service.link theme
     $scope.load-list = ->
       $scope.loading = true
