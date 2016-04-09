@@ -7,7 +7,7 @@
       div
         ul.nav.navbar-nav
           li#nav-chart.dropdown
-            a.dropdown-toggle(href="#",data-toggle="dropdown") CHARTS #[span.caret]
+            a.dropdown-toggle(href="#",data-toggle="dropdown") CHARTS#[span.caret]
             ul.dropdown-menu
               li: a(href="/chart/explore/") Explore
               li: a(ng-cloak,href="/chart/me/",ng-show="user.data") My Charts
@@ -16,7 +16,7 @@
               li: a(href="/chart/?demo") Demo Chart
 
           li#nav-dataset.dropdown
-            a.dropdown-toggle(href="#",data-toggle="dropdown") DATASET #[span.caret]
+            a.dropdown-toggle(href="#",data-toggle="dropdown") DATASET#[span.caret]
             ul.dropdown-menu
               //-li: a(href="/dataset/explore/") Explore
               li: a(href="/dataset/me/",ng-cloak,ng-show="user.data") My Dataset
@@ -24,7 +24,7 @@
               li: a(href="/dataset/") New Dataset
 
           li#nav-theme.dropdown
-            a.dropdown-toggle(href="#",data-toggle="dropdown") THEME #[span.caret]
+            a.dropdown-toggle(href="#",data-toggle="dropdown") THEME#[span.caret]
             ul.dropdown-menu
               li: a(href="/theme/explore/") Explore
               li: a(href="/theme/me.html",ng-cloak,ng-show="user.data") My Theme
@@ -32,7 +32,10 @@
               li: a(href="/theme/") New Theme
 
         ul.nav.navbar-nav.pull-right
-          li#nav-theme: a(href="/chart/request/"): small Request a Chart
+          li#nav-request: a(href="/chart/request/")
+            i.fa.fa-comment
+            | &nbsp;
+            span: small Request a Chart
           //-li#nav-theme: a(href="/doc/"): small Dev Guide
           //-li#nav-localdata: a(href="/",ng-cloak) {{dataService.local.size|size}}, {{dataService.local.rows}} Rows
           li(ng-cloak,ng-show="!user.data"): a#nav-login(href="#",ng-click="auth.show = !!!auth.show")
@@ -48,6 +51,4 @@
               li: a(href="/me/edit/") Settings
               li.divider
               li: a(href="#",ng-click="auth.logout()") Logout
-
-          li: a(href="#"): i.fa.fa-comment(style="opacity: 0.5")
 

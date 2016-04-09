@@ -1,5 +1,5 @@
-@import basic
-@import vars
+@import '../basic'
+@import '../vars'
 
 // structure
 // #nav-top > nav.navbar.navbar-default > .container-fluid
@@ -15,7 +15,7 @@
   position: fixed
   transition all 0.3s ease-out
   //border-bottom: 1px solid #999
-  border-bottom: 1px solid #ccc
+  //border-bottom: 1px solid #ccc
   box-shadow: 0 2px 5px rgba(0,0,0,0.1)
   background: #fff
   color: #444
@@ -55,29 +55,24 @@
   .navbar-nav > li.open > a
     background: #ed1d78
     color: #fff
-  .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus
+  .navbar-nav .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus
     color: #fff
     background: #ed1d78
 
-#nav-top.dim
-  height: 50px
-  background: rgba(255,255,255,0.9)
-
-#nav-top.dim nav.navbar-default
-  .navbar-nav > li > a
-    padding-top: 15px
-    padding-bottom: 15px
-  .navbar-nav > li > div
-    padding-top: 13px
-    padding-bottom: 13px
-  .navbar-brand
-    padding: 8px 10px 3px
-    height: 46px
-  #nav-localdata > a
-    padding-top: 3px
-    padding-bottom: 0px
-    &:before
-      padding: 0 3px
+@media (min-width: 800px)
+  #nav-top.dim
+    height: 50px
+    background: rgba(255,255,255,0.9)
+  #nav-top.dim nav.navbar-default
+    .navbar-nav > li > a
+      padding-top: 15px
+      padding-bottom: 15px
+    .navbar-nav > li > div
+      padding-top: 13px
+      padding-bottom: 13px
+    .navbar-brand
+      padding: 8px 10px 3px
+      height: 46px
 
 
 #nav-top li.dropdown
@@ -114,7 +109,7 @@
 #nav-top .navbar-default .navbar-nav > .open > a
   background: rgba(0,0,0,0.1)
 
-#nav-login i.fa
+#nav-login i.fa, #nav-request i.fa
   display: none
 
 #nav-top nav.navbar-default li#nav-localdata > a
@@ -159,68 +154,65 @@
     padding: 5px
     display: inline-block
     font-size: 12px
-#subnav-top.dim
-  top: 50px
-  background: rgba(255,255,255,0.9)
-  border-bottom: 1px solid #ccc
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2)
+    
+@media (min-width: 800px)
+  #subnav-top.dim
+    top: 50px
+    background: rgba(255,255,255,0.9)
+    border-bottom: 1px solid #ccc
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2)
 
+@media (max-width: 1240px)
+  #nav-top nav.navbar-default
+    max-width: initial
+    margin: 0 20px
 
 @media (max-width: 800px)
   #nav-top
     height: 46px
   #subnav-top
     top: 46px
-  .navbar-brand
-    height: auto
   #nav-top .navbar-header
-    display: none
-  #nav-top nav.navbar-default .navbar-nav li#nav-localdata > a
+    margin: 0 5px 0 0
+    float: left
+  #nav-top nav.navbar-default .navbar-brand
+    height: auto
+    padding: 5px 0
+    margin: 0
+  #nav-top .container-fluid
+    padding: 0
+  #nav-top nav.navbar-default
+    margin: 0 10px
+    min-height: initial
+  #nav-top nav.navbar-default .navbar-nav > li > div
+    padding: 10px 5px
+  #nav-top nav.navbar-default .navbar-nav li > a
     font-size: 12px
-    padding-bottom: 5px
-    padding-top: 6px
+    padding: 14px 12px 12px
+  #nav-top nav.navbar-default .navbar-nav .dropdown-menu li > a
+    font-size: 13px
+    padding: 5px 10px
+    color: #333
 
 
-@media (max-width: 480px)
-  #nav-login
+@media (max-width: 800px)
+  #nav-login, #nav-request
     span
       display: none
     i.fa
       display: inline
+      font-size: 1.2em
+  #subnav-top
+    display: none
 
 @media (max-width: 480px)
   #nav-top nav.navbar-default .navbar-nav > li > a
     font-size: 12px
-
-#nav-top nav.navbar-default
-  @media (max-width: 1200px)
-    max-width: 800px
-  @media (max-width: 767px)
-    margin-top: 5px
-    margin-bottom: 0
-    min-height: initial
-    border-bottom: 1px solid #e2e2e2
-    .navbar-brand
-      padding-left: 8px
-      padding-right: 8px
-      font-size: 1.2em
-      line-height: 1.3em
-      padding-bottom: 0
-
-@media (max-width: 682px)
-  #nav-top.dim
-    height: 45px
-  #subnav-top.dim
-    top: 45px
-  #nav-top .navbar-nav
-    & > li > a
-      padding-left: 8px
-      padding-right: 8px
-      font-size: 0.9em
-    & > li.heart
-      display: none
-  #nav-localdata
-    display: none
+    padding: 14px 6px 12px
+  #nav-top nav.navbar-default .navbar-brand
+    padding: 9px 0
+    img
+      width: 36px
 
 #nav-top
   color: #eee
@@ -231,19 +223,3 @@
 
 #nav-top.dim
   background: rgba(0,0,0,0.8)
-
-
-#chart-explore-bar li.dropdown a
-  padding: 5px 15px
-  color: #222
-  small
-    display: block
-    font-size: 0.7em
-    line-height: 1.3em
-    color: #777
-  span
-    line-height: 1.5em
-
-#chart-explore-bar ul.dropdown-menu li.active a
-  color: #fff
-  background: #ed1d78
