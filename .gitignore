@@ -5,3 +5,5 @@ secret.ls
 static/s/
 !.gitignore
 npm-debug.log
+engine/share/config.ls
+static/js/config.js
