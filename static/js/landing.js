@@ -68,5 +68,6 @@ $(document).ready(function(){
       return speed = 0.2;
     }
   };
-  return force.on('tick', tick);
+  force.on('tick', tick);
+  return force.start();
 });

@@ -39,4 +39,4 @@ tick = ->
   speed := speed * 0.994
   if speed < 0.2 => speed := 0.2
 force.on \tick, tick
-#force.start!
+force.start!
