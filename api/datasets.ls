@@ -8,7 +8,7 @@ engine.router.api.get "/dataset/", (req, res) ->
   #TODO consider general dataset api
   if !req.user => return res.json []
   io.query([
-    "select *,users.displayname as ownername from datasets,users"
+    "select datasets.*,users.displayname as ownername from datasets,users"
     "where datasets.owner=users.key and datasets.owner = $1"].join(" "), [req.user.key]
   )
     .then (r = {}) ->
