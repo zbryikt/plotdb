@@ -8,17 +8,29 @@ block vars
   - var url = "http://plotdb.com/"
 block head
 block body
-  span &nbsp;
-  #root.narrow
+  .spc1
+  .page-header: .inner
     include ../widget/usage.jade
-    h3.page-title My Dataset
-    .entries
+    .title My Dataset
+    //-.desc 35 public charts available for re-user.
+    .desc
+      .entries
+        .entry
+          i.fa.fa-database
+          span(ng-cloak) 15 datasets
+        .entry
+          i.fa.fa-tag
+          span(ng-cloak) 37 fields
+  #root.narrow.with-header
+    //include ../widget/usage.jade
+    //-h3.page-title My Dataset
+    //-.entries
       .entry
         i.fa.fa-database
         span(ng-cloak) 15 datasets
       .entry
         i.fa.fa-tag
         span(ng-cloak) 37 fields
-    .sep.break.dark
+    //-.sep.break.dark
     include list.jade
   include ../../footer.jade

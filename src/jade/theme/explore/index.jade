@@ -8,8 +8,11 @@ block vars
   - var url = "http://plotdb.com/"
 block head
 block body
-  span &nbsp;
-  #root(style="max-width:1200px;margin-left:auto;margin-right:auto;",ng-controller="themeList")
+  .spc1
+  .page-header: .inner
+    .title Explore Themes
+    .desc 35 public themes available for re-user.
+  #root.narrow.with-header(ng-controller="themeList")
     .charts
       .chart(ng-repeat="theme in themes",ng-attr-style="display:inline-block;flex:1 1 {{theme.width}}px",ng-click="load(theme)")
         .chart-img: .ib(ng-attr-style="background-image:url({{theme.thumbnail}})")

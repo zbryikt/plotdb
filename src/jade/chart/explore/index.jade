@@ -9,7 +9,10 @@ block vars
 block head
 block body
   .spc1
-  #root(style="max-width:1200px;margin-left:auto;margin-right:auto;",ng-controller="chartList")
+  .page-header: .inner
+    .title Explore Viz
+    .desc 35 public charts available for re-user.
+  #root.narrow.with-header(ng-controller="chartList")
     div(style="height:60px")
     #chart-filter.scroll-stick(data-top="65")
       include ../widget/search.jade

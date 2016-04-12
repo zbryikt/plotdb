@@ -9,10 +9,10 @@ block vars
 block head
 block body
   .spc1
-  #root.narrow
-    h3.page-title.text-center My Charts
-    br
-    .sep.dark
+  .page-header: .inner
+    .title My Charts
+    .desc 35 public charts available for re-user.
+  #root.narrow.with-header
     div(ng-controller="userChartList"): div(ng-controller="chartList")
       div(style="height:52px")
       #chart-filter.scroll-stick(data-top="75")

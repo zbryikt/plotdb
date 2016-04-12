@@ -9,10 +9,10 @@ block vars
 block head
 block body
   .spc1
-  #root.narrow
-    h3.page-title.text-center My Themes
-    br
-    .sep.dark
+  .page-header: .inner
+    .title My Themes
+    .desc 35 public themes available for re-user.
+  #root.narrow.with-header
     div(ng-controller="themeList")
       include ../widget/themes.jade
       .loader.alone.loading.block-center.lg(ng-class="{'loading': loading}")
