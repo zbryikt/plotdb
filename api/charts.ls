@@ -16,7 +16,7 @@ engine.router.api.get "/chart/", (req, res) ->
   equal = do
     dimlen: req.query.dim
     owner: req.query.owner
-  if !equal.owner or !req.user or (req.query.owner and req.query.owner != req.user.key) =>
+  if !equal.owner or !req.user or (req.query.owner and parseInt(req.query.owner) != req.user.key) =>
     equal.searchable = true
   overlap = [[k,v] for k,v of overlap].filter(->it.1 and it.1.length)
   equal = [[k,v] for k,v of equal].filter(->it.1)

@@ -16,7 +16,7 @@ angular.module \plotDB
     require: <[]>
     restrict: \A
     scope: do
-      model: \=ngModel
+      model: \=ngData
       istag: \@istag
     link: (s,e,a,c) ->
       changed = ->
@@ -25,15 +25,15 @@ angular.module \plotDB
         [cval,nval] = [cval,nval].map -> (it or []).join(",")
         cval != nval
       config = {}
-      if s.istag => config <<< tags: true, tokenSeparators: [',']
-      $(e).select2!
+      if s.istag => config <<< tags: true, tokenSeparators: [',',' ']
+      $(e).select2 config
       $(e).select2 config .on \change, ~>
         if changed! => setTimeout (-> s.$apply -> s.model = $(e)val!),0
       s.$watch 'model', (vals) ~>
-        html = ""
         # escaped html from jquery.
         # jquery.val won't help select2 build option tags so we have to do this by ourselves
         if config.tags =>
+          html = ""
           for val in (vals or []) => html += $("<option></option>").val(val).text(val).0.outerHTML
           $(e).html(html)
         if changed! => setTimeout (-> $(e).val(vals).trigger(\change) ),0

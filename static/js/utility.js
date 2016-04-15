@@ -58,7 +58,7 @@ x$.directive('ngselect2', function(){
     require: [],
     restrict: 'A',
     scope: {
-      model: '=ngModel',
+      model: '=ngData',
       istag: '@istag'
     },
     link: function(s, e, a, c){
@@ -77,9 +77,9 @@ x$.directive('ngselect2', function(){
       config = {};
       if (s.istag) {
         config.tags = true;
-        config.tokenSeparators = [','];
+        config.tokenSeparators = [',', ' '];
       }
-      $(e).select2();
+      $(e).select2(config);
       $(e).select2(config).on('change', function(){
         if (changed()) {
           return setTimeout(function(){
@@ -91,8 +91,8 @@ x$.directive('ngselect2', function(){
       });
       return s.$watch('model', function(vals){
         var html, i$, ref$, len$, val;
-        html = "";
         if (config.tags) {
+          html = "";
           for (i$ = 0, len$ = (ref$ = vals || []).length; i$ < len$; ++i$) {
             val = ref$[i$];
             html += $("<option></option>").val(val).text(val)[0].outerHTML;
