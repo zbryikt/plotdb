@@ -185,9 +185,12 @@ x$.controller('userChartList', ['$scope', '$http', 'dataService', 'chartService'
   owner = (that = /^\/user\/([^/]+)/.exec(window.location.pathname))
     ? that[1]
     : $scope.user.data ? $scope.user.data.key : null;
-  return $scope.q = {
+  $scope.q = {
     owner: owner
   };
+  if ($scope.user.data && owner === $scope.user.data.key) {
+    return $scope.showPub = true;
+  }
 }));
 x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, $timeout, IOService, Paging, dataService, chartService, plNotify){
   var map, k, ref$, v;

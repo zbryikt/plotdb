@@ -1,12 +1,13 @@
 .charts(ng-cloak)
   .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
-    .chart-ribon(ng-class="{'private': !chart.searchable, 'public': chart.searchable}")
+    //-.chart-ribon(ng-class="{'private': !chart.searchable, 'public': chart.searchable}")
     a.chart-img(ng-attr-href="{{link(chart)}}",style="display:block")
       .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime|timestamp}})")
     .chart-desc
       a.title(ng-attr-href="{{link(chart)}}")
         //-.pull-right.grayed #[i.fa.fa-dot-circle-o] 5
         span {{chart.name}}
+        .label.label-success.pull-right(ng-show="chart.searchable && showPub") published
       .desc {{chart.description || 'check it yourself!'}}
     .labels
       .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
@@ -16,3 +17,4 @@
       .favorite(ng-click="like(chart)", ng-class="{'active':user.data && user.data.likes.chart[chart.key]}") #[i.fa.fa-heart] {{chart.likes || 0}}
   .flexend
   #list-end.text-center: span(ng-cloak,ng-show="paging.end") this is the end :)
+  .loader.alone.sm.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")

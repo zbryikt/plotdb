@@ -674,6 +674,16 @@ li.disabled a:hover {
   background-size: cover;
   background: url("/assets/img/loading-lg.svg") center center no-repeat;
 }
+.loader.alone.sm {
+  width: 32px;
+  height: 32px;
+}
+.loader.alone.sm:after {
+  width: 32px;
+  height: 32px;
+  background-size: cover;
+  background: url("/assets/img/loading-sm.svg") center center no-repeat;
+}
 .btn.loader {
   position: relative;
   padding-left: 35px;

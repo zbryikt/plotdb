@@ -91,6 +91,7 @@ angular.module \plotDB
     owner = if /^\/user\/([^/]+)/.exec(window.location.pathname) => that.1
     else => (if $scope.user.data => $scope.user.data.key else null)
     $scope.q = {owner}
+    if $scope.user.data and owner == $scope.user.data.key => $scope.showPub = true
   ..controller \chartList,
   <[$scope $http $timeout IOService Paging dataService chartService plNotify]> ++
   ($scope, $http, $timeout, IO-service, Paging, data-service, chart-service, plNotify) ->
