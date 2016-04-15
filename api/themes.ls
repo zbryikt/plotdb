@@ -5,11 +5,16 @@ themetype = model.type.theme
 
 engine.router.api.get "/theme/", (req, res) ->
   #TODO consider general dataset api 
+  offset = req.query.offset or 0
+  limit = (req.query.limit or 20) <? 100
   if !req.user => return res.send []
-  io.query [
-    'select users.displayname as ownername,themes.*'
-    "from themes,users where users.key = themes.owner and themes.owner = #{req.user.key}"
-  ].join(" ")
+  io.query(
+    ["select users.displayname as ownername,themes.*"
+     "from themes,users where users.key = themes.owner and themes.owner = $1"
+     " offset $2 limit $3"
+    ].join(" "),
+    [req.user.key, offset, limit]
+  )
     .then -> res.send it.rows
     .catch ->
       console.log e

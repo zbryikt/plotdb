@@ -189,8 +189,8 @@ x$.controller('userChartList', ['$scope', '$http', 'dataService', 'chartService'
     owner: owner
   };
 }));
-x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, $timeout, IOService, dataService, chartService, plNotify){
-  var Paging, map, k, ref$, v;
+x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, $timeout, IOService, Paging, dataService, chartService, plNotify){
+  var map, k, ref$, v;
   $scope.loading = true;
   $scope.charts = [];
   $scope.q = {
@@ -218,92 +218,35 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'dataSer
   $scope.link = function(it){
     return chartService.link(it);
   };
-  Paging = {
-    session: 0,
-    offset: 0,
-    limit: 20,
-    end: false,
-    loading: false,
-    handle: null,
-    load: function(load, reset){
-      var session, this$ = this;
-      reset == null && (reset = false);
-      if (reset) {
-        this.offset = 0;
-        this.end = false;
-        this.session = Math.random() + "";
-      } else if (this.loading) {
-        return;
-      }
-      session = this.session;
-      if (this.handle) {
-        $timeout.cancel(this.handle);
-      }
-      this.loading = true;
-      this.handle = null;
-      return load(this).then(function(ret){
-        return $scope.$apply(function(){
-          if (session !== this$.session) {
-            return;
-          }
-          if (!ret || ret.length === 0) {
-            this$.end = true;
-          }
-          this$.loading = false;
-          this$.offset = this$.offset + ret.length;
-          return ret;
-        });
-      });
-    }
-  };
-  $scope.loadList = function(reset){
+  $scope.paging = Paging;
+  $scope.loadList = function(delay, reset){
+    delay == null && (delay = 1000);
     reset == null && (reset = false);
-    $scope.loading = true;
     return Paging.load(function(){
       var payload, ref$;
-      payload = import$((ref$ = {}, ref$.offset = Paging.offset, ref$.limit = Paging.limit, ref$), $scope.q);
+      payload = import$(import$((ref$ = {}, ref$.offset = Paging.offset, ref$.limit = Paging.limit, ref$), $scope.q), $scope.qLazy);
       return IOService.listRemotely({
         name: 'chart'
       }, payload);
-    }, reset).then(function(ret){
+    }, delay, reset).then(function(ret){
+      var this$ = this;
       return $scope.$apply(function(){
-        var hit, i$, to$, i, d, width;
-        $scope.charts = ($scope.charts || []).concat(ret.map(function(it){
+        var data;
+        data = (ret || []).map(function(it){
           return new chartService.chart(it);
-        }));
-        hit = false;
-        for (i$ = 0, to$ = $scope.charts.length; i$ < to$; ++i$) {
-          i = i$;
-          d = $scope.charts[i];
-          width = 320;
-          if (Math.random() > 0.6 && !hit) {
-            width = Math.random() > 0.8 ? 960 : 640;
-            hit = true;
-          }
-          if (i % 3 === 2) {
-            if (!hit) {
-              width = 640;
-            }
-            hit = false;
-          }
-          d.width = width;
-        }
-        $scope.loading = false;
-        return console.log($scope.charts.length + " charts loaded");
+        });
+        Paging.flexWidth(data);
+        return $scope.charts = (reset
+          ? []
+          : $scope.charts).concat(data);
       });
     });
   };
   $scope.$watch('q', function(){
-    return $scope.loadList(true);
+    return $scope.loadList(500, true);
   }, true);
   $scope.$watch('qLazy', function(){
-    if ($scope.lazyload) {
-      $timeout.cancel($scope.lazyload);
-    }
-    return $scope.lazyload = $timeout(function(){
-      $scope.lazyload = null;
-      return $scope.loadList(true);
-    }, 1000);
+    return $scope.loadList(1000, true);
   }, true);
   $scope.like = function(chart){
     var mylikes, ref$, ref1$, v;
@@ -330,15 +273,9 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'dataSer
       }
     }
   }
-  return window.addEventListener('scroll', function(){
-    if (document.body.scrollTop + window.innerHeight + 50 > $('#list-end').offset().top) {
-      if (!Paging.loading && !Paging.end) {
-        return $scope.$apply(function(){
-          return $scope.loadList();
-        });
-      }
-    }
-  });
+  return Paging.loadOnScroll(function(){
+    return $scope.loadList();
+  }, $('#list-end'));
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

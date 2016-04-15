@@ -92,8 +92,8 @@ angular.module \plotDB
     else => (if $scope.user.data => $scope.user.data.key else null)
     $scope.q = {owner}
   ..controller \chartList,
-  <[$scope $http $timeout IOService dataService chartService plNotify]> ++
-  ($scope, $http, $timeout, IO-service, data-service, chart-service, plNotify) ->
+  <[$scope $http $timeout IOService Paging dataService chartService plNotify]> ++
+  ($scope, $http, $timeout, IO-service, Paging, data-service, chart-service, plNotify) ->
     $scope.loading = true
     $scope.charts = []
     $scope.q = do
@@ -125,51 +125,19 @@ angular.module \plotDB
         0 1 2 3 4 5 "> 5"
       ]
     $scope.link = -> chart-service.link it
-    Paging = do
-      session: 0, offset: 0, limit: 20, end: false, loading: false
-      handle: null
-      load: (load, reset = false) ->
-        if reset => @ <<< {offset: 0, end: false, session: "#{Math.random!}"}
-        else if @loading => return
-        session = @session
-        if @handle => $timeout.cancel @handle
-        @ <<< {loading: true, handle: null}
-        load @ .then (ret) ~>
-          <~ $scope.$apply
-          if session != @session => return
-          if !ret or ret.length == 0 => @end = true
-          @ <<< loading: false, offset: @offset + ret.length
-          return ret
-
-    $scope.load-list = (reset = false) ->
-      $scope.loading = true
+    $scope.paging = Paging
+    $scope.load-list = (delay = 1000, reset = false) ->
       Paging.load((->
-        payload = {} <<< Paging{offset,limit} <<< $scope.q
+        payload = {} <<< Paging{offset,limit} <<< $scope.q <<< $scope.q-lazy
         IO-service.list-remotely {name: \chart}, payload
-      ), reset).then (ret) -> $scope.$apply ->
-        $scope.charts = ($scope.charts or []) ++ (ret.map -> new chartService.chart it)
-        hit = false
-        for i from 0 til $scope.charts.length =>
-          d = $scope.charts[i]
-          width = 320
-          if Math.random! > 0.6 and !hit =>
-            width = (if Math.random! > 0.8 => 960 else 640)
-            hit = true
-          if i % 3 == 2 =>
-            if !hit => width = 640
-            hit = false
-          d.width = width #if Math.random() > 0.8 => 640 else 320
-        $scope.loading = false
-        console.log "#{$scope.charts.length} charts loaded"
+      ), delay, reset).then (ret) -> $scope.$apply ~>
+        data = (ret or []).map -> new chartService.chart it
+        Paging.flex-width data
+        $scope.charts = (if reset => [] else $scope.charts) ++ data
 
-    $scope.$watch 'q', (-> $scope.load-list true), true
-    $scope.$watch 'qLazy', (->
-      if $scope.lazyload => $timeout.cancel $scope.lazyload
-      $scope.lazyload = $timeout (->
-        $scope.lazyload = null
-        $scope.load-list true
-      ), 1000
-    ), true
+    $scope.$watch 'q', (-> $scope.load-list 500, true), true
+    $scope.$watch 'qLazy', (-> $scope.load-list 1000, true), true
+
     $scope.like = (chart) ->
       if !chart => return
       mylikes = $scope.user.data.{}likes.{}chart
@@ -181,6 +149,4 @@ angular.module \plotDB
     if window.location.search =>
       map = d3.nest!key(->it.0).map(window.location.search.replace(\?,'').split(\&).map(->it.split \=))
       for k,v of $scope.q => if map[k] => $scope.q[k] = map[k].0.1
-    window.addEventListener \scroll, ->
-      if document.body.scrollTop + window.innerHeight + 50 > $(\#list-end).offset!top =>
-        if !Paging.loading and !Paging.end => $scope.$apply -> $scope.load-list!
+    Paging.load-on-scroll (-> $scope.load-list!), $(\#list-end)

@@ -90,7 +90,7 @@ x$.service('themeService', ['$rootScope', '$http', 'IOService', 'sampleTheme', '
   themeService = baseService.derive('theme', service, object);
   return themeService;
 }));
-x$.controller('themeList', ['$scope', '$http', 'IOService', 'dataService', 'themeService'].concat(function($scope, $http, IOService, dataService, themeService){
+x$.controller('themeList', ['$scope', '$http', 'IOService', 'Paging', 'dataService', 'themeService'].concat(function($scope, $http, IOService, Paging, dataService, themeService){
   $scope.loading = true;
   $scope.load = function(theme){
     return window.location.href = themeService.link(theme);
@@ -98,46 +98,34 @@ x$.controller('themeList', ['$scope', '$http', 'IOService', 'dataService', 'them
   $scope.link = function(it){
     return themeService.link(it);
   };
-  $scope.paging = {
-    session: 0,
-    offset: 0,
-    limit: 20,
-    end: false
-  };
-  $scope.loadList = function(){
-    $scope.loading = true;
-    return IOService.listRemotely({
-      name: 'theme'
-    }, {}).then(function(ret){
+  $scope.paging = Paging;
+  $scope.loadList = function(delay, reset){
+    delay == null && (delay = 1000);
+    reset == null && (reset = false);
+    return Paging.load(function(){
+      var payload, ref$;
+      payload = (ref$ = {}, ref$.offset = Paging.offset, ref$.limit = Paging.limit, ref$);
+      return IOService.listRemotely({
+        name: 'theme'
+      }, payload);
+    }, delay, reset).then(function(ret){
       var this$ = this;
       return $scope.$apply(function(){
-        var hit, i$, to$, i, d, width, results$ = [];
-        $scope.themes = ret.map(function(it){
+        var data;
+        data = (ret || []).map(function(it){
           return new themeService.theme(it);
         });
-        $scope.loading = false;
-        hit = false;
-        for (i$ = 0, to$ = $scope.themes.length; i$ < to$; ++i$) {
-          i = i$;
-          d = $scope.themes[i];
-          width = 320;
-          if (Math.random() > 0.6 && !hit) {
-            width = Math.random() > 0.8 ? 960 : 640;
-            hit = true;
-          }
-          if (i % 3 === 2) {
-            if (!hit) {
-              width = 640;
-            }
-            hit = false;
-          }
-          results$.push(d.width = width);
-        }
-        return results$;
+        Paging.flexWidth(data);
+        return $scope.themes = (reset || !$scope.themes
+          ? []
+          : $scope.themes).concat(data);
       });
     });
   };
-  return $scope.loadList();
+  $scope.loadList(0, true);
+  return Paging.loadOnScroll(function(){
+    return $scope.loadList();
+  }, $('#list-end'));
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

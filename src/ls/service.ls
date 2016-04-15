@@ -1,4 +1,41 @@
 angular.module \plotDB
+  ..service \Paging, <[$rootScope $timeout]> ++ ($rootScope, $timeout) ->
+    Paging = do
+      session: 0, offset: 0, limit: 20, end: false, loading: false
+      handle: null
+      load-on-scroll: (cb, beacon) ->
+        window.addEventListener \scroll, ->
+          if document.body.scrollTop + window.innerHeight + 50 > $(beacon).offset!top =>
+            if !@loading and !@end => $rootScope.$apply ~> cb!
+
+      load: (load, lazy = 500, reset = false) -> new Promise (res, rej) ~>
+        if @loading => return res []
+        if @handle => $timeout.cancel @handle
+        @loading = true
+        @handle = $timeout (~>
+          if reset => @ <<< {offset: 0, end: false, session: "#{Math.random!}"}
+          session = @session
+          @handle = null
+          load @ .then (ret) ~> $rootScope.$apply ~>
+            if session != @session => res []
+            if !ret or ret.length == 0 => @end = true
+            @ <<< loading: false, offset: @offset + ret.length
+            res ret
+        ), lazy
+      flex-width: (list) ->
+        hit = false
+        for i from 0 til list.length =>
+          d = list[i]
+          width = 320
+          if Math.random! > 0.6 and !hit =>
+            width = (if Math.random! > 0.8 => 960 else 640)
+            hit = true
+          if i % 3 == 2 =>
+            if !hit => width = 640
+            hit = false
+          d.width = width #if Math.random() > 0.8 => 640 else 320
+
+
   ..service \baseService, <[$rootScope IOService eventBus]> ++ ($rootScope, IOService, eventBus) ->
     service-skeleton = do
       type: null # setup once inherited

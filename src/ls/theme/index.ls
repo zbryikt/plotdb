@@ -664,31 +664,20 @@ angular.module \plotDB
     $scope.init!
 */
   ..controller \themeList,
-  <[$scope $http IOService dataService themeService]> ++
-  ($scope, $http, IO-service, data-service, theme-service) ->
+  <[$scope $http IOService Paging dataService themeService]> ++
+  ($scope, $http, IO-service, Paging, data-service, theme-service) ->
     $scope.loading = true
     $scope.load = (theme) -> window.location.href = theme-service.link theme
     $scope.link = -> theme-service.link it
-    $scope.paging = do
-      session: 0
-      offset: 0
-      limit: 20
-      end: false
-    $scope.load-list = ->
-      $scope.loading = true
-      (ret) <- IO-service.list-remotely {name: \theme}, {} .then
-      <~ $scope.$apply
-      $scope.themes = ( ret ).map -> new themeService.theme(it)
-      $scope.loading = false
-      hit = false
-      for i from 0 til $scope.themes.length =>
-        d = $scope.themes[i]
-        width = 320
-        if Math.random! > 0.6 and !hit =>
-          width = (if Math.random! > 0.8 => 960 else 640)
-          hit = true
-        if i % 3 == 2 =>
-          if !hit => width = 640
-          hit = false
-        d.width = width
-    $scope.load-list!
+    $scope.paging = Paging
+    $scope.load-list = (delay = 1000, reset = false) ->
+      Paging.load((->
+        payload = {} <<< Paging{offset,limit} # <<< $scope.q <<< $scope.q-lazy
+        IO-service.list-remotely {name: \theme}, payload
+      ), delay, reset).then (ret) -> $scope.$apply ~>
+        data = (ret or []).map -> new themeService.theme it
+        Paging.flex-width data
+        $scope.themes = (if reset or !$scope.themes => [] else $scope.themes) ++ data
+
+    $scope.load-list 0, true
+    Paging.load-on-scroll (-> $scope.load-list!), $(\#list-end)
