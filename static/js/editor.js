@@ -93,7 +93,6 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return results$;
         }.call(this)).length;
       }
-      console.log(1234);
       return this.target().save().then(function(ret){
         return this$.$apply(function(){
           var link;

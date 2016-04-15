@@ -1,5 +1,5 @@
 require! <[fs]>
-require! <[../engine/aux ../engine/share/model/]>
+require! <[../engine/aux ../engine/share/model/ ./thumb]>
 (engine,io) <- (->module.exports = it)  _
 
 charttype = model.type.chart
@@ -16,7 +16,7 @@ engine.router.api.get "/chart/", (req, res) ->
   equal = do
     dimlen: req.query.dim
     owner: req.query.owner
-  if !equal.owner or !req.user or (req.query.owner != req.user.key) =>
+  if !equal.owner or !req.user or (req.query.owner and req.query.owner != req.user.key) =>
     equal.searchable = true
   overlap = [[k,v] for k,v of overlap].filter(->it.1 and it.1.length)
   equal = [[k,v] for k,v of equal].filter(->it.1)
@@ -56,27 +56,17 @@ engine.router.api.get "/chart/:id", (req, res) ->
       console.error it.stack
       return aux.r403 res
 
-dethumb = (chart) ->
-  if !chart.thumbnail => return null
-  thumb = chart.thumbnail.split('base64,')
-  ret = /data:([^;]+);/.exec(thumb.0)
-  if !ret => return null
-  delete chart.thumbnail
-  [type, thumb] = [ret.1, new Buffer(thumb.1, 'base64')]
-
-#TODO save thumbnail
 engine.router.api.post "/chart/", (req, res) ->
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
   data = req.body <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
-  [type, thumb] = dethumb data
-  if data.key => fs.write-file "static/s/chart/#{data.key}.png", thumb
   ret = charttype.lint data
   if ret.0 => return aux.r400 res, ret
   data = charttype.clean data
   pairs = io.aux.insert.format charttype, data
   delete pairs.key
   pairs = io.aux.insert.assemble pairs
+  thumb.save 'chart', data
   io.query "insert into charts #{pairs.0} values #{pairs.1} returning key", pairs.2
     .then (r={}) ->
       key = r.[]rows.0.key
@@ -86,7 +76,6 @@ engine.router.api.post "/chart/", (req, res) ->
       console.error it.stack
       aux.r403 res
 
-#TODO save thumbnail
 engine.router.api.put "/chart/:id", (req, res) ~>
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
@@ -101,14 +90,13 @@ engine.router.api.put "/chart/:id", (req, res) ~>
         owner: req.user.key
         key: req.params.id
         modifiedtime: new Date!toUTCString!
-      [type, thumb] = dethumb data
-      if data.key => fs.write-file "static/s/chart/#{data.key}.png", thumb
       ret = charttype.lint(data)
       if ret.0 => return aux.r400 res, ret
       data := charttype.clean data
       pairs = io.aux.insert.format charttype, data
       <[key createdtime]>.map -> delete pairs[it]
       pairs = io.aux.insert.assemble pairs
+      thumb.save 'chart', data
       io.query(
         "update charts set #{pairs.0} = #{pairs.1} where key = $#{pairs.2.length + 1}",
         pairs.2 ++ [req.params.id]

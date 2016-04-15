@@ -39,7 +39,6 @@ angular.module \plotDB
           if key => @target! <<< {parent: key}
         refresh = if !@target!.key => true else false
         if @target!.dimension => @target!.dimlen = [k for k of @target!.dimension or {}].length
-        console.log 1234
         @target!.save!
           .then (ret) ~>
             <~ @$apply

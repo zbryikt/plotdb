@@ -185,10 +185,9 @@ x$.controller('userChartList', ['$scope', '$http', 'dataService', 'chartService'
   owner = (that = /^\/user\/([^/]+)/.exec(window.location.pathname))
     ? that[1]
     : $scope.user.data ? $scope.user.data.key : null;
-  $scope.q = {
+  return $scope.q = {
     owner: owner
   };
-  return console.log($scope.q);
 }));
 x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, $timeout, IOService, dataService, chartService, plNotify){
   var map, k, ref$, v;
@@ -220,18 +219,23 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'dataSer
     return chartService.link(it);
   };
   $scope.paging = {
+    session: 0,
     offset: 0,
     limit: 20,
     end: false
   };
   $scope.loadList = function(reset){
-    var ref$, payload, ref1$;
+    var ref$, session, payload, ref1$;
     reset == null && (reset = false);
     if (reset) {
       ref$ = $scope.paging;
       ref$.offset = 0;
       ref$.end = false;
+      ref$.session = Math.random() + "";
+    } else if ($scope.loading) {
+      return;
     }
+    session = $scope.paging.session;
     import$($scope.q, $scope.qLazy);
     if ($scope.lazyload) {
       $timeout.cancel($scope.lazyload);
@@ -245,6 +249,9 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'dataSer
       var this$ = this;
       return $scope.$apply(function(){
         var hit, i$, to$, i, d, width, results$ = [];
+        if (session !== $scope.paging.session) {
+          return;
+        }
         if (!ret || ret.length === 0) {
           $scope.paging.end = true;
         }

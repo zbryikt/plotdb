@@ -1,4 +1,4 @@
-require! <[../engine/aux ../engine/share/model/]>
+require! <[../engine/aux ../engine/share/model/ ./thumb]>
 (engine,io) <- (->module.exports = it)  _
 
 themetype = model.type.theme
@@ -36,6 +36,7 @@ engine.router.api.post "/theme/", (req, res) ->
   ret = themetype.lint data
   if ret.0 => return aux.r400 res, ret
   data = themetype.clean data
+  thumb.save 'theme', data
   io.query([
     'insert into themes',
     ('(' + <[
@@ -78,7 +79,7 @@ engine.router.api.put "/theme/:id", (req, res) ~>
       ret = themetype.lint(data)
       if ret.0 => return aux.r400 res, ret
       data := themetype.clean data
-
+      thumb.save 'theme', data
       io.query([
         'update themes set'
         ('(name,owner,chart,description,tags,likes,searchable,' +

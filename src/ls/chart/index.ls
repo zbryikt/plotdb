@@ -91,7 +91,6 @@ angular.module \plotDB
     owner = if /^\/user\/([^/]+)/.exec(window.location.pathname) => that.1
     else => (if $scope.user.data => $scope.user.data.key else null)
     $scope.q = {owner}
-    console.log $scope.q
   ..controller \chartList,
   <[$scope $http $timeout IOService dataService chartService plNotify]> ++
   ($scope, $http, $timeout, IO-service, data-service, chart-service, plNotify) ->
@@ -127,11 +126,14 @@ angular.module \plotDB
       ]
     $scope.link = -> chart-service.link it
     $scope.paging = do
+      session: 0
       offset: 0
       limit: 20
       end: false
     $scope.load-list = (reset = false) ->
-      if reset => $scope.paging <<< {offset: 0, end: false}
+      if reset => $scope.paging <<< {offset: 0, end: false, session: "#{Math.random!}"}
+      else if $scope.loading => return
+      session = $scope.paging.session
       $scope.q <<< $scope.q-lazy
       if $scope.lazyload =>
         $timeout.cancel $scope.lazyload
@@ -140,6 +142,7 @@ angular.module \plotDB
       payload = {} <<< $scope.paging{offset,limit} <<< $scope.q
       (ret) <- IO-service.list-remotely {name: \chart}, payload .then
       <~ $scope.$apply
+      if session != $scope.paging.session => return
       if !ret or ret.length == 0 => $scope.paging.end = true
       $scope.charts = (if $scope.paging.offset => $scope.charts else []) ++ (ret.map -> new chartService.chart it)
       $scope.paging.offset = $scope.charts.length

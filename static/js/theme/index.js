@@ -95,6 +95,9 @@ x$.controller('themeList', ['$scope', '$http', 'IOService', 'dataService', 'them
   $scope.load = function(theme){
     return window.location.href = themeService.link(theme);
   };
+  $scope.link = function(it){
+    return themeService.link(it);
+  };
   $scope.loadList = function(){
     $scope.loading = true;
     return IOService.listRemotely({

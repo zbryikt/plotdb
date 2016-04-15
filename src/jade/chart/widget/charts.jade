@@ -1,17 +1,18 @@
 .charts
   .chart(ng-cloak,ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
+    .chart-ribon(ng-class="{'private': !chart.searchable, 'public': chart.searchable}")
     a.chart-img(ng-attr-href="{{link(chart)}}",style="display:block")
       .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime|timestamp}})")
     .chart-desc
       a.title(ng-attr-href="{{link(chart)}}")
-        .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
+        //-.pull-right.grayed #[i.fa.fa-dot-circle-o] 5
         span {{chart.name}}
       .desc {{chart.description || 'check it yourself!'}}
     .labels
       .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
       .flexend
     .social
-      a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownername}} #[i.fa.fa-eye(ng-sshow="chart.searchable")]
+      a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownername}}
       .favorite(ng-click="like(chart)", ng-class="{'active':user.data && user.data.likes.chart[chart.key]}") #[i.fa.fa-heart] {{chart.likes || 0}}
   .flexend
-  #chart-list-end.text-center this is the end :)
+  #chart-list-end.text-center(ng-cloak,ng-show="paging.end") this is the end :)

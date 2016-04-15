@@ -1129,7 +1129,6 @@ a.dropdown-toggle {
   -webkit-flex: 1 1 320px;
   flex: 1 1 320px;
   background: #faf9f8;
-  overflow: hidden;
 }
 .chart:hover .chart-img .ib {
   background-size: initial;
@@ -1166,6 +1165,32 @@ a.dropdown-toggle {
 .chart .chart-desc .desc {
   margin: 0;
   font-size: 1em;
+}
+.chart-ribon {
+  width: 50px;
+  height: 18px;
+  position: absolute;
+  top: 10px;
+  left: -5px;
+  text-align: center;
+  font-size: 0.8em;
+  color: #fff;
+  border-bottom-right-radius: 7px;
+  box-shadow: 0 2px 2px rgba(0,0,0,0.2);
+}
+.chart-ribon.private {
+  background: #944;
+}
+.chart-ribon.private:after {
+  content: "privae";
+  display: inline;
+}
+.chart-ribon.public {
+  background: #494;
+}
+.chart-ribon.public:after {
+  content: "public";
+  display: inline;
 }
 .chart .labels {
   margin: 0 10px 5px;

@@ -753,3 +753,11 @@ a.dropdown-toggle {
   margin-left: auto;
   margin-right: auto;
 }
+.dropdown-menu.parallel {
+  width: 300px;
+}
+.dropdown-menu.parallel li {
+  display: inline-block;
+  width: 149px;
+  text-align: center;
+}

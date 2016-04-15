@@ -668,6 +668,7 @@ angular.module \plotDB
   ($scope, $http, IO-service, data-service, theme-service) ->
     $scope.loading = true
     $scope.load = (theme) -> window.location.href = theme-service.link theme
+    $scope.link = -> theme-service.link it
     $scope.load-list = ->
       $scope.loading = true
       (ret) <- IO-service.list-remotely {name: \theme}, {} .then
