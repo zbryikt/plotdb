@@ -190,7 +190,7 @@ x$.controller('userChartList', ['$scope', '$http', 'dataService', 'chartService'
   };
 }));
 x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, $timeout, IOService, dataService, chartService, plNotify){
-  var map, k, ref$, v;
+  var Paging, map, k, ref$, v;
   $scope.loading = true;
   $scope.charts = [];
   $scope.q = {
@@ -218,50 +218,59 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'dataSer
   $scope.link = function(it){
     return chartService.link(it);
   };
-  $scope.paging = {
+  Paging = {
     session: 0,
     offset: 0,
     limit: 20,
-    end: false
+    end: false,
+    loading: false,
+    handle: null,
+    load: function(load, reset){
+      var session, this$ = this;
+      reset == null && (reset = false);
+      if (reset) {
+        this.offset = 0;
+        this.end = false;
+        this.session = Math.random() + "";
+      } else if (this.loading) {
+        return;
+      }
+      session = this.session;
+      if (this.handle) {
+        $timeout.cancel(this.handle);
+      }
+      this.loading = true;
+      this.handle = null;
+      return load(this).then(function(ret){
+        return $scope.$apply(function(){
+          if (session !== this$.session) {
+            return;
+          }
+          if (!ret || ret.length === 0) {
+            this$.end = true;
+          }
+          this$.loading = false;
+          this$.offset = this$.offset + ret.length;
+          return ret;
+        });
+      });
+    }
   };
   $scope.loadList = function(reset){
-    var ref$, session, payload, ref1$;
     reset == null && (reset = false);
-    if (reset) {
-      ref$ = $scope.paging;
-      ref$.offset = 0;
-      ref$.end = false;
-      ref$.session = Math.random() + "";
-    } else if ($scope.loading) {
-      return;
-    }
-    session = $scope.paging.session;
-    import$($scope.q, $scope.qLazy);
-    if ($scope.lazyload) {
-      $timeout.cancel($scope.lazyload);
-      $scope.lazyload = null;
-    }
     $scope.loading = true;
-    payload = import$((ref1$ = {}, ref1$.offset = (ref$ = $scope.paging).offset, ref1$.limit = ref$.limit, ref1$), $scope.q);
-    return IOService.listRemotely({
-      name: 'chart'
-    }, payload).then(function(ret){
-      var this$ = this;
+    return Paging.load(function(){
+      var payload, ref$;
+      payload = import$((ref$ = {}, ref$.offset = Paging.offset, ref$.limit = Paging.limit, ref$), $scope.q);
+      return IOService.listRemotely({
+        name: 'chart'
+      }, payload);
+    }, reset).then(function(ret){
       return $scope.$apply(function(){
-        var hit, i$, to$, i, d, width, results$ = [];
-        if (session !== $scope.paging.session) {
-          return;
-        }
-        if (!ret || ret.length === 0) {
-          $scope.paging.end = true;
-        }
-        $scope.charts = ($scope.paging.offset
-          ? $scope.charts
-          : []).concat(ret.map(function(it){
+        var hit, i$, to$, i, d, width;
+        $scope.charts = ($scope.charts || []).concat(ret.map(function(it){
           return new chartService.chart(it);
         }));
-        $scope.paging.offset = $scope.charts.length;
-        $scope.loading = false;
         hit = false;
         for (i$ = 0, to$ = $scope.charts.length; i$ < to$; ++i$) {
           i = i$;
@@ -277,9 +286,10 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'dataSer
             }
             hit = false;
           }
-          results$.push(d.width = width);
+          d.width = width;
         }
-        return results$;
+        $scope.loading = false;
+        return console.log($scope.charts.length + " charts loaded");
       });
     });
   };
@@ -321,12 +331,10 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'dataSer
     }
   }
   return window.addEventListener('scroll', function(){
-    if (document.body.scrollTop + window.innerHeight + 50 > $('#chart-list-end').offset().top) {
-      if (!$scope.loading) {
+    if (document.body.scrollTop + window.innerHeight + 50 > $('#list-end').offset().top) {
+      if (!Paging.loading && !Paging.end) {
         return $scope.$apply(function(){
-          if (!$scope.paging.end) {
-            return $scope.loadList();
-          }
+          return $scope.loadList();
         });
       }
     }

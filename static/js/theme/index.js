@@ -98,6 +98,12 @@ x$.controller('themeList', ['$scope', '$http', 'IOService', 'dataService', 'them
   $scope.link = function(it){
     return themeService.link(it);
   };
+  $scope.paging = {
+    session: 0,
+    offset: 0,
+    limit: 20,
+    end: false
+  };
   $scope.loadList = function(){
     $scope.loading = true;
     return IOService.listRemotely({
