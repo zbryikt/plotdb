@@ -280,7 +280,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       };
     },
     reset: function(rawdata){
-      return $scope.dataset = new dataService.dataset(), $scope.rawdata = rawdata, $scope;
+      return $scope.dataset = new dataService.dataset(window.dataset || {}), $scope.rawdata = rawdata, $scope;
     },
     init: function(){
       var ret1, ret2, that, ret, offset;

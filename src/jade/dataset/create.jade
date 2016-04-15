@@ -1,27 +1,2 @@
 div(ng-controller="dataEditCtrl")
-  include widget/usage.jade
-  h3.page-title 
-    if dataset
-      span #[small dataset] #{dataset.name}
-    else
-      span Create Dataset
-
-  if dataset
-    .entries
-      .entry
-        i.fa.fa-clock-o
-        span(ng-cloak) {{dataset.modifiedtime || dataset.createdtime|datelite}}
-      .entry
-        i.fa.fa-list
-        span #{dataset.rows} rows
-      .entry
-        i.fa.fa-archive
-        span(ng-cloak) {{dataset.size|size}}
-      .entry.text-danger.clickable(ng-cxlick="delete(dataset)")
-        i.fa.fa-close
-        span Delete
-  else
-    p create dataset to use them in your visualization.
-
-  .sep.dark.break
   include widget/create.jade

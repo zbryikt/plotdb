@@ -1,6 +1,6 @@
 #dataset-create-methods .btn {
   margin-right: 10px;
-  background: rgba(255,255,255,0.5);
+  background: #f9f9f9;
   border: 1px solid rgba(0,0,0,0.2);
 }
 #dataset-create-methods .btn.pull-right {

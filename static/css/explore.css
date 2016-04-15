@@ -8,7 +8,8 @@
 #chart-explore-bar .navbar-nav > li > a:hover {
   color: #ed1d78;
 }
-#chart-explore-bar .navbar-nav > li.open > a {
+#chart-explore-bar .navbar-nav > li.open > a,
+#chart-explore-bar .navbar-nav > li.open small {
   background: #ed1d78;
   color: #fff;
 }

@@ -11,7 +11,5 @@ block head
   script(type="text/javascript").
     window.dataset = !{JSON.stringify(dataset)};
 block body
-  span &nbsp;
-  #root.narrow
-    include ../module/dataset/create.jade
+  include ../module/dataset/view.jade
   include ../module/footer.jade

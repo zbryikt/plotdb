@@ -42,7 +42,7 @@ engine.app.get "/dataset/:id", (req, res) ->
       res.render 'dataset/index.jade', {dataset:ret}
       return null
     .catch (e) ->
-      if e.status == 404 => return aux.r403 res, "", true
+      if e.status == 404 => return aux.r404 res, "", true
       aux.r403 res, "", true
 
 engine.router.api.get "/dataset/:id", (req, res) ->

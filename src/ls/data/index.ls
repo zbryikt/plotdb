@@ -147,7 +147,6 @@ angular.module \plotDB
       dataset: null
       worker: new Worker("/js/data/worker.js")
       loading: false
-
     $scope.name = null
     $scope.save = (locally = false) ->
       if !$scope.dataset or !$scope.dataset.name => return
@@ -208,7 +207,7 @@ angular.module \plotDB
             $scope.rawdata = payload.data
             $scope.loading = false
       reset: (rawdata) ->
-        $scope <<< {dataset:  new dataService.dataset!, rawdata}
+        $scope <<< {dataset:  new dataService.dataset(window.dataset or {}), rawdata}
       init: ->
         @reset ""
         # e.g.: /dataset/?k=s123 )
