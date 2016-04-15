@@ -15,6 +15,11 @@ x$.filter('date', function(){
     return new Date(it);
   };
 });
+x$.filter('timestamp', function(){
+  return function(it){
+    return new Date(it).getTime();
+  };
+});
 x$.filter('datelite', function(){
   return function(it){
     var d;

@@ -5,10 +5,14 @@ require! <[../engine/aux ../engine/share/model/]>
 charttype = model.type.chart
 
 engine.router.api.get "/chart/", (req, res) ->
+  keyword = (req.query.keyword or "").split(/[, ]/).map(->it.trim!).filter(->it)
+  offset = req.query.offset or 0
+  limit = (req.query.limit or 20) <? 100
   overlap = do
     basetype: (req.query.type or "").split(\,).filter(->it)
     visualencoding: (req.query.enc or "").split(\,).filter(->it)
     category: (req.query.cat or "").split(\,).filter(->it)
+    tags: keyword
   equal = do
     dimlen: req.query.dim
     owner: req.query.owner
@@ -20,12 +24,17 @@ engine.router.api.get "/chart/", (req, res) ->
     overlap.map((d,i) -> ["charts.#{d.0} && ",d.1]) ++
     equal.map((d,i) -> ["charts.#{d.0} = ",d.1])
   ).map((d,i) -> ["#{d.0} $#{i + 1}", d.1])
+  paging = [[1,2].map(-> "$#{it + conditions.length}"), [offset, limit]]
   io.query([
     'select users.displayname as ownername,charts.*'
-    ["from charts,users where users.key = charts.owner","#{conditions.map(->it.0).join(" and ")}"]
+    [
+      "from charts,users where users.key = charts.owner and"
+      "#{conditions.map(->it.0).join(" and ")}"
+      "offset #{paging.0.0} limit #{paging.0.1}"
+    ]
       .filter(->it)
-      .join(" and ")
-  ].join(" "), conditions.map(->it.1))
+      .join(" ")
+  ].join(" "), conditions.map(->it.1) ++ paging.1)
     .then -> res.send it.rows
     .catch (e) ->
       console.log e.stack

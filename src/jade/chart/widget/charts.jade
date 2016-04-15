@@ -1,7 +1,7 @@
 .charts
   .chart(ng-cloak,ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
     a.chart-img(ng-attr-href="{{link(chart)}}",style="display:block")
-      .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime}})")
+      .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime|timestamp}})")
     .chart-desc
       a.title(ng-attr-href="{{link(chart)}}")
         .pull-right.grayed #[i.fa.fa-dot-circle-o] 5
@@ -14,3 +14,4 @@
       a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownername}} #[i.fa.fa-eye(ng-sshow="chart.searchable")]
       .favorite(ng-click="like(chart)", ng-class="{'active':user.data && user.data.likes.chart[chart.key]}") #[i.fa.fa-heart] {{chart.likes || 0}}
   .flexend
+  #chart-list-end.text-center this is the end :)

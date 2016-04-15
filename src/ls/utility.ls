@@ -1,6 +1,7 @@
 angular.module \plotDB
   ..filter \tags, -> -> if Array.isArray(it) => it else (it or "").split(\,)
   ..filter \date, -> -> new Date(it)
+  ..filter \timestamp -> -> new Date(it).getTime!
   ..filter \datelite, -> ->
     d = new Date(it)
     "#{d.getYear! + 1900}/#{d.getMonth! + 1}/#{d.getDate!} #{d.getHours!}:#{d.getMinutes!}"

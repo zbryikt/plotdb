@@ -1,3 +1,4 @@
+.loader.alone.lg.loading.floating(ng-show="loading")
 #chart-explore-bar.navbar.navbar-default
   .container-fluid
     div
@@ -8,7 +9,7 @@
             span(ng-cloak,ng-show="q.type") {{qmap.type[q.type]}}
             span(ng-cloak,ng-show="!q.type") Any
             span.caret
-          ul.dropdown-menu
+          ul.dropdown-menu.parallel
             li: a(ng-click="q.type=''") Any
             li(ng-class="{'active':q.type=='1'}"): a(ng-click="q.type='1'") Bar Chart
             li(ng-class="{'active':q.type=='2'}"): a(ng-click="q.type='2'") Line Chart
@@ -93,6 +94,6 @@
       form.navbar-form.navbar-right
         .form-group
           .input-group
-            input.form-control(type="text",placeholder="Search")
-            .input-group-btn
+            input.form-control(type="text",placeholder="Search",ng-model="qLazy.keyword")
+            .input-group-btn(ng-click="loadList()")
               .btn.btn-default #[i.fa.fa-search]

@@ -124,6 +124,13 @@ li.disabled a
     height: 100%
     background: url(/assets/img/loading.gif) center center no-repeat
 
+.loader.floating
+  position: absolute
+  left: 50%
+  z-index: index(order, 'float-loader')
+.loader.floating.lg
+  margin-left: -50px
+
 .loader.alone.lg
   width: 100px
   height: 100px
@@ -224,3 +231,10 @@ a.dropdown-toggle
 .block-center
   margin-left: auto
   margin-right: auto
+
+.dropdown-menu.parallel
+  width: 300px
+  li
+    display: inline-block
+    width: 149px
+    text-align: center

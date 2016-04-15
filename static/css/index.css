@@ -18,6 +18,9 @@ body {
   margin: -204px 20px 0;
   padding: 170px 0 100px;
 }
+ {
+  width: 100%;
+}
 .spc1 {
   height: 0;
 }
@@ -653,6 +656,14 @@ li.disabled a:hover {
   height: 100%;
   background: url("/assets/img/loading.gif") center center no-repeat;
 }
+.loader.floating {
+  position: absolute;
+  left: 50%;
+  z-index: 32;
+}
+.loader.floating.lg {
+  margin-left: -50px;
+}
 .loader.alone.lg {
   width: 100px;
   height: 100px;
@@ -763,6 +774,14 @@ a.dropdown-toggle {
 .block-center {
   margin-left: auto;
   margin-right: auto;
+}
+.dropdown-menu.parallel {
+  width: 300px;
+}
+.dropdown-menu.parallel li {
+  display: inline-block;
+  width: 149px;
+  text-align: center;
 }
 .page-title {
   padding-top: 20px;
@@ -2620,6 +2639,12 @@ small.hint {
     border: 1px solid rgba(0,0,0,0.15);
     box-shadow: 0 6px 12px rgba(0,0,0,0.175);
   }
+}
+#chart-list-end {
+  width: 100%;
+  margin: 20px;
+  opacity: 0.8;
+  text-shadow: 0 0 5px rgba(0,0,0,0.2);
 }
 #user-edit .col-sm-3 {
   text-align: right;

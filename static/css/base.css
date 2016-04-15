@@ -634,6 +634,14 @@ width: 100%;
   height: 100%;
   background: url("/assets/img/loading.gif") center center no-repeat;
 }
+.loader.floating {
+  position: absolute;
+  left: 50%;
+  z-index: 32;
+}
+.loader.floating.lg {
+  margin-left: -50px;
+}
 .loader.alone.lg {
   width: 100px;
   height: 100px;

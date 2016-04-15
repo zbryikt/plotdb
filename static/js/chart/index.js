@@ -190,8 +190,8 @@ x$.controller('userChartList', ['$scope', '$http', 'dataService', 'chartService'
   };
   return console.log($scope.q);
 }));
-x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, IOService, dataService, chartService, plNotify){
-  var map, k, ref$, v, results$ = [];
+x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, $timeout, IOService, dataService, chartService, plNotify){
+  var map, k, ref$, v;
   $scope.loading = true;
   $scope.charts = [];
   $scope.q = {
@@ -201,8 +201,14 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
     dim: null,
     order: 'Latest'
   };
+  $scope.qLazy = {
+    keyword: null
+  };
   if ($scope.$parent.q) {
     import$($scope.q, $scope.$parent.q);
+  }
+  if ($scope.$parent.qLazy) {
+    import$($scope.qLazy, $scope.$parent.qLazy);
   }
   $scope.qmap = {
     type: ["Other", "Bar Chart", "Line Chart", "Pie Chart", "Area Chart", "Bubble Chart", "Radial Chart", "Calendar", "Treemap", "Choropleth", "Cartogram", "Heatmap", "Sankey", "Venn Diagram", "Word Cloud", "Timeline", "Mixed"],
@@ -213,17 +219,41 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
   $scope.link = function(it){
     return chartService.link(it);
   };
-  $scope.loadList = function(){
+  $scope.paging = {
+    offset: 0,
+    limit: 20,
+    end: false
+  };
+  $scope.loadList = function(reset){
+    var ref$, payload, ref1$;
+    reset == null && (reset = false);
+    if (reset) {
+      ref$ = $scope.paging;
+      ref$.offset = 0;
+      ref$.end = false;
+    }
+    import$($scope.q, $scope.qLazy);
+    if ($scope.lazyload) {
+      $timeout.cancel($scope.lazyload);
+      $scope.lazyload = null;
+    }
     $scope.loading = true;
+    payload = import$((ref1$ = {}, ref1$.offset = (ref$ = $scope.paging).offset, ref1$.limit = ref$.limit, ref1$), $scope.q);
     return IOService.listRemotely({
       name: 'chart'
-    }, $scope.q).then(function(ret){
+    }, payload).then(function(ret){
       var this$ = this;
       return $scope.$apply(function(){
         var hit, i$, to$, i, d, width, results$ = [];
-        $scope.charts = ret.map(function(it){
+        if (!ret || ret.length === 0) {
+          $scope.paging.end = true;
+        }
+        $scope.charts = ($scope.paging.offset
+          ? $scope.charts
+          : []).concat(ret.map(function(it){
           return new chartService.chart(it);
-        });
+        }));
+        $scope.paging.offset = $scope.charts.length;
         $scope.loading = false;
         hit = false;
         for (i$ = 0, to$ = $scope.charts.length; i$ < to$; ++i$) {
@@ -247,7 +277,16 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
     });
   };
   $scope.$watch('q', function(){
-    return $scope.loadList();
+    return $scope.loadList(true);
+  }, true);
+  $scope.$watch('qLazy', function(){
+    if ($scope.lazyload) {
+      $timeout.cancel($scope.lazyload);
+    }
+    return $scope.lazyload = $timeout(function(){
+      $scope.lazyload = null;
+      return $scope.loadList(true);
+    }, 1000);
   }, true);
   $scope.like = function(chart){
     var mylikes, ref$, ref1$, v;
@@ -270,11 +309,21 @@ x$.controller('chartList', ['$scope', '$http', 'IOService', 'dataService', 'char
     for (k in ref$ = $scope.q) {
       v = ref$[k];
       if (map[k]) {
-        results$.push($scope.q[k] = map[k][0][1]);
+        $scope.q[k] = map[k][0][1];
       }
     }
-    return results$;
   }
+  return window.addEventListener('scroll', function(){
+    if (document.body.scrollTop + window.innerHeight + 50 > $('#chart-list-end').offset().top) {
+      if (!$scope.loading) {
+        return $scope.$apply(function(){
+          if (!$scope.paging.end) {
+            return $scope.loadList();
+          }
+        });
+      }
+    }
+  });
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;
