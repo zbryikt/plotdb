@@ -83,6 +83,7 @@ base = (model) ->
       searchable: { required: false, type: model.type.boolean }
       dimlen: { required: true, type: model.type.number }
       dimension: { required: false, type: base.json }
+      config: { required: false, type: base.json }
       createdtime: {required: false, type: model.type.date}
       modifiedtime: {required: false, type: model.type.date}
       doc: {type: base.file}
