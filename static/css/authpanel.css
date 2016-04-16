@@ -41,3 +41,7 @@
 #authpanel-social-login .g-signin2 {
   border: 1px solid #ddd;
 }
+#authpanel.static {
+  position: static;
+  display: block;
+}

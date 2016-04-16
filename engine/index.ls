@@ -102,7 +102,7 @@ backend = do
       ..get \/login, (req, res) -> res.render \login
       ..post \/login, passport.authenticate \local, do
         successRedirect: \/u/200
-        failureRedirect: \/u/403
+        failureRedirect: \/auth/email-fail.html
       ..get \/logout, (req, res) ->
         req.logout!
         res.redirect \/
@@ -113,7 +113,7 @@ backend = do
       ..get \/auth/facebook, passport.authenticate \facebook, {scope: ['email']}
       ..get \/auth/facebook/callback, passport.authenticate \facebook, do
         successRedirect: \/
-        failureRedirect: \/u/403
+        failureRedirect: \/auth/fb-fail.html
 
     postman = nodemailer.createTransport nodemailer-smtp-transport config.mail
 
