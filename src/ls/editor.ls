@@ -581,7 +581,7 @@ angular.module \plotDB
         @$watch 'chart.config', ((n,o={}) ~>
           ret = !!([[k,v] for k,v of n]
             .filter(([k,v]) -> !o[k] or (v.value != o[k].value))
-            .map(->v.rebindOnChange)
+            .map(->(it.1 or {}).rebindOnChange)
             .filter(->it).length)
           @render-async ret
         ), true

@@ -1136,8 +1136,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           var k, v;
           k = arg$[0], v = arg$[1];
           return !o[k] || v.value !== o[k].value;
-        }).map(function(){
-          return v.rebindOnChange;
+        }).map(function(it){
+          return (it[1] || {}).rebindOnChange;
         }).filter(function(it){
           return it;
         }).length;

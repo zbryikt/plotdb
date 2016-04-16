@@ -293,6 +293,10 @@ base = function(model){
         required: false,
         type: base.json
       },
+      config: {
+        required: false,
+        type: base.json
+      },
       createdtime: {
         required: false,
         type: model.type.date
