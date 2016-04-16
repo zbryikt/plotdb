@@ -80,6 +80,7 @@ angular.module \plotDB
       <- setTimeout _, 0
       top = if sel => ( $(sel).offset!top - 60 ) else 0
       $(document.body).animate {scrollTop: top}, '500', 'swing', ->
+      $("html").animate {scrollTop: top}, '500', 'swing', ->
     $scope.auth = do
       email: ''
       passwd: ''

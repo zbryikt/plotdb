@@ -243,9 +243,10 @@ document.body.appendChild(hover-box)
 hover-margin = document.createElement("div")
 hover-margin.setAttribute("class", "hover-margin")
 document.body.appendChild(hover-margin)
+html = document.querySelector("html")
 window.addEventListener \mousemove, (e) ->
   rect = e.target.getBoundingClientRect!
-  scroll = top: document.body.scrollTop, left: document.body.scrollLeft
+  scroll = top: (document.body.scrollTop or html.scrollTop), left: (document.body.scrollLeft or html.scrollTop)
   style = e.target.currentStyle || window.getComputedStyle(e.target);
 
   margin = do

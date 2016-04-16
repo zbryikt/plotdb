@@ -147,7 +147,10 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     return setTimeout(function(){
       var top;
       top = sel ? $(sel).offset().top - 60 : 0;
-      return $(document.body).animate({
+      $(document.body).animate({
+        scrollTop: top
+      }, '500', 'swing', function(){});
+      return $("html").animate({
         scrollTop: top
       }, '500', 'swing', function(){});
     }, 0);

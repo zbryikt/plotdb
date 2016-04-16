@@ -4,8 +4,9 @@ angular.module \plotDB
       session: 0, offset: 0, limit: 20, end: false, loading: false
       handle: null
       load-on-scroll: (cb, beacon) ->
-        window.addEventListener \scroll, ->
-          if document.body.scrollTop + window.innerHeight + 50 > $(beacon).offset!top =>
+        window.addEventListener \scroll, (v)  ->
+          scroll = document.body.scrollTop or document.querySelector("html").scrollTop
+          if scroll + window.innerHeight + 50 > $(beacon).offset!top =>
             if !@loading and !@end => $rootScope.$apply ~> cb!
 
       load: (load, lazy = 500, reset = false) -> new Promise (res, rej) ~>
