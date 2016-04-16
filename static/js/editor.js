@@ -687,6 +687,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
                   perm: 'fork'
                 }]
                 : [];
+              $scope.target().searchable = it;
               return this$.saveHint = true;
             }
           });

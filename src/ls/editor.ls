@@ -377,6 +377,7 @@ angular.module \plotDB
             forkable = @is-forkable!
             if forkable != @forkable and @forkable? =>
               $scope.target!.permission.value = if it => [{switch: \public, perm: \fork}] else []
+              $scope.target!.searchable = it
               @save-hint = true
           $scope.$watch "#{$scope.type}.permission.value", (~>
             forkable = @is-forkable!
