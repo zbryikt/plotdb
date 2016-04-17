@@ -10,7 +10,8 @@ angular.module \plotDB
       vis: \preview
       lastvis: null
       plotdb-domain: "#{plConfig.urlschema}#{plConfig.domainIO}"
-      plotdb-renderer: $sce.trustAsResourceUrl("#{plConfig.urlschema}#{plConfig.domainIO}/render.html")
+      #plotdb-renderer: $sce.trustAsResourceUrl("#{plConfig.urlschema}#{plConfig.domainIO}/render.html")
+      plotdb-renderer: "#{plConfig.urlschema}#{plConfig.domain}/render.html"
       error: {msg: null, lineno: 0}
       codemirror: do
         #NOTE viewportMargin = Infinity might cause performance issue when file is large.
@@ -23,6 +24,12 @@ angular.module \plotDB
         window: document.getElementById(\chart-renderer).contentWindow
       type: null     # chart or theme
       service: null  # chart-service or theme-service
+
+    $http url: $scope.plotdb-renderer, method: \GET
+      .success (r) ->
+        url = URL.createObjectURL new Blob [r], {type: \text/html}
+        $scope.plotdb-domain = url
+        $scope.plotdb-renderer = $sce.trustAsResourceUrl(url)
 
     #########  Functions  ################################################################
     $scope <<< do

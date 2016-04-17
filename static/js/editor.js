@@ -10,7 +10,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     vis: 'preview',
     lastvis: null,
     plotdbDomain: plConfig.urlschema + "" + plConfig.domainIO,
-    plotdbRenderer: $sce.trustAsResourceUrl(plConfig.urlschema + "" + plConfig.domainIO + "/render.html"),
+    plotdbRenderer: plConfig.urlschema + "" + plConfig.domain + "/render.html",
     error: {
       msg: null,
       lineno: 0
@@ -42,6 +42,17 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     },
     type: null,
     service: null
+  });
+  $http({
+    url: $scope.plotdbRenderer,
+    method: 'GET'
+  }).success(function(r){
+    var url;
+    url = URL.createObjectURL(new Blob([r], {
+      type: 'text/html'
+    }));
+    $scope.plotdbDomain = url;
+    return $scope.plotdbRenderer = $sce.trustAsResourceUrl(url);
   });
   import$($scope, {
     target: function(){

@@ -1,5 +1,6 @@
-require! <[fs path chokidar child_process jade stylus]>
+require! <[fs path chokidar child_process jade stylus require-reload]>
 require! 'uglify-js': uglify-js, LiveScript: lsc, 'uglifycss': uglify-css
+reload = require-reload require
 
 RegExp.escape = -> it.replace /[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"
 
@@ -85,6 +86,7 @@ base = do
     if type == \other => return
 
     if type == \jade =>
+      data = reload "./share/config.ls"
       try
         jade-tree.parse src
         srcs = jade-tree.find-root src
@@ -101,7 +103,7 @@ base = do
           desdir = path.dirname(des)
           if !fs.exists-sync(desdir) or !fs.stat-sync(desdir).is-directory! => mkdir-recurse desdir
           try
-            fs.write-file-sync des, jade.render (fs.read-file-sync src .toString!),{filename: src, basedir: path.join(cwd,\src/jade/)}
+            fs.write-file-sync des, jade.render (fs.read-file-sync src .toString!),{filename: src, basedir: path.join(cwd,\src/jade/)} <<< data
             console.log "[BUILD]   #src --> #des"
           catch
             console.log "[BUILD]   #src failed: "

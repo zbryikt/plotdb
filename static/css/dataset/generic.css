@@ -97,6 +97,7 @@
   vertical-align: top;
   -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
+  min-width: 1px;
 }
 .dse-fields-inner {
   display: -webkit-flex;
