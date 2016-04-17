@@ -31,9 +31,10 @@ window.addEventListener \error, (e) ->
   error-handling msg, e.lineno - 1
 
 proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
+  empty="{exports:{init:function(){},update:function(){},resize:function(){},bind:function(){},render:function(){}}}"
   window.error-message = ""
   module = if updateModule => \module else \moduleLocal
-  code := "(function() { #code; window.#module = module; })();"
+  code := "(function() { #code; window.#module = (typeof(module)=='undefined'?#empty:module); })()"
   window.codeURL = codeURL = URL.createObjectURL new Blob [code], {type: "text/javascript"}
   codeNode = document.createElement("script")
   codeNode.onload = ->
@@ -169,8 +170,8 @@ render = (payload, rebind = true) ->
       root = document.getElementById \container
       chart = module.exports
       if (!data or !data.length) and chart.sample => data := chart.sample
-      for k,v of config =>
-        for type in v.type =>
+      for k,v of (config or {}) =>
+        for type in (v.type or [])=>
           try
             type = plotdb[type.name]
             if type.test and type.parse and type.test(v.value) =>

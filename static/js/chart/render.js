@@ -59,10 +59,11 @@ $(document).ready(function(){
   properEval = function(code, updateModule){
     updateModule == null && (updateModule = true);
     return new Promise(function(res, rej){
-      var module, codeURL, codeNode;
+      var empty, module, codeURL, codeNode;
+      empty = "{exports:{init:function(){},update:function(){},resize:function(){},bind:function(){},render:function(){}}}";
       window.errorMessage = "";
       module = updateModule ? 'module' : 'moduleLocal';
-      code = "(function() { " + code + "; window." + module + " = module; })();";
+      code = "(function() { " + code + "; window." + module + " = (typeof(module)=='undefined'?" + empty + ":module); })()";
       window.codeURL = codeURL = URL.createObjectURL(new Blob([code], {
         type: "text/javascript"
       }));
@@ -266,9 +267,9 @@ $(document).ready(function(){
         if ((!data || !data.length) && chart.sample) {
           data = chart.sample;
         }
-        for (k in ref$ = config) {
+        for (k in ref$ = config || {}) {
           v = ref$[k];
-          for (i$ = 0, len$ = (ref1$ = v.type).length; i$ < len$; ++i$) {
+          for (i$ = 0, len$ = (ref1$ = v.type || []).length; i$ < len$; ++i$) {
             type = ref1$[i$];
             try {
               type = plotdb[type.name];
