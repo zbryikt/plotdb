@@ -9,7 +9,7 @@ angular.module \plotDB
       showsrc: true
       vis: \preview
       lastvis: null
-      plotdb-domain: "#{plConfig.urlschema}#{plConfig.domainIO}"
+      plotdb-domain: "http://localhost" #"#{plConfig.urlschema}#{plConfig.domainIO}"
       #plotdb-renderer: $sce.trustAsResourceUrl("#{plConfig.urlschema}#{plConfig.domainIO}/render.html")
       plotdb-renderer: "#{plConfig.urlschema}#{plConfig.domain}/render.html"
       error: {msg: null, lineno: 0}
