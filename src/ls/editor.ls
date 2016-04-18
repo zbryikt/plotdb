@@ -11,8 +11,7 @@ angular.module \plotDB
       lastvis: null
       plotdb-domain: "#{plConfig.urlschema}#{plConfig.domainIO}"
       #plotdb-renderer: $sce.trustAsResourceUrl("#{plConfig.urlschema}#{plConfig.domainIO}/render.html")
-      plotdb-renderer2: "#{plConfig.urlschema}#{plConfig.domain}/render.html"
-      plotdb-renderer: "#{plConfig.urlschema}#{plConfig.domain}/render2.html"
+      plotdb-renderer: "#{plConfig.urlschema}#{plConfig.domain}/render.html"
       error: {msg: null, lineno: 0}
       codemirror: do
         #NOTE viewportMargin = Infinity might cause performance issue when file is large.
@@ -29,11 +28,9 @@ angular.module \plotDB
     $http url: $scope.plotdb-renderer2, method: \GET
       .success (html) ->
         ret = /<meta name="script" content="([^"]+)">/.exec html
-        console.log ret
         if ret =>
           $http url: ret.1, method: \GET
             .success (js) ->
-              console.log "here"
               urljs = URL.createObjectURL new Blob [js], {type: \text/javascript}
               html := html.replace(
                 /<meta name="script" content="([^"]+)">/
