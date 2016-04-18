@@ -25,7 +25,7 @@ angular.module \plotDB
       type: null     # chart or theme
       service: null  # chart-service or theme-service
 
-    $http url: $scope.plotdb-renderer2, method: \GET
+    $http url: $scope.plotdb-renderer, method: \GET
       .success (html) ->
         ret = /<meta name="script" content="([^"]+)">/.exec html
         if ret =>
