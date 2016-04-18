@@ -22,7 +22,6 @@ sched = do
     set: (func) ->
       @func.call window, func
 
-
 # Chrome refuse to use setInterval in dictionary like ...sched.interval
 window.setTimeout = (func, delta) ->
   ret = sched.timeout.set func, delta

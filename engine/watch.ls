@@ -1,5 +1,6 @@
 require! <[fs path chokidar child_process jade stylus require-reload]>
 require! 'uglify-js': uglify-js, LiveScript: lsc, 'uglifycss': uglify-css
+require! <[./share/scriptpack]>
 reload = require-reload require
 
 RegExp.escape = -> it.replace /[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"
@@ -70,11 +71,36 @@ base = do
   ignore-func: (f) -> @ignore-list.filter(-> it.exec f.replace(cwd-re, "")replace(/^\.\/+/, ""))length
   start: (config) ->
     @config = config
-    <[src src/ls src/styl static static/css static/js]>.map ->
+    <[src src/ls src/styl static static/css static/js static/js/pack/]>.map ->
       if !fs.exists-sync it => fs.mkdir-sync it
+    chokidar.watch 'static/js', ignored: (~> @ignore-func it), persistent: true
+      .on \add, ~> @packer.watcher it
+      .on \change, ~> @packer.watcher it
     watcher = chokidar.watch 'src', ignored: (~> @ignore-func it), persistent: true
       .on \add, ~> @watch-handler it
       .on \change, ~> @watch-handler it
+  packer: do
+    handle: null
+    queue: {}
+    handler: ->
+      @handle = null
+      for k,v of @queue =>
+        des = "static/js/pack/#k.js"
+        ret = [fs.read-file-sync(file).toString! for file in v.1].join("")
+        if !base.config.debug => ret = uglify-js.minify(ret,{fromString:true}).code
+        fs.write-file-sync des, ret
+        console.log "[BUILD] Pack '#k' -> #des by #{v.0}"
+      @queue = {}
+
+    watcher: (d) ->
+      packers = reload "./share/scriptpack.ls"
+      for k,v of packers =>
+        if @queue[k] => continue
+        files = v.map(->path.join(\static, it))
+        if (d in files) => @queue[k] = [d, files]
+      if [k for k of @queue].length =>
+        if @handle => clearTimeout(@handle)
+        @handle = setTimeout((~> @handler!), 1000)
   watch-handler: (d) ->
     setTimeout (~> @_watch-handler d), 500
   _watch-handler: ->
