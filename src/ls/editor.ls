@@ -324,7 +324,9 @@ angular.module \plotDB
       setting-panel: do
         toggle: -> @toggled = !!!@toggled
         toggled: false
-
+      data-panel: do
+        toggle: -> @toggled = !!!@toggled
+        toggled: false
       share-panel: do
         social: do
           facebook: null
