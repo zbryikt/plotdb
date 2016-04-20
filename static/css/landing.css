@@ -1,1 +1,60 @@
-#landing{padding-top:1px;position:relative;width:100%;height:80%;background:url("/assets/img/landing.png") center 60px no-repeat #ebeae9;background-size:cover;background-position-y:60px;text-align:center;color:#444;box-shadow:inset 0 -6px 12px rgba(0,0,0,0.3)}#landing .title{width:100%;font-size:64px;text-align:center;position:absolute;top:35%;margin-top:-32px;font-family:'Lato','Helvetica Neue',Helvetica,sans-serif;font-weight:700}#landing .subtitle{width:100%;font-family:Open Sans Condensed,verdana,arial,sans-serif;font-weight:300;font-size:24px;text-align:center;position:absolute;top:35%;font-weight:200;margin-top:48px}#landing-svg{width:100%;height:150%;position:absolute;z-index:1}@media(max-width:767px){#landing{top:45px}#landing .title{font-size:48px;margin-top:-24px}#landing .subtitle{font-size:16px;margin-top:40px}}#product-description{position:relative;width:100%}#product-description .row{border-top:1px solid #999;border-bottom:1px solid #999;padding:40px 0}#product-description b{color:#ed1d78}
+#landing {
+  padding-top: 1px;
+  position: relative;
+  width: 100%;
+  height: 80%;
+  background: url("/assets/img/landing.png") center top no-repeat #ebeae9;
+  background-size: cover;
+  text-align: center;
+  color: #444;
+  box-shadow: inset 0 -6px 12px rgba(0,0,0,0.3);
+}
+#landing .title {
+  width: 100%;
+  font-size: 64px;
+  text-align: center;
+  position: absolute;
+  top: 35%;
+  margin-top: -32px;
+  font-family: 'Lato', 'Helvetica Neue', Helvetica, sans-serif;
+  font-weight: 700;
+}
+#landing .subtitle {
+  width: 100%;
+  font-family: Open Sans Condensed, verdana, arial, sans-serif;
+  font-weight: 300;
+  font-size: 24px;
+  text-align: center;
+  position: absolute;
+  top: 35%;
+  font-weight: 200;
+  margin-top: 48px;
+}
+#landing-svg {
+  width: 100%;
+  height: 150%;
+  position: absolute;
+  z-index: 1;
+}
+@media (max-width: 800px) {
+  #landing .title {
+    font-size: 48px;
+    margin-top: -24px;
+  }
+  #landing .subtitle {
+    font-size: 16px;
+    margin-top: 40px;
+  }
+}
+#product-description {
+  position: relative;
+  width: 100%;
+}
+#product-description .row {
+  border-top: 1px solid #999;
+  border-bottom: 1px solid #999;
+  padding: 40px 0;
+}
+#product-description b {
+  color: #ed1d78;
+}

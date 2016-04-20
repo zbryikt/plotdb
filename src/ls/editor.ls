@@ -41,6 +41,7 @@ angular.module \plotDB
               #TODO: directly regen iframe so we don't have to consider timing issue
               $timeout (->
                 $scope.plotdb-renderer = $sce.trustAsResourceUrl(urlhtml)
+                $(\#chart-renderer)[0].setAttribute("src", urlhtml)
               ), 1000
 
     #########  Functions  ################################################################
@@ -131,6 +132,7 @@ angular.module \plotDB
           $scope.render!
       reset: -> @render!
       render: (rebind = true) ->
+        if !@inited => return
         if !@chart => return
         @chart.update-data!
         payload = JSON.parse(angular.toJson({theme: @theme, chart: @chart}))
@@ -633,6 +635,7 @@ angular.module \plotDB
           for k,v of @chart.config => if config[k]? => config[k].value = v.value
           for k,v of config => if !(v.value?) => v.value = v.default
           @chart <<< {config, dimension}
+          @inited = true
           $scope.render!
         else if data.type == \parse-theme =>
           $scope.parse.theme.pending = false

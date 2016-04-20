@@ -8,7 +8,7 @@
   position: fixed;
   bottom: 10px;
   left: 10px;
-  z-index: 31;
+  z-index: 32;
 }
 .notify {
   border-radius: 2px;
@@ -597,7 +597,7 @@ width: 100%;
   top: 0;
   left: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 30;
+  z-index: 31;
 }
 #alertbox .ib {
   position: relative;
@@ -637,7 +637,7 @@ width: 100%;
 .loader.floating {
   position: absolute;
   left: 50%;
-  z-index: 32;
+  z-index: 33;
 }
 .loader.floating.lg {
   margin-left: -50px;
@@ -770,4 +770,7 @@ a.dropdown-toggle {
   display: inline-block;
   width: 149px;
   text-align: center;
+}
+.modal-backdrop {
+  z-index: 27 !important;
 }

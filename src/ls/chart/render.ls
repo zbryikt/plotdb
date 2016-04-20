@@ -1,4 +1,5 @@
 plotdb-domain = "#{window.plConfig.urlschema}#{window.plConfig.domain}"
+brand-new = true
 
 # bubbling up click outside renderer. for ColorPicker
 window.addEventListener \click, ->
@@ -17,7 +18,7 @@ dispatcher = (evt) ->
   else if evt.data.type == \render => render evt.data.payload, evt.data.rebind
   else if evt.data.type == \parse-chart => parse evt.data.payload, \chart
   else if evt.data.type == \parse-theme => parse evt.data.payload, \theme
-  else if evt.data.type == \reload => window.location.reload!
+  else if evt.data.type == \reload => if !brand-new => window.location.reload!
   else if evt.data.type == \colorblind-emu => colorblind evt.data.payload
 
 window.addEventListener \error, (e) ->
@@ -217,6 +218,7 @@ render = (payload, rebind = true) ->
   catch e
     thread.dec reboot
     error-handling e
+  brand-new := false
 
 window.addEventListener \message, dispatcher, false
 resize-handler = null

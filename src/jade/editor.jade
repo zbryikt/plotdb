@@ -424,8 +424,9 @@ block body
                 a(href="#",ng-click="colorblind.set('achromatopsia')") Achromatopsia
               li(ng-class="{'active':colorblind.val=='achromatomaly'}")
                 a(href="#",ng-click="colorblind.set('achromatomaly')") Achromatomaly
-          iframe#chart-renderer(ng-attr-src="{{plotdbRenderer}}",
-          style="width:100%;height:100%;border:none")
+          //-iframe#chart-renderer(ng-attr-src="{{plotdbRenderer}}",
+          iframe#chart-renderer(
+          style="width:100%;height:100%;border:none;background:url(/assets/img/loading-sm.svg) center center no-repeat")
 
     #binding-panel.relpos.panel.panel-default(ng-controller="datasetList",ng-show="type=='chart'",ng-cloak): .panel-body
       .pull-right.clickable(style="margin-top:5px;",
