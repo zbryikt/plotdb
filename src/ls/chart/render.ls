@@ -18,7 +18,9 @@ dispatcher = (evt) ->
   else if evt.data.type == \render => render evt.data.payload, evt.data.rebind
   else if evt.data.type == \parse-chart => parse evt.data.payload, \chart
   else if evt.data.type == \parse-theme => parse evt.data.payload, \theme
-  else if evt.data.type == \reload => if !brand-new => window.location.reload!
+  else if evt.data.type == \reload =>
+    if !brand-new => window.location.reload!
+    else window.parent.postMessage {type: \loaded}, plotdb-domain
   else if evt.data.type == \colorblind-emu => colorblind evt.data.payload
 
 window.addEventListener \error, (e) ->

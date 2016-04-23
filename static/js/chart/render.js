@@ -39,9 +39,13 @@ $(document).ready(function(){
     } else if (evt.data.type === 'reload') {
       if (!brandNew) {
         return window.location.reload();
-      } else if (evt.data.type === 'colorblind-emu') {
-        return colorblind(evt.data.payload);
+      } else {
+        return window.parent.postMessage({
+          type: 'loaded'
+        }, plotdbDomain);
       }
+    } else if (evt.data.type === 'colorblind-emu') {
+      return colorblind(evt.data.payload);
     }
   };
   window.addEventListener('error', function(e){
