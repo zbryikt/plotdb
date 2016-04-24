@@ -129,7 +129,7 @@ base = do
           desdir = path.dirname(des)
           if !fs.exists-sync(desdir) or !fs.stat-sync(desdir).is-directory! => mkdir-recurse desdir
           try
-            fs.write-file-sync des, jade.render (fs.read-file-sync src .toString!),{filename: src, basedir: path.join(cwd,\src/jade/)} <<< data
+            fs.write-file-sync des, jade.render (fs.read-file-sync src .toString!),{filename: src, basedir: path.join(cwd,\src/jade/)} <<< {config: data}
             console.log "[BUILD]   #src --> #des"
           catch
             console.log "[BUILD]   #src failed: "
