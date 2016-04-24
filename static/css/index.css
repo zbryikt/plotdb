@@ -2143,6 +2143,9 @@ small.hint {
   position: static;
   display: block;
 }
+#authpanel.static .closebtn {
+  display: none;
+}
 .dataset-entry {
   background: #f9f9f9;
   padding: 0;
