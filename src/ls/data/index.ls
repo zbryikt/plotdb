@@ -5,7 +5,7 @@ angular.module \plotDB
     name = \dataset
     service = do
       sample: sampleData
-      link: (dataset) -> 
+      link: (dataset) ->
         if dataset._type.location == \server => return "/dataset/#{dataset.key}/"
         return "/dataset/?k=c#{dataset.key}"
       cache: {}
@@ -161,14 +161,14 @@ angular.module \plotDB
       is-create = if !$scope.dataset.key => true else false
       $scope.loading = true
       $scope.dataset.save!
-        .then -> 
+        .then ->
           $scope.$apply -> plNotify.send \success, "dataset saved"
-          if is-create => 
+          if is-create =>
             setTimeout (->
               window.location.href = data-service.link $scope.dataset
             ), 1000
           else => $scope.loading = false
-        .catch (e) -> 
+        .catch (e) ->
           console.log e.stack
           $scope.loading = false
           $scope.$apply -> plNotify.aux.error.io \save, \data, e
@@ -186,7 +186,7 @@ angular.module \plotDB
           $scope.inited = true
     $scope.delete = (dataset) ->
       dataset.delete!
-        .then -> 
+        .then ->
           plNotify.send \success, "dataset deleted"
           $timeout (-> window.location.href = "/dataset/" ), 1300
         .catch (ret) ->
@@ -205,7 +205,7 @@ angular.module \plotDB
         $scope.worker.onmessage = ({data: payload}) ->
           if typeof(payload) != \object => return
           switch payload.type
-          | "parse.revert" => 
+          | "parse.revert" =>
             $scope.rawdata = payload.data
             $scope.loading = false
       reset: (rawdata) ->
@@ -236,7 +236,7 @@ angular.module \plotDB
       result: null
       loading: false
       handle: null
-      revert: (dataset) -> 
+      revert: (dataset) ->
         $scope.loading = true
         $scope.worker.postMessage {type: "parse.revert", data: dataset}
 
@@ -327,11 +327,11 @@ angular.module \plotDB
     $scope.delete = (dataset) ->
       dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)
 
-  ..controller \datasetList, 
+  ..controller \datasetList,
   <[$scope dataService plNotify eventBus]> ++
   ($scope, data-service, plNotify, eventBus) ->
     data-service.list!
-      .then (datasets) -> 
+      .then (datasets) ->
         $scope.$apply -> $scope.datasets = datasets
     # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large
     $scope.chosen = do
@@ -344,7 +344,7 @@ angular.module \plotDB
       @chosen.dataset = dataset
     $scope.delete = (dataset) ->
       dataset.delete!
-        .then ~> 
+        .then ~>
           <~ $scope.$apply
           $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)
           plNotify.send \success, "dataset deleted."
