@@ -13,12 +13,14 @@ block body
     br
     h1.text-center Can't Let You In.
     p.text-center.grayed Did you sign up with email or Facebook account? Try a different method to login.
-    #fb-login-issue
+    #google-login-issue
     script(type="text/javascript").
       var node = document.getElementById("authpanel");
       node.setAttribute("class", "modal static");
       node.parentNode.removeChild(node);
-      document.getElementById("fb-login-issue").appendChild(node);
+      document.getElementById("google-login-issue").appendChild(node);
+      node = document.getElementById("nav-login");
+      node.parentNode.removeChild(node);
     p.text-center #[br] #[a(href="/") back to home]
     br
     script.

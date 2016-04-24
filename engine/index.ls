@@ -51,7 +51,7 @@ backend = do
         passReqToCallback: true
         profileFields: ['id', 'displayName', 'link', 'emails']
       , (request, access-token, refresh-token, profile, done) ~>
-        @getUser profile.emails.0.value, null, false, profile, done
+        get-user profile.emails.0.value, null, false, profile, done
     )
 
     passport.use new passport-facebook.Strategy(
@@ -109,7 +109,7 @@ backend = do
       ..get \/auth/google, passport.authenticate \google, {scope: ['email']}
       ..get \/auth/google/callback, passport.authenticate \google, do
         successRedirect: \/
-        failureRedirect: \/u/403
+        failureRedirect: \/auth/google-fail.html
       ..get \/auth/facebook, passport.authenticate \facebook, {scope: ['email']}
       ..get \/auth/facebook/callback, passport.authenticate \facebook, do
         successRedirect: \/

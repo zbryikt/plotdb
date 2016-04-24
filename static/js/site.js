@@ -219,6 +219,9 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     }
   };
   $scope.$watch('auth.show', function(isShow){
+    if ($('#authpanel').hasClass('static')) {
+      return;
+    }
     return setTimeout(function(){
       if (isShow) {
         return $('#authpanel').modal('show');

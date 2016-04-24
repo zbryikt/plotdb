@@ -121,6 +121,7 @@ angular.module \plotDB
           else => $scope.auth.failed = 'system error, please try later'
         @passwd = ""
     $scope.$watch 'auth.show', (is-show) ->
+      if $(\#authpanel).hasClass(\static) => return
       setTimeout (->
         if is-show => $(\#authpanel).modal \show
         else $(\#authpanel).modal \hide
