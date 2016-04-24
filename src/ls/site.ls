@@ -89,6 +89,7 @@ angular.module \plotDB
       toggle: (value) -> @show = if value? => !!value else !@show
       failed: ''
       keyHandler: (e) -> if e.keyCode == 13 => @login!
+      loading: false
       logout: ->
         console.log \logout..
         $http do
@@ -101,6 +102,7 @@ angular.module \plotDB
         .error (d) ->
           plNotify.send \danger, 'Failed to Logout. '
       login: ->
+        @loading = true
         $http do
           url: \/u/login
           method: \POST
@@ -115,10 +117,12 @@ angular.module \plotDB
           else if window.location.pathname == '/u/login' => window.location.href = '/'
           # let's see if it's ok to not reload...
           #else window.location.reload!
-        .error (d, code) ->
+          @loading = false
+        .error (d, code) ~>
           if code == 403 =>
             $scope.auth.failed = if d.[]message.length => d.message.0 else 'email or password incorrect'
           else => $scope.auth.failed = 'system error, please try later'
+          @loading = false
         @passwd = ""
     $scope.$watch 'auth.show', (is-show) ->
       if $(\#authpanel).hasClass(\static) => return

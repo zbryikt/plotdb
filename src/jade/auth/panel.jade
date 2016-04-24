@@ -12,7 +12,8 @@
           .form-group
             input.form-control(type="password",placeholder="Password",ng-model="auth.passwd",
             ng-keypress="auth.keyHandler($event)")
-          .btn.btn-block.btn-success.btn-lg(ng-click="auth.login()",ng-cloak)
+          .btn.btn-block.btn-success.btn-lg.loader.loading-success(ng-click="auth.login()",ng-cloak,
+          ng-class="{'loading':auth.loading}")
             span(ng-show="!auth.isSignIn") SIGNUP
             span(ng-show="auth.isSignIn") LOGIN
           a.pull-right(href="#",style="margin-top:12px;font-size:12px;") forget password? &#xbb;

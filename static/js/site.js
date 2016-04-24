@@ -171,6 +171,7 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
         return this.login();
       }
     },
+    loading: false,
     logout: function(){
       console.log('logout..');
       return $http({
@@ -186,6 +187,7 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     },
     login: function(){
       var this$ = this;
+      this.loading = true;
       $http({
         url: '/u/login',
         method: 'POST',
@@ -204,16 +206,18 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
         }
         this$.show = false;
         if ($scope.nexturl) {
-          return window.location.href = $scope.nexturl;
+          window.location.href = $scope.nexturl;
         } else if (window.location.pathname === '/u/login') {
-          return window.location.href = '/';
+          window.location.href = '/';
         }
+        return this$.loading = false;
       }).error(function(d, code){
         if (code === 403) {
-          return $scope.auth.failed = (d.message || (d.message = [])).length ? d.message[0] : 'email or password incorrect';
+          $scope.auth.failed = (d.message || (d.message = [])).length ? d.message[0] : 'email or password incorrect';
         } else {
-          return $scope.auth.failed = 'system error, please try later';
+          $scope.auth.failed = 'system error, please try later';
         }
+        return this$.loading = false;
       });
       return this.passwd = "";
     }
