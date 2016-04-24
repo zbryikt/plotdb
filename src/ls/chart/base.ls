@@ -62,6 +62,13 @@ plotdb <<< do
       binary: "binary"
       sequential: "sequential"
       diverging: "diverging"
+    scale: do
+      ordinal: (pal) ->
+        c = pal.colors
+        range = (c.filter(->it.keyword).map(->it.hex) ++ c.filter(->!it.keyword).map(->it.hex))
+        domain = c.map(-> it.keyword).filter(-> it)
+        d3.scale.ordinal!domain domain .range range
+
   Boolean:
     name: \Boolean, level: 2,
     test: -> !!/^(true|false|1|0|yes|no)$/.exec(it)
@@ -105,3 +112,16 @@ plotdb.theme = do
       diverging-diverging: []
     config: do
       padding: {type: [plotdb.Number], default: 10}
+
+plotdb.data = do
+  sample: do
+    category: <[IT RD GM FIN LEGAL HR SALES]>
+    name: <[James Joe Amelie Doraemon Cindy David Frank Kim Ken Leland Mike Nick Oliver Randy]>
+    generate: (dimension) ->
+      ret = for i from 0 til parseInt(Math.random! * 10 + 10) =>
+        node = {}
+        for k,v of dimension =>
+          if !v.type or !v.type.length => node[k] = @name[parseInt(Math.random! * @name.length)]
+          else node[k] = parseInt(Math.random! * 8) + 2
+        node
+      return ret

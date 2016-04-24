@@ -4647,6 +4647,27 @@ import$(plotdb, {
       binary: "binary",
       sequential: "sequential",
       diverging: "diverging"
+    },
+    scale: {
+      ordinal: function(pal){
+        var c, range, domain;
+        c = pal.colors;
+        range = c.filter(function(it){
+          return it.keyword;
+        }).map(function(it){
+          return it.hex;
+        }).concat(c.filter(function(it){
+          return !it.keyword;
+        }).map(function(it){
+          return it.hex;
+        }));
+        domain = c.map(function(it){
+          return it.keyword;
+        }).filter(function(it){
+          return it;
+        });
+        return d3.scale.ordinal().domain(domain).range(range);
+      }
     }
   },
   Boolean: {
@@ -4717,6 +4738,31 @@ plotdb.theme = {
         type: [plotdb.Number],
         'default': 10
       }
+    }
+  }
+};
+plotdb.data = {
+  sample: {
+    category: ['IT', 'RD', 'GM', 'FIN', 'LEGAL', 'HR', 'SALES'],
+    name: ['James', 'Joe', 'Amelie', 'Doraemon', 'Cindy', 'David', 'Frank', 'Kim', 'Ken', 'Leland', 'Mike', 'Nick', 'Oliver', 'Randy'],
+    generate: function(dimension){
+      var ret, res$, i$, to$, i, node, k, v;
+      res$ = [];
+      for (i$ = 0, to$ = parseInt(Math.random() * 10 + 10); i$ < to$; ++i$) {
+        i = i$;
+        node = {};
+        for (k in dimension) {
+          v = dimension[k];
+          if (!v.type || !v.type.length) {
+            node[k] = this.name[parseInt(Math.random() * this.name.length)];
+          } else {
+            node[k] = parseInt(Math.random() * 8) + 2;
+          }
+        }
+        res$.push(node);
+      }
+      ret = res$;
+      return ret;
     }
   }
 };

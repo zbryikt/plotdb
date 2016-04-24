@@ -23,13 +23,15 @@
             li(ng-class="{'active':q.type=='10'}"): a(ng-click="q.type='10'") Cartogram
             li(ng-class="{'active':q.type=='11'}"): a(ng-click="q.type='11'") Heatmap
             li(ng-class="{'active':q.type=='12'}"): a(ng-click="q.type='12'") Sankey
-            li(ng-class="{'active':q.type=='13'}"): a(ng-click="q.type='13'") Venn Diagram
-            li(ng-class="{'active':q.type=='14'}"): a(ng-click="q.type='14'") Word Cloud
-            li(ng-class="{'active':q.type=='15'}"): a(ng-click="q.type='15'") Timeline
-            li(ng-class="{'active':q.type=='16'}"): a(ng-click="q.type='16'") Mixed
+            //-
+              li(ng-class="{'active':q.type=='13'}"): a(ng-click="q.type='13'") Venn Diagram
+              li(ng-class="{'active':q.type=='14'}"): a(ng-click="q.type='14'") Word Cloud
+              li(ng-class="{'active':q.type=='15'}"): a(ng-click="q.type='15'") Timeline
+              li(ng-class="{'active':q.type=='16'}"): a(ng-click="q.type='16'") Mixed
             li(ng-class="{'active':q.type=='17'}"): a(ng-click="q.type='17'") Pictogram
             li(ng-class="{'active':q.type=='18'}"): a(ng-click="q.type='18'") Scatter Plot
-            li(ng-class="{'active':q.type=='99'}"): a(ng-click="q.type='99'") Other
+            //-
+              li(ng-class="{'active':q.type=='99'}"): a(ng-click="q.type='99'") Other
 
         li.dropdown
           a.dropdown-toggle(data-toggle="dropdown")
@@ -49,7 +51,7 @@
             li(ng-class="{'active':q.enc=='8'}"): a(ng-click="q.enc='8'") Curvature
             li(ng-class="{'active':q.enc=='9'}"): a(ng-click="q.enc='9'") Shade
             li(ng-class="{'active':q.enc=='10'}"): a(ng-click="q.enc='10'") Saturation
-            li(ng-class="{'active':q.enc=='99'}"): a(ng-click="q.enc='99'") Other
+            //-li(ng-class="{'active':q.enc=='99'}"): a(ng-click="q.enc='99'") Other
 
         li.dropdown
           a.dropdown-toggle(data-toggle="dropdown")
@@ -61,11 +63,11 @@
             li: a(ng-click="q.cat=''") Any
             li(ng-class="{'active':q.cat=='1'}"): a(ng-click="q.cat='1'") Infographics
             li(ng-class="{'active':q.cat=='2'}"): a(ng-click="q.cat='2'") Geographics
-            li(ng-class="{'active':q.cat=='3'}"): a(ng-click="q.cat='3'") Interactive
+            //-li(ng-class="{'active':q.cat=='3'}"): a(ng-click="q.cat='3'") Interactive
             li(ng-class="{'active':q.cat=='4'}"): a(ng-click="q.cat='4'") Journalism
             li(ng-class="{'active':q.cat=='5'}"): a(ng-click="q.cat='5'") Statistics
             li(ng-class="{'active':q.cat=='6'}"): a(ng-click="q.cat='6'") Business
-            li(ng-class="{'active':q.cat=='99'}"): a(ng-click="q.cat='99'") Other
+            //-li(ng-class="{'active':q.cat=='99'}"): a(ng-click="q.cat='99'") Other
 
         li.dropdown
           a.dropdown-toggle(data-toggle="dropdown")
@@ -81,7 +83,7 @@
             li(ng-class="{'active':q.dim==4}"): a(ng-click="q.dim=4") 4
             li(ng-class="{'active':q.dim==5}"): a(ng-click="q.dim=5") 5
             li(ng-class="{'active':q.dim==99}"): a(ng-click="q.dim=99") > 5
-        li.dropdown
+        //-li.dropdown
           a.dropdown-toggle(data-toggle="dropdown")
             small Order
             span(ng-cloak) {{q.order}}

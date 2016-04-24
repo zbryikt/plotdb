@@ -146,7 +146,8 @@ angular.module \plotDB
       rawdata: ""
       dataset: null
       worker: new Worker("/js/data/worker.js")
-      loading: false
+      loading: true
+      inited: false
     $scope.name = null
     $scope.save = (locally = false) ->
       if !$scope.dataset or !$scope.dataset.name => return
@@ -176,12 +177,13 @@ angular.module \plotDB
         .then (ret) ~>
           $scope.dataset = new data-service.dataset ret
           $scope.parse.revert $scope.dataset
-
+          $scope.inited = true
         .catch (ret) ~>
           console.error ret
           plNotify.send \error, "failed to load dataset. please try reloading"
           #TODO check at server time?
           if ret.1 == \forbidden => window.location.href = \/403.html #window.location.pathname
+          $scope.inited = true
     $scope.delete = (dataset) ->
       dataset.delete!
         .then -> 
@@ -222,6 +224,7 @@ angular.module \plotDB
           ret = that
           $scope.dataset.key = ret.2
           $scope.load {location: (if ret.1 == \s => \server else \local), name: \dataset}, ret.2
+        else $scope.inited = true
         $scope.$watch 'rawdata', -> $scope.parse.run!
         offset = $('#dataset-editbox textarea').offset!
         $('#dataset-editbox textarea').css({height: "#{window.innerHeight - offset.top - 140}px"})
@@ -321,7 +324,7 @@ angular.module \plotDB
         return @chosen <<< {dataset: null, key: null}
       @chosen.key = dataset.key
       @chosen.dataset = dataset
-    $scope.remove = (dataset) ->
+    $scope.delete = (dataset) ->
       dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)
 
   ..controller \datasetList, 
@@ -339,5 +342,11 @@ angular.module \plotDB
         return @chosen <<< {dataset: null, key: null}
       @chosen.key = dataset.key
       @chosen.dataset = dataset
-    $scope.remove = (dataset) ->
-      dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)
+    $scope.delete = (dataset) ->
+      dataset.delete!
+        .then ~> 
+          <~ $scope.$apply
+          $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)
+          plNotify.send \success, "dataset deleted."
+        .catch ~>
+          plNotify.send \danger, "failed to delete dataset."

@@ -69,6 +69,7 @@ angular.module \plotDB
             if @save.handle => $timeout.cancel @save.handle
             @save.handle = null
             @backup.unguard 3000
+            @share-panel.save-hint = false
           .catch (err) ~> @$apply ~>
             plNotify.aux.error.io \save, @type, err
             console.error "[save #name]", err
@@ -419,6 +420,11 @@ angular.module \plotDB
         is-public: -> ("public" in $scope.target!.permission.switch)
         set-private: ->
           $scope.target!.{}permission.switch = <[private]>
+          @save-hint = true
+        toggle-public: ->
+          $scope.target!.{}permission.switch = (
+            if $scope.target!.{}permission.switch.0 == \public => <[private]> else <[public]>
+          )
           @save-hint = true
         set-public: ->
           $scope.target!.{}permission.switch = <[public]>

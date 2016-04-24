@@ -1,6 +1,6 @@
 .data-fields(ng-controller="dataFiles")
   .data-file(ng-repeat="dataset in datasets")
-    .closebtn(ng-show="dataset.type.location!='sample'",ng-click="remove(dataset)")
+    .closebtn(ng-show="dataset.type.location!='sample'",ng-click="delete(dataset)")
     .title(ng-click="edit(dataset)") {{dataset.name}}
     .desc {{dataset.size|size}}, {{dataset.rows}} rows
     .data-field(ng-repeat="field in dataset.fields",ng-attr-style="background:{{dataset.color}}",ng-drag="true",ng-drag-data="field")

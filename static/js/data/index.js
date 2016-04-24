@@ -179,7 +179,8 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     rawdata: "",
     dataset: null,
     worker: new Worker("/js/data/worker.js"),
-    loading: false
+    loading: true,
+    inited: false
   });
   $scope.name = null;
   $scope.save = function(locally){
@@ -231,13 +232,15 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     var this$ = this;
     return dataService.load(_type, key).then(function(ret){
       $scope.dataset = new dataService.dataset(ret);
-      return $scope.parse.revert($scope.dataset);
+      $scope.parse.revert($scope.dataset);
+      return $scope.inited = true;
     })['catch'](function(ret){
       console.error(ret);
       plNotify.send('error', "failed to load dataset. please try reloading");
       if (ret[1] === 'forbidden') {
-        return window.location.href = '/403.html';
+        window.location.href = '/403.html';
       }
+      return $scope.inited = true;
     });
   };
   $scope['delete'] = function(dataset){
@@ -294,6 +297,8 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
           location: ret[1] === 's' ? 'server' : 'local',
           name: 'dataset'
         }, ret[2]);
+      } else {
+        $scope.inited = true;
       }
       $scope.$watch('rawdata', function(){
         return $scope.parse.run();
@@ -507,7 +512,7 @@ x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].con
       this.chosen.key = dataset.key;
       return this.chosen.dataset = dataset;
     };
-    return $scope.remove = function(dataset){
+    return $scope['delete'] = function(dataset){
       var this$ = this;
       return dataset['delete']().then(function(){
         return $scope.$apply(function(){
@@ -537,14 +542,17 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
     this.chosen.key = dataset.key;
     return this.chosen.dataset = dataset;
   };
-  return $scope.remove = function(dataset){
+  return $scope['delete'] = function(dataset){
     var this$ = this;
     return dataset['delete']().then(function(){
       return $scope.$apply(function(){
-        return $scope.datasets = $scope.datasets.filter(function(it){
+        $scope.datasets = $scope.datasets.filter(function(it){
           return it.key !== dataset.key;
         });
+        return plNotify.send('success', "dataset deleted.");
       });
+    })['catch'](function(){
+      return plNotify.send('danger', "failed to delete dataset.");
     });
   };
 }));

@@ -242,7 +242,9 @@ block body
       .col-sm-3
         #config-panel.plpanel
           #chart-settings
-            label(ng-cloak) {{type}}
+            small.grayed.pull-right.clickable(ng-cloak,ng-click="sharePanel.togglePublic()")
+              | {{(target().permission.switch[0]=='public'?"published":"private")}}
+            label: #[span(ng-cloak) {{type}}]&nbsp;
             .chart-config
               .input-group
                 span.input-group-addon name

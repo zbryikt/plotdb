@@ -136,7 +136,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             $timeout.cancel(this$.save.handle);
           }
           this$.save.handle = null;
-          return this$.backup.unguard(3000);
+          this$.backup.unguard(3000);
+          return this$.sharePanel.saveHint = false;
         });
       })['catch'](function(err){
         return this$.$apply(function(){
@@ -755,6 +756,13 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       setPrivate: function(){
         var ref$;
         ((ref$ = $scope.target()).permission || (ref$.permission = {}))['switch'] = ['private'];
+        return this.saveHint = true;
+      },
+      togglePublic: function(){
+        var ref$;
+        ((ref$ = $scope.target()).permission || (ref$.permission = {}))['switch'] = ((ref$ = $scope.target()).permission || (ref$.permission = {}))['switch'][0] === 'public'
+          ? ['private']
+          : ['public'];
         return this.saveHint = true;
       },
       setPublic: function(){

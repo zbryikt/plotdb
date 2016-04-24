@@ -32,5 +32,13 @@ block body
         i.fa.fa-tag
         span(ng-cloak) 37 fields
     //-.sep.break.dark
-    include list.jade
+    .row
+      .col-sm-8
+        include list.jade
+      .col-sm-4
+        br
+        br
+        .input-group
+          input.form-control(placeholder="search for dataset...")
+          .input-group-addon: i.fa.fa-search
   include ../../footer.jade

@@ -213,9 +213,9 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging'
     import$($scope.qLazy, $scope.$parent.qLazy);
   }
   $scope.qmap = {
-    type: ["Other", "Bar Chart", "Line Chart", "Pie Chart", "Area Chart", "Bubble Chart", "Radial Chart", "Calendar", "Treemap", "Choropleth", "Cartogram", "Heatmap", "Sankey", "Venn Diagram", "Word Cloud", "Timeline", "Mixed"],
+    type: ["Other", "Bar Chart", "Line Chart", "Pie Chart", "Area Chart", "Bubble Chart", "Radial Chart", "Calendar", "Treemap", "Choropleth", "Cartogram", "Heatmap", "Sankey", "Venn Diagram", "Word Cloud", "Timeline", "Mixed", "Pictogram", "Scatter Plot"],
     enc: ["Other", "Position", "Position ( Non-aligned )", "Length", "Direction", "Angle", "Area", "Volume", "Curvature", "Shade", "Saturation"],
-    cat: ["Other", "Infographics", "Geographics", "Interactive", "Journalism", "Statistics"],
+    cat: ["Other", "Infographics", "Geographics", "Interactive", "Journalism", "Statistics", "Business"],
     dim: [0, 1, 2, 3, 4, 5, "> 5"]
   };
   $scope.link = function(it){

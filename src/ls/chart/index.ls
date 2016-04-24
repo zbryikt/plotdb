@@ -113,14 +113,14 @@ angular.module \plotDB
         "Other" "Bar Chart" "Line Chart" "Pie Chart"
         "Area Chart" "Bubble Chart" "Radial Chart" "Calendar"
         "Treemap" "Choropleth" "Cartogram" "Heatmap" "Sankey"
-        "Venn Diagram" "Word Cloud" "Timeline" "Mixed"
+        "Venn Diagram" "Word Cloud" "Timeline" "Mixed" "Pictogram" "Scatter Plot"
       ]
       enc: [
         "Other" "Position" "Position ( Non-aligned )" "Length" "Direction" "Angle"
         "Area" "Volume" "Curvature" "Shade" "Saturation"
       ]
       cat: [
-        "Other" "Infographics" "Geographics" "Interactive" "Journalism" "Statistics"
+        "Other" "Infographics" "Geographics" "Interactive" "Journalism" "Statistics" "Business"
       ]
       dim: [
         0 1 2 3 4 5 "> 5"

@@ -1,8 +1,8 @@
 div(ng-controller="datasetList")
   .dataset-entry(ng-repeat="dataset in datasets")
     .dse-ctrl.pull-right
-      i.fa.fa-share
-      i.fa.fa-trash
+      //-i.fa.fa-share
+      i.fa.fa-trash.clickable(ng-click="delete(dataset)")
     .dse-head
       .dse-thumb
         img(src="/assets/img/dataset/grid.png")
