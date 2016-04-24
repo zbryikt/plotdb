@@ -200,6 +200,7 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
         }
       }).success(function(d){
         $scope.auth.failed = '';
+        $scope.auth.succeed = 'success! ' + ($('#authpanel').hasClass('static') ? 'redirecting...' : '');
         $scope.user.data = d;
         if (typeof ga != 'undefined' && ga !== null) {
           ga('set', '&uid', d.key);

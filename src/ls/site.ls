@@ -110,6 +110,8 @@ angular.module \plotDB
           headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
         .success (d) ~>
           $scope.auth.failed = ''
+          $scope.auth.succeed = 'success! ' + (
+            if $(\#authpanel).hasClass(\static) => 'redirecting...' else '')
           $scope.user.data = d
           if ga? => ga \set, \&uid, d.key
           @show = false

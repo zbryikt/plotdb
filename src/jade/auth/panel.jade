@@ -21,6 +21,7 @@
         div(style="position:relative")
           hr
           .error(ng-show="auth.failed",ng-cloak) {{auth.failed}}
+          .success(ng-show="auth.succeed",ng-cloak) {{auth.succeed}}
         #authpanel-social-login.row
           .col-xs-6
             a.btn.btn-default.btn-block(ng-attr-href="/u/auth/facebook?nexturl={{nexturl}}",
