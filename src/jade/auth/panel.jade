@@ -7,9 +7,11 @@
       .moda-body(style="padding:20px")
         form.form
           .form-group
-            input.form-control(type="text",placeholder="Email",ng-model="auth.email")
+            input.form-control(type="text",placeholder="Email",ng-model="auth.email",
+            ng-keypress="auth.keyHandler($event)")
           .form-group
-            input.form-control(type="password",placeholder="Password",ng-model="auth.passwd")
+            input.form-control(type="password",placeholder="Password",ng-model="auth.passwd",
+            ng-keypress="auth.keyHandler($event)")
           .btn.btn-block.btn-success.btn-lg(ng-click="auth.login()",ng-cloak)
             span(ng-show="!auth.isSignIn") SIGNUP
             span(ng-show="auth.isSignIn") LOGIN

@@ -56,7 +56,7 @@ html(lang="en")
   body(id=rootid,ng-app="plotDB",ng-controller="plSite")
     div(style="height:0") &nbsp;
     include nav.jade
-    include authpanel.jade
+    include auth/panel.jade
     #notifications
       .notify(ng-repeat="n in notifications",ng-class="'notify-'+n.type",ng-cloak) {{n.message}}
     #alertbox(ng-cloak,ng-show="alert.toggled"): .ib

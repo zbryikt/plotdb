@@ -102,7 +102,7 @@ backend = do
       ..get \/login, (req, res) -> res.render \login
       ..post \/login, passport.authenticate \local, do
         successRedirect: \/u/200
-        failureRedirect: \/auth/email-fail.html
+        failureRedirect: \/u/403
       ..get \/logout, (req, res) ->
         req.logout!
         res.redirect \/
