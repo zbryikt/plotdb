@@ -25,4 +25,4 @@ promises = for i from 0 til charts.length =>
   pairs = io.aux.insert.assemble pairs
   updater = join(pairs)
   io.query("insert into charts #{pairs.0} values #{pairs.1} on conflict (key) do update set #updater", pairs.2)
-Promise.all promises .then -> console.log "done."
+bluebird.all promises .then -> console.log "done."
