@@ -65,7 +65,8 @@ angular.module \plotDB
             if nothumb => plNotify.send \warning, "#{@type} saved, but thumbnail failed to update"
               else plNotify.send \success, "#{@type} saved"
             link = @service.link @target!
-            if refresh or !window.location.search => window.location.href = link
+            if refresh or (!window.location.search and !/\/chart\/[^/]+/.exec(window.location.pathname)) =>
+              window.location.href = link
             if @save.handle => $timeout.cancel @save.handle
             @save.handle = null
             @backup.unguard 3000
@@ -88,6 +89,11 @@ angular.module \plotDB
         key = (if @target!._type.location == \server => @target!.key else null)
         @target! <<< {key: null, owner: null, parent: key, permission: {switch: [], value: []}}
         @save!
+      loadchart: (chart) ->
+        @[@type] = new @service[@type](@[@type] <<< chart)
+        @backup.check!
+        $scope.backup.unguard 3000
+        $scope.countline!
       load: (type, key) ->
         @service.load type, key
           .then (ret) ~>
@@ -529,6 +535,8 @@ angular.module \plotDB
             $scope.$apply ~> @switch-panel!
 
       check-param: ->
+        if window.chart => return @loadchart window.chart
+        # deprecated. dont use ?k=s123 from now on
         if !window.location.search => return
         if window.location.search == \?demo =>
           $scope.target!.doc.content = $scope.service.sample.1.doc.content

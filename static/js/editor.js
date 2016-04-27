@@ -129,7 +129,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             plNotify.send('success', this$.type + " saved");
           }
           link = this$.service.link(this$.target());
-          if (refresh || !window.location.search) {
+          if (refresh || (!window.location.search && !/\/chart\/[^/]+/.exec(window.location.pathname))) {
             window.location.href = link;
           }
           if (this$.save.handle) {
@@ -179,6 +179,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         value: []
       };
       return this.save();
+    },
+    loadchart: function(chart){
+      this[this.type] = new this.service[this.type](import$(this[this.type], chart));
+      this.backup.check();
+      $scope.backup.unguard(3000);
+      return $scope.countline();
     },
     load: function(type, key){
       var this$ = this;
@@ -1006,6 +1012,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     },
     checkParam: function(){
       var ret, key, ref$, location;
+      if (window.chart) {
+        return this.loadchart(window.chart);
+      }
       if (!window.location.search) {
         return;
       }

@@ -6,7 +6,7 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
   service = {
     sample: sampleChart,
     link: function(chart){
-      return "/chart/?k=" + chart._type.location.charAt(0) + chart.key;
+      return "/chart/" + chart.key + "/";
     },
     thumblink: function(chart){
       return this.sharelink(chart) + "/thumb";

@@ -1,20 +1,29 @@
 extends /base.jade
 block vars
-  - var rootid = "chartview"
-  - var title = 'plotdb'
-  - var description = "plotdb"
-  - var thumbnail = "http://plotdb.io/assets/img/thumbnail.jpg"
-  - var thumbtype = "image/jpg"
-  - var rootpath = "/module"
-  - var url = "http://plotdb.com/"
+  if !chart
+    - var rootid = "chartview"
+    - var title = 'Visualization Editor @ PlotDB'
+    - var description = "Create, share and request visualizations online."
+    - var thumbnail = "http://plotdb.com/assets/img/thumbnail.png"
+    - var thumbtype = "image/png"
+    - var rootpath = "/module"
+    - var url = "http://plotdb.com/"
+  else
+    - var rootid = "chartview"
+    - var title = chart.name + ' / Visualize with PlotDB'
+    - var description = chart.description
+    - var thumbnail = "http://plotdb.com/s/chart/" + chart.key + ".png"
+    - var thumbtype = "image/png"
+    - var rootpath = "/module"
+    - var url = "http://plotdb.com/chart/" + chart.key
 mixin SaveFork
   span(ng-cloak,ng-show="target().owner==user.data.key") Save
   span(ng-cloak,ng-show="target().owner!=user.data.key") Fork
 block head
-block body
   if chart 
     script.
       window.chart = !{JSON.stringify(chart)}
+block body
   div &nbsp;
   #root(ng-controller="plEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
     #data-edit-modal(ng-cloak,ng-show="dataPanel.toggled"): .ib
