@@ -129,11 +129,11 @@ engine.app.get \/chart/:id, (req, res) ->
   io.query "select * from charts where key = $1", [req.params.id]
     .then (r = {}) ->
       chart = r.[]rows.0
-      if !chart => return aux.r404 res
+      if !chart => return aux.r404 res, "", true
       if (chart.{}permission.[]switch.indexOf(\public) < 0)
-      and (!req.user or chart.owner != req.user.key) => return aux.r403 res, "forbidden"
+      and (!req.user or chart.owner != req.user.key) => return aux.r403 res, "forbidden", true
       res.render 'view/chart/index.jade', {chart}
       return null
     .catch ->
       console.error it.stack
-      return aux.r403 res
+      return aux.r403 res, "no luck.", true
