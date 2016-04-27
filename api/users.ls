@@ -11,19 +11,19 @@ get-user = (req, key) ->
 
 engine.app.get \/me/, throttle.limit {lower-delta: 2, upper-delta: 6, penalty: 1, limit: 6}, (req, res) ->
   if !req.user => return res.redirect "/"
-  res.render \me/profile.jade, {user: req.user}
+  res.render \view/me/profile.jade, {user: req.user}
 
 engine.app.get \/user/:id, (req, res) ->
   get-user req, req.params.id
     .then (user) ->
       if !user => return aux.r404 res, "user not found", true
-      res.render \me/profile.jade, {user}
+      res.render \view/me/profile.jade, {user}
       return null
     .catch -> return aux.r403 res, "", true
 
 engine.app.get \/me/edit/, (req, res) ->
   if !req.user => return res.redirect "/"
-  res.render \me/settings.jade, {user: req.user}
+  res.render \view/me/settings.jade, {user: req.user}
 
 engine.router.api.post \/me/passwd/, throttle.limit auth-limit,  (req, res) ->
   if !req.user => return aux.r404 res

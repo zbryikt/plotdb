@@ -672,6 +672,9 @@ width: 100%;
   right: 10px;
   top: 0;
 }
+.btn.btn-success.loader:after {
+  background: url("/assets/img/loading-success.gif") center center no-repeat;
+}
 .btn.btn-danger.loader:after {
   background: url("/assets/img/loading-danger.gif") center center no-repeat;
 }

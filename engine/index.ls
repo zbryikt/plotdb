@@ -28,7 +28,7 @@ backend = do
         [err,ret] = [e,""]
       callback err, ret
     app.use \/, express.static(path.join(__dirname, '../static'))
-    app.set 'views', path.join(__dirname, '../view')
+    app.set 'views', path.join(__dirname, '../src/jade/')
     app.locals.basedir = app.get \views
 
     get-user = (u, p, usep, detail, done) ->
