@@ -15,8 +15,9 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
       return plConfig.urlschema + "" + plConfig.domain + "/v/chart/" + chart.key;
     }
   };
-  object = function(src){
+  object = function(src, lazy){
     var k, ref$, v;
+    lazy == null && (lazy = false);
     import$(this, {
       name: 'untitled',
       owner: null,
@@ -61,7 +62,9 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
     function fn$(it){
       var field;
       field = new dataService.Field(it);
-      field.update();
+      if (!lazy) {
+        field.update();
+      }
       return field;
     }
   };
@@ -236,7 +239,7 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging'
       return $scope.$apply(function(){
         var data;
         data = (ret || []).map(function(it){
-          return new chartService.chart(it);
+          return new chartService.chart(it, true);
         });
         Paging.flexWidth(data);
         return $scope.charts = (reset

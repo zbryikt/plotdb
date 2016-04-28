@@ -11,7 +11,7 @@ angular.module \plotDB
       #TODO better mechanism for switching domain ( dev, staging and production )
       #sharelink: (chart) -> "https://plotdb.com/v/chart/#{chart.key}"
       sharelink: (chart) -> "#{plConfig.urlschema}#{plConfig.domain}/v/chart/#{chart.key}"
-    object = (src) ->
+    object = (src, lazy = false) ->
       @ <<< do
         name: \untitled
         owner: null
@@ -34,7 +34,7 @@ angular.module \plotDB
       @ <<< src
       for k,v of (@dimension or {}) => v.fields = (v.fields or []).map ->
         field = new dataService.Field it
-        field.update!
+        if !lazy => field.update!
         field
       @
 
@@ -133,7 +133,7 @@ angular.module \plotDB
         payload = {} <<< Paging{offset,limit} <<< $scope.q <<< $scope.q-lazy
         IO-service.list-remotely {name: \chart}, payload
       ), delay, reset).then (ret) -> $scope.$apply ~>
-        data = (ret or []).map -> new chartService.chart it
+        data = (ret or []).map -> new chartService.chart it, true
         Paging.flex-width data
         $scope.charts = (if reset => [] else $scope.charts) ++ data
 

@@ -105,9 +105,9 @@ angular.module \plotDB
       @ <<< config
 
     baseService = do
-      wrapper: (name, callee) -> (config) ->
-        baseObject.call @, name, config
-        callee.call @, config
+      wrapper: (name, callee) -> (config, ...list) ->
+        baseObject.apply @, [name, config] ++ list
+        callee.apply @, [config] ++ list
         @
       derive: (name, service, callee) ->
         service = {} <<< service-skeleton <<< service
