@@ -199,8 +199,8 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       }
       return results$;
     }()).length;
-    if (columnLength >= 20) {
-      return plNotify.send('danger', "maximal 20 columns is allowed. you have " + columnLength);
+    if (columnLength >= 30) {
+      return plNotify.send('danger', "maximal 30 columns is allowed. you have " + columnLength);
     }
     return $scope.parse.run(true).then(function(){
       var isCreate;
