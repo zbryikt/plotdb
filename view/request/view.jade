@@ -21,37 +21,20 @@ block head
 block body
   .spc1
   .page-header: .inner
-    .title Request
-    .desc Want your own unique visualization? let the Pros help!
+    .title #{request.name}
+    .desc visualization request by #[a(href="/user/#{request.owner}") #{request.username}]
   #root.narrow.with-header(ng-controller="plRequest")
+    each comment in comments
+      .panel.panel-default
+        .panel-body
+          != comment.content
+    br
+    h3 Response
+    .sep
     .panel.panel-default
-      .panel-heading(style="background:#f9f9f9")
-        span What kind of visualization you want to make?
-      .panel-body
-        input.form-control(placeholder="What kind of chart you want to make?")
-        #request-editor
-          .editable
-        .sep.noline
-        .btn.btn-success Submit
-    //-.panel.panel-default: .panel-body
-      h3 Make a Request
-      #editable
-        h3 I want to make a chart ...
-      label Upload a reference image and describe what you want it to be by text
-      textarea.form-control(rows="10")
-      div(style="margin-top:5px;")
-        .btn.btn-default: i.fa.fa-paperclip
-        .pull-right: .btn.btn-default Submit
-    br
-    br
-    .text-center
-      p or check out requests from others...
-    hr
-    .text-right
-      div(style="width:200px;display:inline-block")
-        .input-group
-          input.form-control(type="text",placeholder="keyword")
-          span.input-group-btn
-            .btn.btn-default: i.fa.fa-search
-    include ../widget/request.jade
-  include ../../footer.jade
+      #request-editor.panel-body(style="border:none;box-shadow:none")
+        .editable
+      .panel-footer
+        .btn.btn-success Response
+
+  include /footer.jade

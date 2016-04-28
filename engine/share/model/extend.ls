@@ -66,7 +66,7 @@ base = (model) ->
       assets: {required: false, type: model.type.array({ type: base.file })}
       permission: {type: model.type.permission}
 
-  chart-config = do
+  base.chart = new model do
     name: \chart
     default-fields: true
     base: do
@@ -91,12 +91,26 @@ base = (model) ->
       code: {type: base.file}
       assets: {required: false, type: model.type.array({type: base.file})}
       permission: {required: false, type: model.type.permission}
-      #config: {require: false}
-      #dimension: {require: false}
-      #data: {required: false}
       #TODO: add mapping or binding for dataset fields in chart
 
-  base.chart = new model chart-config
+  base.request = new model do
+    name: \request
+    default-fields: true
+    base: do
+      owner: {required: true, type: model.type.key({type:model.type.user})}
+      name: {max: 100, min: 1, required: true, type: model.type.string}
+      config: {required: false, type: base.json}
+
+  base.comment = new model do
+    name: \discussion
+    default-fields: true
+    base: do
+      owner: {required: true, type: model.type.key({type:model.type.user})}
+      content: {required: true, type: model.type.stirng}
+      request: {required: false, type: model.type.key({type:model.type.request})}
+      main: {required: false, type: model.type.boolean }
+
+
   base
 
 module.exports = base

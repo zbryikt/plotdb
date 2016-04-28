@@ -1,0 +1,10 @@
+.ldcp-colors.ldcp-g21 .ldcp-palette .ldcp-color {
+  margin: 0 2px 0 0;
+}
+.ldcp-colors.ldcp-g21 .ldcp-palette .ldcp-color > div {
+  box-shadow: none;
+}
+.ldColorPicker .ldcp-g31 .ldcp-caret {
+  width: 42px;
+  overflow: hidden;
+}

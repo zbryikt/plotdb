@@ -1,0 +1,99 @@
+extends /base.jade
+block vars
+  - var rootid = "chartview"
+  - var title = 'Request for visualizations / PlotDB'
+  - var description = "Need a visualization design? let the pro help!"
+  - var url = "http://plotdb.com/chart/request"
+block head
+  link(rel="stylesheet",type="text/css",href="/assets/medium-editor/5.15.1/css/medium-editor.min.css")
+  link(rel="stylesheet",type="text/css",href="/assets/medium-editor/5.15.1/css/themes/beagle.min.css")
+  link(rel="stylesheet",type="text/css",href="/assets/medium-insert/2.2.4/css/frontend.min.css")
+  link(rel="stylesheet",type="text/css",href="/assets/medium-insert/2.2.4/css/base.min.css")
+  script(type="text/javascript",src="/assets/medium-editor/5.15.1/js/medium-editor.min.js")
+  script(type="text/javascript",src="/assets/medium-list/1.0.5/medium-editor-list-min.js")
+  script(type="text/javascript",src="/assets/handlebars/4.0.5/handlebars.runtime.min.js")
+  script(type="text/javascript",src="/assets/jquery-sortable/0.9.13/jquery-sortable-min.js")
+  script(type="text/javascript",src="/assets/blueimp-file-upload/9.11.2/jquery.ui.widget.js")
+  script(type="text/javascript",src="/assets/blueimp-file-upload/9.11.2/jquery.iframe-transport.js")
+  script(type="text/javascript",src="/assets/blueimp-file-upload/9.11.2/jquery.fileupload.js")
+  script(type="text/javascript",src="/assets/medium-insert/2.2.4/js/index.min.js")
+  script(type="text/javascript",src="/js/request.js")
+block body
+  .spc1
+  .page-header: .inner
+    .title Request
+    .desc Want your own unique visualization? let the Pros help!
+  #root.narrow.with-header(ng-controller="plRequest")
+    .row
+      .col-sm-9
+        .panel.panel-default
+          .panel-heading(style="background:#fff;padding:5px 0;")
+            input.form-control(ng-model="name",
+            placeholder="What kind of chart you want to make?",
+            style="border:none;box-shadow:none")
+          #request-editor.panel-body(style="border:none;box-shadow:none")
+            .editable
+          .panel-footer
+            .btn.btn-success(ng-click="submit()") Post
+      .col-sm-3
+        .panel.panel-default
+          .panel-body
+            label valid before
+            input.form-control(type="date",ng-model="config.deadline")
+            .sep.noline
+            label Requirement
+            .checkbox: label #[input(type="checkbox",ng-model="config.ie8")] #[span IE 8 compatible]
+            .checkbox: label #[input(type="checkbox",ng-model="config.mobile")] #[span Mobile Friendly]
+            .checkbox: label #[input(type="checkbox",ng-model="config.realtime")] #[span Realtime Dataset]
+            .checkbox: label #[input(type="checkbox",ng-model="config.static")] #[span Static Image]
+
+    h3 Latest Requests
+    span or, take a look of how others post request...
+    .sep.gap
+    //-div(ng-controller="requestList",ng-cloak)
+      div(ng-repeat="request in requests")
+        img(src="/assets/img/avatar.png")
+        h3 {{request.name}}
+        p {{request.img}}
+        img(ng-attr-src="{{request.img}}")
+        p {{request.brief}}
+
+
+    .charts(ng-cloak,ng-controller="requestList")
+      .chart(ng-repeat="request in requests",ng-attr-style="display:inline-block;flex:1 1 {{request.width}}px")
+        a.chart-img(ng-attr-href="{{link(request)}}",style="display:block")
+          .ib(ng-attr-style="background-image:url({{request.img}})")
+        .chart-desc
+          a.title(ng-attr-href="{{link(request)}}")
+            span {{request.name}}
+          .desc {{request.brief}}
+        .labels
+          //-.label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
+          .flexend
+        .social.request
+          a.author(ng-attr-href="/user/{{request.owner}}") #[i.fa.fa-user] {{request.ownername}}
+          i.fa.fa-internet-explorer
+          i.fa.fa-mobile
+          i.fa.fa-photo
+          i.fa.fa-rss
+          //-.favorite(ng-click="like(request)",
+            ng-class="{'active':user.data && user.data.likes.chart[chart.key]}") #[i.fa.fa-heart] {{chart.likes || 0}}
+      #list-end.text-center: span(ng-cloak,ng-show="paging.end") this is the end :)
+      .loader.alone.sm.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")
+
+
+    //-
+      br
+      br
+      .text-center
+        p or check out requests from others...
+      hr
+      .text-right
+        div(style="width:200px;display:inline-block")
+          .input-group
+            input.form-control(type="text",placeholder="keyword")
+            span.input-group-btn
+              .btn.btn-default: i.fa.fa-search
+      include /widget/request.jade
+
+  include /footer.jade

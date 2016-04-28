@@ -1183,6 +1183,13 @@ a.dropdown-toggle {
   margin: 0;
   font-size: 1em;
 }
+.chart .social.request i.fa {
+  font-size: 1.4em;
+  margin-right: 10px;
+}
+.chart .social.request i.fa.fa-mobile {
+  font-size: 1.6em;
+}
 .chart-ribon {
   width: 50px;
   height: 18px;
@@ -2383,7 +2390,7 @@ small.hint {
   padding: 0 15px;
   border: 1px solid #ccc;
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-  min-height: 100px;
+  min-height: 130px;
   margin-top: 5px;
 }
 #request-editor .editable:after {

@@ -1,5 +1,23 @@
 require! <[../../../secret ../postgresql pg bluebird]>
 
+init-commentimgs-table = """create table if not exists commentimgs (
+  key serial primary key,
+  owner int references users(key)
+)"""
+
+init-requests-table = """create table if not exists requests (
+  key serial primary key,
+  owner int references users(key),
+  name text constraint nlen check (char_length(name) <= 200)
+)"""
+
+init-comments-table = """create table if not exists comments (
+  key serial primary key,
+  owner int references users(key),
+  request int references requests(key),
+  content text
+)"""
+
 init-sessions-table = """create table if not exists sessions (
   key text not null unique primary key,
   detail jsonb
@@ -109,6 +127,9 @@ query init-users-table
   .then -> query init-datafields-table
   .then -> query init-themes-table
   .then -> query init-charts-table
+  .then -> query init-requests-table
+  .then -> query init-comments-table
+  .then -> query init-commentimgs-table
   .then -> client.end!
   .catch -> [console.log(it), client.end!]
   

@@ -42,6 +42,7 @@
     "lwip": "=0.0.7",
     "pg": "=4.5.1",
     "fs-extra": "=0.26.7",
-    "require-reload": "=0.2.2"
+    "require-reload": "=0.2.2",
+    "sanitize-html": "1.11.4"
   }
 }
