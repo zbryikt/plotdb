@@ -33,10 +33,13 @@ backend = do
 
     get-user = (u, p, usep, detail, done) ->
       authio.user.get u, p, usep, detail
-        .then -> done null, it
-        .catch -> 
+        .then ->
+          done null, it
+          return null
+        .catch ->
           msg = if usep => "incorrect email or password" else "did you login with social account?"
           done null, false, {message: msg}
+          return null
 
     passport.use new passport-local.Strategy {
       usernameField: \email
@@ -129,7 +132,7 @@ backend = do
     res!
 
   start: (cb) ->
-    if !@config.debug => 
+    if !@config.debug =>
       (err, req, res, next) <- @app.use
       -> if err => res.status 500 .render '500' else next!
     if @config.watch => watch.start @config
