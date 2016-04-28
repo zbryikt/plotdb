@@ -17,7 +17,9 @@ engine.router.api.get "/dataset/", (req, res) ->
       console.log it.stack
       return aux.r403 res
 
-get-dataset =(req,simple=false) -> new bluebird (res, rej) ->
+get-dataset =(req,simple=false) ->
+  if !/^\d+$/.exec(req.params.id) => return bluebird.reject new Error("incorrect key type")
+  (res, rej) <- new bluebird _
   io.query "select * from datasets where datasets.key = $1", [req.params.id]
     .then (r = {}) ->
       dataset = r.[]rows.0
@@ -36,7 +38,7 @@ get-dataset =(req,simple=false) -> new bluebird (res, rej) ->
       console.error it.stack
       return rej new Error! <<< status: 403
 
-engine.app.get "/dataset/:id", (req, res) ->
+engine.app.get "/dataset/:id", aux.numid true, (req, res) ->
   get-dataset req, true
     .then (ret) ->
       res.render 'dataset/index.jade', {dataset:ret}
@@ -45,7 +47,7 @@ engine.app.get "/dataset/:id", (req, res) ->
       if e.status == 404 => return aux.r404 res, "", true
       aux.r403 res, "", true
 
-engine.router.api.get "/dataset/:id", (req, res) ->
+engine.router.api.get "/dataset/:id", aux.numid false, (req, res) ->
   get-dataset req
     .then (ret) -> res.json ret
     .catch (e) ->
@@ -69,6 +71,7 @@ update-size = (req, delta) -> new bluebird (res, rej) ->
 
 #TODO remove length check for dynamic dataset
 save-dataset = (req, res, okey = null) ->
+  if okey and !/^\d+$/.exec("#okey") => return bluebird.reject new Error("incorrect key type")
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => aux.r400 res
   data = req.body <<< {owner: req.user.key, modifiedtime: new Date!}
@@ -178,11 +181,11 @@ save-dataset = (req, res, okey = null) ->
 engine.router.api.post "/dataset/", (req, res) ->
   save-dataset req, res
 
-engine.router.api.put "/dataset/:id", (req, res) ->
+engine.router.api.put "/dataset/:id", aux.numid false, (req, res) ->
   save-dataset req, res, req.params.id
 
-engine.router.api.delete "/dataset/:id", (req, res) ->
-  if !req.user or !req.params.id => aux.r403 res
+engine.router.api.delete "/dataset/:id", aux.numid false, (req, res) ->
+  if !req.user => aux.r403 res
   io.query "select key,owner from datasets where key = $1", [req.params.id]
     .then (r) ->
       dataset = r.[]rows.0

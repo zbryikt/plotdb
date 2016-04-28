@@ -40,7 +40,7 @@ engine.router.api.get "/chart/", (req, res) ->
       console.log e.stack
       res.send []
 
-engine.router.api.get "/chart/:id", (req, res) ->
+engine.router.api.get "/chart/:id", aux.numid false, (req, res) ->
   io.query([
     'select users.displayname as ownername, charts.*'
     'from users,charts where users.key = owner and'
@@ -76,7 +76,7 @@ engine.router.api.post "/chart/", (req, res) ->
       console.error it.stack
       aux.r403 res
 
-engine.router.api.put "/chart/:id", (req, res) ~>
+engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
   data = req.body
@@ -109,7 +109,7 @@ engine.router.api.put "/chart/:id", (req, res) ~>
       console.error it.stack
       return aux.r403 res
 
-engine.router.api.delete "/chart/:id", (req, res) ~>
+engine.router.api.delete "/chart/:id", aux.numid false, (req, res) ~>
   if !req.user => return aux.r403 res
   io.query "select * from charts where key = $1", [req.params.id]
     .then (r = {}) ->
@@ -125,7 +125,7 @@ engine.router.api.delete "/chart/:id", (req, res) ~>
 engine.app.get \/chart/, (req, res) ->
   return res.render 'view/chart/index.jade'
 
-engine.app.get \/chart/:id, (req, res) ->
+engine.app.get \/chart/:id, aux.numid true, (req, res) ->
   io.query "select * from charts where key = $1", [req.params.id]
     .then (r = {}) ->
       chart = r.[]rows.0
@@ -137,3 +137,20 @@ engine.app.get \/chart/:id, (req, res) ->
     .catch ->
       console.error it.stack
       return aux.r403 res, "no luck.", true
+
+engine.router.api.put \/chart/:id/like, aux.numid false, (req, res) ->
+  if !req.user => return aux.r403 res
+  io.query "select likes,key,permission from charts where key = $1", [req.params.id]
+    .then (r = {}) ->
+      chart = r.[]rows.0
+      if !chart => return aux.r404 res
+      if !("public" in chart.{}permission.[]switch) => return aux.r403 res
+      v = req.user.{}likes.{}chart[chart.key] = !req.user.{}likes.{}chart[chart.key]
+      chart.likes = (chart.likes or 0) + (if v => 1 else -1) >? 0
+      io.query "update charts set likes = $1 where key = $2", [chart.likes, chart.key]
+    .then ->
+      req.login req.user, -> res.send!
+      return null
+    .catch ->
+      console.error it.stack
+      aux.r403 res

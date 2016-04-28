@@ -13,7 +13,7 @@ engine.app.get \/me/, throttle.limit {lower-delta: 2, upper-delta: 6, penalty: 1
   if !req.user => return res.redirect "/"
   res.render \view/me/profile.jade, {user: req.user}
 
-engine.app.get \/user/:id, (req, res) ->
+engine.app.get \/user/:id, aux.numid true, (req, res) ->
   get-user req, req.params.id
     .then (user) ->
       if !user => return aux.r404 res, "user not found", true

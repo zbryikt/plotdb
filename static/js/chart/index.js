@@ -253,13 +253,16 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging'
   }, true);
   $scope.like = function(chart){
     var mylikes, ref$, ref1$, v;
+    if (!$scope.user.authed()) {
+      return $scope.auth.toggle(true);
+    }
     if (!chart) {
       return;
     }
     mylikes = (ref$ = (ref1$ = $scope.user.data).likes || (ref1$.likes = {})).chart || (ref$.chart = {});
     v = mylikes[chart.key] = !mylikes[chart.key];
     return chart.like(v)['catch'](function(){
-      plNotify.error("Can't do favorite. try again later?");
+      plNotify.send('error', "You failed to love. try again later, don't give up!");
       return mylikes[chart.key] = !v;
     });
   };

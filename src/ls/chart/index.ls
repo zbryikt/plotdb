@@ -141,11 +141,12 @@ angular.module \plotDB
     $scope.$watch 'qLazy', (-> $scope.load-list 1000, true), true
 
     $scope.like = (chart) ->
+      if !$scope.user.authed! => return $scope.auth.toggle true
       if !chart => return
       mylikes = $scope.user.data.{}likes.{}chart
       v = mylikes[chart.key] = !mylikes[chart.key]
       chart.like v .catch ->
-        plNotify.error "Can't do favorite. try again later?"
+        plNotify.send \error, "You failed to love. try again later, don't give up!"
         mylikes[chart.key] = !v
 
     if window.location.search =>

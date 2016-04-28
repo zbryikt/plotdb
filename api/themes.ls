@@ -20,7 +20,7 @@ engine.router.api.get "/theme/", (req, res) ->
       console.log e
       res.send []
 
-engine.router.api.get "/theme/:id", (req, res) ->
+engine.router.api.get "/theme/:id", aux.numid false, (req, res) ->
   io.query [
     'select users.displayname as ownername, themes.*'
     'from users,themes where users.key = owner and'
@@ -66,7 +66,7 @@ engine.router.api.post "/theme/", (req, res) ->
       console.error it.stack
       aux.r403 res
 
-engine.router.api.put "/theme/:id", (req, res) ~>
+engine.router.api.put "/theme/:id", aux.numid false, (req, res) ~>
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
   data = req.body
@@ -107,7 +107,7 @@ engine.router.api.put "/theme/:id", (req, res) ~>
       console.error it.stack
       return aux.r403 res
 
-engine.router.api.delete "/theme/:id", (req, res) ~>
+engine.router.api.delete "/theme/:id", aux.numid false, (req, res) ~>
   if !req.user => return aux.r403 res
   io.query "select * from themes where key = $1", [req.params.id]
     .then (r = {}) ->
