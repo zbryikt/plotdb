@@ -8,14 +8,16 @@ init-commentimgs-table = """create table if not exists commentimgs (
 init-requests-table = """create table if not exists requests (
   key serial primary key,
   owner int references users(key),
-  name text constraint nlen check (char_length(name) <= 200)
+  name text constraint nlen check (char_length(name) <= 200),
+  config jsonb
 )"""
 
 init-comments-table = """create table if not exists comments (
   key serial primary key,
   owner int references users(key),
   request int references requests(key),
-  content text
+  content text,
+  main boolean
 )"""
 
 init-sessions-table = """create table if not exists sessions (

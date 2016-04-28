@@ -39,8 +39,8 @@ engine.router.api.post "/request/", (req, res) ->
     .then (r = {}) ->
       ret.request = r.[]rows.0.key
       io.query(
-        "insert into comments (owner,content,request) values ($1,$2,$3) returning key",
-        [req.user.key, content, ret.request]
+        "insert into comments (owner,content,request,main) values ($1,$2,$3,$4) returning key",
+        [req.user.key, content, ret.request, true]
       )
     .then (r = {}) ->
       ret.comment = r.[]rows.0.key
