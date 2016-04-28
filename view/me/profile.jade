@@ -1,4 +1,4 @@
-extends /module/base.jade
+extends /base.jade
 block head
   script(type="text/javascript",src="/js/profile.js")
 block body
@@ -20,12 +20,14 @@ block body
       span(ng-cloak) #[i.fa.fa-desktop] #[span#theme-number 0] Themes
       span &nbsp; &nbsp; &nbsp; &nbsp;
       span(ng-cloak) #[i.fa.fa-folder] #[span#dataset-number 0] Datasets
-      span &nbsp; &nbsp; &nbsp; &nbsp;
-      span #[i.fa.fa-comments] Speak English
-      span &nbsp; &nbsp; &nbsp; &nbsp;
-      span #[i.fa.fa-clock-o] Respond Quickly
-      .pull-right.btn.btn-info(style="margin-top:-5px;margin-left:5px") #[i.fa.fa-envelope]
-      .pull-right.btn.btn-success(style="margin-top:-5px") Request a Chart
+      //-
+        span &nbsp; &nbsp; &nbsp; &nbsp;
+        span #[i.fa.fa-comments] Speak English
+        span &nbsp; &nbsp; &nbsp; &nbsp;
+        span #[i.fa.fa-clock-o] Respond Quickly
+      //-
+        .pull-right.btn.btn-info(style="margin-top:-5px;margin-left:5px") #[i.fa.fa-envelope]
+        .pull-right.btn.btn-success(style="margin-top:-5px") Request a Chart
 
     div(style="border-bottom:1px solid #bbb;margin: 15px 0")
     br
@@ -34,7 +36,7 @@ block body
     .text-center You underestimate my power
     br
     div(ng-controller="userChartList"): div(ng-controller="chartList")
-      include ../module/chart/widget/charts.jade
+      include /chart/widget/charts.jade
 
     br
     hr
@@ -45,7 +47,7 @@ block body
       br
 
       div(ng-controller="themeList")
-        include ../module/theme/widget/themes.jade
+        include /theme/widget/themes.jade
 
       br
       hr
@@ -67,4 +69,4 @@ block body
           br.clearfix
         .clearfix
 
-  include /module/footer.jade
+  include /footer.jade
