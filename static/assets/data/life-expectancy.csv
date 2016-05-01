@@ -1,0 +1,189 @@
+Country,Continent,1985,2000,2015
+"Afghanistan","Asia",42.8,51,57.63
+"Albania","Europe",72.2,74.2,76
+"Algeria","Africa",67.7,73.2,76.5
+"Andorra","Europe",80,82.7,84.1
+"Angola","Africa",50,52.6,61
+"Antigua and Barbuda","North America",73.1,73.9,75.2
+"Argentina","South America",71.9,74.3,76.2
+"Armenia","Europe",70.5,71.4,74.4
+"Australia","Oceania",75.7,79.7,81.8
+"Austria","Europe",74,78.2,81
+"Azerbaijan","Europe",66.2,68,72.9
+"Bahamas","North America",67.2,70.3,72.3
+"Bahrain","Asia",71.5,73.6,79.2
+"Bangladesh","Asia",55.8,65.8,70.1
+"Barbados","North America",73.3,74.3,75.8
+"Belarus","Europe",71.1,68.2,70.4
+"Belgium","Europe",74.6,77.8,80.4
+"Belize","North America",71.1,69,70
+"Benin","Africa",55,59.2,65.5
+"Bhutan","Asia",56,63.9,70.2
+"Bolivia","South America",59.8,67.6,72.3
+"Bosnia and Herzegovina","Europe",71.5,75.2,77.9
+"Botswana","Africa",67.5,51.6,66.4
+"Brazil","South America",67.4,71.9,75.6
+"Brunei","Asia",72.9,75.5,78.7
+"Bulgaria","Europe",71.3,71.7,74.9
+"Burkina Faso","Africa",52,53.3,62.8
+"Burundi","Africa",49.8,47.5,60.4
+"Cambodia","Asia",56.3,60.9,68.4
+"Cameroon","Africa",58.2,55,59.5
+"Canada","North America",76.5,79.3,81.7
+"Cape Verde","Africa",67.2,70.1,74.6
+"Central African Republic","Africa",49.1,46.7,53.8
+"Chad","Africa",53.4,52.4,57.7
+"Chile","South America",71.8,77.2,79.3
+"China","Asia",66.4,71.5,76.9
+"Colombia","South America",70.3,72.5,75.8
+"Comoros","Africa",55.4,60.2,64.1
+"Congo, Dem. Rep.","Africa",52.9,52.5,58.3
+"Congo, Rep.","Africa",56.6,52.6,61.9
+"Costa Rica","North America",76.3,77.7,80
+"Cote d'Ivoire","Africa",57.7,52.8,60.33
+"Croatia","Europe",71.6,74.7,78
+"Cuba","North America",74.3,75.9,78.5
+"Cyprus","Europe",76.7,79.1,82.6
+"Czech Republic","Europe",71.1,75,78.6
+"Denmark","Europe",74.7,76.9,80.1
+"Djibouti","Africa",60.6,59.6,64.63
+"Dominica","North America",73.1,73.3,74.6
+"Dominican Republic","North America",70.5,72.7,73.8
+"Ecuador","South America",70,73.2,75.2
+"Egypt","Africa",61.1,68.9,71.3
+"El Salvador","North America",67.8,72.9,74.1
+"Equatorial Guinea","Africa",51.9,52.4,60.63
+"Eritrea","Africa",50.2,49.3,62.9
+"Estonia","Europe",70.4,70.1,76.8
+"Ethiopia","Africa",46.3,52.5,63.6
+"Fiji","Oceania",64.1,64.2,66.3
+"Finland","Europe",74.7,77.8,80.8
+"France","Europe",75.7,79.1,81.9
+"Gabon","Africa",60.6,58,60.53
+"Gambia","Africa",56.6,60,65.1
+"Georgia","Europe",70.2,72.3,73.3
+"Germany","Europe",74.6,78.1,81.1
+"Ghana","Africa",58.7,60.2,65.5
+"Greece","Europe",76,78,79.8
+"Grenada","North America",69.1,70.5,71.7
+"Guatemala","North America",62.8,68.5,73.1
+"Guinea","Africa",50.7,55.6,60.8
+"Guinea-Bissau","Africa",50.5,51.7,53.4
+"Guyana","South America",65,64.4,64.4
+"Haiti","North America",53.4,58.6,65.3
+"Honduras","North America",67.6,68.8,72.4
+"Hungary","Europe",68.9,71.8,76.2
+"Iceland","Europe",77.6,79.9,82.8
+"India","Asia",55.9,61.1,66.8
+"Indonesia","Asia",63.4,68.3,70.9
+"Iran","Asia",63.6,71.2,78.5
+"Iraq","Asia",68.5,69.1,72.1
+"Ireland","Europe",73.7,76.7,80.4
+"Israel","Asia",74.9,78.8,82.4
+"Italy","Europe",75.7,79.6,82.1
+"Jamaica","North America",72.6,72.7,75.5
+"Japan","Asia",77.8,81.1,83.5
+"Jordan","Asia",69.3,73.1,78.3
+"Kazakhstan","Asia",66.4,63.6,68.2
+"Kenya","Africa",63.1,57.4,66.63
+"Kiribati","Oceania",56.4,59.5,62.4
+"North Korea","Asia",65.9,63.2,71.4
+"South Korea","Asia",69.5,76.3,80.7
+"Kuwait","Asia",74.6,77.5,80.7
+"Kyrgyz Republic","Asia",64.7,65.8,69
+"Lao","Asia",54.3,59.5,66.4
+"Latvia","Europe",70.1,70.1,75.7
+"Lebanon","Asia",65.3,76.2,78.5
+"Lesotho","Africa",60.4,49.8,48.5
+"Liberia","Africa",54.5,55.9,63.9
+"Libya","Africa",71.9,74.6,76.2
+"Lithuania","Europe",71.2,72,75.4
+"Luxembourg","Europe",73.8,78.2,81.1
+"Macedonia, FYR","Europe",72,73.9,77
+"Madagascar","Africa",54.5,60.5,64.7
+"Malawi","Africa",50.8,46.3,60.22
+"Malaysia","Asia",70.5,73.8,75.1
+"Maldives","Asia",62.7,72.6,79.5
+"Mali","Africa",46.9,51.1,57.6
+"Malta","Europe",75.2,79.7,82.1
+"Marshall Islands","Oceania",64,63.8,65.1
+"Mauritania","Africa",58.9,61.8,65.7
+"Mauritius","Africa",67.8,71,73.9
+"Mexico","North America",69.7,75.1,74.5
+"Micronesia, Fed. Sts.","Oceania",61.8,64.5,67
+"Moldova","Europe",66,69.3,72.7
+"Mongolia","Asia",60.8,61.4,65.3
+"Montenegro","Europe",73.1,72,75.8
+"Morocco","Africa",66.1,71.3,74.7
+"Mozambique","Africa",47,53.6,56.4
+"Myanmar","Asia",56.7,61.4,67.9
+"Namibia","Africa",61.4,55,61
+"Nepal","Asia",55.2,64.9,71.2
+"Netherlands","Europe",76.4,78.1,80.6
+"New Zealand","Oceania",74.2,78.5,80.6
+"Nicaragua","North America",64.9,73.9,76.8
+"Niger","Africa",45,53,62.2
+"Nigeria","Africa",55.5,55.8,61.33
+"Norway","Europe",76.1,78.7,81.6
+"Oman","Asia",68.4,73.7,75.7
+"Pakistan","Asia",61.1,62.6,66.5
+"Panama","North America",75.1,76.9,78.2
+"Papua New Guinea","Oceania",56,56.9,60.6
+"Paraguay","South America",73.1,74.1,73.9
+"Peru","South America",67.2,74.3,77.5
+"Philippines","Asia",66,69,70.2
+"Poland","Europe",70.7,73.8,77.3
+"Portugal","Europe",73.1,76.7,79.8
+"Qatar","Asia",75,77.2,82
+"Romania","Europe",69.7,70.8,76.8
+"Russia","Asia",68.2,65.4,73.13
+"Rwanda","Africa",50.3,50,66.53
+"St. Lucia","North America",69.5,72,74.5
+"St. Vincent and the Grenadines","North America",69.3,69.8,72.9
+"Samoa","Oceania",67.5,69.9,72.2
+"Sao Tome and Principe","Africa",62.5,65.3,68.8
+"Saudi Arabia","Asia",71.8,76.1,78.1
+"Senegal","Africa",55.8,60,66.1
+"Serbia","Europe",72.6,74.7,78.1
+"Seychelles","Africa",69.9,70.9,73.7
+"Sierra Leone","Africa",49.5,52.2,58.5
+"Singapore","Asia",73.1,78.6,82.1
+"Slovak Republic","Europe",70.8,73.3,76.4
+"Slovenia","Europe",71.8,75.8,80.2
+"Solomon Islands","Oceania",60.2,61.7,64.1
+"Somalia","Africa",52.8,54.3,58.7
+"South Africa","Africa",62.8,57.1,63.72
+"Spain","Europe",76.6,79.3,81.7
+"Sri Lanka","Asia",70.5,72.4,76.5
+"Sudan","Africa",54.9,64.4,69.5
+"Suriname","South America",68.5,68.8,70.5
+"Swaziland","Africa",60,48.7,51.5
+"Sweden","Europe",76.9,79.7,82
+"Switzerland","Europe",76.9,80,82.9
+"Syria","Asia",68.5,73.8,70.26
+"Taiwan","Asia",73,76,79.7
+"Tajikistan","Asia",64.4,66.3,71
+"Tanzania","Africa",57.9,54.8,63.43
+"Thailand","Asia",70.4,71.3,75.1
+"Timor-Leste","Asia",55.8,63.6,72.4
+"Togo","Africa",57.5,59,64.23
+"Tonga","Oceania",68,69.1,70.5
+"Trinidad and Tobago","North America",68.5,69.4,71.4
+"Tunisia","Africa",69.8,75,77.3
+"Turkey","Asia",65.2,71.5,76.5
+"Turkmenistan","Asia",62,63.1,67.9
+"Uganda","Africa",52.3,50,60.8
+"Ukraine","Europe",70,67.5,72.1
+"United Arab Emirates","Asia",71.9,73.8,76.6
+"United Kingdom","Europe",74.7,77.8,81.4
+"United States","North America",74.8,77.1,79.1
+"Uruguay","South America",72.1,74.6,77.3
+"Uzbekistan","Asia",67,67.4,70.1
+"Vanuatu","Oceania",62.3,63,65
+"Venezuela","South America",72.2,74.3,75.8
+"West Bank and Gaza","Asia",69.1,73.5,75.2
+"Vietnam","Asia",67.4,72.6,76.5
+"Yemen","Asia",57.8,63.5,67.6
+"Zambia","Africa",56.9,45.7,58.96
+"Zimbabwe","Africa",63.5,50.8,60.01
+"South Sudan","Africa",51.1,54.1,58

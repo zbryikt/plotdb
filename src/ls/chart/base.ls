@@ -20,6 +20,7 @@ plotdb <<< do
     level: 4
     test: -> !!!/(rgba?|hsla?)\([0-9.,]+\)|#[0-9a-f]{3,6}|[a-z0-9]+/.exec(it.trim!)
     default: \#dc4521
+    gray: \#cccccc
     subtype: do
       negative: "negative"
       positive: "positive"

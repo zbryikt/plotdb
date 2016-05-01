@@ -1186,9 +1186,17 @@ a.dropdown-toggle {
 .chart .social.request i.fa {
   font-size: 1.4em;
   margin-right: 10px;
+  color: #000;
+  opacity: 0.2;
 }
 .chart .social.request i.fa.fa-mobile {
-  font-size: 1.6em;
+  font-size: 1.8em;
+  position: relative;
+  top: 1px;
+}
+.chart .social.request i.fa.active {
+  color: #25b;
+  opacity: 1;
 }
 .chart-ribon {
   width: 50px;

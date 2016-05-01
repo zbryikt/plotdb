@@ -57,6 +57,13 @@
   margin: 0;
   font-size: 1em;
 }
+.chart .social.request i.fa {
+  font-size: 1.4em;
+  margin-right: 10px;
+}
+.chart .social.request i.fa.fa-mobile {
+  font-size: 1.6em;
+}
 .chart-ribon {
   width: 50px;
   height: 18px;
@@ -729,7 +736,7 @@ small.hint {
 }
 #assets-preview {
   position: fixed;
-  z-index: 29;
+  z-index: 30;
   top: 0;
   left: 0;
   width: 100%;
@@ -779,7 +786,7 @@ small.hint {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
-  z-index: 27;
+  z-index: 28;
 }
 #permission-modal .ib,
 #setting-modal .ib,
@@ -824,7 +831,7 @@ small.hint {
 }
 #setting-modal-inner .ib {
   height: auto;
-  z-index: 28;
+  z-index: 29;
   position: absolute;
   left: 50%;
   margin-left: -320px;

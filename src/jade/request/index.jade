@@ -48,7 +48,7 @@ block body
             .checkbox: label #[input(type="checkbox",ng-model="config.static")] #[span Static Image]
 
     h3 Latest Requests
-    span or, take a look of how others post request...
+    span or, take a look of others request ?
     .sep.gap
     //-div(ng-controller="requestList",ng-cloak)
       div(ng-repeat="request in requests")
@@ -72,10 +72,10 @@ block body
           .flexend
         .social.request
           a.author(ng-attr-href="/user/{{request.owner}}") #[i.fa.fa-user] {{request.ownername}}
-          i.fa.fa-internet-explorer
-          i.fa.fa-mobile
-          i.fa.fa-photo
-          i.fa.fa-rss
+          i.fa.fa-internet-explorer(ng-class="{'active':request.config.ie8}")
+          i.fa.fa-mobile(ng-class="{'active':request.config.mobile}")
+          i.fa.fa-photo(ng-class="{'active':request.config.static}")
+          i.fa.fa-rss(ng-class="{'active':request.config.realtime}")
           //-.favorite(ng-click="like(request)",
             ng-class="{'active':user.data && user.data.likes.chart[chart.key]}") #[i.fa.fa-heart] {{chart.likes || 0}}
       #list-end.text-center: span(ng-cloak,ng-show="paging.end") this is the end :)
