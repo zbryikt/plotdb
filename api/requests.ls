@@ -3,6 +3,15 @@ require! <[../engine/aux ../engine/share/model/ ./thumb]>
 (engine,io) <- (->module.exports = it)  _
 
 requesttype = model.type.request
+sanitize-config = do
+  allowedTags: <[
+    h2 h3 h4 h5 h6 ol code hr br b i p u em a ul li
+    figure div blockquote strike strong img
+  ]>
+  allowedAttributes: do
+    a: <[href]>
+    img: <[src alt]>
+    div: <[class]>
 
 engine.router.api.get "/request/", (req, res) ->
   offset = req.query.offset or 0
@@ -23,15 +32,7 @@ engine.router.api.post "/request/", (req, res) ->
   if !req.user => return aux.r403 res
   if !req.body or !req.body.name or !req.body.content => return aux.r400 res
   ret = {}
-  content = sanitize-html req.body.content, do
-    allowedTags: <[
-      h2 h3 h4 h5 h6 ol code hr br b i p u em a ul li
-      figure div blockquote strike strong img
-    ]>
-    allowedAttributes: do
-      a: <[href]>
-      img: <[src alt]>
-      div: <[class]>
+  content = sanitize-html req.body.content, sanitize-config
   io.query(
     "insert into requests (owner,name,config) values ($1,$2,$3) returning key",
     [req.user.key, req.body.name, req.body.config]
@@ -49,17 +50,24 @@ engine.router.api.post "/request/", (req, res) ->
       console.error it.stack
       aux.r403 res
 
-engine.router.api.post "/comment/", (req, res) ->
+post-comment = (req, res, id = null) ->
   if !req.user => return aux.r403 res
   if !req.body or !req.body.content => return aux.r400 res
-  #TODO escape
-  io.query "insert into comments (owner,content) values ($1,$2) returning key"
+  content = sanitize-html req.body.content, sanitize-config
+  io.query(
+    "insert into comments (owner,content,request,main) values ($1,$2,$3,$4) returning key",
+    [req.user.key, content, id, true]
+  )
     .then (r = {}) ->
       key = r.[]rows.0.key
-      res.send key
+      res.send JSON.stringify({key})
     .catch ->
       console.error it.stack
       aux.r403 res
+
+
+engine.router.api.post "/request/:id/comment/", aux.numid false, (req, res) -> post-comment req, res, req.params.id
+#engine.router.api.post "/comment/", (req, res) -> post-comment req, res
 
 engine.router.api.post "/comment/image", engine.multi.parser, (req, res) ->
   if !req.user => return aux.r403 res

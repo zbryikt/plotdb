@@ -18,6 +18,8 @@ block head
   script(type="text/javascript",src="/assets/blueimp-file-upload/9.11.2/jquery.fileupload.js")
   script(type="text/javascript",src="/assets/medium-insert/2.2.4/js/index.min.js")
   script(type="text/javascript",src="/js/request.js")
+  script.
+    window.request = !{JSON.stringify(request)}
 block body
   .spc1
   .page-header: .inner
@@ -35,6 +37,6 @@ block body
       #request-editor.panel-body(style="border:none;box-shadow:none")
         .editable
       .panel-footer
-        .btn.btn-success Response
+        .btn.btn-success(ng-click="response()") Response
 
   include /footer.jade

@@ -24,7 +24,7 @@ x$.service('requestService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 
   requestService = baseService.derive('request', service, object);
   return requestService;
 }));
-x$.controller('plRequest', ['$scope', '$http', 'plNotify'].concat(function($scope, $http, plNotify){
+x$.controller('plRequest', ['$scope', '$timeout', '$http', 'plNotify'].concat(function($scope, $timeout, $http, plNotify){
   var editor;
   editor = new MediumEditor($('#request-editor .editable')[0], {
     toolbar: {
@@ -64,6 +64,28 @@ x$.controller('plRequest', ['$scope', '$http', 'plNotify'].concat(function($scop
     realtime: false,
     'static': false
   };
+  $scope.response = function(){
+    var content, key;
+    content = editor.serialize()["element-0"].value;
+    if (!window.request || !window.request.key) {
+      return;
+    }
+    key = window.request.key;
+    return $http({
+      url: "/d/request/" + key + "/comment",
+      method: 'POST',
+      data: {
+        content: content
+      }
+    }).success(function(d){
+      $timeout(function(){
+        return window.location.href = "/request/" + key;
+      }, 1000);
+      return plNotify.send('success', "comment posted");
+    }).error(function(){
+      return plNotify.send('error', "fail to post comment. try again later?");
+    });
+  };
   return $scope.submit = function(){
     var content;
     content = editor.serialize()["element-0"].value;
@@ -76,7 +98,9 @@ x$.controller('plRequest', ['$scope', '$http', 'plNotify'].concat(function($scop
         config: $scope.config
       }
     }).success(function(d){
-      window.location.href = "/request/" + d.request;
+      $timeout(function(){
+        return window.location.href = "/request/" + d.request;
+      }, 1000);
       return plNotify.send('success', "request posted");
     }).error(function(){
       return plNotify.send('error', "fail to post request. try again later?");

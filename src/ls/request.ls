@@ -47,15 +47,30 @@ angular.module \plotDB
         realtime: false
         static: false
 
+      $scope.response = ->
+        content = editor.serialize()["element-0"].value
+        if !window.request or !window.request.key => return
+        key = window.request.key
+        $http do
+          url: "/d/request/#key/comment"
+          method: \POST
+          data: {content}
+        .success (d) ->
+          $timeout (->
+            window.location.href = "/request/#{key}"
+          ), 1000
+          plNotify.send \success, "comment posted"
+        .error ->
+          plNotify.send \error, "fail to post comment. try again later?"
+
       $scope.submit = ->
         content = editor.serialize()["element-0"].value
-
         $http do
           url: \/d/request/
           method: \POST
           data: {name: $scope.name, content, config: $scope.config}
         .success (d) ->
-          $timeout( ->
+          $timeout (->
             window.location.href = "/request/#{d.request}"
           ), 1000
           plNotify.send \success, "request posted"
