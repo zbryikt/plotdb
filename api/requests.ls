@@ -50,13 +50,13 @@ engine.router.api.post "/request/", (req, res) ->
       console.error it.stack
       aux.r403 res
 
-post-comment = (req, res, id = null) ->
+post-comment = (req, res, id = null, is-main) ->
   if !req.user => return aux.r403 res
   if !req.body or !req.body.content => return aux.r400 res
   content = sanitize-html req.body.content, sanitize-config
   io.query(
     "insert into comments (owner,content,request,main) values ($1,$2,$3,$4) returning key",
-    [req.user.key, content, id, true]
+    [req.user.key, content, id, is-main]
   )
     .then (r = {}) ->
       key = r.[]rows.0.key
@@ -66,8 +66,8 @@ post-comment = (req, res, id = null) ->
       aux.r403 res
 
 
-engine.router.api.post "/request/:id/comment/", aux.numid false, (req, res) -> post-comment req, res, req.params.id
-#engine.router.api.post "/comment/", (req, res) -> post-comment req, res
+engine.router.api.post "/request/:id/comment/", aux.numid false, (req, res) ->
+  post-comment req, res, req.params.id, false
 
 engine.router.api.post "/comment/image", engine.multi.parser, (req, res) ->
   if !req.user => return aux.r403 res
