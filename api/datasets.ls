@@ -140,7 +140,7 @@ save-dataset = (req, res, okey = null) ->
             if insert.length =>
               promises.push(io.query "insert into datafields #inscol values #placeholder", params)
             promises ++= (for item in update => io.query(
-              "update datafields set #upcol = #{item.1.1} where datafields.key = $#{item.1.2.length + 1}"
+              "update datafields set #{item.1.0} = #{item.1.1} where datafields.key = $#{item.1.2.length + 1}"
               item.1.2 ++ [item.0]))
             promises ++= (for item in ofields.filter(->!it.matched) =>
               io.query(
