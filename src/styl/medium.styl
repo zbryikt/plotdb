@@ -2,6 +2,8 @@
 @import 'vars'
 
 #request-editor
+  .medium-insert-buttons-addons
+    margin-left: -50px
   .medium-editor-insert-plugin .medium-insert-buttons .medium-insert-buttons-show,
   .medium-editor-insert-plugin .medium-insert-buttons .medium-insert-buttons-addons li a
     border: none
@@ -41,9 +43,12 @@
     width: 32px
     color: #ccc
     font-size: 32px
-    line-height: 0
+    line-height: 28px
+    padding-left: 1px
     &:before
       font-size: 0
+      height: 0
+      padding: 0
     &:after
       width: 0
       height: 0
@@ -56,14 +61,16 @@
     color: rgba(0,0,0,0)
     font-size: 1px
     line-height: 1px
-    margin-left: -5px
+    margin-left: -50px
     &:before
-      content: "add image"
+      content: "add media"
       display: block
       font-size: 12px
       line-height: 11px
       font-weight: 200
       color: #999
-      padding: 2px 0
+      padding: 4px 0
       transition(all 0.1s linear)
 
+  .editable.medium-editor-insert-plugin.medium-editor-placeholder
+    min-height: 115px

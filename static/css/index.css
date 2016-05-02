@@ -2756,6 +2756,9 @@ small.hint {
   opacity: 0.01;
   cursor: pointer;
 }
+#request-editor .medium-insert-buttons-addons {
+  margin-left: -50px;
+}
 #request-editor .medium-editor-insert-plugin .medium-insert-buttons .medium-insert-buttons-show,
 #request-editor .medium-editor-insert-plugin .medium-insert-buttons .medium-insert-buttons-addons li a {
   border: none;
@@ -2811,10 +2814,13 @@ small.hint {
   width: 32px;
   color: #ccc;
   font-size: 32px;
-  line-height: 0;
+  line-height: 28px;
+  padding-left: 1px;
 }
 #request-editor .medium-editor-insert-plugin .medium-insert-buttons .medium-insert-buttons-show.medium-insert-buttons-rotate:before {
   font-size: 0;
+  height: 0;
+  padding: 0;
 }
 #request-editor .medium-editor-insert-plugin .medium-insert-buttons .medium-insert-buttons-show.medium-insert-buttons-rotate:after {
   width: 0;
@@ -2828,19 +2834,22 @@ small.hint {
   color: rgba(0,0,0,0);
   font-size: 1px;
   line-height: 1px;
-  margin-left: -5px;
+  margin-left: -50px;
 }
 #request-editor .medium-editor-insert-plugin .medium-insert-buttons .medium-insert-buttons-show:before {
-  content: "add image";
+  content: "add media";
   display: block;
   font-size: 12px;
   line-height: 11px;
   font-weight: 200;
   color: #999;
-  padding: 2px 0;
+  padding: 4px 0;
   -ms-transition: all 0.1s linear;
   -moz-transition: all 0.1s linear;
   -webkit-transition: all 0.1s linear;
   -o-transition: all 0.1s linear;
   transition: all 0.1s linear;
+}
+#request-editor .editable.medium-editor-insert-plugin.medium-editor-placeholder {
+  min-height: 115px;
 }

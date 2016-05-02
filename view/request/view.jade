@@ -28,15 +28,24 @@ block body
   #root.narrow.with-header(ng-controller="plRequest")
     each comment in comments
       .panel.panel-default
-        .panel-body
-          != comment.content
+        .panel-body(style="padding:0px")
+          div(style="margin:10px")
+            != comment.content
+          .text-right(style="border-top: 1px solid #eee;width: 100%;padding:0 10px"): small
+            span by 
+            img(src="/assets/img/avatar.png",style="width:16px;margin: 5px")
+            a(href="/user/#{comment.owner}") #{comment.username}
+            span &nbsp; / &nbsp;
+            span.grayed 2016/05/02 12:30:45
     br
     h3 Response
     .sep
-    .panel.panel-default
-      #request-editor.panel-body(style="border:none;box-shadow:none")
-        .editable
-      .panel-footer
-        .btn.btn-success(ng-click="response()") Response
+    .row
+      .col-sm-12
+        .panel.panel-default
+          #request-editor.panel-body(style="border:none;box-shadow:none")
+            .editable
+          .panel-footer
+            .btn.btn-success(ng-click="response()") Response
 
   include /footer.jade
