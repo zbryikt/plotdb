@@ -199,7 +199,7 @@ render = (payload, rebind = true) ->
       root = document.getElementById \container
       chart = module.exports
       if (!data or !data.length) and chart.sample =>
-        if typeof(chart.sample) == "Function" => data := load-sample dimension ,chart.sample!
+        if typeof(chart.sample) == "function" => data := load-sample dimension, chart.sample!
         else if Array.isArray(chart.sample) => data := chart.sample
         else data := []
       for k,v of (config or {}) =>

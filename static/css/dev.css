@@ -353,6 +353,7 @@
   -o-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out;
   z-index: 8;
+  position: absolute;
 }
 #code-panel #code-tabs .tab.src.shown {
   position: relative;

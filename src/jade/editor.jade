@@ -150,11 +150,11 @@ block body
 
         #share-buttons.text-center(style="font-size:2em",ng-class="{'disabled':!sharePanel.isPublic()}")
           div(ng-show="!sharePanel.isPublic()")
-            i.fa.fa-facebook-square
-            i.fa.fa-twitter-square
-            i.fa.fa-pinterest-square
-            i.fa.fa-linkedin-square
-            i.fa.fa-envelope-square
+            i.fa.fa-facebook
+            i.fa.fa-twitter
+            i.fa.fa-pinterest
+            i.fa.fa-linkedin
+            i.fa.fa-envelope
           div(ng-show="sharePanel.isPublic()")
             a(ng-attr-href="{{sharePanel.social.facebook}}",target="_blank")
               i.fa.fa-facebook-square(style="color:#3b5998")
