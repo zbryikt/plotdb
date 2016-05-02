@@ -164,7 +164,7 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
       this.size = 0;
       for (i$ = 0, len$ = (ref$ = this.fields).length; i$ < len$; ++i$) {
         f1 = ref$[i$];
-        results$.push(this.size += (f1.data || "").length + (f1.name.length + 1));
+        results$.push(this.size += (f1.data || "").length + ((f1.name || "").length + 1));
       }
       return results$;
     },

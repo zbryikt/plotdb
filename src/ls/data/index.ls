@@ -115,7 +115,7 @@ angular.module \plotDB
           if f1.name != f2.name => continue
           f2 <<< f1{key}
         @ <<< fields: fields, rows: (@fields.0 or {}).[]data.length, size: 0
-        for f1 in @fields => @size += (f1.data or "").length + (f1.name.length + 1)
+        for f1 in @fields => @size += (f1.data or "").length + ((f1.name or "").length + 1)
 
       update: ->
         #if data => @data = data
