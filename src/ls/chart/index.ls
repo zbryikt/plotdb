@@ -63,6 +63,7 @@ angular.module \plotDB
         @assets.splice idx, 1
       update-data: ->
         @data = []
+        #TODO abstract so that sample data in renderer can also use this. we now just copy it.
         #TODO fields data load by demand
         len = Math.max.apply null,
           [v for k,v of @dimension]

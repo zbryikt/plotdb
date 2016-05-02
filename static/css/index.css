@@ -1479,6 +1479,7 @@ a.dropdown-toggle {
   -o-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out;
   z-index: 8;
+  position: absolute;
 }
 #code-panel #code-tabs .tab.src.shown {
   position: relative;
@@ -2565,6 +2566,9 @@ small.hint {
   width: 210px;
   text-align: left;
 }
+#code-panel {
+  margin-top: 15px;
+}
 #code-editor.dark {
   border: 1px solid #292929;
 }
@@ -2631,6 +2635,35 @@ small.hint {
 #code-editor.dark .CodeMirror-code > .error .CodeMirror-linenumber {
   color: #fff;
   background: #810;
+}
+@media (max-width: 800px) {
+  .pleditor .row {
+    margin: 0;
+  }
+  #code-panel {
+    margin-top: 0;
+  }
+  #code-editor,
+  #visualization-canvas2 {
+    margin: 7px;
+    height: 400px;
+  }
+  #binding-panel {
+    margin: 420px 15px 0;
+  }
+  #code-ctrl > .btn,
+  #visualization-canvas2 > .btn {
+    display: none;
+  }
+  #code-ctrl .btn,
+  #visualization-canvas2 .btn {
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 0.9em;
+  }
+  #editor-colorblind-dropup {
+    left: 5px !important;
+  }
 }
 #chart-explore-bar {
   background: #fff;

@@ -6,7 +6,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     plConfig: plConfig,
     theme: new themeService.theme(),
     chart: new chartService.chart(),
-    showsrc: true,
+    showsrc: window.innerWidth < 800 ? false : true,
     vis: 'preview',
     lastvis: null,
     plotdbDomain: plConfig.urlschema + "" + plConfig.domain,

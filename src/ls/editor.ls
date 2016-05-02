@@ -6,7 +6,7 @@ angular.module \plotDB
       plConfig: plConfig
       theme: new theme-service.theme! #TODO defer create. consider theme and chart
       chart: new chart-service.chart!
-      showsrc: true
+      showsrc: (if window.innerWidth < 800 => false else true)
       vis: \preview
       lastvis: null
       plotdb-domain: "#{plConfig.urlschema}#{plConfig.domain}" #"#{plConfig.urlschema}#{plConfig.domainIO}"

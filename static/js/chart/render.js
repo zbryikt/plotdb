@@ -25,7 +25,7 @@ window.thread = {
   }
 };
 $(document).ready(function(){
-  var dispatcher, properEval, errorHandling, colorblind, parse, snapshot, render, resizeHandler;
+  var dispatcher, properEval, errorHandling, colorblind, parse, snapshot, loadSample, render, resizeHandler;
   dispatcher = function(evt){
     var ref$;
     if ((ref$ = evt.data.type) === 'snapshot' || ref$ === 'getsvg' || ref$ === 'getpng') {
@@ -228,6 +228,70 @@ $(document).ready(function(){
       }, plotdbDomain);
     }
   };
+  loadSample = function(dimension, sample){
+    var k, v, data, len, i$, i, ret, that;
+    if (Array.isArray(sample)) {
+      return sample;
+    }
+    for (k in dimension) {
+      v = dimension[k];
+      if (sample[k]) {
+        v.fields = sample[k];
+      }
+    }
+    data = [];
+    len = Math.max.apply(null, (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = dimension) {
+        v = ref$[k];
+        results$.push(v);
+      }
+      return results$;
+    }()).reduce(function(a, b){
+      return a.concat(b.fields || []);
+    }, []).filter(function(it){
+      return it.data;
+    }).map(function(it){
+      return it.data.length;
+    }).concat([0]));
+    for (i$ = 0; i$ < len; ++i$) {
+      i = i$;
+      ret = {};
+      for (k in dimension) {
+        v = dimension[k];
+        if (v.multiple) {
+          ret[k] = (v.fields || (v.fields = [])).length
+            ? (v.fields || (v.fields = [])).map(fn$)
+            : [];
+          v.fieldName = (v.fields || (v.fields = [])).map(fn1$);
+        } else {
+          ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
+          v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
+        }
+        if (v.type.filter(fn2$).length) {
+          if (Array.isArray(ret[k])) {
+            ret[k] = ret[k].map(fn3$);
+          } else {
+            ret[k] = parseFloat(ret[k]);
+          }
+        }
+      }
+      data.push(ret);
+    }
+    return data;
+    function fn$(it){
+      return (it.data || (it.data = []))[i];
+    }
+    function fn1$(it){
+      return it.name;
+    }
+    function fn2$(it){
+      return it.name === 'Number';
+    }
+    function fn3$(it){
+      return parseFloat(it);
+    }
+  };
   render = function(payload, rebind){
     var ref$, code, style, doc, data, assets, dimension, config, theme, reboot, ret, node, promise, e;
     rebind == null && (rebind = true);
@@ -272,7 +336,13 @@ $(document).ready(function(){
         root = document.getElementById('container');
         chart = module.exports;
         if ((!data || !data.length) && chart.sample) {
-          data = chart.sample;
+          if (typeof chart.sample === "Function") {
+            data = loadSample(dimension, chart.sample());
+          } else if (Array.isArray(chart.sample)) {
+            data = chart.sample;
+          } else {
+            data = [];
+          }
         }
         for (k in ref$ = config || {}) {
           v = ref$[k];

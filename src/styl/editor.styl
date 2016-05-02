@@ -12,6 +12,9 @@ d1 = #222
 d2 = #292929
 d3 = #333
 
+#code-panel
+  margin-top: 15px
+
 #code-editor.dark
   border: 1px solid d2
   .CodeMirror
@@ -58,3 +61,24 @@ d3 = #333
     .CodeMirror-linenumber
       color: #fff
       background: #810
+
+@media(max-width: 800px)
+  .pleditor
+    .row
+      margin: 0
+  #code-panel
+    margin-top: 0
+  #code-editor, #visualization-canvas2
+    margin: 7px
+    height: 400px
+  #binding-panel
+    margin: 420px 15px 0
+  #code-ctrl, #visualization-canvas2
+    & > .btn
+      display: none
+    .btn
+      padding-left: 5px
+      padding-right: 5px
+      font-size: 0.9em
+  #editor-colorblind-dropup
+    left: 5px!important

@@ -132,6 +132,32 @@ snapshot = (type='snapshot') ->
     console.log e
     window.parent.postMessage {type, payload: null}, plotdb-domain
 
+load-sample = (dimension, sample) ->
+  if Array.isArray(sample) => return sample
+  for k,v of dimension
+    if sample[k] => v.fields = sample[k]
+  data = []
+  len = Math.max.apply null,
+    [v for k,v of dimension]
+      .reduce(((a,b) -> (a) ++ (b.fields or [])),[])
+      .filter(->it.data)
+      .map(->it.data.length) ++ [0]
+  for i from 0 til len
+    ret = {}
+    for k,v of dimension
+      if v.multiple =>
+        ret[k] = if v.[]fields.length => v.[]fields.map(->it.[]data[i]) else []
+        v.field-name = v.[]fields.map -> it.name
+      else
+        ret[k] = if v.[]fields.0 => that.[]data[i] else null
+        v.field-name = if v.[]fields.0 => that.name else null
+      #TODO need correct type matching
+      if v.type.filter(->it.name == \Number).length =>
+        if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
+        else ret[k] = parseFloat(ret[k])
+    data.push ret
+  return data
+
 render = (payload, rebind = true) ->
   [code,style,doc] = <[code style doc]>.map(->payload.{}chart[it].content)
   [data,assets] = <[data assets]>.map(->payload.chart[it])
@@ -172,7 +198,10 @@ render = (payload, rebind = true) ->
       #window.module = module
       root = document.getElementById \container
       chart = module.exports
-      if (!data or !data.length) and chart.sample => data := chart.sample
+      if (!data or !data.length) and chart.sample =>
+        if typeof(chart.sample) == "Function" => data := load-sample dimension ,chart.sample!
+        else if Array.isArray(chart.sample) => data := chart.sample
+        else data := []
       for k,v of (config or {}) =>
         for type in (v.type or [])=>
           try

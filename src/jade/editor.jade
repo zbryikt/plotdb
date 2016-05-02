@@ -24,8 +24,8 @@ block head
     script.
       window.chart = !{JSON.stringify(chart)}
 block body
-  div &nbsp;
-  #root(ng-controller="plEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
+  .spc1
+  #root.pleditor(ng-controller="plEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
     #data-edit-modal(ng-cloak,ng-show="dataPanel.toggled"): .ib
       .closebtn(ng-click="dataPanel.toggle()")
       include dataset/create.jade
@@ -223,6 +223,10 @@ block body
     #fullscreen-dimmer(ng-class="{'fullscreen':editor.fullscreen.toggled}")
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
       #code-tabs
+        .pull-right
+          .tab.action(ng-click="settingPanel.toggle()") #[i.fa.fa-cog] #[span settings]
+          .tab.action(ng-show="target().owner==user.data.key",
+          ng-click="sharePanel.toggle()") #[i.fa.fa-user] #[span share]
         .tab.cat.shown(ng-click="showsrc=!!!showsrc")
           div.text-right #[span src]
           .desc.text-right
@@ -245,12 +249,6 @@ block body
           .desc
             span(ng-cloak,ng-if="!target().assets.length") no file
             span(ng-cloak,ng-if="target().assets.length") {{target().assets.length}} files, {{target().assets.size|size}}
-        .pull-right
-          .tab.action(ng-click="settingPanel.toggle()") #[i.fa.fa-cog] #[span settings]
-          .tab.action(ng-show="target().owner==user.data.key",
-          ng-click="sharePanel.toggle()") #[i.fa.fa-user] #[span share]
-
-
     .row
       .col-sm-3
         #config-panel.plpanel
@@ -412,7 +410,7 @@ block body
                 i.glyphicon.glyphicon-resize-small(ng-show="editor.fullscreen.toggled")
             .btn.btn-default(ng-click="vis='code'") Edit Code #[small.hint Alt-Enter]
 
-          .dropup(style="position:absolute;bottom:5px;left:90px")
+          #editor-colorblind-dropup.dropup(style="position:absolute;bottom:5px;left:90px")
             .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
               span(ng-show="colorblind.val=='normal'")
                 i.fa.fa-eye-slash.grayed

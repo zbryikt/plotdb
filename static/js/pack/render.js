@@ -4764,6 +4764,40 @@ plotdb.data = {
       }
       ret = res$;
       return ret;
+    },
+    crimeanWar: {
+      "month": {
+        "name": "month",
+        "data": ["01/04/1854", "01/05/1854", "01/06/1854", "01/07/1854", "01/08/1854", "01/09/1854", "01/10/1854", "01/11/1854", "01/12/1854", "01/01/1855", "01/02/1855", "01/03/1855", "01/04/1855", "01/05/1855", "01/06/1855", "01/07/1855", "01/08/1855", "01/09/1855", "01/10/1855", "01/11/1855", "01/12/1855", "01/01/1856", "01/02/1856", "01/03/1856"]
+      },
+      "army size": {
+        "name": "army size",
+        "data": [8571, 23333, 28333, 28722, 30246, 30290, 30643, 29736, 32779, 32393, 30919, 30107, 32252, 35473, 38863, 42647, 44614, 47751, 46852, 37853, 43217, 44212, 43485, 46140]
+      },
+      "death number by zymotic": {
+        "name": "death number by zymotic",
+        "data": [1, 12, 11, 359, 828, 788, 503, 844, 1725, 2761, 2120, 1205, 477, 508, 802, 382, 483, 189, 128, 178, 91, 42, 24, 15]
+      },
+      "death number by wound": {
+        "name": "death number by wound",
+        "data": [0, 0, 0, 0, 1, 81, 132, 287, 114, 83, 42, 32, 48, 49, 209, 134, 164, 276, 53, 33, 18, 2, 0, 0]
+      },
+      "death number by other": {
+        "name": "death number by other",
+        "data": [5, 9, 6, 23, 30, 70, 128, 106, 131, 324, 361, 172, 57, 37, 31, 33, 25, 20, 18, 32, 28, 48, 19, 35]
+      },
+      "zymotic rate(‰)": {
+        "name": "zymotic rate(‰)",
+        "data": [1.4, 6.2, 4.7, 150, 328.5, 312.2, 197, 340.6, 631.5, 1022.8, 822.8, 480.3, 177.5, 171.8, 247.6, 107.5, 129.9, 47.5, 32.8, 56.4, 25.3, 11.4, 6.6, 3.9]
+      },
+      "wound rate(‰)": {
+        "name": "wound rate(‰)",
+        "data": [0, 0, 0, 0, 0.4, 32.1, 51.7, 115.8, 41.7, 30.7, 16.3, 12.8, 17.9, 16.6, 64.5, 37.7, 44.1, 69.4, 13.6, 10.5, 5, 0.5, 0, 0]
+      },
+      "other rate(‰)": {
+        "name": "other rate(‰)",
+        "data": [7, 4.6, 2.5, 9.6, 11.9, 27.7, 50.1, 42.8, 48, 120, 140.1, 68.6, 21.2, 12.5, 9.6, 9.3, 6.7, 5, 4.6, 10.1, 7.8, 13, 5.2, 9.1]
+      }
     }
   }
 };
@@ -4803,7 +4837,7 @@ window.thread = {
   }
 };
 $(document).ready(function(){
-  var dispatcher, properEval, errorHandling, colorblind, parse, snapshot, render, resizeHandler;
+  var dispatcher, properEval, errorHandling, colorblind, parse, snapshot, loadSample, render, resizeHandler;
   dispatcher = function(evt){
     var ref$;
     if ((ref$ = evt.data.type) === 'snapshot' || ref$ === 'getsvg' || ref$ === 'getpng') {
@@ -5006,6 +5040,70 @@ $(document).ready(function(){
       }, plotdbDomain);
     }
   };
+  loadSample = function(dimension, sample){
+    var k, v, data, len, i$, i, ret, that;
+    if (Array.isArray(sample)) {
+      return sample;
+    }
+    for (k in dimension) {
+      v = dimension[k];
+      if (sample[k]) {
+        v.fields = sample[k];
+      }
+    }
+    data = [];
+    len = Math.max.apply(null, (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = dimension) {
+        v = ref$[k];
+        results$.push(v);
+      }
+      return results$;
+    }()).reduce(function(a, b){
+      return a.concat(b.fields || []);
+    }, []).filter(function(it){
+      return it.data;
+    }).map(function(it){
+      return it.data.length;
+    }).concat([0]));
+    for (i$ = 0; i$ < len; ++i$) {
+      i = i$;
+      ret = {};
+      for (k in dimension) {
+        v = dimension[k];
+        if (v.multiple) {
+          ret[k] = (v.fields || (v.fields = [])).length
+            ? (v.fields || (v.fields = [])).map(fn$)
+            : [];
+          v.fieldName = (v.fields || (v.fields = [])).map(fn1$);
+        } else {
+          ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
+          v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
+        }
+        if (v.type.filter(fn2$).length) {
+          if (Array.isArray(ret[k])) {
+            ret[k] = ret[k].map(fn3$);
+          } else {
+            ret[k] = parseFloat(ret[k]);
+          }
+        }
+      }
+      data.push(ret);
+    }
+    return data;
+    function fn$(it){
+      return (it.data || (it.data = []))[i];
+    }
+    function fn1$(it){
+      return it.name;
+    }
+    function fn2$(it){
+      return it.name === 'Number';
+    }
+    function fn3$(it){
+      return parseFloat(it);
+    }
+  };
   render = function(payload, rebind){
     var ref$, code, style, doc, data, assets, dimension, config, theme, reboot, ret, node, promise, e;
     rebind == null && (rebind = true);
@@ -5050,7 +5148,13 @@ $(document).ready(function(){
         root = document.getElementById('container');
         chart = module.exports;
         if ((!data || !data.length) && chart.sample) {
-          data = chart.sample;
+          if (typeof chart.sample === "Function") {
+            data = loadSample(dimension, chart.sample());
+          } else if (Array.isArray(chart.sample)) {
+            data = chart.sample;
+          } else {
+            data = [];
+          }
         }
         for (k in ref$ = config || {}) {
           v = ref$[k];
