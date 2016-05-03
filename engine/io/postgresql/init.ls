@@ -30,7 +30,7 @@ init-users-table = """create table if not exists users (
   username text constraint nlen check (char_length(username) <= 100),
   password text constraint pwlen check (char_length(password) <= 100),
   usepasswd boolean,
-  displayname text, constraint displaynamelength check (chart_length(displayname) <= 100),
+  displayname text, constraint displaynamelength check (char_length(displayname) <= 100),
   description text,
   datasize int,
   createdtime timestamp,
