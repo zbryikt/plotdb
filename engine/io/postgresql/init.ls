@@ -27,7 +27,7 @@ init-sessions-table = """create table if not exists sessions (
 
 init-users-table = """create table if not exists users (
   key serial primary key,
-  username text constraint nlen check (char_length(name) <= 100),
+  username text constraint nlen check (char_length(username) <= 100),
   password text constraint pwlen check (char_length(password) <= 100),
   usepasswd boolean,
   displayname text, constraint displaynamelength check (chart_length(displayname) <= 100),
