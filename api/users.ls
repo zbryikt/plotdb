@@ -1,4 +1,4 @@
-require! <[bluebird crypto]>
+require! <[bluebird crypto fs fs-extra lwip read-chunk image-type]>
 require! <[../engine/aux ../engine/share/model/ ../engine/throttle]>
 (engine, io) <- (->module.exports = it)  _
 
@@ -66,6 +66,37 @@ engine.router.api.put \/user/:id, aux.numid false, throttle.limit edit-limit, (r
       console.error it.stack
       aux.r403 res
 
+engine.app.post \/me/avatar, engine.multi.parser, throttle.limit edit-limit, (req, res) ->
+  if !req.files.image => return aux.r400 res
+  buf = read-chunk.sync req.files.image.path, 0, 12
+  ret = image-type buf
+  if !ret => return aux.r403 res, "not supported format"
+  (e,img) <- lwip.open req.files.image.path, (ret.ext or '').toLowerCase!, _
+  if e => return aux.r403 res, "not supported format"
+  [w,h] = [img.width!, img.height!]
+  [w1,h1] = if w > h => [w * 200 / h, 200] else [200, h * 200 / w]
+  img = img.batch!resize(w1,h1).crop(200,200)
+  (e,b) <- img.toBuffer \jpg
+  if e =>
+    console.error "failed (img.toBuffer)"
+    return r500 res, "failed processing avatar. maybe try later?"
+  md5 = crypto.createHash \md5
+  md5.update b
+  md5 = md5.digest \hex
+  if /^[0-9a-fA-F]+$/.exec(req.user.avatar or "") =>
+    fs-extra.remove "static/s/avatar/#{req.user.avatar}.jpg"
+  fs-extra.mkdirs "static/s/avatar", ->
+    fs.write-file "static/s/avatar/#{md5}.jpg", b, (e) ->
+      if e => return aux.r500 res, "failed writing avatar. maybe try later?"
+      io.query "update users set (avatar) = ($1) where key = $2", [md5, req.user.key]
+        .then ->
+          req.user.avatar = md5
+          req.login req.user, -> res.send {avatar: md5}
+          return null
+        .catch ->
+          console.error it.stack
+          aux.r403 res
+
 /*
 
 backend.app.post \/me/avatar, backend.multi.parser, throttle.limit edit-limit, (req, res) ->
@@ -88,14 +119,6 @@ backend.app.post \/me/avatar, backend.multi.parser, throttle.limit edit-limit, (
   model.type.user.clean(user)
   user.save!then (ret) -> req.login user, -> res.send ret
   backend.multi.clean req, res
-
-router.api.put \/user/:id, throttle.limit edit-limit, (req, res) ->
-  if !req.user or req.user.key != req.params.id => return aux.r403 res
-  for key in <[username usepasswd password create_date avatar]> => delete req.body[key]
-  user = {} <<< req.user <<< req.body
-  if (e = model.type.user.lint(user)).0 => return aux.r400 res, {msg: model.error-parser e}
-  model.type.user.clean(user)
-  user.save!then (ret) -> req.login user, -> res.send ret
 
 router.api.get \/user/:id/summary, (req, res) ->
   if !req.params.id => return aux.r404 res

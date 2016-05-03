@@ -44,7 +44,7 @@
             span LOGIN / SIGNUP
           li#nav-profile.dropdown(ng-cloak,ng-show="user.data")
             .btn(data-toggle="dropdown")
-              .avatar(ng-attr-style="background-image:url({{user.data.avatar || '/assets/img/avatar.png'}})")
+              .avatar(ng-attr-style="background-image:url(/s/avatar/{{user.data.avatar || '0'}}.jpg)")
               span.caret
             ul.dropdown-menu
               li: a(href="/me/") Profile

@@ -3,6 +3,7 @@ node_modules/
 .*
 secret.ls
 static/s/
+!static/s/avatar/0.jpg
 !.gitignore
 npm-debug.log
 engine/share/config.ls

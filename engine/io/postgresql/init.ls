@@ -36,6 +36,7 @@ init-users-table = """create table if not exists users (
   createdtime timestamp,
   lastactive timestamp,
   public_email boolean,
+  avatar text,
   detail jsonb
 )"""
 

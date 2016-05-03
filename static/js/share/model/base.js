@@ -329,6 +329,10 @@ import$(model.type, {
       },
       datasize: {
         type: model.type.number
+      },
+      avatar: {
+        max: 100,
+        type: model.type.string
       }
     }
   })

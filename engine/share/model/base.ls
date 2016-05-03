@@ -169,5 +169,6 @@ model.type <<< do
       lastactive: {type: model.type.date}
       public_email: {type: model.type.boolean}
       datasize: { type: model.type.number }
+      avatar: {max: 100, type: model.type.string}
 
 module.exports = model

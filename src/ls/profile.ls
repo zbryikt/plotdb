@@ -54,6 +54,7 @@ angular.module \plotDB
             headers: "Content-Type": undefined
           .success (d) ->
             plNotify.send \success, "Avatar Changed."
+            $scope.user.data.avatar = d.avatar
             $scope.profile.avatar = d.avatar
           .error (d) ->
             plNotify.send \danger, "Image can't be used, use another image",

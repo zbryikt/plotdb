@@ -69,6 +69,7 @@ x$.controller('profile', ['$scope', '$http', 'global', 'plNotify', 'dataService'
           }
         }).success(function(d){
           plNotify.send('success', "Avatar Changed.");
+          $scope.user.data.avatar = d.avatar;
           return $scope.profile.avatar = d.avatar;
         }).error(function(d){
           return plNotify.send('danger', "Image can't be used, use another image");
