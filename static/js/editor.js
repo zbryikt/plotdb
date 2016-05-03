@@ -5,7 +5,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
   import$($scope, {
     plConfig: plConfig,
     theme: new themeService.theme(),
-    chart: new chartService.chart(),
+    chart: new chartService.chart({
+      permission: {
+        'switch': ['public'],
+        value: []
+      }
+    }),
     showsrc: window.innerWidth < 800 ? false : true,
     vis: 'preview',
     lastvis: null,
@@ -102,7 +107,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         ref$.key = null;
         ref$.owner = null;
         ref$.permission = {
-          'switch': [],
+          'switch': ['public'],
           value: []
         };
         if (key) {
@@ -174,7 +179,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       ref$.owner = null;
       ref$.parent = key;
       ref$.permission = {
-        'switch': [],
+        'switch': ['public'],
         value: []
       };
       return this.save();

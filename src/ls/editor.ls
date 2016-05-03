@@ -5,7 +5,7 @@ angular.module \plotDB
     $scope <<< do
       plConfig: plConfig
       theme: new theme-service.theme! #TODO defer create. consider theme and chart
-      chart: new chart-service.chart!
+      chart: new chart-service.chart {permission: {switch: <[public]>, value: []}}
       showsrc: (if window.innerWidth < 800 => false else true)
       vis: \preview
       lastvis: null
@@ -55,7 +55,7 @@ angular.module \plotDB
       _save: (nothumb = false)->
         if @target!.owner != @user.data.key =>
           key = (if @target!._type.location == \server => @target!.key else null)
-          @target! <<< {key: null, owner: null, permission: {switch: [], value: []}}
+          @target! <<< {key: null, owner: null, permission: {switch: <[public]>, value: []}}
           # clone will set parent beforehand. so we only set it if necessary.
           if key => @target! <<< {parent: key}
         refresh = if !@target!.key => true else false
@@ -88,7 +88,7 @@ angular.module \plotDB
       clone: -> # clone forcely. same as save() when user is not the chart's owner
         @target!.name = "#{@target!.name} - Copy"
         key = (if @target!._type.location == \server => @target!.key else null)
-        @target! <<< {key: null, owner: null, parent: key, permission: {switch: [], value: []}}
+        @target! <<< {key: null, owner: null, parent: key, permission: {switch: <[public]>, value: []}}
         @save!
       loadchart: (chart) ->
         @[@type] = new @service[@type](@[@type] <<< chart)
