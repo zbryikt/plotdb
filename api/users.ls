@@ -1,8 +1,10 @@
 require! <[bluebird crypto]>
-require! <[../engine/aux ../engine/throttle]>
+require! <[../engine/aux ../engine/share/model/ ../engine/throttle]>
 (engine, io) <- (->module.exports = it)  _
 
+usertype = model.type.user
 auth-limit = {strategy: \hard, limit: 10, upper-delta: 1800, json: true}
+edit-limit = {strategy: \hard, limit: 30, upper-delta: 120, json: true}
 
 get-user = (req, key) ->
   if req.user and req.user.key == key => return new bluebird (res, rej) -> res req.user
@@ -42,6 +44,27 @@ engine.router.api.post \/me/passwd/, throttle.limit auth-limit,  (req, res) ->
     .catch (e) ->
       console.error e.stack
       aux.r404 res
+
+
+engine.router.api.put \/user/:id, aux.numid false, throttle.limit edit-limit, (req, res) ->
+  if !req.user or req.user.key != parseInt(req.params.id) => return aux.r403 res
+  for key in <[username usepasswd password createdtime avatar]> => delete req.body[key]
+  user = {} <<< req.user <<< req.body
+  if (e = usertype.lint(user)).0 => return aux.r400 res
+  usertype.clean(user)
+  pairs = io.aux.insert.format usertype, user
+  <[username usepasswd password avatar key createdtime]>.map -> delete pairs[it]
+  pairs = io.aux.insert.assemble pairs
+  io.query(
+    "update users set #{pairs.0} = #{pairs.1} where key = $#{pairs.2.length + 1}",
+    pairs.2 ++ [req.user.key]
+  )
+    .then (r={}) ->
+      req.login user, -> res.send!
+      return null
+    .catch ->
+      console.error it.stack
+      aux.r403 res
 
 /*
 

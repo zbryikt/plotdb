@@ -21,7 +21,7 @@ block body
             | Email
             small as Your Account
         .col-sm-9
-          label {{profile.username}}
+          label(ng-cloak) {{profile.username}}
           .checkbox.no-select
             label
               input(type="checkbox",ng-model="profile.public_email")
