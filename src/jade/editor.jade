@@ -295,8 +295,8 @@ block body
                 span.input-group-addon Theme
                 .dropdown
                   .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                    i.fa.fa-caret-down.pull-right
                     span {{theme.name || 'No Theme'}}
-                    i.fa.fa-caret-down
                   ul.dropdown-menu
                     li: a(ng-click="themes.set(null)") No Theme
                     li(ng-repeat="item in themes.list"): a(ng-click="themes.set(item)") {{item.name}}
@@ -304,8 +304,8 @@ block body
                 span.input-group-addon Chart
                 .dropdown
                   .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                    i.fa.fa-caret-down.pull-right
                     span {{chart.name || 'No Chart'}}
-                    i.fa.fa-caret-down
                   ul.dropdown-menu
                     li: a(ng-click="charts.set(null)") No Chart
                     li(ng-repeat="item in charts.list"): a(ng-click="charts.set(item)") {{item.name}}
@@ -318,8 +318,8 @@ block body
                 span.input-group-addon {{v.name || name}}
                 .dropdown
                   .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                    i.fa.fa-caret-down.pull-right
                     span {{v.value}}
-                    i.fa.fa-caret-down
                   ul.dropdown-menu
                     li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice}}
 
