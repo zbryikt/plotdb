@@ -111,7 +111,7 @@ init-charts-table = """create table if not exists charts (
   style jsonb,
   code jsonb,
   assets jsonb,
-  permissions jsonb,
+  permission jsonb,
   config jsonb
 )"""
 
