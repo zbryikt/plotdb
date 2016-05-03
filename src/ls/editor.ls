@@ -37,7 +37,8 @@ angular.module \plotDB
                 "<script type='text/javascript' src='#urljs'></script>"
               )
               urlhtml = URL.createObjectURL new Blob [html], {type: \text/html}
-              $scope.plotdb-domain = urlhtml
+              # seems that firefox doesn't like urlhtml...
+              #$scope.plotdb-domain = #urlhtml
               #TODO: directly regen iframe so we don't have to consider timing issue
               $timeout (->
                 $scope.plotdb-renderer = $sce.trustAsResourceUrl(urlhtml)
@@ -641,7 +642,6 @@ angular.module \plotDB
           #TODO need sanity check
           if data.payload => @target!.thumbnail = data.payload
           @_save!
-
         else if data.type == \parse-chart =>
           $scope.parse.chart.pending = false
           {config,dimension} = JSON.parse(data.payload)

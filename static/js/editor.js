@@ -62,7 +62,6 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         urlhtml = URL.createObjectURL(new Blob([html], {
           type: 'text/html'
         }));
-        $scope.plotdbDomain = urlhtml;
         return $timeout(function(){
           $scope.plotdbRenderer = $sce.trustAsResourceUrl(urlhtml);
           return $('#chart-renderer')[0].setAttribute("src", urlhtml);
