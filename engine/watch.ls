@@ -122,7 +122,7 @@ base = do
         console.log e.message
       console.log "[BUILD] recursive from #src:"
       _src = src
-      for src in srcs
+      if srcs => for src in srcs
         if !/src\/jade/.exec(src) => continue
         try
           des = src.replace(/src\/jade/, "static").replace(/\.jade/, ".html")
@@ -166,7 +166,7 @@ base = do
         console.log e.message
       console.log "[BUILD] recursive from #src:"
       _src = src
-      for src in srcs
+      if srcs => for src in srcs
         if !/src\/styl/.exec(src) => continue
         try
           des = src.replace(/src\/styl/, "static/css").replace(/\.styl$/, ".css")
