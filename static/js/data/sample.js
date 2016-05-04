@@ -6,7 +6,7 @@ x$.service('sampleData', ['$rootScope'].concat(function($rootScope){
   ret = [];
   ret.push({
     name: "Crimean War 1854",
-    rows: 0,
+    rows: 24,
     owneravatar: 'sample',
     isSample: true,
     _type: {
@@ -15,6 +15,23 @@ x$.service('sampleData', ['$rootScope'].concat(function($rootScope){
     fields: (function(){
       var ref$, results$ = [];
       for (k in ref$ = plotdb.data.sample.crimeanWar) {
+        v = ref$[k];
+        results$.push(v);
+      }
+      return results$;
+    }())
+  });
+  ret.push({
+    name: "Life Expectancy (1985,2000,2015)",
+    rows: 188,
+    owneravatar: 'sample',
+    isSample: true,
+    _type: {
+      location: 'sample'
+    },
+    fields: (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = plotdb.data.sample.lifeExpectancy) {
         v = ref$[k];
         results$.push(v);
       }
