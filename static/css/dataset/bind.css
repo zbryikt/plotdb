@@ -22,6 +22,13 @@
 .ds-list-panel .ds-list > .grayed {
   margin-top: 5px;
 }
+.ds-list-panel .ds-list .text-center.grayed:last-of-type,
+.ds-list-panel .ds-list .text-center.grayed:first-of-type {
+  display: none;
+}
+.ds-list-panel .ds-list .text-center.grayed:nth-of-type(2) {
+  display: block;
+}
 .ds-list-panel .ds-list-item {
   padding: 5px 5px;
   cursor: pointer;
@@ -70,7 +77,7 @@
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
 }
-.ds-fields .ball {
+.ds-fields-panel .ball {
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -79,7 +86,7 @@
   vertical-align: middle;
   background: #ccc;
 }
-.ds-fields .ball.active {
+.ds-fields-panel .ball.active {
   background: #ed1d78;
 }
 .ds-field {
@@ -142,7 +149,7 @@
   display: flex;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
-  margin: 0 -5px;
+  margin: 10px -5px 0;
 }
 .chart-dims .ds-field {
   width: 100%;
@@ -157,15 +164,25 @@
   margin-top: 3px;
   cursor: pointer;
 }
+.chart-dims .ds-field.placeholder {
+  background: none;
+  border: 2px dashed #eee;
+  height: 34px;
+}
 .chart-dim {
   width: 160px;
   -webkit-flex: 1 1 160px;
   flex: 1 1 160px;
   margin: 0 5px 10px;
 }
+.chart-dim.flexend {
+  -webkit-flex: 3 1 160px !important;
+  flex: 3 1 160px !important;
+}
 .ds-list-panel .panel-heading,
 .ds-fields-panel .panel-heading,
-.chart-dims-panel .panel-heading {
+.chart-dims-panel .panel-heading,
+.chart-dim.panel .panel-heading {
   font-family: lato;
   padding: 3px 16px;
   color: #999;

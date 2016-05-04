@@ -1976,11 +1976,12 @@ small.hint {
   position: absolute;
   z-index: 99999;
   width: 100%;
-  background: #ddd;
-  border: 1px solid #999;
-  border-radius: 3px;
   opacity: 0.01;
-  margin-left: 20px;
+  margin: 0 15px;
+  display: none;
+}
+#field-agent.active {
+  display: block;
 }
 #field-agent.dragging {
   opacity: 1;
@@ -2595,7 +2596,7 @@ small.hint {
   display: flex;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
-  margin: 0 -5px;
+  margin: 10px -5px 0;
 }
 .chart-dims .ds-field {
   width: 100%;
@@ -2610,15 +2611,25 @@ small.hint {
   margin-top: 3px;
   cursor: pointer;
 }
+.chart-dims .ds-field.placeholder {
+  background: none;
+  border: 2px dashed #eee;
+  height: 34px;
+}
 .chart-dim {
   width: 160px;
   -webkit-flex: 1 1 160px;
   flex: 1 1 160px;
   margin: 0 5px 10px;
 }
+.chart-dim.flexend {
+  -webkit-flex: 3 1 160px !important;
+  flex: 3 1 160px !important;
+}
 .ds-list-panel .panel-heading,
 .ds-fields-panel .panel-heading,
-.chart-dims-panel .panel-heading {
+.chart-dims-panel .panel-heading,
+.chart-dim.panel .panel-heading {
   font-family: lato;
   padding: 3px 16px;
   color: #999;

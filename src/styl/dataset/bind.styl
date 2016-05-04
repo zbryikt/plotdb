@@ -119,7 +119,7 @@
 .chart-dims
   flexbox()
   flex-wrap(wrap)
-  margin: 0 -5px
+  margin: 10px -5px 0
   .ds-field
     width: 100%
     .name
@@ -130,13 +130,19 @@
       font-weight: bold
       margin-top: 3px
       cursor: pointer
+  .ds-field.placeholder
+    background: none
+    border: 2px dashed #eee
+    height: 34px
 
 .chart-dim
   width: 160px
   flex(1 1 160px)
   margin: 0 5px 10px
+  &.flexend
+    flex(3 1 160px!important)
 
-.ds-list-panel, .ds-fields-panel, .chart-dims-panel
+.ds-list-panel, .ds-fields-panel, .chart-dims-panel, .chart-dim.panel
   .panel-heading
     font-family: lato
     padding: 3px 16px

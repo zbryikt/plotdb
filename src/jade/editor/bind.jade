@@ -37,33 +37,35 @@ div(ng-controller="datasetList",ng-cloak)
             small.grayed(ng-show="cur") {{cur.rows}} Rows, {{cur.fields.length}} Fields
             span &nbsp;
           .sep
-          #field-agent.data-field(ng-drag="true",ng-drag-data="fieldAgent.data",
-          ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="chosen.key")
-            span {{fieldAgent.data.name}}
-            small {{fieldAgent.data.type}}
+          #field-agent.ds-field(ng-drag="true",ng-drag-data="fieldAgent.data",
+          ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",
+          ng-class="{'active':fieldAgent.data}")
+            i.fa.fa-bars
+            .detail
+              .name {{fieldAgent.data.name || '(empty)'}}&nbsp;
+              .grayed: small {{fieldAgent.data.type || 'Any'}}
           .ds-fields
             .ds-field(ng-repeat="field in cur.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
             ng-drag="true",ng-drag-data="field")
-              i.fa.fa-bars(style="")
+              i.fa.fa-bars
               .detail
                 .name {{field.name || '(empty)'}}&nbsp;
-                .grayed: small Number, Rate, Percent, Change
+                .grayed: small {{field.type || 'Any'}}
 
             .ds-field.flexend(style="cursor:default")
 
-      .chart-dims-panel.panel.panel-default: .panel-heading
-        .text-center #[i.fa.fa-arrow-down] Drag Field to Map Dimension #[i.fa.fa-arrow-down]
-      .chart-dims
-        each i in [1,2,3,4,5]
-          .chart-dim.panel.panel-default
-            .panel-body
-              b value
-              .grayed accept: #[i any]
-              .ds-fields
-
-                //-.ds-field(ng-repeat="field in cur.fields",ng-show="$index="+i)
-                  .delete: span &times;
-                  .name {{field.name}}&nbsp;
-                  small.grayed in appworksout
-
+      .text-center.grayed #[i.fa.fa-arrow-down] Drag Field to Map Dimension #[i.fa.fa-arrow-down]
+      .chart-dims(ng-cloak)
+        .chart-dim.panel.panel-default(ng-repeat="(name,dim) in chart.dimension",
+        ng-drop="true",ng-drop-success="dimension.bind($event,dim,$data)")
+          .panel-heading dimension
+          .panel-body
+            b value
+            .grayed accept: #[i any]
+            .ds-fields
+              .ds-field.placeholder(ng-show="!dim.fields || !dim.fields.length")
+              .ds-field(ng-repeat="field in dim.fields")
+                .delete(ng-click="dimension.unbind($event, dim, field)"): span &times;
+                .name {{field.name}}&nbsp;
+                small.grayed in appworksout
         .chart-dim.flexend

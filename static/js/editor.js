@@ -1360,13 +1360,13 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return;
         }
         box = this.node.getBoundingClientRect();
-        box2 = this.node.parentNode.parentNode.getBoundingClientRect();
+        box2 = this.node.parentNode.parentNode.parentNode.getBoundingClientRect();
         scroll = {
           left: $('#data-fields').scrollLeft(),
           top: $('#data-fields').scrollTop()
         };
         return $('#field-agent').css({
-          top: (box.top - box2.top + 55 - scroll.top) + "px",
+          top: (box.top - box2.top - scroll.top) + "px",
           left: (box.left - box2.left - scroll.left) + "px",
           width: box.width + "px",
           height: box.height + "px"
@@ -1379,7 +1379,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }
         ref$ = [data, e.target], this.data = ref$[0], node = ref$[1];
         for (;;) {
-          if (node.getAttribute("class").indexOf('data-field') >= 0) {
+          if ((node.getAttribute("class") || "").indexOf('ds-field') >= 0) {
             break;
           }
           node = node.parentNode;

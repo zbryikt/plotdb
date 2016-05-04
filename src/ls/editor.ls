@@ -705,10 +705,10 @@ angular.module \plotDB
         set-position: ->
           if !@node => return
           box = @node.getBoundingClientRect!
-          box2 = @node.parentNode.parentNode.getBoundingClientRect!
+          box2 = @node.parentNode.parentNode.parentNode.getBoundingClientRect!
           scroll = left: $(\#data-fields).scrollLeft(), top: $(\#data-fields).scrollTop()
           $(\#field-agent).css do
-            top: "#{box.top - box2.top + 55 - scroll.top}px"
+            top: "#{box.top - box2.top - scroll.top}px"
             left: "#{box.left - box2.left - scroll.left}px"
             width: "#{box.width}px"
             height: "#{box.height}px"
@@ -716,7 +716,7 @@ angular.module \plotDB
           if @drag.ging => return
           [@data,node] = [data,e.target]
           while true
-            if node.getAttribute("class").indexOf('data-field') >=0 => break
+            if (node.getAttribute("class") || "").indexOf('ds-field') >=0 => break
             node = node.parentNode
             if node.nodeName.toLowerCase! == \body => return
           <~ setTimeout _, 0
