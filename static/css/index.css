@@ -19,6 +19,9 @@ body {
   margin: -204px 20px 0;
   padding: 170px 0 100px;
 }
+ {
+  width: 100%;
+}
 .spc1 {
   height: 0;
 }
@@ -2615,6 +2618,13 @@ small.hint {
   background: none;
   border: 2px dashed #eee;
   height: 34px;
+  cursor: default;
+}
+.chart-dims .ds-field.placeholder:before {
+  content: "drop here";
+  text-align: center;
+  display: block;
+  color: #ddd;
 }
 .chart-dim {
   width: 160px;
