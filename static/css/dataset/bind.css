@@ -1,3 +1,172 @@
 #binding-panel {
   margin: 5px 0;
 }
+.databinder .col-sm-4 {
+  padding-right: 0;
+}
+.ds-list-panel .input-group {
+  float: left;
+  width: 100%;
+  margin-right: 3px;
+  padding-right: 108px;
+}
+.ds-list-panel > .panel-body > .btn {
+  margin-left: -108px;
+  position: relative;
+  z-index: 1;
+}
+.ds-list-panel .ds-list {
+  max-height: 500px;
+  overflow-y: scroll;
+}
+.ds-list-panel .ds-list > .grayed {
+  margin-top: 5px;
+}
+.ds-list-panel .ds-list-item {
+  padding: 5px 5px;
+  cursor: pointer;
+}
+.ds-list-panel .ds-list-item:nth-of-type(2n+1) {
+  background: #f9f9f9;
+}
+.ds-list-panel .ds-list-item:hover,
+.ds-list-panel .ds-list-item.active {
+  background: #ed1d78;
+  color: #fff;
+}
+.ds-list-panel .ds-list-item:hover .grayed,
+.ds-list-panel .ds-list-item.active .grayed {
+  color: #fff;
+}
+.ds-list-panel .ds-list-item .avatar {
+  display: inline-block;
+  margin: 4px 5px 0 0;
+  vertical-align: top;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+.ds-list-panel .ds-list-item .name {
+  height: 16px;
+}
+.ds-list-panel .ds-list-item .grayed {
+  font-size: 0.8em;
+}
+.ds-fields-panel {
+  margin-bottom: 10px;
+}
+.ds-fields-panel label {
+  height: 16px;
+  margin-bottom: 0;
+}
+.ds-fields-panel .info {
+  height: 12px;
+}
+.ds-fields-panel .ds-fields {
+  max-height: 200px;
+  overflow-y: scroll;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+.ds-fields .ball {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: middle;
+  background: #ccc;
+}
+.ds-fields .ball.active {
+  background: #ed1d78;
+}
+.ds-field {
+  display: inline-block;
+  margin: 5px 10px 0 0;
+  padding: 3px 8px;
+  background: #8cc63f;
+  background: #58aab2;
+  background: #eee;
+  border-radius: 5px;
+  color: #555;
+  width: 160px;
+  border-bottom: 2px solid #999;
+  cursor: move;
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.ds-field .grayed {
+  color: #999;
+}
+.ds-field .fa {
+  vertical-align: top;
+  margin: 8px 8px 0 0;
+  font-size: 1.5em;
+  color: #fff;
+}
+.ds-field .detail {
+  display: inline-block;
+  vertical-align: middle;
+  width: 110px;
+}
+.ds-field .grayed {
+  font-size: 0.85em;
+  line-height: 1.1em;
+  margin-top: 2px;
+}
+.ds-field .name {
+  height: 16px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chart-dims-panel {
+  margin-bottom: 10px;
+  box-shadow: none;
+  color: #999;
+}
+.chart-dims-panel .panel-body {
+  padding: 10px;
+}
+.chart-dims {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  margin: 0 -5px;
+}
+.chart-dims .ds-field {
+  width: 100%;
+}
+.chart-dims .ds-field .name {
+  width: initial;
+}
+.chart-dims .ds-field .delete {
+  float: right;
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-top: 3px;
+  cursor: pointer;
+}
+.chart-dim {
+  width: 160px;
+  -webkit-flex: 1 1 160px;
+  flex: 1 1 160px;
+  margin: 0 5px 10px;
+}
+.ds-list-panel .panel-heading,
+.ds-fields-panel .panel-heading,
+.chart-dims-panel .panel-heading {
+  font-family: lato;
+  padding: 3px 16px;
+  color: #999;
+}

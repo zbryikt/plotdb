@@ -22,11 +22,7 @@ block body
       margin: 0 5px 10px;
     }
   div(ng-controller="blah")
-    .float-dataedit(ng-cloak,ng-show="dataPanel.toggled")
-      .dimmer(ng-click="dataPanel.toggle()")
-      .ib
-        .closebtn.inner(ng-click="dataPanel.toggle()")
-        include create.jade
+    include widget/float-edit.jade
     //-#data-edit-modal(ng-cloak,ng-show="dataPanel.toggled"): .ib
       .closebtn(ng-click="dataPanel.toggle()")
       include create.jade

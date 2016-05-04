@@ -32,7 +32,7 @@ body {
   position: fixed;
   bottom: 10px;
   left: 10px;
-  z-index: 32;
+  z-index: 33;
 }
 .notify {
   border-radius: 2px;
@@ -620,7 +620,7 @@ li.disabled a:hover {
   top: 0;
   left: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 31;
+  z-index: 32;
 }
 #alertbox .ib {
   position: relative;
@@ -660,7 +660,7 @@ li.disabled a:hover {
 .loader.floating {
   position: absolute;
   left: 50%;
-  z-index: 33;
+  z-index: 34;
 }
 .loader.floating.lg {
   margin-left: -50px;
@@ -798,7 +798,10 @@ a.dropdown-toggle {
   text-align: center;
 }
 .modal-backdrop {
-  z-index: 27 !important;
+  z-index: 28 !important;
+}
+.high-modal {
+  z-index: 29 !important;
 }
 .page-title {
   padding-top: 20px;
@@ -1699,16 +1702,16 @@ a.dropdown-toggle {
   opacity: 1;
 }
 #code-editor.fullscreen {
-  z-index: 24;
+  z-index: 25;
 }
 #visualization-canvas2.fullscreen {
-  z-index: 24;
+  z-index: 25;
 }
 #code-editor.fullscreen.active {
-  z-index: 25;
+  z-index: 26;
 }
 #visualization-canvas2.fullscreen.active {
-  z-index: 25;
+  z-index: 26;
 }
 #fullscreen-dimmer {
   display: none;
@@ -1740,7 +1743,7 @@ a.dropdown-toggle {
   width: 50%;
 }
 #code-error.fullscreen {
-  z-index: 26;
+  z-index: 27;
   position: fixed;
   bottom: 10px;
   left: 10px;
@@ -1812,7 +1815,7 @@ small.hint {
   border-radius: 2px;
 }
 .ldColorPicker.bubble {
-  z-index: 23;
+  z-index: 24;
 }
 .file {
   position: relative;
@@ -1872,7 +1875,7 @@ small.hint {
 }
 #assets-preview {
   position: fixed;
-  z-index: 30;
+  z-index: 31;
   top: 0;
   left: 0;
   width: 100%;
@@ -1922,7 +1925,7 @@ small.hint {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
-  z-index: 28;
+  z-index: 29;
 }
 #permission-modal .ib,
 #setting-modal .ib,
@@ -1967,7 +1970,7 @@ small.hint {
 }
 #setting-modal-inner .ib {
   height: auto;
-  z-index: 29;
+  z-index: 30;
   position: absolute;
   left: 50%;
   margin-left: -320px;
@@ -2413,7 +2416,7 @@ small.hint {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 28;
+  z-index: 23;
   padding: 70px 20px;
 }
 .float-dataedit .dimmer {
