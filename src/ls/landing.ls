@@ -10,7 +10,7 @@ svg = d3.select \#landing-svg
   .style do
     top: 0
     left: 0
-/*
+
 colors = d3.scale.ordinal!range <[#1d3263 #226c87 #f8d672 #e48e11 #e03215 #ab2321]>
 force = d3.layout.force!size [box.width, box.height] .gravity 0.08 .charge -300 .friction 0.5
 force.nodes data
@@ -41,4 +41,3 @@ tick = ->
   if speed < 0.2 => speed := 0.2
 force.on \tick, tick
 force.start!
-*/
