@@ -525,6 +525,9 @@ x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].con
   });
 }));
 x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].concat(function($scope, dataService, plNotify, eventBus){
+  $scope.filter = {
+    search: ""
+  };
   dataService.list().then(function(datasets){
     var samples, sample;
     samples = [
@@ -584,7 +587,7 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
     this.chosen.key = dataset.key;
     return this.chosen.dataset = dataset;
   };
-  return $scope['delete'] = function(dataset){
+  $scope['delete'] = function(dataset){
     var this$ = this;
     return dataset['delete']().then(function(){
       return $scope.$apply(function(){
@@ -597,6 +600,13 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
       return plNotify.send('danger', "failed to delete dataset.");
     });
   };
+  return $scope.$watch('filter.search', function(it){
+    var re;
+    re = new RegExp(it + "");
+    return $scope.datasets = $scope.datasets.filter(function(it){
+      return re.exec(it.name);
+    });
+  });
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

@@ -2,73 +2,17 @@
   max-width: 1200px;
   margin: auto;
 }
-.myitem {
-  padding: 5px 5px;
-  cursor: pointer;
-}
-.myitem:nth-of-type(2n+1) {
-  background: #f9f9f9;
-}
-.myitem:hover, .myitem.active {
-  background: #ed1d78;
-  color: #fff;
-}
-.myitem:hover .grayed, .myitem.active .grayed {
-  color: #fff;
-}
-.fieldx {
-  display:inline-block;
-  margin: 5px 10px 0 0;
-  padding: 3px 8px;
-  background: #8cc63f;
-  background: #58aab2;
-  background: #eee;
-  border-radius: 5px;
-  color: #555;
-  width: 160px;
-  border-bottom: 2px solid #999;
-  cursor: move;
-  flex: 1 1 auto;
-}
-.fieldxs {
-  display: flex;
-  flex-wrap: wrap;
-}
-.fieldx .grayed {
-  color: #999;
-}
-.fieldx .fa {
-  vertical-align:top;
-  margin: 8px 8px 0 0;
-  font-size: 1.5em;
-  color: #fff;
-}
-.ball {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 5px;
-  vertical-align: middle;
-  background: #ccc;
-}
-.ball.active {
-  background: #ed1d78;
-}
-.dimensions {
-  display: flexbox;
-  margin: 0 -5px;
-}
+
 .dimensionx {
   width: 160px;
   flex: 1 1 160px;
   margin: 0 5px 10px;
-}</style><div ng-controller="blah"><div id="root" ng-controller="datasetList" ng-cloak><h1>Data Binding</h1><div class="sep dark"></div><div class="row"><div style="padding-right:0" class="col-sm-4"><div class="panel panel-default"><div class="panel-body"><div style="float:left;width:100%;margin-right:3px;padding-right:108px" class="input-group"><input class="input-sm form-control"><span class="input-group-btn"><div class="btn btn-default btn-sm"><i class="fa fa-search"></i></div></span></div><div style="margin-left:-108px" class="btn btn-default btn-sm"><i class="fa fa-plus-circle"></i> New Dataset</div><div class="sep"></div><div id="myitems" style="max-height:500px;overflow-y:scroll" class="myitems"><div ng-repeat="dataset in datasets" ng-click="setcur(dataset)" ng-class="{'active':cur==dataset}" class="myitem"><img ng-attr-src="/s/avatar/{{dataset.owneravatar || 0}}.jpg" style="display:inline-block;margin:4px 5px 0 0;vertical-align:top;width:16px;height:16px;border-radius:3px"><div style="display:inline-block"><div style="height:16px;">{{dataset.name}}</div><div style="font-size:0.8em;" class="grayed">{{dataset.rows}} Rows, {{dataset.fields.length}} Fields</div></div><small ng-show="dataset.isSample" class="grayed pull-right">sample data</small></div><div style="margin-top: 5px" class="text-center grayed">that's all. <i class="fa fa-smile-o"></i></div></div></div></div></div><div class="col-sm-8"><div style="margin-bottom:10px" class="panel panel-default"><div class="panel-body"><label style="height:16px;margin-bottom:0"><div ng-class="{'active':cur}" class="ball"></div><span ng-cloak ng-show="cur">{{cur.name}}</span></label><span ng-show="!cur" class="grayed">( no dataset select ... )</span><div style="height:12px"><small ng-show="cur" class="grayed">{{cur.rows}} Rows, {{cur.fields.length}} Fields</small><span>&nbsp;</span></div><div class="sep"></div><div id="fieldxs" style="max-height:200px;overflow-y:scroll;flex-wrap:wrap" class="fieldxs"><div ng-repeat="field in cur.fields" class="fieldx"><i style="" class="fa fa-bars"></i><div style="display:inline-block;vertical-align:middle;width:110px;"><div style="height:16px;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{field.name || '(empty)'}}&nbsp;</div><div style="font-size:0.85em;line-height:1.1em;margin-top:2px" class="grayed"><small>Number, Rate, Percent, Change</small></div></div></div><div style="cursor:default" class="fieldx flexend"></div></div></div></div><div style="margin-bottom:10px;box-shadow:none;color:#999;" class="panel panel-default"><div style="padding:10px" class="panel-body"><div class="text-center"><i class="fa fa-arrow-down"></i> Drag Field to Map Dimension <i class="fa fa-arrow-down"></i></div></div></div><div class="dimensions"><div class="dimensionx panel panel-default"><div class="panel-body"><b>value</b><div class="grayed">accept: <i>any</i></div><div class="fieldxs"><div ng-repeat="field in cur.fields" style="width:100%" ng-show="$index=1" class="fieldx"><div style="font-size:1.3em;font-weight:bold;margin-top:3px;cursor:pointer;" class="pull-right"><span>&times;</span></div><div style="height:12px">{{field.name}}&nbsp;</div><small class="grayed">in appworksout</small></div></div></div></div><div class="dimensionx panel panel-default"><div class="panel-body"><b>value</b><div class="grayed">accept: <i>any</i></div><div class="fieldxs"><div ng-repeat="field in cur.fields" style="width:100%" ng-show="$index=2" class="fieldx"><div style="font-size:1.3em;font-weight:bold;margin-top:3px;cursor:pointer;" class="pull-right"><span>&times;</span></div><div style="height:12px">{{field.name}}&nbsp;</div><small class="grayed">in appworksout</small></div></div></div></div><div class="dimensionx panel panel-default"><div class="panel-body"><b>value</b><div class="grayed">accept: <i>any</i></div><div class="fieldxs"><div ng-repeat="field in cur.fields" style="width:100%" ng-show="$index=3" class="fieldx"><div style="font-size:1.3em;font-weight:bold;margin-top:3px;cursor:pointer;" class="pull-right"><span>&times;</span></div><div style="height:12px">{{field.name}}&nbsp;</div><small class="grayed">in appworksout</small></div></div></div></div><div class="dimensionx panel panel-default"><div class="panel-body"><b>value</b><div class="grayed">accept: <i>any</i></div><div class="fieldxs"><div ng-repeat="field in cur.fields" style="width:100%" ng-show="$index=4" class="fieldx"><div style="font-size:1.3em;font-weight:bold;margin-top:3px;cursor:pointer;" class="pull-right"><span>&times;</span></div><div style="height:12px">{{field.name}}&nbsp;</div><small class="grayed">in appworksout</small></div></div></div></div><div class="dimensionx panel panel-default"><div class="panel-body"><b>value</b><div class="grayed">accept: <i>any</i></div><div class="fieldxs"><div ng-repeat="field in cur.fields" style="width:100%" ng-show="$index=5" class="fieldx"><div style="font-size:1.3em;font-weight:bold;margin-top:3px;cursor:pointer;" class="pull-right"><span>&times;</span></div><div style="height:12px">{{field.name}}&nbsp;</div><small class="grayed">in appworksout</small></div></div></div></div><div class="dimensionx flexend"></div></div></div></div></div></div><script type="text/javascript">angular.module("plotDB").controller("blah", ["$scope",function($scope) {
+}</style><div ng-controller="blah"><div id="root" ng-controller="datasetList" ng-cloak><h1>Data Binding</h1><div class="sep dark"></div><div class="databinder row"><div class="col-sm-4"><div class="ds-list-panel panel panel-default"><div class="panel-heading">Dataset List</div><div class="panel-body"><div class="input-group"><input ng-model="filter.search" class="input-sm form-control"><span class="input-group-btn"><div class="btn btn-default btn-sm"><i class="fa fa-search"></i></div></span></div><div class="btn btn-default btn-sm"><i class="fa fa-plus-circle"></i> New Dataset</div><div class="sep"></div><div class="ds-list"><div ng-repeat="dataset in datasets" ng-click="setcur(dataset)" ng-class="{'active':cur==dataset}" class="ds-list-item"><img ng-attr-src="/s/avatar/{{dataset.owneravatar || 0}}.jpg" class="avatar"><div style="display:inline-block"><div class="name">{{dataset.name}}</div><div class="grayed">{{dataset.rows}} Rows, {{dataset.fields.length}} Fields</div></div><small ng-show="dataset.isSample" class="grayed pull-right">sample data</small></div><div ng-show="!datasets.length &amp;&amp; filter.search" class="text-center grayed">no result. try other keyword? <i class="fa fa-warning"></i></div><div ng-show="datasets.length || !filter.search" class="text-center grayed">that's all. <i class="fa fa-smile-o"></i></div></div></div></div></div><div class="col-sm-8"><div class="ds-fields-panel panel panel-default"><div class="panel-heading">Field List</div><div class="panel-body"><label><div ng-class="{'active':cur}" class="ball"></div><span ng-cloak ng-show="cur">{{cur.name}}</span></label><span ng-show="!cur" class="grayed">( no dataset select ... )</span><div class="info"><small ng-show="cur" class="grayed">{{cur.rows}} Rows, {{cur.fields.length}} Fields</small><span>&nbsp;</span></div><div class="sep"></div><div id="field-agent" ng-drag="true" ng-drag-data="fieldAgent.data" ng-drag-start="fieldAgent.drag.start()" ng-drag-stop="fieldAgent.drag.end()" ng-show="chosen.key" class="data-field"><span>{{fieldAgent.data.name}}</span><small>{{fieldAgent.data.type}}</small></div><div class="ds-fields"><div ng-repeat="field in cur.fields" ng-mouseover="fieldAgent.setProxy($event,field)" ng-drag="true" ng-drag-data="field" class="ds-field"><i style="" class="fa fa-bars"></i><div class="detail"><div class="name">{{field.name || '(empty)'}}&nbsp;</div><div class="grayed"><small>Number, Rate, Percent, Change</small></div></div></div><div style="cursor:default" class="ds-field flexend"></div></div></div></div><div class="chart-dims-panel panel panel-default"><div class="panel-heading"><div class="text-center"><i class="fa fa-arrow-down"></i> Drag Field to Map Dimension <i class="fa fa-arrow-down"></i></div></div></div><div class="chart-dims"><div class="chart-dim panel panel-default"><div class="panel-body"><b>value</b><div class="grayed">accept: <i>any</i></div><div class="ds-fields"><div ng-repeat="field in cur.fields" ng-show="$index=1" class="ds-field"><div class="delete"><span>&times;</span></div><div class="name">{{field.name}}&nbsp;</div><small class="grayed">in appworksout</small></div></div></div></div><div class="chart-dim panel panel-default"><div class="panel-body"><b>value</b><div class="grayed">accept: <i>any</i></div><div class="ds-fields"><div ng-repeat="field in cur.fields" ng-show="$index=2" class="ds-field"><div class="delete"><span>&times;</span></div><div class="name">{{field.name}}&nbsp;</div><small class="grayed">in appworksout</small></div></div></div></div><div class="chart-dim panel panel-default"><div class="panel-body"><b>value</b><div class="grayed">accept: <i>any</i></div><div class="ds-fields"><div ng-repeat="field in cur.fields" ng-show="$index=3" class="ds-field"><div class="delete"><span>&times;</span></div><div class="name">{{field.name}}&nbsp;</div><small class="grayed">in appworksout</small></div></div></div></div><div class="chart-dim panel panel-default"><div class="panel-body"><b>value</b><div class="grayed">accept: <i>any</i></div><div class="ds-fields"><div ng-repeat="field in cur.fields" ng-show="$index=4" class="ds-field"><div class="delete"><span>&times;</span></div><div class="name">{{field.name}}&nbsp;</div><small class="grayed">in appworksout</small></div></div></div></div><div class="chart-dim panel panel-default"><div class="panel-body"><b>value</b><div class="grayed">accept: <i>any</i></div><div class="ds-fields"><div ng-repeat="field in cur.fields" ng-show="$index=5" class="ds-field"><div class="delete"><span>&times;</span></div><div class="name">{{field.name}}&nbsp;</div><small class="grayed">in appworksout</small></div></div></div></div><div class="chart-dim flexend"></div></div></div></div></div></div><script type="text/javascript">angular.module("plotDB").controller("blah", ["$scope",function($scope) {
   $scope.cur = null;
   $scope.setcur = function(v) { 
     $scope.cur = v; 
   };
-  $scope.limitscroll(document.getElementById("myitems"));
+  $scope.limitscroll(document.querySelectorAll(".ds-list")[0]);
 }]);</script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)

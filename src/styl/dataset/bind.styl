@@ -3,3 +3,135 @@
 
 #binding-panel
   margin: 5px 0
+
+.databinder .col-sm-4
+  padding-right: 0
+
+.ds-list-panel
+  .input-group
+    float: left
+    width: 100%
+    margin-right: 3px
+    padding-right: 108px
+  & > .panel-body > .btn
+    margin-left: -108px
+  .ds-list
+    max-height: 500px
+    overflow-y: scroll
+    & > .grayed
+      margin-top: 5px
+  .ds-list-item
+    padding: 5px 5px
+    cursor: pointer
+    &:nth-of-type(2n+1)
+      background: #f9f9f9
+    &:hover, &.active
+      background: color.primary
+      color: #fff
+      .grayed
+        color: #fff
+    .avatar
+      display: inline-block
+      margin: 4px 5px 0 0
+      vertical-align: top
+      width: 16px
+      height: 16px
+      border-radius: 3px
+    .name
+      height: 16px
+    .grayed
+      font-size: 0.8em
+
+.ds-fields-panel
+  margin-bottom: 10px
+  label
+    height: 16px
+    margin-bottom: 0
+  .info
+    height: 12px
+  .ds-fields
+    max-height: 200px
+    overflow-y: scroll
+    flexbox()
+    flex-wrap(wrap)
+
+.ds-fields
+  .ball
+    width: 12px
+    height: 12px
+    border-radius: 50%
+    display: inline-block
+    margin-right: 5px
+    vertical-align: middle
+    background: #ccc
+  .ball.active
+    background: color.primary
+
+.ds-field
+  display:inline-block
+  margin: 5px 10px 0 0
+  padding: 3px 8px
+  background: #8cc63f
+  background: #58aab2
+  background: #eee
+  border-radius: 5px
+  color: #555
+  width: 160px
+  border-bottom: 2px solid #999
+  cursor: move
+  flex(1 1 auto)
+  no-selection()
+  .grayed
+    color: #999
+  .fa
+    vertical-align: top
+    margin: 8px 8px 0 0
+    font-size: 1.5em
+    color: #fff
+  .detail
+    display: inline-block
+    vertical-align: middle
+    width: 110px
+  .grayed
+    font-size: 0.85em
+    line-height: 1.1em
+    margin-top: 2px
+  .name
+    height: 16px
+    width: 100%
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+
+.chart-dims-panel
+  margin-bottom: 10px
+  box-shadow: none
+  color: #999
+  .panel-body
+    padding: 10px
+
+.chart-dims
+  flexbox()
+  flex-wrap(wrap)
+  margin: 0 -5px
+  .ds-field
+    width: 100%
+    .name
+      width: initial
+    .delete
+      float: right
+      font-size: 1.3em
+      font-weight: bold
+      margin-top: 3px
+      cursor: pointer
+
+.chart-dim
+  width: 160px
+  flex(1 1 160px)
+  margin: 0 5px 10px
+
+.ds-list-panel, .ds-fields-panel, .chart-dims-panel
+  .panel-heading
+    font-family: lato
+    padding: 3px 16px
+    color: #999

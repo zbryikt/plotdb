@@ -330,6 +330,8 @@ angular.module \plotDB
   ..controller \datasetList,
   <[$scope dataService plNotify eventBus]> ++
   ($scope, data-service, plNotify, eventBus) ->
+    $scope.filter = do
+      search: ""
     data-service.list!
       .then (datasets) ->
         samples = [
@@ -359,3 +361,7 @@ angular.module \plotDB
           plNotify.send \success, "dataset deleted."
         .catch ~>
           plNotify.send \danger, "failed to delete dataset."
+    $scope.$watch 'filter.search', ->
+      #TODO use angular filter filter or store datasets in other place.
+      re = new RegExp("#it")
+      $scope.datasets = $scope.datasets.filter -> re.exec(it.name)
