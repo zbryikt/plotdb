@@ -28,7 +28,7 @@ block body
   #root.pleditor(ng-controller="plEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
     #data-edit-modal(ng-cloak,ng-show="dataPanel.toggled"): .ib
       .closebtn(ng-click="dataPanel.toggle()")
-      include dataset/create.jade
+      include /dataset/create.jade
     #setting-modal(ng-cloak,ng-show="settingPanel.toggled",ng-click="settingPanel.toggle()")
     #setting-modal-inner(ng-cloak,ng-show="settingPanel.toggled"): .ib
       .closebtn(ng-click="settingPanel.toggle()")
@@ -219,7 +219,7 @@ block body
     #assets-preview(ng-cloak,ng-show="assets.preview.toggled"): .ib
       .closebtn.inner(ng-click="assets.preview.toggled=false")
       .iframe(style="width:100%;height:100%;border:none")
-    include widget/palette-edit-modal.jade
+    include /widget/palette-edit-modal.jade
     #fullscreen-dimmer(ng-class="{'fullscreen':editor.fullscreen.toggled}")
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
       #code-tabs
@@ -441,7 +441,7 @@ block body
           iframe#chart-renderer(
           style="width:100%;height:100%;border:none;background:url(/assets/img/loading-sm.svg) center center no-repeat")
 
-    include editor/bind.jade
+    include /editor/bind.jade
     //-
       br
       #binding-panel.relpos.panel.panel-default(ng-controller="datasetList",ng-show="type=='chart'",ng-cloak): .panel-body
