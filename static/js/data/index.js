@@ -617,11 +617,6 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
       return plNotify.send('danger', "failed to delete dataset.");
     });
   };
-  /*$scope.$watch 'filter.search', ->
-    #TODO use angular filter filter or store datasets in other place.
-    re = new RegExp("#it")
-    if $scope.datasets => $scope.datasets = $scope.datasets.filter -> re.exec(it.name)
-  */
   $scope.inlineCreate = function(it){
     return $scope.datasets.splice(0, 0, it);
   };
@@ -630,14 +625,8 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
     return $scope.cur = it;
   };
   if (that = document.querySelectorAll(".ds-list")[0]) {
-    $scope.limitscroll(that);
+    return $scope.limitscroll(that);
   }
-  return $scope.dataPanel = {
-    toggled: false,
-    toggle: function(){
-      return this.toggled = !this.toggled;
-    }
-  };
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

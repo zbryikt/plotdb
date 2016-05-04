@@ -370,17 +370,7 @@ angular.module \plotDB
           plNotify.send \success, "dataset deleted."
         .catch ~>
           plNotify.send \danger, "failed to delete dataset."
-    /*$scope.$watch 'filter.search', ->
-      #TODO use angular filter filter or store datasets in other place.
-      re = new RegExp("#it")
-      if $scope.datasets => $scope.datasets = $scope.datasets.filter -> re.exec(it.name)
-    */
     $scope.inline-create = -> $scope.datasets.splice 0, 0, it
     $scope.cur = null
     $scope.setcur = -> $scope.cur = it
     if document.querySelectorAll(".ds-list").0 => $scope.limitscroll that
-
-    #TODO use editor.ls's data-panel controller
-    $scope.data-panel = do
-      toggled: false
-      toggle: -> @toggled = !!!@toggled

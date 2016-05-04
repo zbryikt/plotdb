@@ -29,6 +29,8 @@ div(ng-controller="datasetList",ng-cloak)
         .panel-heading
           | Field List
         .panel-body
+          .pull-right
+            a(ng-attr-href="/dataset/{{cur.key}}/",target="_blank") #[i.fa.fa-external-link]
           label
             .ball(ng-class="{'active':cur}")
             span(ng-cloak,ng-show="cur") {{cur.name}}
