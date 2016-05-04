@@ -213,9 +213,13 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
           return plNotify.send('success', "dataset saved");
         });
         if (isCreate) {
-          return setTimeout(function(){
-            return window.location.href = dataService.link($scope.dataset);
-          }, 1000);
+          if ($scope.$parent && $scope.$parent.inlineCreate) {
+            return $scope.$parent.inlineCreate($scope.dataset);
+          } else {
+            return setTimeout(function(){
+              return window.location.href = dataService.link($scope.dataset);
+            }, 1000);
+          }
         } else {
           return $scope.loading = false;
         }
@@ -537,6 +541,7 @@ x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].con
   });
 }));
 x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].concat(function($scope, dataService, plNotify, eventBus){
+  var that;
   $scope.filter = {
     search: ""
   };
@@ -612,15 +617,27 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
       return plNotify.send('danger', "failed to delete dataset.");
     });
   };
-  return $scope.$watch('filter.search', function(it){
-    var re;
-    re = new RegExp(it + "");
-    if ($scope.datasets) {
-      return $scope.datasets = $scope.datasets.filter(function(it){
-        return re.exec(it.name);
-      });
+  /*$scope.$watch 'filter.search', ->
+    #TODO use angular filter filter or store datasets in other place.
+    re = new RegExp("#it")
+    if $scope.datasets => $scope.datasets = $scope.datasets.filter -> re.exec(it.name)
+  */
+  $scope.inlineCreate = function(it){
+    return $scope.datasets.splice(0, 0, it);
+  };
+  $scope.cur = null;
+  $scope.setcur = function(it){
+    return $scope.cur = it;
+  };
+  if (that = document.querySelectorAll(".ds-list")[0]) {
+    $scope.limitscroll(that);
+  }
+  return $scope.dataPanel = {
+    toggled: false,
+    toggle: function(){
+      return this.toggled = !this.toggled;
     }
-  });
+  };
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

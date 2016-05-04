@@ -15,25 +15,19 @@ block body
       max-width: 1200px;
       margin: auto;
     }
-
-    .dimensionx {
-      width: 160px;
-      flex: 1 1 160px;
-      margin: 0 5px 10px;
-    }
   div(ng-controller="blah")
-    include widget/float-edit.jade
     //-#data-edit-modal(ng-cloak,ng-show="dataPanel.toggled"): .ib
       .closebtn(ng-click="dataPanel.toggle()")
       include create.jade
     #root(ng-controller="datasetList",ng-cloak)
+      include widget/float-edit.jade
       h1 Data Binding
       .sep.dark
       .databinder.row
         .col-sm-4
           .ds-list-panel.panel.panel-default
             .panel-heading
-              | Dataset List
+              | choose dataset you want to use ...
             .panel-body
               .input-group
                 input.input-sm.form-control(ng-model="filter.search")
@@ -41,15 +35,15 @@ block body
               .btn.btn-default.btn-sm(ng-click="dataPanel.toggle()") #[i.fa.fa-plus-circle] New Dataset
               .sep
               .ds-list
-                .ds-list-item(ng-repeat="dataset in datasets",ng-click="setcur(dataset)",
-                ng-class="{'active':cur==dataset}")
+                .ds-list-item(ng-repeat="dataset in datasets|filter:{name:filter.search}:false",
+                ng-click="setcur(dataset)",ng-class="{'active':cur==dataset}")
                   img.avatar(ng-attr-src="/s/avatar/{{dataset.owneravatar || 0}}.jpg")
                   div(style="display:inline-block")
                     .name {{dataset.name}}
                     .grayed {{dataset.rows}} Rows, {{dataset.fields.length}} Fields
                   small.grayed.pull-right(ng-show="dataset.isSample") sample data
-                .text-center.grayed(ng-show="!datasets.length && filter.search") no result. try other keyword? #[i.fa.fa-warning]
-                .text-center.grayed(ng-show="datasets.length || !filter.search") that's all. #[i.fa.fa-smile-o]
+                .text-center.grayed that's all. #[i.fa.fa-smile-o]
+                .text-center.grayed no result. try other keyword?
 
         .col-sm-8
           .ds-fields-panel.panel.panel-default
@@ -75,6 +69,7 @@ block body
                   .detail
                     .name {{field.name || '(empty)'}}&nbsp;
                     .grayed: small Number, Rate, Percent, Change
+
                 .ds-field.flexend(style="cursor:default")
 
           .chart-dims-panel.panel.panel-default: .panel-heading
@@ -86,10 +81,12 @@ block body
                   b value
                   .grayed accept: #[i any]
                   .ds-fields
-                    .ds-field(ng-repeat="field in cur.fields",ng-show="$index="+i)
+
+                    //-.ds-field(ng-repeat="field in cur.fields",ng-show="$index="+i)
                       .delete: span &times;
                       .name {{field.name}}&nbsp;
                       small.grayed in appworksout
+
             .chart-dim.flexend
 
   script(type="text/javascript").
@@ -102,9 +99,6 @@ block body
       // TODO use editor.ls's data-panel controller
       $scope.dataPanel = {
         toggled: false,
-        toggle: function(it) {
-          console.log("123");
-          this.toggled = !!!this.toggled;
-        }
+        toggle: function(it) { this.toggled = !!!this.toggled; }
       };
     }]);

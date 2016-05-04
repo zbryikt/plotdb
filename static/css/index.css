@@ -2468,6 +2468,13 @@ small.hint {
 .ds-list-panel .ds-list > .grayed {
   margin-top: 5px;
 }
+.ds-list-panel .ds-list .text-center.grayed:last-of-type,
+.ds-list-panel .ds-list .text-center.grayed:first-of-type {
+  display: none;
+}
+.ds-list-panel .ds-list .text-center.grayed:nth-of-type(2) {
+  display: block;
+}
 .ds-list-panel .ds-list-item {
   padding: 5px 5px;
   cursor: pointer;
@@ -2516,7 +2523,7 @@ small.hint {
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
 }
-.ds-fields .ball {
+.ds-fields-panel .ball {
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -2525,7 +2532,7 @@ small.hint {
   vertical-align: middle;
   background: #ccc;
 }
-.ds-fields .ball.active {
+.ds-fields-panel .ball.active {
   background: #ed1d78;
 }
 .ds-field {

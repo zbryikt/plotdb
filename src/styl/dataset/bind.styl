@@ -22,6 +22,12 @@
     overflow-y: scroll
     & > .grayed
       margin-top: 5px
+    .text-center.grayed:last-of-type, .text-center.grayed:first-of-type
+      display: none
+    .text-center.grayed:nth-of-type(2)
+      display: block
+
+
   .ds-list-item
     padding: 5px 5px
     cursor: pointer
@@ -56,8 +62,6 @@
     overflow-y: scroll
     flexbox()
     flex-wrap(wrap)
-
-.ds-fields
   .ball
     width: 12px
     height: 12px

@@ -1,0 +1,69 @@
+div(ng-controller="datasetList",ng-cloak)
+  include ../dataset/widget/float-edit.jade
+  h1 Data Binding
+  .sep.dark
+  .databinder.row
+    .col-sm-4
+      .ds-list-panel.panel.panel-default
+        .panel-heading
+          | choose dataset you want to use ...
+        .panel-body
+          .input-group
+            input.input-sm.form-control(ng-model="filter.search")
+            span.input-group-btn: .btn.btn-default.btn-sm: i.fa.fa-search
+          .btn.btn-default.btn-sm(ng-click="dataPanel.toggle()") #[i.fa.fa-plus-circle] New Dataset
+          .sep
+          .ds-list
+            .ds-list-item(ng-repeat="dataset in datasets|filter:{name:filter.search}:false",
+            ng-click="setcur(dataset)",ng-class="{'active':cur==dataset}")
+              img.avatar(ng-attr-src="/s/avatar/{{dataset.owneravatar || 0}}.jpg")
+              div(style="display:inline-block")
+                .name {{dataset.name}}
+                .grayed {{dataset.rows}} Rows, {{dataset.fields.length}} Fields
+              small.grayed.pull-right(ng-show="dataset.isSample") sample data
+            .text-center.grayed that's all. #[i.fa.fa-smile-o]
+            .text-center.grayed no result. try other keyword?
+
+    .col-sm-8
+      .ds-fields-panel.panel.panel-default
+        .panel-heading
+          | Field List
+        .panel-body
+          label
+            .ball(ng-class="{'active':cur}")
+            span(ng-cloak,ng-show="cur") {{cur.name}}
+          span.grayed(ng-show="!cur") ( no dataset select ... )
+          .info
+            small.grayed(ng-show="cur") {{cur.rows}} Rows, {{cur.fields.length}} Fields
+            span &nbsp;
+          .sep
+          #field-agent.data-field(ng-drag="true",ng-drag-data="fieldAgent.data",
+          ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="chosen.key")
+            span {{fieldAgent.data.name}}
+            small {{fieldAgent.data.type}}
+          .ds-fields
+            .ds-field(ng-repeat="field in cur.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
+            ng-drag="true",ng-drag-data="field")
+              i.fa.fa-bars(style="")
+              .detail
+                .name {{field.name || '(empty)'}}&nbsp;
+                .grayed: small Number, Rate, Percent, Change
+
+            .ds-field.flexend(style="cursor:default")
+
+      .chart-dims-panel.panel.panel-default: .panel-heading
+        .text-center #[i.fa.fa-arrow-down] Drag Field to Map Dimension #[i.fa.fa-arrow-down]
+      .chart-dims
+        each i in [1,2,3,4,5]
+          .chart-dim.panel.panel-default
+            .panel-body
+              b value
+              .grayed accept: #[i any]
+              .ds-fields
+
+                //-.ds-field(ng-repeat="field in cur.fields",ng-show="$index="+i)
+                  .delete: span &times;
+                  .name {{field.name}}&nbsp;
+                  small.grayed in appworksout
+
+        .chart-dim.flexend
