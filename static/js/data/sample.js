@@ -2,6 +2,26 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.service('sampleData', ['$rootScope'].concat(function($rootScope){
+  var ret, k, v;
+  ret = [];
+  ret.push({
+    name: "Crimean War 1854",
+    rows: 0,
+    owneravatar: 'sample',
+    isSample: true,
+    _type: {
+      location: 'sample'
+    },
+    fields: (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = plotdb.data.sample.crimeanWar) {
+        v = ref$[k];
+        results$.push(v);
+      }
+      return results$;
+    }())
+  });
+  return ret;
   return [
     {
       key: "/dataset/sample/:crimeawar",

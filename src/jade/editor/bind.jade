@@ -62,8 +62,11 @@ div(ng-controller="datasetList",ng-cloak)
         ng-drop="true",ng-drop-success="dimension.bind($event,dim,$data)")
           .panel-heading dimension
           .panel-body
-            b value
-            .grayed accept: #[i any]
+            b {{name}}
+            .desc {{dim.desc}}
+            .grayed accept: 
+              i(ng-repeat="type in dim.type") {{type.name}}
+              i(ng-show="!dim.type || !dim.type.length") Any
             .ds-fields
               .ds-field.placeholder(ng-show="!dim.fields || !dim.fields.length")
               .ds-field(ng-repeat="field in dim.fields")

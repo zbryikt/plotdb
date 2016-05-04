@@ -5,7 +5,6 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
   var name, service, Field, Dataset, dataService;
   name = 'dataset';
   service = {
-    sample: sampleData,
     link: function(dataset){
       if (dataset._type.location === 'server') {
         return "/dataset/" + dataset.key + "/";
@@ -58,6 +57,9 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
   Field.prototype = {
     update: function(){
       var this$ = this;
+      if (this.location === 'sample') {
+        return Promise.resolve(this);
+      }
       return dataService.cachedLoad({
         location: this.location,
         name: 'dataset'
@@ -172,6 +174,9 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
   };
   service.Field = Field;
   dataService = baseService.derive(name, service, Dataset);
+  dataService.sample = sampleData.map(function(it){
+    return new Dataset(it);
+  });
   return dataService;
 }));
 x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'eventBus', 'plNotify'].concat(function($scope, $timeout, $http, dataService, eventBus, plNotify){
@@ -545,7 +550,7 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
     search: ""
   };
   dataService.list().then(function(datasets){
-    var samples, sample;
+    var samples;
     samples = [
       {
         fields: [{
@@ -585,7 +590,7 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
         isSample: true
       }
     ];
-    sample = [];
+    samples = dataService.sample;
     return $scope.$apply(function(){
       $scope.datasets = datasets.concat(samples);
       return $scope.setcur($scope.datasets[0]);

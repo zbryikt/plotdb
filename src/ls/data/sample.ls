@@ -1,5 +1,12 @@
 angular.module \plotDB
   ..service \sampleData, <[$rootScope]> ++ ($rootScope) ->
+    ret = []
+    ret.push do
+      name: "Crimean War 1854", rows: 0, owneravatar: \sample, is-sample: true,
+      _type: location: \sample,
+      fields: [v for k,v of plotdb.data.sample.crimean-war]
+
+    return ret
     [
       {
         key: "/dataset/sample/:crimeawar"

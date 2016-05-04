@@ -2580,7 +2580,7 @@ small.hint {
   margin-top: 2px;
 }
 .ds-field .name {
-  height: 16px;
+  height: 18px;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2600,6 +2600,13 @@ small.hint {
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
   margin: 10px -5px 0;
+}
+.chart-dims .panel-body {
+  padding: 5px 10px 10px;
+}
+.chart-dims .desc,
+.chart-dims .grayed {
+  font-size: 0.9em;
 }
 .chart-dims .ds-field {
   width: 100%;

@@ -4,7 +4,6 @@ angular.module \plotDB
   ($rootScope, $http, IOService, sampleData, baseService, plNotify, eventBus, plConfig) ->
     name = \dataset
     service = do
-      sample: sampleData
       link: (dataset) ->
         if dataset._type.location == \server => return "/dataset/#{dataset.key}/"
         return "/dataset/?k=c#{dataset.key}"
@@ -43,6 +42,7 @@ angular.module \plotDB
       @
     Field.prototype = do
       update: ->
+        if @location == \sample => return Promise.resolve @
         data-service.cachedLoad {location: @location, name: \dataset}, @dataset
           .then (dataset) ~>
             matched = dataset.fields.filter(~>it.name == @name).0
@@ -137,6 +137,7 @@ angular.module \plotDB
         */
     service.Field = Field
     dataService = baseService.derive name, service, Dataset
+    dataService.sample = sampleData.map -> new Dataset it
     dataService
 
   ..controller \dataEditCtrl,
@@ -342,13 +343,14 @@ angular.module \plotDB
       search: ""
     data-service.list!
       .then (datasets) ->
+
         samples = [
           * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
           * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
           * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
           * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
         ]
-        sample = []
+        samples = dataService.sample
         $scope.$apply ->
           $scope.datasets = datasets ++ samples
           $scope.setcur $scope.datasets[0]
