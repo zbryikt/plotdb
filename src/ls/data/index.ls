@@ -332,7 +332,16 @@ angular.module \plotDB
   ($scope, data-service, plNotify, eventBus) ->
     data-service.list!
       .then (datasets) ->
-        $scope.$apply -> $scope.datasets = datasets
+        samples = [
+          * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
+          * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
+          * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
+          * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
+        ]
+        sample = []
+        $scope.$apply ->
+          $scope.datasets = datasets ++ samples
+          $scope.setcur $scope.datasets[0]
     # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large
     $scope.chosen = do
       dataset: null

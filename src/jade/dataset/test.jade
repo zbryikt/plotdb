@@ -1,0 +1,142 @@
+extends /base.jade
+block vars
+  - var rootid = "dataview"
+  - var title = 'Create Dataset / PlotDB'
+  - var url = "http://plotdb.com/dataset/"
+block head
+  script(type="text/javascript",src="/js/io.js")
+  script(type="text/javascript",src="/js/chart/base.js")
+  script(type="text/javascript",src="/js/data/sample.js")
+  script(type="text/javascript",src="/js/data/index.js")
+block body
+  .spc1
+  style(type="text/css").
+    #root {
+      max-width: 1200px;
+      margin: auto;
+    }
+    .myitem {
+      padding: 5px 5px;
+      cursor: pointer;
+    }
+    .myitem:nth-of-type(2n+1) {
+      background: #f9f9f9;
+    }
+    .myitem:hover, .myitem.active {
+      background: #ed1d78;
+      color: #fff;
+    }
+    .myitem:hover .grayed, .myitem.active .grayed {
+      color: #fff;
+    }
+    .fieldx {
+      display:inline-block;
+      margin: 5px 10px 0 0;
+      padding: 3px 8px;
+      background: #8cc63f;
+      background: #58aab2;
+      background: #eee;
+      border-radius: 5px;
+      color: #555;
+      width: 160px;
+      border-bottom: 2px solid #999;
+      cursor: move;
+      flex: 1 1 auto;
+    }
+    .fieldxs {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .fieldx .grayed {
+      color: #999;
+    }
+    .fieldx .fa {
+      vertical-align:top;
+      margin: 8px 8px 0 0;
+      font-size: 1.5em;
+      color: #fff;
+    }
+    .ball {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+      vertical-align: middle;
+      background: #ccc;
+    }
+    .ball.active {
+      background: #ed1d78;
+    }
+    .dimensions {
+      display: flexbox;
+      margin: 0 -5px;
+    }
+    .dimensionx {
+      width: 160px;
+      flex: 1 1 160px;
+      margin: 0 5px 10px;
+    }
+  div(ng-controller="blah")
+    #root(ng-controller="datasetList",ng-cloak)
+      h1 Data Binding
+      .sep.dark
+      .row
+        .col-sm-4(style="padding-right:0")
+          .panel.panel-default: .panel-body
+            .input-group(style="float:left;width:100%;margin-right:3px;padding-right:108px")
+              input.input-sm.form-control
+              span.input-group-btn: .btn.btn-default.btn-sm: i.fa.fa-search
+            .btn.btn-default.btn-sm(style="margin-left:-108px") #[i.fa.fa-plus-circle] New Dataset
+            .sep
+            #myitems.myitems(style="max-height:500px;overflow-y:scroll")
+              .myitem(ng-repeat="dataset in datasets",ng-click="setcur(dataset)",
+              ng-class="{'active':cur==dataset}")
+                //-i.fa.fa-table(style="display:inline-block;margin:4px 5px 0 0;vertical-align:top;")
+                img(ng-attr-src="/s/avatar/{{dataset.owneravatar || 0}}.jpg",
+                style="display:inline-block;margin:4px 5px 0 0;vertical-align:top;width:16px;height:16px;border-radius:3px")
+                div(style="display:inline-block")
+                  div(style="height:16px;") {{dataset.name}}
+                  .grayed(style="font-size:0.8em;")
+                    | {{dataset.rows}} Rows, {{dataset.fields.length}} Fields
+                small.grayed.pull-right(ng-show="dataset.isSample") sample data
+              .text-center.grayed(style="margin-top: 5px") that's all. #[i.fa.fa-smile-o]
+        .col-sm-8
+          .panel.panel-default(style="margin-bottom:10px"): .panel-body
+            label(style="height:16px;margin-bottom:0")
+              .ball(ng-class="{'active':cur}")
+              span(ng-cloak,ng-show="cur") {{cur.name}}
+            span.grayed(ng-show="!cur") ( no dataset select ... )
+            div(style="height:12px")
+              small.grayed(ng-show="cur") {{cur.rows}} Rows, {{cur.fields.length}} Fields
+              span &nbsp;
+            .sep
+            #fieldxs.fieldxs(style="max-height:200px;overflow-y:scroll;flex-wrap:wrap")
+              .fieldx(ng-repeat="field in cur.fields")
+                i.fa.fa-bars(style="")
+                div(style="display:inline-block;vertical-align:middle;width:110px;")
+                  div(style="height:16px;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;") {{field.name || '(empty)'}}&nbsp;
+                  .grayed(style="font-size:0.85em;line-height:1.1em;margin-top:2px"): small Number, Rate, Percent, Change
+              .fieldx.flexend(style="cursor:default")
+          .panel.panel-default(style="margin-bottom:10px;box-shadow:none;color:#999;"): .panel-body(style="padding:10px")
+            .text-center #[i.fa.fa-arrow-down] Drag Field to Map Dimension #[i.fa.fa-arrow-down]
+          .dimensions
+            each i in [1,2,3,4,5]
+              .dimensionx.panel.panel-default: .panel-body
+                b value
+                .grayed accept: #[i any]
+                .fieldxs
+                  .fieldx(ng-repeat="field in cur.fields",style="width:100%",ng-show="$index="+i)
+                    .pull-right(style="font-size:1.3em;font-weight:bold;margin-top:3px;cursor:pointer;"): span &times;
+                    div(style="height:12px") {{field.name}}&nbsp;
+                    small.grayed in appworksout
+            .dimensionx.flexend
+
+  script(type="text/javascript").
+    angular.module("plotDB").controller("blah", ["$scope",function($scope) {
+      $scope.cur = null;
+      $scope.setcur = function(v) { 
+        $scope.cur = v; 
+      };
+      $scope.limitscroll(document.getElementById("myitems"));
+    }]);

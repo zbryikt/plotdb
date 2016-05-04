@@ -526,8 +526,50 @@ x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].con
 }));
 x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].concat(function($scope, dataService, plNotify, eventBus){
   dataService.list().then(function(datasets){
+    var samples, sample;
+    samples = [
+      {
+        fields: [{
+          data: [],
+          name: "blah"
+        }],
+        name: "1234",
+        rows: 5,
+        owneravatar: 'sample',
+        isSample: true
+      }, {
+        fields: [{
+          data: [],
+          name: "blah"
+        }],
+        name: "1234",
+        rows: 5,
+        owneravatar: 'sample',
+        isSample: true
+      }, {
+        fields: [{
+          data: [],
+          name: "blah"
+        }],
+        name: "1234",
+        rows: 5,
+        owneravatar: 'sample',
+        isSample: true
+      }, {
+        fields: [{
+          data: [],
+          name: "blah"
+        }],
+        name: "1234",
+        rows: 5,
+        owneravatar: 'sample',
+        isSample: true
+      }
+    ];
+    sample = [];
     return $scope.$apply(function(){
-      return $scope.datasets = datasets;
+      $scope.datasets = datasets.concat(samples);
+      return $scope.setcur($scope.datasets[0]);
     });
   });
   $scope.chosen = {
