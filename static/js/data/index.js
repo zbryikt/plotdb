@@ -230,6 +230,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
   };
   $scope.load = function(_type, key){
     var this$ = this;
+    console.log(_type, key);
     return dataService.load(_type, key).then(function(ret){
       $scope.dataset = new dataService.dataset(ret);
       $scope.parse.revert($scope.dataset);
@@ -294,7 +295,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       var ret1, ret2, that, ret, offset;
       this.reset("");
       ret1 = /\/dataset\//.exec(window.location.pathname) ? /[?&]k=([sc])([^&?#]+)/.exec(window.location.search || "") : null;
-      ret2 = /^\/data(s)et\/([^\/?&]+)\/?/.exec(window.location.pathname || "");
+      ret2 = /^\/data(s)et\/([0-9]+)\/?/.exec(window.location.pathname || "");
       if (that = ret1 || ret2) {
         ret = that;
         $scope.dataset.key = ret[2];
@@ -611,9 +612,11 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
   return $scope.$watch('filter.search', function(it){
     var re;
     re = new RegExp(it + "");
-    return $scope.datasets = $scope.datasets.filter(function(it){
-      return re.exec(it.name);
-    });
+    if ($scope.datasets) {
+      return $scope.datasets = $scope.datasets.filter(function(it){
+        return re.exec(it.name);
+      });
+    }
   });
 }));
 function import$(obj, src){

@@ -22,6 +22,14 @@ block body
       margin: 0 5px 10px;
     }
   div(ng-controller="blah")
+    .float-dataedit(ng-cloak,ng-show="dataPanel.toggled")
+      .dimmer(ng-click="dataPanel.toggle()")
+      .ib
+        .closebtn.inner(ng-click="dataPanel.toggle()")
+        include create.jade
+    //-#data-edit-modal(ng-cloak,ng-show="dataPanel.toggled"): .ib
+      .closebtn(ng-click="dataPanel.toggle()")
+      include create.jade
     #root(ng-controller="datasetList",ng-cloak)
       h1 Data Binding
       .sep.dark
@@ -34,7 +42,7 @@ block body
               .input-group
                 input.input-sm.form-control(ng-model="filter.search")
                 span.input-group-btn: .btn.btn-default.btn-sm: i.fa.fa-search
-              .btn.btn-default.btn-sm #[i.fa.fa-plus-circle] New Dataset
+              .btn.btn-default.btn-sm(ng-click="dataPanel.toggle()") #[i.fa.fa-plus-circle] New Dataset
               .sep
               .ds-list
                 .ds-list-item(ng-repeat="dataset in datasets",ng-click="setcur(dataset)",
@@ -91,8 +99,16 @@ block body
   script(type="text/javascript").
     angular.module("plotDB").controller("blah", ["$scope",function($scope) {
       $scope.cur = null;
-      $scope.setcur = function(v) { 
-        $scope.cur = v; 
+      $scope.setcur = function(v) {
+        $scope.cur = v;
       };
       $scope.limitscroll(document.querySelectorAll(".ds-list")[0]);
+      // TODO use editor.ls's data-panel controller
+      $scope.dataPanel = {
+        toggled: false,
+        toggle: function(it) {
+          console.log("123");
+          this.toggled = !!!this.toggled;
+        }
+      };
     }]);

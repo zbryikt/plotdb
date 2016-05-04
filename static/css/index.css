@@ -2371,6 +2371,9 @@ small.hint {
   padding-bottom: 0;
   overflow: hidden;
 }
+#dataset-create-methods {
+  margin-bottom: 10px;
+}
 #dataset-create-methods .btn {
   margin-right: 10px;
   background: #f9f9f9;
@@ -2404,6 +2407,37 @@ small.hint {
   border-top: 0;
   background: #f9f9f9;
 }
+.float-dataedit {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 28;
+  padding: 70px 20px;
+}
+.float-dataedit .dimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+.float-dataedit .ib {
+  position: relative;
+}
+.float-dataedit #dataset-create-methods {
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-bottom: 0;
+  border-radius: 3px 3px 0 0;
+  margin-bottom: 0;
+}
+.float-dataedit textarea {
+  border-radius: 0;
+}
 #binding-panel {
   margin: 5px 0;
 }
@@ -2418,6 +2452,8 @@ small.hint {
 }
 .ds-list-panel > .panel-body > .btn {
   margin-left: -108px;
+  position: relative;
+  z-index: 1;
 }
 .ds-list-panel .ds-list {
   max-height: 500px;

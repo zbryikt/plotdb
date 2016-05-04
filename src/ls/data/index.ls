@@ -173,6 +173,7 @@ angular.module \plotDB
           $scope.loading = false
           $scope.$apply -> plNotify.aux.error.io \save, \data, e
     $scope.load = (_type, key) ->
+      console.log _type, key
       data-service.load _type, key
         .then (ret) ~>
           $scope.dataset = new data-service.dataset ret
@@ -221,7 +222,7 @@ angular.module \plotDB
           else => null
         )
         # e.g.: /dataset/123/
-        ret2 = /^\/data(s)et\/([^\/?&]+)\/?/.exec(window.location.pathname or "")
+        ret2 = /^\/data(s)et\/([0-9]+)\/?/.exec(window.location.pathname or "")
         if ret1 or ret2 =>
           ret = that
           $scope.dataset.key = ret.2
@@ -367,4 +368,4 @@ angular.module \plotDB
     $scope.$watch 'filter.search', ->
       #TODO use angular filter filter or store datasets in other place.
       re = new RegExp("#it")
-      $scope.datasets = $scope.datasets.filter -> re.exec(it.name)
+      if $scope.datasets => $scope.datasets = $scope.datasets.filter -> re.exec(it.name)
