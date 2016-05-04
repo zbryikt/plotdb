@@ -209,7 +209,9 @@ angular.module \plotDB
             $scope.rawdata = payload.data
             $scope.loading = false
       reset: (rawdata) ->
-        $scope <<< {dataset:  new dataService.dataset(window.dataset or {}), rawdata}
+        dataset = new dataService.dataset(window.dataset or {})
+        if $scope.dataset and $scope.dataset.name => dataset.name = $scope.dataset.name
+        $scope <<< {dataset, rawdata}
       init: ->
         @reset ""
         # e.g.: /dataset/?k=s123 )
@@ -252,6 +254,7 @@ angular.module \plotDB
               <~ $scope.$apply
               @ <<< {fields: values.length, rows: (values.0 or []).length}
               $scope.loading = false
+              if @rows > 0 and !$scope.dataset.name => $('#dataset-editbox-meta .input-group input').tooltip('show')
               res @result
         if @handle => $timeout.cancel @handle
         if force => return _!

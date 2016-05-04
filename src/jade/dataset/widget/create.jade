@@ -69,15 +69,16 @@ br
   #dataset-editbox-meta
     .input-group.pull-left(style="width:260px")
       input.form-control.input-sm(type="input",ng-model="dataset.name",placeholder="Dataset Name",
-      ng-disabled="dataset.type.location=='sample'")
-      span.input-group-btn
+      ng-disabled="dataset.type.location=='sample'",
+      data-toggle="tooltip" data-placement="bottom" title="give it a name")
+      span.input-group-btn(data-toggle="tooltip" data-placement="bottom" title="save dataset")
         .btn.btn-default.btn-sm(
         ng-disabled="!dataset.name || !parse.result || (dataset.type.location && dataset.type.location!='server')"
         ,ng-click="save()") Save
     span &nbsp;
-    .btn.btn-sm.btn-default(
-    ng-disabled="!dataset.name || !parse.result || (dataset.type.location && dataset.type.location!='local')",
-    ng-click="save(true)") Save Locally
+    //-.btn.btn-sm.btn-default(
+       ng-disabled="!dataset.name || !parse.result || (dataset.type.location && dataset.type.location!='local')",
+       ng-click="save(true)") Save Locally
     span(ng-cloak,ng-class="{'grayed':parse.rows==0}",
     style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px")
       | {{parse.rows || 0}} rows, {{parse.fields || 0}} fields, size: {{(parse.size || 0)|size}} #[small (estimated)]

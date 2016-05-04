@@ -283,7 +283,12 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       };
     },
     reset: function(rawdata){
-      return $scope.dataset = new dataService.dataset(window.dataset || {}), $scope.rawdata = rawdata, $scope;
+      var dataset;
+      dataset = new dataService.dataset(window.dataset || {});
+      if ($scope.dataset && $scope.dataset.name) {
+        dataset.name = $scope.dataset.name;
+      }
+      return $scope.dataset = dataset, $scope.rawdata = rawdata, $scope;
     },
     init: function(){
       var ret1, ret2, that, ret, offset;
@@ -366,6 +371,9 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
                 this$.fields = values.length;
                 this$.rows = (values[0] || []).length;
                 $scope.loading = false;
+                if (this$.rows > 0 && !$scope.dataset.name) {
+                  $('#dataset-editbox-meta .input-group input').tooltip('show');
+                }
                 return res(this$.result);
               });
             }
