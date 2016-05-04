@@ -19,9 +19,6 @@ body {
   margin: -204px 20px 0;
   padding: 170px 0 100px;
 }
- {
-  width: 100%;
-}
 .spc1 {
   height: 0;
 }
@@ -2418,6 +2415,12 @@ small.hint {
   height: 100%;
   z-index: 23;
   padding: 70px 20px;
+  display: none;
+  opacity: 0;
+}
+.float-dataedit.active {
+  display: block;
+  opacity: 1;
 }
 .float-dataedit .dimmer {
   position: absolute;

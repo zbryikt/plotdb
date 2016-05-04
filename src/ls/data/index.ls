@@ -231,6 +231,8 @@ angular.module \plotDB
         $scope.$watch 'rawdata', -> $scope.parse.run!
         offset = $('#dataset-editbox textarea').offset!
         $('#dataset-editbox textarea').css({height: "#{window.innerHeight - offset.top - 140}px"})
+        #TODO quick hack. think about a better way to do this
+        $('.float-dataedit textarea').css({height: "#{window.innerHeight - offset.top - 240}px"})
         $('[data-toggle="tooltip"]').tooltip!
         @communicate!
 

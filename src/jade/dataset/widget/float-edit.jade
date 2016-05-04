@@ -1,4 +1,4 @@
-.float-dataedit(ng-cloak,ng-show="dataPanel.toggled")
+.float-dataedit(ng-cloak,ng-class="{'active': dataPanel.toggled}")
   .dimmer(ng-click="dataPanel.toggle()")
   .ib
     .closebtn.inner(ng-click="dataPanel.toggle()")

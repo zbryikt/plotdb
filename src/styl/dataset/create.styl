@@ -40,6 +40,11 @@
   height: 100%
   z-index: index(order, 'middle-modal')
   padding: 70px 20px
+  display: none
+  opacity: 0
+  &.active
+    display: block
+    opacity: 1.0
   .dimmer
     position: absolute
     top: 0

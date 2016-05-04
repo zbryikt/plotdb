@@ -313,6 +313,9 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       $('#dataset-editbox textarea').css({
         height: (window.innerHeight - offset.top - 140) + "px"
       });
+      $('.float-dataedit textarea').css({
+        height: (window.innerHeight - offset.top - 240) + "px"
+      });
       $('[data-toggle="tooltip"]').tooltip();
       return this.communicate();
     }
