@@ -29,8 +29,11 @@ div(ng-controller="datasetList",ng-cloak)
         .panel-heading
           | Field List
         .panel-body
-          .pull-right
-            a(ng-attr-href="/dataset/{{cur.key}}/",target="_blank") #[i.fa.fa-external-link]
+          .pull-right.ctrl
+            a(ng-class="{'disabled':cur._type.location=='sample'}",
+            ng-click="dataPanel.edit(cur)") #[i.fa.fa-pencil-square-o] edit
+            a(ng-class="{'disabled':cur._type.location=='sample'}",
+            ng-attr-href="/dataset/{{cur.key}}/",target="_blank") #[i.fa.fa-external-link] open
           label
             .ball(ng-class="{'active':cur}")
             span(ng-cloak,ng-show="cur") {{cur.name}}
@@ -72,5 +75,5 @@ div(ng-controller="datasetList",ng-cloak)
               .ds-field(ng-repeat="field in dim.fields")
                 .delete(ng-click="dimension.unbind($event, dim, field)"): span &times;
                 .name {{field.name}}&nbsp;
-                small.grayed in appworksout
+                small.grayed in {{field.datasetname}}
         .chart-dim.flexend

@@ -1,6 +1,6 @@
 angular.module \plotDB
   ..controller \plEditor,
-  <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify) ->
+  <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify eventBus]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify,eventBus) ->
     #########  Variables  ################################################################
     $scope <<< do
       plConfig: plConfig
@@ -157,7 +157,7 @@ angular.module \plotDB
           @render rebind
         ), 500
       parse: do
-        send: (name) -> 
+        send: (name) ->
           if !$scope[name] => return
           @[name]pending = true
           $scope.canvas.window.postMessage(
@@ -337,6 +337,11 @@ angular.module \plotDB
       data-panel: do
         toggle: -> @toggled = !!!@toggled
         toggled: false
+        edit: (dataset) ->
+          if dataset._type.location == \sample => return
+          @toggled = true
+          eventBus.fire \dataset.edit, dataset
+
       share-panel: do
         social: do
           facebook: null

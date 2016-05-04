@@ -219,15 +219,16 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
         });
         if (isCreate) {
           if ($scope.$parent && $scope.$parent.inlineCreate) {
-            return $scope.$parent.inlineCreate($scope.dataset);
+            $scope.$parent.inlineCreate($scope.dataset);
           } else {
-            return setTimeout(function(){
+            setTimeout(function(){
               return window.location.href = dataService.link($scope.dataset);
             }, 1000);
           }
         } else {
-          return $scope.loading = false;
+          $scope.loading = false;
         }
+        return eventBus.fire('dataset.saved', $scope.dataset);
       })['catch'](function(e){
         console.log(e.stack);
         $scope.loading = false;
@@ -239,6 +240,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
   };
   $scope.load = function(_type, key){
     var this$ = this;
+    $scope.rawdata = "";
     return dataService.load(_type, key).then(function(ret){
       $scope.dataset = new dataService.dataset(ret);
       $scope.parse.revert($scope.dataset);
@@ -508,8 +510,16 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       return $scope.dataset = null;
     }
   });
-  eventBus.listen('dataset.edit', function(dataset){
-    return $scope.load(dataset._type, dataset.key);
+  eventBus.listen('dataset.edit', function(dataset, load){
+    load == null && (load = true);
+    $scope.inited = false;
+    if (load && dataset._type.location === 'server') {
+      return $scope.load(dataset._type, dataset.key);
+    } else {
+      $scope.dataset = new dataService.dataset(dataset);
+      $scope.parse.revert($scope.dataset);
+      return $scope.inited = true;
+    }
   });
   return $scope.init();
 }));
@@ -629,8 +639,18 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
     return $scope.cur = it;
   };
   if (that = document.querySelectorAll(".ds-list")[0]) {
-    return $scope.limitscroll(that);
+    $scope.limitscroll(that);
   }
+  return eventBus.listen('dataset.saved', function(dataset){
+    var matched;
+    dataset == null && (dataset = {});
+    matched = $scope.datasets.filter(function(it){
+      return it.key === dataset.key;
+    })[0];
+    if (matched) {
+      return import$(matched, dataset);
+    }
+  });
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

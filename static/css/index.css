@@ -2512,6 +2512,17 @@ small.hint {
 .ds-fields-panel {
   margin-bottom: 10px;
 }
+.ds-fields-panel .ctrl .fa {
+  vertical-align: middle;
+}
+.ds-fields-panel .ctrl a {
+  cursor: pointer;
+  margin-left: 24px;
+}
+.ds-fields-panel .ctrl a.disabled {
+  color: #eee;
+  cursor: not-allowed;
+}
 .ds-fields-panel label {
   height: 16px;
   margin-bottom: 0;

@@ -172,11 +172,13 @@ angular.module \plotDB
                 window.location.href = data-service.link $scope.dataset
               ), 1000
           else => $scope.loading = false
+          eventBus.fire \dataset.saved, $scope.dataset
         .catch (e) ->
           console.log e.stack
           $scope.loading = false
           $scope.$apply -> plNotify.aux.error.io \save, \data, e
     $scope.load = (_type, key) ->
+      $scope.rawdata = ""
       data-service.load _type, key
         .then (ret) ~>
           $scope.dataset = new data-service.dataset ret
@@ -310,9 +312,15 @@ angular.module \plotDB
             $(\#dataset-edit-link-modal).modal \hide
           #TODO error handling
     eventBus.listen \dataset.delete, (key) -> if $scope.dataset.key == key => $scope.dataset = null
-    eventBus.listen \dataset.edit, (dataset) ->
+    eventBus.listen \dataset.edit, (dataset, load = true) ->
       #TODO: support more type ( currently CSV structure only )
-      $scope.load dataset._type, dataset.key
+      $scope.inited = false
+      if load and dataset._type.location == \server =>
+        $scope.load dataset._type, dataset.key
+      else
+        $scope.dataset = new data-service.dataset dataset
+        $scope.parse.revert $scope.dataset
+        $scope.inited = true
 
     $scope.init!
 
@@ -375,3 +383,6 @@ angular.module \plotDB
     $scope.cur = null
     $scope.setcur = -> $scope.cur = it
     if document.querySelectorAll(".ds-list").0 => $scope.limitscroll that
+    eventBus.listen \dataset.saved, (dataset = {}) ->
+      matched = $scope.datasets.filter(->it.key == dataset.key)[0]
+      if matched => matched <<< dataset

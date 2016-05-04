@@ -10,13 +10,13 @@ angular.module \plotDB
         else list = [[name, @queues[][name]]]
         ([k,v]) <~ list.map
         if !v or !v.length => return
-        for func in (@handlers[k] or []) => for payload in v => func payload
+        for func in (@handlers[k] or []) => for payload in v => func.apply null, [payload.0] ++ payload.1
         @queues[][name].splice 0, @queues[][name].length
       listen: (name, cb) ->
         @handlers[][name].push cb
         @process name
-      fire: (name, payload) ->
-        @queues[][name].push payload
+      fire: (name, payload, ...params) ->
+        @queues[][name].push [payload, params]
         @process name
 
   ..service 'plNotify', <[$rootScope $timeout]> ++ ($rootScope, $timeout) ->
