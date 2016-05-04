@@ -160,7 +160,7 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
         }
       }
       this.fields = fields;
-      this.rows = ((ref$ = this.fields[0] || {}).data || (ref$.data = [])).length;
+      this.rows = this.rows || ((ref$ = this.fields[0] || {}).data || (ref$.data = [])).length;
       this.size = 0;
       for (i$ = 0, len$ = (ref$ = this.fields).length; i$ < len$; ++i$) {
         f1 = ref$[i$];
@@ -234,7 +234,6 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
   };
   $scope.load = function(_type, key){
     var this$ = this;
-    console.log(_type, key);
     return dataService.load(_type, key).then(function(ret){
       $scope.dataset = new dataService.dataset(ret);
       $scope.parse.revert($scope.dataset);

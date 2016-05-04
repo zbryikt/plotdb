@@ -114,7 +114,7 @@ angular.module \plotDB
         for f1 in @fields => for f2 in fields =>
           if f1.name != f2.name => continue
           f2 <<< f1{key}
-        @ <<< fields: fields, rows: (@fields.0 or {}).[]data.length, size: 0
+        @ <<< fields: fields, rows: @rows or (@fields.0 or {}).[]data.length, size: 0
         for f1 in @fields => @size += (f1.data or "").length + ((f1.name or "").length + 1)
 
       update: ->
@@ -176,7 +176,6 @@ angular.module \plotDB
           $scope.loading = false
           $scope.$apply -> plNotify.aux.error.io \save, \data, e
     $scope.load = (_type, key) ->
-      console.log _type, key
       data-service.load _type, key
         .then (ret) ~>
           $scope.dataset = new data-service.dataset ret
