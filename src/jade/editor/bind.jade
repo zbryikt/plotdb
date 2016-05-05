@@ -63,7 +63,9 @@ div(ng-controller="datasetList",ng-cloak)
       .chart-dims(ng-cloak)
         .chart-dim.panel.panel-default(ng-repeat="(name,dim) in chart.dimension",
         ng-drop="true",ng-drop-success="dimension.bind($event,dim,$data)")
-          .panel-heading dimension
+          .panel-heading
+            span dimension
+            small.pull-right(ng-show="dim.multiple",data-toggle="tooltip",data-placement="top",title="You can drag multiple fields here!",style="margin-top: 4px",ng-mouseover="tooltip.show($event)") multiple #[i.fa.fa-question-circle]
           .panel-body
             b {{name}}
             .desc {{dim.desc}}

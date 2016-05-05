@@ -417,6 +417,13 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     }
   });
   import$($scope, {
+    tooltip: {
+      show: function(e){
+        return setTimeout(function(){
+          return $(e.target).tooltip('show');
+        }, 0);
+      }
+    },
     backup: {
       enabled: false,
       guard: false,

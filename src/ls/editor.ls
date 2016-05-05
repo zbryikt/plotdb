@@ -207,6 +207,9 @@ angular.module \plotDB
 
     #########  Behaviors  ################################################################
     $scope <<< do
+      tooltip: do
+        show: (e) -> setTimeout (->$(e.target).tooltip('show')), 0
+
       backup: do
         enabled: false
         guard: false

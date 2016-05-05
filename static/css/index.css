@@ -2662,6 +2662,9 @@ small.hint {
   padding: 3px 16px;
   color: #999;
 }
+.chart-dim.panel .panel-heading {
+  padding: 3px 8px;
+}
 #request-editor {
   background: #fff;
   padding: 0 15px;
