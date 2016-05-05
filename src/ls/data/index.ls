@@ -154,8 +154,8 @@ angular.module \plotDB
       if !$scope.dataset or !$scope.dataset.name => return
       if !$scope.user.authed! => return $scope.auth.toggle true
       column-length = [k for k of $scope.parse.{}result].length
-      if column-length >= 30 =>
-        return plNotify.send \danger, "maximal 30 columns is allowed. you have #{column-length}"
+      if column-length >= 40 =>
+        return plNotify.send \danger, "maximal 40 columns is allowed. you have #{column-length}"
       <- $scope.parse.run true .then
       $scope.dataset._type.location = (if locally => \local else \server)
       $scope.dataset.set-fields $scope.parse.result

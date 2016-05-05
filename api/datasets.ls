@@ -88,7 +88,7 @@ save-dataset = (req, res, okey = null) ->
     delete data.fields
     if data.type == \static and data.format == \csv =>
       if !Array.isArray(fields) or fields.length == 0 => return aux.r400 res, [true,"field format incorrect"]
-      if fields.length > 30 => return aux.r400 res, [true, "field limit exceed"]
+      if fields.length >= 40 => return aux.r400 res, [true, "field limit exceed"]
     ret = datasettype.lint data
     if ret.0 => return aux.r400 res, ret
     data := datasettype.clean data
