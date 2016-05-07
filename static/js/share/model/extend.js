@@ -7,7 +7,6 @@ base = function(model){
   base.dataset = new model({
     name: 'dataset',
     types: ['csv', 'json'],
-    defaultFields: true,
     base: {
       owner: {
         required: true,

@@ -17,6 +17,7 @@ aux = do
       for k,v of type.config.base => 
         value = switch v.type.name
         | \string  => data[k]
+        | \email  => data[k]
         | \number  => data[k]
         | \date    => 
           d = new Date(data[k])
@@ -33,7 +34,7 @@ aux = do
             ) data[k]
           else JSON.stringify(data[k])
         | otherwise  => JSON.stringify(data[k])
-        pairlist[k] = ((value? and value) or null)
+        pairlist[k] = (if value? => value else null)
       pairlist
 
 module.exports = aux

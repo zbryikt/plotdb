@@ -7,7 +7,7 @@ base = (model) ->
   base.dataset = new model do
     name: \dataset
     types: <[csv json]>
-    default-fields: true
+    #default-fields: true
     base: do
       owner: {required: true, type: model.type.key({type:model.type.user})}
       parent: { required: false, type: model.type.key({type: base.theme})}

@@ -6,15 +6,26 @@ usertype = model.type.user
 auth-limit = {strategy: \hard, limit: 10, upper-delta: 1800, json: true}
 edit-limit = {strategy: \hard, limit: 30, upper-delta: 120, json: true}
 
-# NOTE some fields in session data are removed, such as password. force query if necessary
-get-user = (req, key, force = false) ->
-  if !force and req.user and req.user.key == key => return new bluebird (res, rej) -> res req.user
-  io.query "select * from users where key = $1", [key]
-    .then (r) -> return r.[]rows.0
-
 engine.app.get \/me/, throttle.limit {lower-delta: 2, upper-delta: 6, penalty: 1, limit: 6}, (req, res) ->
   if !req.user => return res.redirect "/"
   res.render \view/me/profile.jade, {user: req.user}
+
+get-user = (req, key) ->
+  user = null
+  io.query "select * from users where key = $1", [key]
+    .then (r = {}) ->
+      user := r.[]rows.0
+      if !user => return bluebird.reject "user not found"
+      io.query [
+        "select ",
+        "(select count(datasets.key) from datasets where owner = $1) as datasets,"
+        "(select count(charts.key) from charts where owner = $1) as charts,"
+        "(select count(themes.key) from themes where themes.owner = $1) as themes"
+      ].join(" "), [user.key]
+    .then (r = {}) ->
+      stat = r.[]rows.0
+      if !stat => return bluebird.reject "no user stat"
+      user <<< {stat}
 
 engine.app.get \/user/:id, aux.numid true, (req, res) ->
   get-user req, req.params.id
@@ -31,7 +42,7 @@ engine.app.get \/me/edit/, (req, res) ->
 engine.router.api.post \/me/passwd/, throttle.limit auth-limit,  (req, res) ->
   if !req.user => return aux.r404 res
   if !req.user.usepasswd => return aux.r400 res
-  get-user req, req.user.key, true
+  get-user req, req.user.key
     .then (user) ->
       {oldpasswd,newpasswd} = req.body{oldpasswd, newpasswd}
       if user.password != (crypto.createHash(\md5).update(oldpasswd).digest(\hex) or "") => return aux.r403 res

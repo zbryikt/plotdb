@@ -7,19 +7,19 @@ block body
     div(style="position:absolute;width:100%;height:100%;background:#999;background-size:contain;opacity: 0.3")
     div(style="max-width:1200px;margin:auto;position:relative;height:100%;")
       div(style="border:2px solid #444;width:100px;height:100px;border-radius:5px;background:#222;position:absolute;bottom:30px;left: 20px;overflow:hidden")
-        img(ng-attr-src="{{user.data.avatar || '/assets/img/avatar.png'}}",style="width:100%;")
-      div(ng-cloak,style="position:absolute;bottom:52px;left:140px;font-size:24px;letter-spacing:0.5px") {{user.data.displayname}}
+        img(src="/s/avatar/#{user.avatar || 0}.jpg",style="width:100%;")
+      div(ng-cloak,style="position:absolute;bottom:52px;left:140px;font-size:24px;letter-spacing:0.5px") #{user.displayname}
       div(style="position:absolute;bottom:32px;left:140px;font-size:14px;letter-spacing:0.5px")
         span #[i.fa.fa-map-marker] Taipei, Taiwan
         span &nbsp; &nbsp;
       div.text-center(style="position:absolute;bottom:32px;right:20px;font-family:lato;font-size:20px;letter-spacing:0.3px") {{user.data.desc}}
   div(style="max-width:1200px;margin:auto",ng-controller="profile")
     div(style="font-size:1.2em;margin:15px")
-      span(ng-cloak) #[i.fa.fa-area-chart] #[span#chart-number 0] Charts
+      span(ng-cloak) #[i.fa.fa-area-chart] #[span#chart-number #{user.stat.charts}] Charts
       span &nbsp; &nbsp; &nbsp; &nbsp;
-      span(ng-cloak) #[i.fa.fa-desktop] #[span#theme-number 0] Themes
+      span(ng-cloak) #[i.fa.fa-desktop] #[span#theme-number #{user.stat.themes}] Themes
       span &nbsp; &nbsp; &nbsp; &nbsp;
-      span(ng-cloak) #[i.fa.fa-folder] #[span#dataset-number 0] Datasets
+      span(ng-cloak) #[i.fa.fa-folder] #[span#dataset-number #{user.stat.datasets}] Datasets
       //-
         span &nbsp; &nbsp; &nbsp; &nbsp;
         span #[i.fa.fa-comments] Speak English
@@ -52,21 +52,22 @@ block body
       br
       hr
       br
-      h2.text-center My Datasets
-      .text-center there is no data
-      br
-      .well
-        .data-fields(ng-controller="dataFiles")
-          .data-file(ng-repeat="dataset in datasets")
-            .closebtn(ng-show="dataset.type.location!='sample'",ng-click="remove(dataset)")
-            .title(ng-click="edit(dataset)") {{dataset.name}}
-            .desc {{dataset.size|size}}, {{dataset.rows}} rows
-            .data-field(ng-repeat="field in dataset.fields",ng-attr-style="background:{{dataset.color}}",ng-drag="true",ng-drag-data="field")
-              span {{field.name}}
-              small {{field.type}}
-          //-.data-file.data-file-new
-            .title add new dataset ...
-          br.clearfix
-        .clearfix
+
+    h2.text-center My Datasets
+    .text-center there is no data
+    br
+    .well
+      .data-fields(ng-controller="dataFiles")
+        .data-file(ng-repeat="dataset in datasets")
+          .closebtn(ng-show="dataset.type.location!='sample'",ng-click="remove(dataset)")
+          .title(ng-click="edit(dataset)") {{dataset.name}}
+          .desc {{dataset.size|size}}, {{dataset.rows}} rows
+          .data-field(ng-repeat="field in dataset.fields",ng-attr-style="background:{{dataset.color}}",ng-drag="true",ng-drag-data="field")
+            span {{field.name}}
+            small {{field.type}}
+        //-.data-file.data-file-new
+          .title add new dataset ...
+        br.clearfix
+      .clearfix
 
   include /footer.jade
