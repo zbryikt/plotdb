@@ -8,7 +8,8 @@ usertype = model.type.user
 dstype = model.type.dataset
 dftype = model.type.datafield
 
-files = fs.readdir-sync \twstat/csv/county/index/ .map -> {name: it, path: "twstat/csv/county/index/#it"}
+files = fs.readdir-sync \twstat/csv/county/index/ .map ->
+  {name: it.replace(/\.csv$/,""), path: "twstat/csv/county/index/#it"}
 
 loadfile = (file,owner) -> new bluebird (res, rej) ->
   data = fs.read-file-sync file.path .toString!
@@ -29,7 +30,7 @@ loadfile = (file,owner) -> new bluebird (res, rej) ->
     type: \static
     format: \csv
     config: {}
-    permission: {"value": [], "switch": []}
+    permission: {"value": [], "switch": [\public]}
     fields: fields
 
   pairs = io.aux.insert.format dstype, dataset
@@ -81,7 +82,7 @@ io.query "select * from users where username=$1", [user.username]
     keys := r.[]rows.map -> it.key
     console.log "total #{keys.length} dataset. drop all datafields from them..."
     if keys.length =>
-      return io.query( "delete from datafields where key in (#{keys.join(\,)})" )
+      return io.query( "delete from datafields where dataset in (#{keys.join(\,)})" )
     else return Promise.resolve!
   .then ->
     console.log "drop all dataset from taiwan stat..."
