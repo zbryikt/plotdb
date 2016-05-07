@@ -685,6 +685,16 @@ li.disabled a:hover {
   background-size: cover;
   background: url("/assets/img/loading-sm.svg") center center no-repeat;
 }
+.loader.alone.xs {
+  width: 16px;
+  height: 16px;
+}
+.loader.alone.xs:after {
+  width: 16px;
+  height: 16px;
+  background-size: cover;
+  background: url("/assets/img/loading-xs.svg") center center no-repeat;
+}
 .btn.loader {
   position: relative;
   padding-left: 35px;
@@ -2466,7 +2476,7 @@ small.hint {
   z-index: 1;
 }
 .ds-list-panel .ds-list {
-  max-height: 500px;
+  height: 500px;
   overflow-y: scroll;
 }
 .ds-list-panel .ds-list > .grayed {
@@ -2482,6 +2492,12 @@ small.hint {
 .ds-list-panel .ds-list-item {
   padding: 5px 5px;
   cursor: pointer;
+  position: relative;
+}
+.ds-list-panel .ds-list-item .info {
+  display: inline-block;
+  width: 100%;
+  padding-left: 20px;
 }
 .ds-list-panel .ds-list-item:nth-of-type(2n+1) {
   background: #f9f9f9;
@@ -2497,17 +2513,26 @@ small.hint {
 }
 .ds-list-panel .ds-list-item .avatar {
   display: inline-block;
-  margin: 4px 5px 0 0;
+  margin: 3px 5px 0 0;
   vertical-align: top;
   width: 16px;
   height: 16px;
   border-radius: 3px;
+  position: absolute;
 }
 .ds-list-panel .ds-list-item .name {
   height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .ds-list-panel .ds-list-item .grayed {
   font-size: 0.8em;
+}
+.ds-list-panel .ds-list-item .sample {
+  position: absolute;
+  right: 5px;
+  bottom: 6px;
 }
 .ds-fields-panel {
   margin-bottom: 10px;
@@ -2661,6 +2686,21 @@ small.hint {
   font-family: lato;
   padding: 3px 16px;
   color: #999;
+}
+.ds-list-panel .input-group-btn,
+.ds-fields-panel .input-group-btn,
+.chart-dims-panel .input-group-btn,
+.chart-dim.panel .input-group-btn {
+  position: relative;
+}
+.ds-list-panel .loader.xs,
+.ds-fields-panel .loader.xs,
+.chart-dims-panel .loader.xs,
+.chart-dim.panel .loader.xs {
+  position: absolute;
+  left: -24px;
+  top: 8px;
+  z-index: 24;
 }
 .chart-dim.panel .panel-heading {
   padding: 3px 8px;

@@ -18,7 +18,7 @@
     position: relative
     z-index: 1
   .ds-list
-    max-height: 500px
+    height: 500px
     overflow-y: scroll
     & > .grayed
       margin-top: 5px
@@ -31,6 +31,11 @@
   .ds-list-item
     padding: 5px 5px
     cursor: pointer
+    position: relative
+    .info
+      display: inline-block
+      width: 100%
+      padding-left: 20px
     &:nth-of-type(2n+1)
       background: #f9f9f9
     &:hover, &.active
@@ -40,15 +45,23 @@
         color: #fff
     .avatar
       display: inline-block
-      margin: 4px 5px 0 0
+      margin: 3px 5px 0 0
       vertical-align: top
       width: 16px
       height: 16px
       border-radius: 3px
+      position: absolute
     .name
       height: 16px
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
     .grayed
       font-size: 0.8em
+    .sample
+      position: absolute
+      right: 5px
+      bottom: 6px
 
 .ds-fields-panel
   margin-bottom: 10px
@@ -166,6 +179,13 @@
     font-family: lato
     padding: 3px 16px
     color: #999
+  .input-group-btn
+    position: relative
+  .loader.xs
+    position: absolute
+    left: -24px
+    top: 8px
+    z-index: index(order, 'colorpicker')
 
 .chart-dim.panel
   .panel-heading

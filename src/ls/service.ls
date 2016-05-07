@@ -3,10 +3,17 @@ angular.module \plotDB
     Paging = do
       session: 0, offset: 0, limit: 20, end: false, loading: false
       handle: null
-      load-on-scroll: (cb, beacon) ->
-        window.addEventListener \scroll, (v)  ->
-          scroll = document.body.scrollTop or document.querySelector("html").scrollTop
-          if scroll + window.innerHeight + 50 > $(beacon).offset!top =>
+      load-on-scroll: (cb, beacon, container) ->
+        if container => container = $(container).0
+        if beacon => beacon = $(beacon).0
+        (container or window).addEventListener \scroll, (v)  ->
+          scrolltop = if container => container.scrollTop
+          else if document.body.scrollTop => that
+          else document.querySelector(\html).scrollTop
+          height = (container or document.body).getBoundingClientRect().height
+          top = beacon.getBoundingClientRect().top
+          ptop = (if container => container.getBoundingClientRect().top else 0)
+          if height + 50 > (top - ptop)  =>
             if !@loading and !@end => $rootScope.$apply ~> cb!
 
       load: (load, lazy = 500, reset = false) -> new Promise (res, rej) ~>

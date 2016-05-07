@@ -356,7 +356,7 @@ angular.module \plotDB
   <[$scope IOService dataService Paging plNotify eventBus]> ++
   ($scope, IOService, data-service, Paging, plNotify, eventBus) ->
     $scope.paging = Paging
-    $scope.filter = { search: "" }
+    #$scope.filter = { search: "" }
     $scope.datasets = []
     $scope.mydatasets = []
     $scope.samplesets = dataService.sample.map -> it <<< {key: -Math.random!}
@@ -377,21 +377,6 @@ angular.module \plotDB
         $scope.mydatasets = (if reset => [] else $scope.mydatasets) ++ data
         $scope.datasets = $scope.mydatasets ++ $scope.samplesets
         $scope.setcur $scope.datasets[0]
-
-    /*
-    data-service.list!
-      .then (datasets) ->
-        samples = [
-          * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
-          * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
-          * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
-          * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
-        ]
-        samples = dataService.sample
-        $scope.$apply ->
-          $scope.datasets = datasets ++ samples
-          $scope.setcur $scope.datasets[0]
-    */
 
     # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large
     $scope.chosen = do
@@ -417,7 +402,7 @@ angular.module \plotDB
     eventBus.listen \dataset.saved, (dataset = {}) ->
       matched = $scope.datasets.filter(->it.key == dataset.key)[0]
       if matched => matched <<< dataset
-    if $(\#list-end) => Paging.load-on-scroll (-> $scope.load-list!), $(\#list-end)
+    if $(\#list-end) => Paging.load-on-scroll (-> $scope.load-list!), $(\#list-end), $(".ds-list")
     $scope.load-list!
 
     dsfilter = document.querySelector '#dataset-filter .items'

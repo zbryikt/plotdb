@@ -569,9 +569,6 @@ x$.controller('userDatasetList', ['$scope', '$http', 'dataService'].concat(funct
 x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'plNotify', 'eventBus'].concat(function($scope, IOService, dataService, Paging, plNotify, eventBus){
   var that, dsfilter, box;
   $scope.paging = Paging;
-  $scope.filter = {
-    search: ""
-  };
   $scope.datasets = [];
   $scope.mydatasets = [];
   $scope.samplesets = dataService.sample.map(function(it){
@@ -612,20 +609,6 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
       });
     });
   };
-  /*
-  data-service.list!
-    .then (datasets) ->
-      samples = [
-        * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
-        * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
-        * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
-        * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
-      ]
-      samples = dataService.sample
-      $scope.$apply ->
-        $scope.datasets = datasets ++ samples
-        $scope.setcur $scope.datasets[0]
-  */
   $scope.chosen = {
     dataset: null,
     key: null
@@ -674,7 +657,7 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
   if ($('#list-end')) {
     Paging.loadOnScroll(function(){
       return $scope.loadList();
-    }, $('#list-end'));
+    }, $('#list-end'), $(".ds-list"));
   }
   $scope.loadList();
   dsfilter = document.querySelector('#dataset-filter .items');

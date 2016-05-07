@@ -1,4 +1,4 @@
-div(ng-controller="userDatasetList"): div(ng-controller="datasetList",ng-cloak)
+div(ng-controller="datasetList",ng-cloak)
   include ../dataset/widget/float-edit.jade
   h1 Data Binding #[small.grayed: small connect your data with this chart]
   .sep.dark
@@ -9,20 +9,24 @@ div(ng-controller="userDatasetList"): div(ng-controller="datasetList",ng-cloak)
           | choose dataset you want to use ...
         .panel-body
           .input-group
-            input.input-sm.form-control(ng-model="filter.search")
-            span.input-group-btn: .btn.btn-default.btn-sm: i.fa.fa-search
+            input.input-sm.form-control(ng-model="qLazy.keyword")
+            span.input-group-btn
+              .loader.alone.xs.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")
+              .btn.btn-default.btn-sm: i.fa.fa-search
           .btn.btn-default.btn-sm(ng-click="dataPanel.toggle()") #[i.fa.fa-plus-circle] New Dataset
           .sep
           .ds-list
             .ds-list-item(ng-repeat="dataset in datasets|filter:{name:filter.search}:false",
             ng-click="setcur(dataset)",ng-class="{'active':cur==dataset}")
               img.avatar(ng-attr-src="/s/avatar/{{dataset.owneravatar || 0}}.jpg")
-              div(style="display:inline-block")
+              .info
                 .name {{dataset.name}}
                 .grayed {{dataset.rows}} Rows, {{dataset.fields.length}} Fields
-              small.grayed.pull-right(ng-show="dataset.isSample") sample data
-            .text-center.grayed that's all. #[i.fa.fa-smile-o]
-            .text-center.grayed no result. try other keyword?
+              small.grayed.sample(ng-show="dataset.isSample") sample data
+            #list-end.text-center: span(ng-cloak,ng-show="paging.end")
+            .loader.alone.sm.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")
+            .text-center.grayed(ng-show="paging.end") that's all. #[i.fa.fa-smile-o]
+            .text-center.grayed(ng-show="paging.end") no result. try other keyword?
 
     .col-sm-8
       .ds-fields-panel.panel.panel-default

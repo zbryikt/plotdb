@@ -10,11 +10,24 @@ x$.service('Paging', ['$rootScope', '$timeout'].concat(function($rootScope, $tim
     end: false,
     loading: false,
     handle: null,
-    loadOnScroll: function(cb, beacon){
-      return window.addEventListener('scroll', function(v){
-        var scroll, this$ = this;
-        scroll = document.body.scrollTop || document.querySelector("html").scrollTop;
-        if (scroll + window.innerHeight + 50 > $(beacon).offset().top) {
+    loadOnScroll: function(cb, beacon, container){
+      if (container) {
+        container = $(container)[0];
+      }
+      if (beacon) {
+        beacon = $(beacon)[0];
+      }
+      return (container || window).addEventListener('scroll', function(v){
+        var scrolltop, that, height, top, ptop, this$ = this;
+        scrolltop = container
+          ? container.scrollTop
+          : (that = document.body.scrollTop)
+            ? that
+            : document.querySelector('html').scrollTop;
+        height = (container || document.body).getBoundingClientRect().height;
+        top = beacon.getBoundingClientRect().top;
+        ptop = container ? container.getBoundingClientRect().top : 0;
+        if (height + 50 > top - ptop) {
           if (!this.loading && !this.end) {
             return $rootScope.$apply(function(){
               return cb();
