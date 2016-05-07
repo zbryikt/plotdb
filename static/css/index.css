@@ -19,9 +19,6 @@ body {
   margin: -204px 20px 0;
   padding: 170px 0 100px;
 }
- {
-  width: 100%;
-}
 .spc1 {
   height: 0;
 }
@@ -2490,6 +2487,12 @@ small.hint {
   display: block;
 }
 .ds-list-panel .ds-list-item {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   padding: 5px 5px;
   cursor: pointer;
   position: relative;
