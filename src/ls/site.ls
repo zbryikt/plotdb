@@ -137,8 +137,10 @@ angular.module \plotDB
 
     window.scrollstickers = $(\.scroll-stick)
       ..map ->
+        box = @getBoundingClientRect!
         @maxtop = parseInt @.getAttribute("data-top")
-        @init-top = @offsetTop
+        @initval = {top: box.top, left: box.left, width: box.width, height: box.height}
+
     window.addEventListener \scroll, (it) ->
       scroll-top = $(window).scroll-top!
       if scroll-top < 60 =>
@@ -148,11 +150,13 @@ angular.module \plotDB
         $(\#nav-top)addClass \dim
         $(\#subnav-top)addClass \dim
       for node in window.scrollstickers =>
-        if scroll-top + node.maxtop >= node.offsetTop and !node.sticked =>
+        if node.initval.top - scroll-top <= node.maxtop and !node.sticked =>
           node.sticked = true
           node.style.top = "#{node.maxtop}px"
+          node.style.width = "#{node.initval.width}px"
+          node.style.left = "#{node.initval.left}px"
           $(node).addClass(\sticked)
-        else if scroll-top + node.maxtop < node.init-top and node.sticked =>
+        else if scroll-top + node.maxtop < node.initval.top and node.sticked =>
           node.sticked = false
           node.style.top = \initial
           $(node).removeClass(\sticked)

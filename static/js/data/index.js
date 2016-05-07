@@ -554,58 +554,78 @@ x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].con
     };
   });
 }));
-x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].concat(function($scope, dataService, plNotify, eventBus){
-  var that;
+x$.controller('userDatasetList', ['$scope', '$http', 'dataService'].concat(function($scope, $http, dataService){
+  var owner, that;
+  owner = (that = /^\/user\/([^/]+)/.exec(window.location.pathname))
+    ? that[1]
+    : $scope.user.data ? $scope.user.data.key : null;
+  $scope.q = {
+    owner: owner
+  };
+  if ($scope.user.data && owner === $scope.user.data.key) {
+    return $scope.showPub = true;
+  }
+}));
+x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'plNotify', 'eventBus'].concat(function($scope, IOService, dataService, Paging, plNotify, eventBus){
+  var that, dsfilter, box;
+  $scope.paging = Paging;
   $scope.filter = {
     search: ""
   };
-  dataService.list().then(function(datasets){
-    var samples;
-    samples = [
-      {
-        fields: [{
-          data: [],
-          name: "blah"
-        }],
-        name: "1234",
-        rows: 5,
-        owneravatar: 'sample',
-        isSample: true
-      }, {
-        fields: [{
-          data: [],
-          name: "blah"
-        }],
-        name: "1234",
-        rows: 5,
-        owneravatar: 'sample',
-        isSample: true
-      }, {
-        fields: [{
-          data: [],
-          name: "blah"
-        }],
-        name: "1234",
-        rows: 5,
-        owneravatar: 'sample',
-        isSample: true
-      }, {
-        fields: [{
-          data: [],
-          name: "blah"
-        }],
-        name: "1234",
-        rows: 5,
-        owneravatar: 'sample',
-        isSample: true
-      }
-    ];
-    samples = dataService.sample;
-    return $scope.$apply(function(){
-      $scope.datasets = datasets.concat(samples);
-      return $scope.setcur($scope.datasets[0]);
-    });
+  $scope.datasets = [];
+  $scope.mydatasets = [];
+  $scope.samplesets = dataService.sample.map(function(it){
+    return it.key = -Math.random(), it;
   });
+  $scope.q = {};
+  $scope.qLazy = {
+    keyword: null
+  };
+  if ($scope.$parent.q) {
+    import$($scope.q, $scope.$parent.q);
+  }
+  $scope.$watch('qLazy', function(){
+    return $scope.loadList(1000, true);
+  }, true);
+  $scope.loadList = function(delay, reset){
+    delay == null && (delay = 1000);
+    reset == null && (reset = false);
+    return Paging.load(function(){
+      var payload, ref$;
+      payload = import$(import$((ref$ = {}, ref$.offset = Paging.offset, ref$.limit = Paging.limit, ref$), $scope.q), $scope.qLazy);
+      return IOService.listRemotely({
+        name: 'dataset'
+      }, payload);
+    }, delay, reset).then(function(ret){
+      var this$ = this;
+      return $scope.$apply(function(){
+        var data;
+        data = (ret || []).map(function(it){
+          return new dataService.dataset(it, true);
+        });
+        Paging.flexWidth(data);
+        $scope.mydatasets = (reset
+          ? []
+          : $scope.mydatasets).concat(data);
+        $scope.datasets = $scope.mydatasets.concat($scope.samplesets);
+        return $scope.setcur($scope.datasets[0]);
+      });
+    });
+  };
+  /*
+  data-service.list!
+    .then (datasets) ->
+      samples = [
+        * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
+        * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
+        * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
+        * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
+      ]
+      samples = dataService.sample
+      $scope.$apply ->
+        $scope.datasets = datasets ++ samples
+        $scope.setcur $scope.datasets[0]
+  */
   $scope.chosen = {
     dataset: null,
     key: null
@@ -641,7 +661,7 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
   if (that = document.querySelectorAll(".ds-list")[0]) {
     $scope.limitscroll(that);
   }
-  return eventBus.listen('dataset.saved', function(dataset){
+  eventBus.listen('dataset.saved', function(dataset){
     var matched;
     dataset == null && (dataset = {});
     matched = $scope.datasets.filter(function(it){
@@ -651,6 +671,20 @@ x$.controller('datasetList', ['$scope', 'dataService', 'plNotify', 'eventBus'].c
       return import$(matched, dataset);
     }
   });
+  if ($('#list-end')) {
+    Paging.loadOnScroll(function(){
+      return $scope.loadList();
+    }, $('#list-end'));
+  }
+  $scope.loadList();
+  dsfilter = document.querySelector('#dataset-filter .items');
+  if (dsfilter) {
+    box = dsfilter.getBoundingClientRect();
+    dsfilter.style.height = (window.innerHeight - box.top - 50) + "px";
+    return $scope.jumpTo = function(dataset){
+      return $scope.scrollto($("#dataset-" + dataset.key));
+    };
+  }
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

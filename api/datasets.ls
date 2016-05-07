@@ -5,19 +5,26 @@ datasettype = model.type.dataset
 datafieldtype = model.type.datafield
 
 engine.router.api.get "/dataset/", (req, res) ->
-  #TODO consider general dataset api
-  if !req.user => return res.json []
+  keyword = (req.query.keyword or "").split(/[, ]/).map(->it.trim!).filter(->it)
+  offset = req.query.offset or 0
+  limit = (req.query.limit or 20) <? 100
+  userkey = parseInt(req.query.owner)
+
+  if !req.query.owner => condition = "datasets.searchable=true"
+  else if userkey == req.user.key => condition = "datasets.owner=$3"
+  else condition = "(datasets.owner=$3 or datasets.searchable=true)"
+  if keyword => condition += " and datasets.name ~ '#keyword'"
   io.query([
     "select datasets.*,users.displayname as ownername from datasets,users"
-    "where datasets.owner=users.key and datasets.owner = $1"].join(" "), [req.user.key]
-  )
-    .then (r = {}) ->
-      return res.json r.[]rows
-    .catch ->
-      console.log it.stack
+    "where datasets.owner=users.key and #condition"
+    "offset $1 limit $2"
+  ].join(" "), [offset, limit] ++ (if req.query.owner => [parseInt(req.query.owner or req.user.key)] else []))
+    .then -> res.send it.rows
+    .catch (e) ->
+      console.log e.stack
       return aux.r403 res
 
-get-dataset =(req,simple=false) ->
+get-dataset = (req,simple=false) ->
   if !/^\d+$/.exec(req.params.id) => return bluebird.reject new Error("incorrect key type")
   (res, rej) <- new bluebird _
   io.query "select * from datasets where datasets.key = $1", [req.params.id]

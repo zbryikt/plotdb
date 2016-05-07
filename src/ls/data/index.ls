@@ -344,14 +344,43 @@ angular.module \plotDB
     $scope.delete = (dataset) ->
       dataset.delete!then ~> $scope.$apply ~> $scope.datasets = $scope.datasets.filter(->it.key != dataset.key)
 
+  ..controller \userDatasetList,
+  <[$scope $http dataService]> ++
+  ($scope, $http, data-service) ->
+    owner = if /^\/user\/([^/]+)/.exec(window.location.pathname) => that.1
+    else => (if $scope.user.data => $scope.user.data.key else null)
+    $scope.q = {owner}
+    if $scope.user.data and owner == $scope.user.data.key => $scope.showPub = true
+
   ..controller \datasetList,
-  <[$scope dataService plNotify eventBus]> ++
-  ($scope, data-service, plNotify, eventBus) ->
-    $scope.filter = do
-      search: ""
+  <[$scope IOService dataService Paging plNotify eventBus]> ++
+  ($scope, IOService, data-service, Paging, plNotify, eventBus) ->
+    $scope.paging = Paging
+    $scope.filter = { search: "" }
+    $scope.datasets = []
+    $scope.mydatasets = []
+    $scope.samplesets = dataService.sample.map -> it <<< {key: -Math.random!}
+
+    $scope.q = {}
+    $scope.q-lazy = { keyword: null }
+    if $scope.$parent.q => $scope.q <<< $scope.$parent.q
+
+    $scope.$watch 'qLazy', (-> $scope.load-list 1000, true), true
+
+    $scope.load-list = (delay = 1000, reset = false) ->
+      Paging.load((->
+        payload = {} <<< Paging{offset,limit} <<< $scope.q <<< $scope.q-lazy
+        IO-service.list-remotely {name: \dataset}, payload
+      ), delay, reset).then (ret) -> $scope.$apply ~>
+        data = (ret or []).map -> new dataService.dataset it, true
+        Paging.flex-width data
+        $scope.mydatasets = (if reset => [] else $scope.mydatasets) ++ data
+        $scope.datasets = $scope.mydatasets ++ $scope.samplesets
+        $scope.setcur $scope.datasets[0]
+
+    /*
     data-service.list!
       .then (datasets) ->
-
         samples = [
           * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
           * fields: [data: [], name: "blah"], name: "1234", rows: 5, owneravatar: \sample, is-sample: true
@@ -362,6 +391,8 @@ angular.module \plotDB
         $scope.$apply ->
           $scope.datasets = datasets ++ samples
           $scope.setcur $scope.datasets[0]
+    */
+
     # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large
     $scope.chosen = do
       dataset: null
@@ -386,3 +417,12 @@ angular.module \plotDB
     eventBus.listen \dataset.saved, (dataset = {}) ->
       matched = $scope.datasets.filter(->it.key == dataset.key)[0]
       if matched => matched <<< dataset
+    if $(\#list-end) => Paging.load-on-scroll (-> $scope.load-list!), $(\#list-end)
+    $scope.load-list!
+
+    dsfilter = document.querySelector '#dataset-filter .items'
+    if dsfilter =>
+      box = dsfilter.getBoundingClientRect!
+      dsfilter.style.height = "#{window.innerHeight - box.top - 50}px"
+      $scope.jump-to = (dataset) ->
+        $scope.scrollto $("\#dataset-#{dataset.key}")

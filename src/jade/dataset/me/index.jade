@@ -9,7 +9,6 @@ block body
   .page-header: .inner
     include ../widget/usage.jade
     .title My Dataset
-    //-.desc 35 public charts available for re-user.
     .desc
       .entries
         .entry
@@ -18,24 +17,19 @@ block body
         .entry
           i.fa.fa-tag
           span(ng-cloak) 37 fields
-  #root.narrow.with-header
-    //include ../widget/usage.jade
-    //-h3.page-title My Dataset
-    //-.entries
-      .entry
-        i.fa.fa-database
-        span(ng-cloak) 15 datasets
-      .entry
-        i.fa.fa-tag
-        span(ng-cloak) 37 fields
-    //-.sep.break.dark
-    .row
+  #root.narrow.with-header(ng-controller="userDatasetList")
+    .row(ng-controller="datasetList")
       .col-sm-8
         include list.jade
       .col-sm-4
         br
         br
-        .input-group
-          input.form-control(placeholder="search for dataset...")
-          .input-group-addon: i.fa.fa-search
+        #dataset-filter.scroll-stick(data-top="60")
+          .input-group
+            input.form-control(placeholder="search in my dataset...",ng-model="qLazy.keyword")
+            .input-group-addon: i.fa.fa-search
+          .sep
+          .items
+            .item(ng-repeat="dataset in datasets",ng-click="jumpTo(dataset)") {{dataset.name}}
+
   include ../../footer.jade

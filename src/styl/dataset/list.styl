@@ -1,0 +1,16 @@
+@import '../basic'
+@import '../vars'
+
+#dataset-filter
+  .items
+    min-height: 100px
+    height: 100px
+    overflow-y: scroll
+  .item
+    padding: 5px
+    cursor: pointer
+  .item:nth-of-type(2n+1)
+    background: rgba(0,0,0,0.05)
+  .item:hover
+    background: color.primary
+    color: #fff

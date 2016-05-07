@@ -248,8 +248,15 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
   });
   x$ = window.scrollstickers = $('.scroll-stick');
   x$.map(function(){
+    var box;
+    box = this.getBoundingClientRect();
     this.maxtop = parseInt(this.getAttribute("data-top"));
-    return this.initTop = this.offsetTop;
+    return this.initval = {
+      top: box.top,
+      left: box.left,
+      width: box.width,
+      height: box.height
+    };
   });
   window.addEventListener('scroll', function(it){
     var scrollTop, i$, ref$, len$, node, results$ = [];
@@ -263,11 +270,13 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     }
     for (i$ = 0, len$ = (ref$ = window.scrollstickers).length; i$ < len$; ++i$) {
       node = ref$[i$];
-      if (scrollTop + node.maxtop >= node.offsetTop && !node.sticked) {
+      if (node.initval.top - scrollTop <= node.maxtop && !node.sticked) {
         node.sticked = true;
         node.style.top = node.maxtop + "px";
+        node.style.width = node.initval.width + "px";
+        node.style.left = node.initval.left + "px";
         results$.push($(node).addClass('sticked'));
-      } else if (scrollTop + node.maxtop < node.initTop && node.sticked) {
+      } else if (scrollTop + node.maxtop < node.initval.top && node.sticked) {
         node.sticked = false;
         node.style.top = 'initial';
         results$.push($(node).removeClass('sticked'));
