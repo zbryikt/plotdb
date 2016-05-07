@@ -238,6 +238,11 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       bind: function(event, dimension, field){
         var this$ = this;
         field == null && (field = {});
+        if (dimension.fields.filter(function(it){
+          return it === field;
+        }).length) {
+          return;
+        }
         return field.update().then(function(){
           if (dimension.multiple) {
             (dimension.fields || (dimension.fields = [])).push(field);
@@ -1365,7 +1370,13 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return this.ging = true;
         },
         end: function(){
-          return this.ging = false;
+          this.ging = false;
+          return setTimeout(function(){
+            return $('#field-agent').css({
+              top: "-9999px",
+              left: "-9999px"
+            });
+          }, 0);
         }
       },
       setPosition: function(){

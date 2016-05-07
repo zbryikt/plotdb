@@ -125,6 +125,7 @@ angular.module \plotDB
       #TODO review binding process
       dimension: do
         bind: (event, dimension, field = {}) ->
+          if dimension.fields.filter(->it == field).length => return
           field.update!
             .then ~>
               if dimension.multiple => dimension.[]fields.push field
@@ -709,7 +710,9 @@ angular.module \plotDB
         drag: do
           ging: false
           start: -> @ging = true
-          end: -> @ging = false
+          end: ->
+            @ging = false
+            setTimeout (-> $(\#field-agent).css {top: "-9999px" left: "-9999px"} ), 0
         set-position: ->
           if !@node => return
           box = @node.getBoundingClientRect!
