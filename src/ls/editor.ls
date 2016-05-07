@@ -125,7 +125,7 @@ angular.module \plotDB
       #TODO review binding process
       dimension: do
         bind: (event, dimension, field = {}) ->
-          if dimension.fields.filter(->it == field).length => return
+          if (dimension.fields or []).filter(->it == field).length => return
           field.update!
             .then ~>
               if dimension.multiple => dimension.[]fields.push field

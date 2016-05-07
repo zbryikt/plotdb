@@ -238,7 +238,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       bind: function(event, dimension, field){
         var this$ = this;
         field == null && (field = {});
-        if (dimension.fields.filter(function(it){
+        if ((dimension.fields || []).filter(function(it){
           return it === field;
         }).length) {
           return;
