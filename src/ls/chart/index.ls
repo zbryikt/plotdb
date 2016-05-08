@@ -4,12 +4,8 @@ angular.module \plotDB
   ($rootScope, $http, plConfig, sampleChart, IOService, baseService, dataService) ->
     service = do
       sample: sampleChart
-      #link: (chart) -> "/chart/?k=#{chart._type.location}|#{chart._type.name}|#{chart.key}"
-      #link: (chart) -> "/chart/?k=#{chart._type.location.charAt(0)}#{chart.key}"
       link: (chart) -> "/chart/#{chart.key}/"
-      thumblink: (chart) -> "#{@sharelink chart}/thumb"
-      #TODO better mechanism for switching domain ( dev, staging and production )
-      #sharelink: (chart) -> "https://plotdb.com/v/chart/#{chart.key}"
+      thumblink: (chart) -> "/s/chart/#{chart.key}.png"
       sharelink: (chart) -> "#{plConfig.urlschema}#{plConfig.domain}/v/chart/#{chart.key}"
     object = (src, lazy = false) ->
       @ <<< do

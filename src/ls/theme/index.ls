@@ -6,10 +6,9 @@ angular.module \plotDB
   ($rootScope, $http, IOService, sampleTheme, baseService, plNotify, eventBus) ->
     service = do
       sample: sampleTheme
-      link: (theme) -> "/theme/?k=#{theme._type.location.charAt(0)}#{theme.key}"
-      thumblink: (theme) -> "/theme/thumb/?k=#{theme._type.location.charAt(0)}#{theme.key}"
-      #TODO better mechanism for switching domain ( dev, staging and production )
-      sharelink: (theme) -> "https://plotdb.com#{@link(theme)}"
+      link: (theme) -> "/theme/#{theme.key}"
+      thumblink: (theme) -> "/s/theme/#{theme.key}.png"
+      sharelink: (chart) -> "#{plConfig.urlschema}#{plConfig.domain}/v/theme/#{chart.key}"
       list: ->
         IOService.list-remotely {name: \theme, location: \server}
           .then (r) -> r.map -> new object it

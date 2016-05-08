@@ -411,3 +411,23 @@ angular.module \plotDB
       dsfilter.style.height = "#{window.innerHeight - box.top - 50}px"
       $scope.jump-to = (dataset) ->
         $scope.scrollto $("\#dataset-#{dataset.key}")
+
+    #experimental functionality
+    $scope.transpose = (dataset) ->
+      console.log dataset
+      dataset.fields.map -> it.update!
+      setTimeout (->
+        console.log "old: ", dataset.fields
+        head = dataset.fields.0
+        fields = head.data.map -> new dataService.Field {location: \sample}
+        for i from 1 til dataset.fields.length
+          for j from 0 til head.data.length
+            fields[j].[]data[i - 1] = dataset.fields[i].data[j]
+            fields[j].name = head.data[j]
+        index = new dataService.Field {location: \sample}
+        index.data = dataset.fields.map -> it.name
+        index.data.splice 0,1
+        index.name = \欄位
+        fields = [index] ++ fields
+        $scope.$apply -> dataset.fields = fields
+      ), 1000

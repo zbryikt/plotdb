@@ -9,7 +9,7 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
       return "/chart/" + chart.key + "/";
     },
     thumblink: function(chart){
-      return this.sharelink(chart) + "/thumb";
+      return "/s/chart/" + chart.key + ".png";
     },
     sharelink: function(chart){
       return plConfig.urlschema + "" + plConfig.domain + "/v/chart/" + chart.key;

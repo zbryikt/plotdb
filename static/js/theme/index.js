@@ -9,13 +9,13 @@ x$.service('themeService', ['$rootScope', '$http', 'IOService', 'sampleTheme', '
   service = {
     sample: sampleTheme,
     link: function(theme){
-      return "/theme/?k=" + theme._type.location.charAt(0) + theme.key;
+      return "/theme/" + theme.key;
     },
     thumblink: function(theme){
-      return "/theme/thumb/?k=" + theme._type.location.charAt(0) + theme.key;
+      return "/s/theme/" + theme.key + ".png";
     },
-    sharelink: function(theme){
-      return "https://plotdb.com" + this.link(theme);
+    sharelink: function(chart){
+      return plConfig.urlschema + "" + plConfig.domain + "/v/theme/" + chart.key;
     },
     list: function(){
       return IOService.listRemotely({

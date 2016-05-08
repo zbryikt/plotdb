@@ -119,3 +119,19 @@ engine.router.api.delete "/theme/:id", aux.numid false, (req, res) ~>
     .catch ->
       console.error it.stack
       return aux.r403 res
+
+engine.app.get \/theme/, (req, res) ->
+  return res.render 'view/theme/index.jade'
+
+engine.app.get \/theme/:id, aux.numid true, (req, res) ->
+  io.query "select * from themes where key = $1", [req.params.id]
+    .then (r = {}) ->
+      theme = r.[]rows.0
+      if !theme => return aux.r404 res, "", true
+      if (theme.{}permission.[]switch.indexOf(\public) < 0)
+      and (!req.user or theme.owner != req.user.key) => return aux.r403 res, "forbidden", true
+      res.render 'view/theme/index.jade', {theme}
+      return null
+    .catch ->
+      console.error it.stack
+      return aux.r403 res, "no luck.", true

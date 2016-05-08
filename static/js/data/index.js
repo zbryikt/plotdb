@@ -664,10 +664,46 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
   if (dsfilter) {
     box = dsfilter.getBoundingClientRect();
     dsfilter.style.height = (window.innerHeight - box.top - 50) + "px";
-    return $scope.jumpTo = function(dataset){
+    $scope.jumpTo = function(dataset){
       return $scope.scrollto($("#dataset-" + dataset.key));
     };
   }
+  return $scope.transpose = function(dataset){
+    console.log(dataset);
+    dataset.fields.map(function(it){
+      return it.update();
+    });
+    return setTimeout(function(){
+      var head, fields, i$, to$, i, j$, to1$, j, ref$, index;
+      console.log("old: ", dataset.fields);
+      head = dataset.fields[0];
+      fields = head.data.map(function(){
+        return new dataService.Field({
+          location: 'sample'
+        });
+      });
+      for (i$ = 1, to$ = dataset.fields.length; i$ < to$; ++i$) {
+        i = i$;
+        for (j$ = 0, to1$ = head.data.length; j$ < to1$; ++j$) {
+          j = j$;
+          ((ref$ = fields[j]).data || (ref$.data = []))[i - 1] = dataset.fields[i].data[j];
+          fields[j].name = head.data[j];
+        }
+      }
+      index = new dataService.Field({
+        location: 'sample'
+      });
+      index.data = dataset.fields.map(function(it){
+        return it.name;
+      });
+      index.data.splice(0, 1);
+      index.name = '欄位';
+      fields = [index].concat(fields);
+      return $scope.$apply(function(){
+        return dataset.fields = fields;
+      });
+    }, 1000);
+  };
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

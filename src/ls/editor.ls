@@ -90,8 +90,8 @@ angular.module \plotDB
         key = (if @target!._type.location == \server => @target!.key else null)
         @target! <<< {key: null, owner: null, parent: key, permission: {switch: <[public]>, value: []}}
         @save!
-      loadchart: (chart) ->
-        @[@type] = new @service[@type](@[@type] <<< chart)
+      loadlocal: (type, item) ->
+        @[type] = new @service[type](@[type] <<< item)
         @backup.check!
         $scope.backup.unguard 3000
         $scope.countline!
@@ -280,7 +280,7 @@ angular.module \plotDB
           )
             .then (ret) ~>
               <~ $scope.$apply
-              @list = (chart-service.sample ++ ret).map -> new chartService.chart(it)
+              @list = (chart-service.sample ++ ret).map -> new chartService.chart it, true
             .catch ->
               console.error e
               plNotify.send \error, "failed to load chart list. use sample chart instead"
@@ -545,7 +545,8 @@ angular.module \plotDB
             $scope.$apply ~> @switch-panel!
 
       check-param: ->
-        if window.chart => return @loadchart window.chart
+        if window.chart => return @loadlocal \chart, that
+        if window.theme => return @loadlocal \theme, that
         # deprecated. dont use ?k=s123 from now on
         if !window.location.search => return
         if window.location.search == \?demo =>

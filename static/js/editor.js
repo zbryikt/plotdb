@@ -184,8 +184,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       };
       return this.save();
     },
-    loadchart: function(chart){
-      this[this.type] = new this.service[this.type](import$(this[this.type], chart));
+    loadlocal: function(type, item){
+      this[type] = new this.service[type](import$(this[type], item));
       this.backup.check();
       $scope.backup.unguard(3000);
       return $scope.countline();
@@ -533,7 +533,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }).then(function(ret){
           return $scope.$apply(function(){
             return this$.list = (chartService.sample.concat(ret)).map(function(it){
-              return new chartService.chart(it);
+              return new chartService.chart(it, true);
             });
           });
         })['catch'](function(){
@@ -1034,9 +1034,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       });
     },
     checkParam: function(){
-      var ret, key, ref$, location;
-      if (window.chart) {
-        return this.loadchart(window.chart);
+      var that, ret, key, ref$, location;
+      if (that = window.chart) {
+        return this.loadlocal('chart', that);
+      }
+      if (that = window.theme) {
+        return this.loadlocal('theme', that);
       }
       if (!window.location.search) {
         return;

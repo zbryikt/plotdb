@@ -35,6 +35,8 @@ div(ng-controller="datasetList",ng-cloak)
         .panel-body
           .pull-right.ctrl
             a(ng-class="{'disabled':cur._type.location=='sample'}",
+            ng-click="transpose(cur)") #[i.fa.fa-pencil-square-o] transpose
+            a(ng-class="{'disabled':cur._type.location=='sample'}",
             ng-click="dataPanel.edit(cur)") #[i.fa.fa-pencil-square-o] edit
             a(ng-class="{'disabled':cur._type.location=='sample'}",
             ng-attr-href="/dataset/{{cur.key}}/",target="_blank") #[i.fa.fa-external-link] open

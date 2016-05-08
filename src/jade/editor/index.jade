@@ -20,9 +20,12 @@ mixin SaveFork
   span(ng-cloak,ng-show="target().owner==user.data.key") Save
   span(ng-cloak,ng-show="target().owner!=user.data.key") Fork
 block head
-  if chart 
+  if chart
     script.
       window.chart = !{JSON.stringify(chart)}
+  if theme
+    script.
+      window.theme = !{JSON.stringify(theme)}
 block body
   .spc1
   #root.pleditor(ng-controller="plEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
