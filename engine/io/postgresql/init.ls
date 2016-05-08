@@ -115,7 +115,7 @@ init-charts-table = """create table if not exists charts (
   config jsonb
 )"""
 
-alter-themes-table = """alter table theme add column chart int references charts(key)"""
+alter-themes-table = """alter table themes add column chart int references charts(key)"""
 
 client = new pg.Client secret.io-pg.uri
 (e) <- client.connect
@@ -127,7 +127,7 @@ query = (q) -> new bluebird (res, rej) ->
   if e => rej e
   res r
 
-query init-users-table 
+query init-users-table
   .then -> query init-sessions-table
   .then -> query init-datasets-table
   .then -> query init-datafields-table
@@ -136,6 +136,13 @@ query init-users-table
   .then -> query init-requests-table
   .then -> query init-comments-table
   .then -> query init-commentimgs-table
-  .then -> client.end!
+  .then ->
+    query alter-themes-table
+      .catch ->
+        console.log "alter table themes encounter following issue:"
+        console.log it
+        console.log "continue since it might not be a problem"
+  .then ->
+    console.log "done."
+    client.end!
   .catch -> [console.log(it), client.end!]
-  

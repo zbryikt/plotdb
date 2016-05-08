@@ -51,9 +51,10 @@ base = (model) ->
     name: \theme
     default-fields: true
     base: do
-      owner: {required: true, type: model.type.key({type:model.type.user})}
-      parent: { required: false, type: model.type.key({type: base.theme})}
       name: {max: 100, min: 1, required: true, type: model.type.string}
+      owner: {required: true, type: model.type.key({type:model.type.user})}
+      chart: {require: false, type: model.type.number} # for cross reference issue
+      parent: { required: false, type: model.type.key({type: base.theme})}
       description: {max: 512, required: false, type: model.type.string}
       tags: { required: false, type: model.type.array({max: 50, min: 1, type: model.type.string})}
       likes: {required: false, type: model.type.number}

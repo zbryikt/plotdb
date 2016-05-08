@@ -193,11 +193,11 @@ angular.module \plotDB
           @val = it
           $scope.canvas.window.postMessage {type: \colorblind-emu, payload: it}, $scope.plotdb-domain
       apply-theme: ->
-        if @chart and @theme =>
+        if @chart and @theme and @chart.config =>
           for k,v of @chart.config => if v._bytheme => delete @chart.config[k]
           for k,v of @chart.config =>
             if !@chart.config[k].hint => continue
-            preset = @theme.typedef[@chart.config[k].type.0.name]
+            preset = @theme.{}typedef[@chart.config[k].type.0.name]
             if !preset => continue
             if preset[@chart.config[k].hint]? =>
               @chart.config[k].value = preset[@chart.config[k].hint]
@@ -265,7 +265,9 @@ angular.module \plotDB
             .then (ret) ~>
               $scope.chart = new chart-service.chart(ret)
               $scope.chart.theme = $scope.theme
+              if $scope.theme => $scope.theme.chart = $scope.chart.key
               $scope.reset-config!
+              $scope.parse.chart!
               $scope.parse.theme!
             .catch (ret) ~>
               console.error ret
@@ -278,6 +280,8 @@ angular.module \plotDB
             .then (ret) ~>
               <~ $scope.$apply
               @list = (chart-service.sample ++ ret).map -> new chartService.chart it, true
+              if $scope.theme and $scope.theme.chart =>
+                @set @list.filter(-> it.key == $scope.theme.chart).0
             .catch ->
               console.error e
               plNotify.send \error, "failed to load chart list. use sample chart instead"
@@ -613,8 +617,6 @@ angular.module \plotDB
         @$watch 'chart', (chart) ~>
           if !chart => return
           @render-async!
-          if @theme => @theme.chart = if chart => chart.key else null
-
         @$watch 'chart.theme', (key) ~>
           if @type == \chart => @theme = @themes.list.filter(-> it.key == key).0
         @$watch 'theme.chart', (key) ~>
@@ -665,6 +667,7 @@ angular.module \plotDB
           for k,v of config => if !(v.value?) => v.value = v.default
           @chart <<< {config, dimension}
           @inited = true
+          @apply-theme!
           $scope.render-async!
         else if data.type == \parse-theme =>
           $scope.parse.theme.pending = false

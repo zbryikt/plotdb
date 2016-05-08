@@ -385,8 +385,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     },
     applyTheme: function(){
-      var k, ref$, v, preset;
-      if (this.chart && this.theme) {
+      var k, ref$, v, preset, ref1$;
+      if (this.chart && this.theme && this.chart.config) {
         for (k in ref$ = this.chart.config) {
           v = ref$[k];
           if (v._bytheme) {
@@ -398,7 +398,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           if (!this.chart.config[k].hint) {
             continue;
           }
-          preset = this.theme.typedef[this.chart.config[k].type[0].name];
+          preset = ((ref1$ = this.theme).typedef || (ref1$.typedef = {}))[this.chart.config[k].type[0].name];
           if (!preset) {
             continue;
           }
@@ -519,7 +519,11 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         return chartService.load(it._type, it.key).then(function(ret){
           $scope.chart = new chartService.chart(ret);
           $scope.chart.theme = $scope.theme;
+          if ($scope.theme) {
+            $scope.theme.chart = $scope.chart.key;
+          }
           $scope.resetConfig();
+          $scope.parse.chart();
           return $scope.parse.theme();
         })['catch'](function(ret){
           console.error(ret);
@@ -536,9 +540,14 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             : -1
         }).then(function(ret){
           return $scope.$apply(function(){
-            return this$.list = (chartService.sample.concat(ret)).map(function(it){
+            this$.list = (chartService.sample.concat(ret)).map(function(it){
               return new chartService.chart(it, true);
             });
+            if ($scope.theme && $scope.theme.chart) {
+              return this$.set(this$.list.filter(function(it){
+                return it.key === $scope.theme.chart;
+              })[0]);
+            }
           });
         })['catch'](function(){
           console.error(e);
@@ -1183,10 +1192,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         if (!chart) {
           return;
         }
-        this$.renderAsync();
-        if (this$.theme) {
-          return this$.theme.chart = chart ? chart.key : null;
-        }
+        return this$.renderAsync();
       });
       this.$watch('chart.theme', function(key){
         if (this$.type === 'chart') {
@@ -1301,6 +1307,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             ref$.config = config;
             ref$.dimension = dimension;
             this$.inited = true;
+            this$.applyTheme();
             return $scope.renderAsync();
           } else if (data.type === 'parse-theme') {
             $scope.parse.theme.pending = false;

@@ -144,23 +144,27 @@ base = function(model){
     name: 'theme',
     defaultFields: true,
     base: {
+      name: {
+        max: 100,
+        min: 1,
+        required: true,
+        type: model.type.string
+      },
       owner: {
         required: true,
         type: model.type.key({
           type: model.type.user
         })
       },
+      chart: {
+        require: false,
+        type: model.type.number
+      },
       parent: {
         required: false,
         type: model.type.key({
           type: base.theme
         })
-      },
-      name: {
-        max: 100,
-        min: 1,
-        required: true,
-        type: model.type.string
       },
       description: {
         max: 512,
