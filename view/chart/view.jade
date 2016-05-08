@@ -1,20 +1,26 @@
-extends /module/render.jade
+extends /render.jade
 block head
   title #{chart.name} by #{chart.author}
   link(rel="icon",type="image/x-icon",href="/assets/img/favicon-16.png")
 block body
-  script.
-    document.body.className = 'loading';
   style(type="text/css").
     html,body,#container {
       width: 100%;
       height: 100%;
       background: initial;
     }
-    body.loading {
+    #container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    #container.loading {
       background: url(/assets/img/loading-lg.gif) center center no-repeat;
     }
-    #container {
+    #container > div:last-of-type {
+      width: 100%;
+      height: 100%;
       position: relative;
       z-index: 1;
     }
@@ -39,18 +45,14 @@ block body
       -ms-user-select: none;
       user-select: none;
     }
-  //-
-    p= chart.name
-    p= chart.desc
-    p= chart.author
   style(type="text/css") #{chart.style.content}
-  script(type="text/javascript",src="/assets/d3js/3.5.12/d3.v3.min.js")
-  script(type="text/javascript",src="#{assets}/topojson/1.6.24/topojson.min.js")
-  script(type="text/javascript",src="/js/chart/base.js")
-  script(type="text/javascript",src="/js/chart/view.js")
-  script(type="text/javascript") !{chart.code.content}
+  //-  script(type="text/javascript",src="/assets/d3js/3.5.12/d3.v3.min.js")
+    script(type="text/javascript",src="#{assets}/topojson/1.6.24/topojson.min.js")
+    script(type="text/javascript",src="/js/chart/base.js")
+    script(type="text/javascript",src="/js/chart/view.js")
+  //-script(type="text/javascript") !{chart.code.content}
   //- the first space in container is crucial for elliminating margin collapsing
-  #container
+  //-#container
     div(style="height:0") &nbsp;
     style(type="text/css").
       !{chart.style.content}
@@ -60,9 +62,22 @@ block body
     | !{chart.doc.content}
     if theme && theme.doc
       | !{theme.doc.content}
+  #container.loading
   a#plotdb-mark(href="http://plotdb.com",target="_blank")
     img(src="/assets/img/poweredby.png",style="width:64px;margin-top:5px")
-  script(type="text/javascript").
+block foot
+  script(type="text/javascript",src="/js/pack/view.js")
+  //-script(type="text/javascript").
     !{chart.code.content}
-    plotdb.viewer.render(!{JSON.stringify(chart)});
-
+    /*plotdb.viewer.render(!{JSON.stringify(chart)});*/
+  script(type="text/javascript").
+    var chart = !{JSON.stringify(chart)};
+    var theme = !{JSON.stringify(theme)};
+    var fields = !{JSON.stringify(fields)};
+  script(type="text/javascript").
+    var mychart = plotdb.load({
+      root: document.getElementById("container"),
+      chart: chart,
+      theme: theme,
+      fields: fields
+    });

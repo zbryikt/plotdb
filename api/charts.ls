@@ -1,4 +1,4 @@
-require! <[fs]>
+require! <[fs bluebird]>
 require! <[../engine/aux ../engine/share/model/ ./thumb]>
 (engine,io) <- (->module.exports = it)  _
 
@@ -154,3 +154,44 @@ engine.router.api.put \/chart/:id/like, aux.numid false, (req, res) ->
     .catch ->
       console.error it.stack
       aux.r403 res
+
+
+engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
+  [chart,theme] = [null,null]
+  io.query([
+    'select users.displayname as ownername, charts.* from users,charts'
+    'where users.key = owner and charts.key=$1'
+  ].join(" "), [req.params.id])
+    .then (it={}) ->
+      chart := it.[]rows.0
+      if !chart => return aux.r404 res
+      if (chart.{}permission.[]switch.indexOf(\public) < 0)
+      and (!req.user or chart.owner != req.user.key) => return aux.r403 res, "forbidden"
+      if !chart.theme => return bluebird.resolve!
+      io.query "select * from themes where key = chart.theme"
+    .then (r={}) ->
+      r = r.[]rows.0
+      if r =>
+        theme := if (r.{}permission.[]switch.indexOf(\public) < 0)
+        and (!req.user or r.owner != req.user.key) => null else r
+      fieldkeys = [v.[]fields.map(->it.key) for k,v of chart.dimension]
+        .reduce(((a,b)->a++b),[])
+        .filter(->it)
+      if !fieldkeys.length => return bluebird.resolve!
+      io.query([
+        "select *,datasets.owner,datasets.permission"
+        "from datafields,datasets"
+        "where datafields.key in (#{fieldkeys.join(\,)})"
+        "and datasets.key == datafields.dataset"
+      ].join(" "))
+    .then (r={}) ->
+      fields = r.[]rows
+      fields = fields.filter(->
+        (f.{}permission.[]switch.indexOf(\public) >= 0) or (req.user and f.owner == req.user.key)
+      )
+      fields ++= [v.[]fields.filter(->!it.key) for k,v of chart.dimension].reduce(((a,b)->a++b),[])
+      res.render 'view/chart/view.jade', {chart, theme, fields}
+      return null
+    .catch ->
+      console.error it.stack
+      return aux.r403 res

@@ -17,7 +17,17 @@
         /js/share/config.js
         /js/chart/render.js
       ]>
-
+    view:
+      <[
+        /js/sched.js
+        /assets/jquery/1.10.2/jquery.min.js
+        /assets/d3js/3.5.12/d3.v3.min.js
+        /assets/topojson/1.6.24/topojson.min.js
+        /assets/voronoijs/0.0.1/voronoi.min.js
+        /js/chart/base.js
+        /js/share/config.js
+        /js/chart/view.js
+      ]>
 
   if module? => module.exports = config
   else if angular? =>

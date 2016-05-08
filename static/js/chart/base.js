@@ -237,6 +237,177 @@ plotdb.chart = {
     bind: function(root, data, config){},
     resize: function(root, data, config){},
     render: function(root, data, config){}
+  },
+  getSampleData: function(chart){
+    var ref$, dimension, sample, k, v, data, len, i$, i, ret, that;
+    if (!chart.sample) {
+      return [];
+    }
+    if (Array.isArray(chart.sample)) {
+      return chart.sample;
+    }
+    if (typeof chart.sample !== 'function') {
+      return [];
+    }
+    ref$ = [chart.dimension, chart.sample()], dimension = ref$[0], sample = ref$[1];
+    sample = chart.sample();
+    for (k in dimension) {
+      v = dimension[k];
+      if (sample[k]) {
+        v.fields = sample[k];
+      }
+    }
+    data = [];
+    len = Math.max.apply(null, (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = dimension) {
+        v = ref$[k];
+        results$.push(v);
+      }
+      return results$;
+    }()).reduce(function(a, b){
+      return a.concat(b.fields || []);
+    }, []).filter(function(it){
+      return it.data;
+    }).map(function(it){
+      return it.data.length;
+    }).concat([0]));
+    for (i$ = 0; i$ < len; ++i$) {
+      i = i$;
+      ret = {};
+      for (k in dimension) {
+        v = dimension[k];
+        if (v.multiple) {
+          ret[k] = (v.fields || (v.fields = [])).length
+            ? (v.fields || (v.fields = [])).map(fn$)
+            : [];
+          v.fieldName = (v.fields || (v.fields = [])).map(fn1$);
+        } else {
+          ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
+          v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
+        }
+        if (v.type.filter(fn2$).length) {
+          if (Array.isArray(ret[k])) {
+            ret[k] = ret[k].map(fn3$);
+          } else {
+            ret[k] = parseFloat(ret[k]);
+          }
+        }
+      }
+      data.push(ret);
+    }
+    return data;
+    function fn$(it){
+      return (it.data || (it.data = []))[i];
+    }
+    function fn1$(it){
+      return it.name;
+    }
+    function fn2$(it){
+      return it.name === 'Number';
+    }
+    function fn3$(it){
+      return parseFloat(it);
+    }
+  },
+  updateAssets: function(chart, assets){
+    var ret, i$, len$, file, raw, array, j$, to$, idx;
+    ret = {};
+    for (i$ = 0, len$ = assets.length; i$ < len$; ++i$) {
+      file = assets[i$];
+      raw = atob(file.content);
+      array = new Uint8Array(raw.length);
+      for (j$ = 0, to$ = raw.length; j$ < to$; ++j$) {
+        idx = j$;
+        array[idx] = raw.charCodeAt(idx);
+      }
+      file.blob = new Blob([array], {
+        type: file.type
+      });
+      file.url = URL.createObjectURL(file.blob);
+      file.datauri = ["data:", file.type, ";charset=utf-8;base64,", file.content].join("");
+      ret[file.name] = file;
+    }
+    return chart.assets = ret;
+  },
+  updateConfig: function(chart, config){
+    var k, ref$, v, type, results$ = [];
+    for (k in ref$ = chart.config) {
+      v = ref$[k];
+      type = config[k].type.map(fn$);
+      if (!(config[k] != null)) {
+        config[k] = v['default'];
+      } else if (!(config[k].value != null)) {
+        config[k] = (v || config[k])['default'];
+      } else {
+        config[k] = config[k].value;
+      }
+      if (type.filter(fn1$).length) {
+        results$.push(config[k] = parseFloat(config[k]));
+      }
+    }
+    return results$;
+    function fn$(it){
+      return it.name;
+    }
+    function fn1$(it){
+      return it === 'Number';
+    }
+  },
+  updateData: function(chart){
+    var len, k, v, i$, i, ret, ref$, that, results$ = [];
+    chart.data = [];
+    len = Math.max.apply(null, (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = chart.dimension) {
+        v = ref$[k];
+        results$.push(v);
+      }
+      return results$;
+    }()).reduce(function(a, b){
+      return a.concat(b.fields || []);
+    }, []).filter(function(it){
+      return it.data;
+    }).map(function(it){
+      return it.data.length;
+    }).concat([0]));
+    for (i$ = 0; i$ < len; ++i$) {
+      i = i$;
+      ret = {};
+      for (k in ref$ = chart.dimension) {
+        v = ref$[k];
+        if (v.multiple) {
+          ret[k] = (v.fields || (v.fields = [])).length
+            ? (v.fields || (v.fields = [])).map(fn$)
+            : [];
+          v.fieldName = (v.fields || (v.fields = [])).map(fn1$);
+        } else {
+          ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
+          v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
+        }
+        if (v.type.filter(fn2$).length) {
+          if (Array.isArray(ret[k])) {
+            ret[k] = ret[k].map(fn3$);
+          } else {
+            ret[k] = parseFloat(ret[k]);
+          }
+        }
+      }
+      results$.push(chart.data.push(ret));
+    }
+    return results$;
+    function fn$(it){
+      return (it.data || (it.data = []))[i];
+    }
+    function fn1$(it){
+      return it.name;
+    }
+    function fn2$(it){
+      return it.name === 'Number';
+    }
+    function fn3$(it){
+      return parseFloat(it);
+    }
   }
 };
 plotdb.theme = {

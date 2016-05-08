@@ -96,6 +96,81 @@ plotdb.chart = do
     resize: (root, data, config) ->
     render: (root, data, config) ->
 
+
+  get-sample-data: (chart) ->
+    if !chart.sample => return []
+    if Array.isArray(chart.sample) => return chart.sample
+    if typeof(chart.sample) != \function => return []
+    [dimension,sample] = [chart.dimension, chart.sample!]
+    sample = chart.sample!
+    for k,v of dimension
+      if sample[k] => v.fields = sample[k]
+    data = []
+    len = Math.max.apply null,
+      [v for k,v of dimension]
+        .reduce(((a,b) -> (a) ++ (b.fields or [])),[])
+        .filter(->it.data)
+        .map(->it.data.length) ++ [0]
+    for i from 0 til len
+      ret = {}
+      for k,v of dimension
+        if v.multiple =>
+          ret[k] = if v.[]fields.length => v.[]fields.map(->it.[]data[i]) else []
+          v.field-name = v.[]fields.map -> it.name
+        else
+          ret[k] = if v.[]fields.0 => that.[]data[i] else null
+          v.field-name = if v.[]fields.0 => that.name else null
+        #TODO need correct type matching
+        if v.type.filter(->it.name == \Number).length =>
+          if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
+          else ret[k] = parseFloat(ret[k])
+      data.push ret
+    return data
+
+  update-assets: (chart, assets) ->
+    ret = {}
+    for file in assets =>
+      raw = atob(file.content)
+      array = new Uint8Array(raw.length)
+      for idx from 0 til raw.length => array[idx] = raw.charCodeAt idx
+      file.blob = new Blob([array],{type: file.type})
+      file.url = URL.createObjectURL(file.blob)
+      file.datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
+      ret[file.name] = file
+    chart.assets = ret
+
+  update-config: (chart, config) ->
+    for k,v of chart.config =>
+      type = config[k].type.map(->it.name)
+      if !(config[k]?) => config[k] = v.default
+      else if !(config[k].value?) => config[k] = (v or config[k]).default
+      else config[k] = config[k].value
+      if type.filter(->it == \Number).length => config[k] = parseFloat(config[k])
+  update-data: (chart) ->
+    chart.data = []
+    #TODO abstract so that sample data in renderer can also use this. we now just copy it.
+    #TODO fields data load by demand
+    len = Math.max.apply null,
+      [v for k,v of chart.dimension]
+        .reduce(((a,b) -> (a) ++ (b.fields or [])),[])
+        .filter(->it.data)
+        .map(->it.data.length) ++ [0]
+    for i from 0 til len
+      ret = {}
+      for k,v of chart.dimension
+        if v.multiple =>
+          ret[k] = if v.[]fields.length => v.[]fields.map(->it.[]data[i]) else []
+          v.field-name = v.[]fields.map -> it.name
+        else
+          ret[k] = if v.[]fields.0 => that.[]data[i] else null
+          v.field-name = if v.[]fields.0 => that.name else null
+        #TODO need correct type matching
+        if v.type.filter(->it.name == \Number).length =>
+          if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
+          else ret[k] = parseFloat(ret[k])
+      chart.data.push ret
+
+
 plotdb.theme = do
   create: (config) ->
     {} <<< @base <<< config

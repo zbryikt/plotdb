@@ -125,59 +125,7 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
       return this.assets.splice(idx, 1);
     },
     updateData: function(){
-      var len, k, v, i$, i, ret, ref$, that, results$ = [];
-      this.data = [];
-      len = Math.max.apply(null, (function(){
-        var ref$, results$ = [];
-        for (k in ref$ = this.dimension) {
-          v = ref$[k];
-          results$.push(v);
-        }
-        return results$;
-      }.call(this)).reduce(function(a, b){
-        return a.concat(b.fields || []);
-      }, []).filter(function(it){
-        return it.data;
-      }).map(function(it){
-        return it.data.length;
-      }).concat([0]));
-      for (i$ = 0; i$ < len; ++i$) {
-        i = i$;
-        ret = {};
-        for (k in ref$ = this.dimension) {
-          v = ref$[k];
-          if (v.multiple) {
-            ret[k] = (v.fields || (v.fields = [])).length
-              ? (v.fields || (v.fields = [])).map(fn$)
-              : [];
-            v.fieldName = (v.fields || (v.fields = [])).map(fn1$);
-          } else {
-            ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
-            v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
-          }
-          if (v.type.filter(fn2$).length) {
-            if (Array.isArray(ret[k])) {
-              ret[k] = ret[k].map(fn3$);
-            } else {
-              ret[k] = parseFloat(ret[k]);
-            }
-          }
-        }
-        results$.push(this.data.push(ret));
-      }
-      return results$;
-      function fn$(it){
-        return (it.data || (it.data = []))[i];
-      }
-      function fn1$(it){
-        return it.name;
-      }
-      function fn2$(it){
-        return it.name === 'Number';
-      }
-      function fn3$(it){
-        return parseFloat(it);
-      }
+      return plotdb.chart.updateData(this);
     }
   };
   chartService = baseService.derive('chart', service, object);
