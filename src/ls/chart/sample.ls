@@ -7,7 +7,7 @@ angular.module \plotDB
         key: 1
         owner: null
         _type: location: \sample, name: \cahrt
-        config: { padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: true}}
+        config: { padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: false}}
         dimension: {value: {type: [plotdb.Number], require: true, desc: "" }}
         assets: []
         doc: content: ""
@@ -20,7 +20,7 @@ module.exports = plotdb.chart.create({
     value: { type: [plotdb.Number], require: true, desc: "" }
   },
   config: {
-    padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: true }
+    padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: false }
   },
   init: function() {
     var that = this;
