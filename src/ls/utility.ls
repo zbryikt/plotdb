@@ -28,6 +28,8 @@ angular.module \plotDB
       if s.istag => config <<< tags: true, tokenSeparators: [',',' ']
       $(e).select2 config
       $(e).select2 config .on \change, ~>
+        # angularjs create object for chart if s.model = chart.blah and chart = undefined.
+        # be aware of this behavior
         if changed! => setTimeout (-> s.$apply -> s.model = $(e)val!),0
       s.$watch 'model', (vals) ~>
         # escaped html from jquery.

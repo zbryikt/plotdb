@@ -46,7 +46,8 @@ block body
         textarea.form-control(placeholder="Description", ng-model="target().description",rows="3")
         br
         label Base Chart Type
-        div: select#chart-setting-type.form-control(multiple="multiple",ngselect2,ng-data="chart.basetype")
+        div: select#chart-setting-type.form-control(multiple="multiple",
+        ngselect2,ng-data="settingPanel.chart.basetype")
           option(value="1") Bar Chart
           option(value="2") Line Chart
           option(value="3") Pie Chart
@@ -68,7 +69,8 @@ block body
           option(value="99") Other
         br
         label Visual Encoding
-        div: select#chart-setting-encoding.form-control(multiple="multiple",ngselect2,ng-data="chart.visualencoding")
+        div: select#chart-setting-encoding.form-control(multiple="multiple",
+        ngselect2,ng-data="settingPanel.chart.visualencoding")
           option(value="1") Position
           option(value="2") Position ( Non-aligned )
           option(value="3") Length
@@ -82,7 +84,8 @@ block body
           option(value="99") Other
         br
         label Chart Category
-        div: select#chart-setting-category.form-control(multiple="multiple",ngselect2,ng-data="chart.category")
+        div: select#chart-setting-category.form-control(multiple="multiple",
+        ngselect2,ng-data="settingPanel.chart.category")
           option(value="1") Infographics
           option(value="2") Geographics
           option(value="4") Journalism
@@ -93,7 +96,7 @@ block body
         br
         label Tags
         div: select#editor-setting-tags.form-control(multiple="multiple",
-        ngselect2,ng-data="chart.tags",istag="true",
+        ngselect2,ng-data="settingPanel.chart.tags",istag="true",
         placeholder="comma separated values, like 'population,economics'")
         br
         label Backups

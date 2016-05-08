@@ -301,6 +301,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     renderAsync: function(rebind){
       var this$ = this;
       rebind == null && (rebind = true);
+      if (this.parse.theme.pending || this.parse.chart.pending) {
+        return;
+      }
       if (!this.chart) {
         return;
       }
@@ -499,6 +502,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }),
       set: function(it){
         var this$ = this;
+        if (it && $scope.chart && $scope.chart.key === it.key) {
+          return;
+        }
         $scope.chart = it;
         if (!it) {
           return;
@@ -507,7 +513,6 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           $scope.chart = new chartService.chart(it);
           $scope.chart.theme = $scope.theme;
           $scope.resetConfig();
-          $scope.render();
           $scope.parse.theme();
           return;
         }
@@ -515,7 +520,6 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           $scope.chart = new chartService.chart(ret);
           $scope.chart.theme = $scope.theme;
           $scope.resetConfig();
-          $scope.render();
           return $scope.parse.theme();
         })['catch'](function(ret){
           console.error(ret);
@@ -614,10 +618,24 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     },
     settingPanel: {
+      init: function(){
+        var this$ = this;
+        return $scope.$watch('setting-panel.chart', function(){
+          if ($scope.chart) {
+            return import$($scope.chart, this$.chart);
+          }
+        }, true);
+      },
       toggle: function(){
         return this.toggled = !this.toggled;
       },
-      toggled: false
+      toggled: false,
+      chart: {
+        basetype: null,
+        visualencoding: null,
+        category: null,
+        tags: null
+      }
     },
     dataPanel: {
       toggle: function(){
@@ -1162,6 +1180,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }
       });
       this.$watch('chart', function(chart){
+        if (!chart) {
+          return;
+        }
         this$.renderAsync();
         if (this$.theme) {
           return this$.theme.chart = chart ? chart.key : null;
@@ -1280,7 +1301,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             ref$.config = config;
             ref$.dimension = dimension;
             this$.inited = true;
-            return $scope.render();
+            return $scope.renderAsync();
           } else if (data.type === 'parse-theme') {
             $scope.parse.theme.pending = false;
             ref$ = JSON.parse(data.payload), config = ref$.config, typedef = ref$.typedef;
@@ -1288,15 +1309,14 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             ref$.config = config;
             ref$.typedef = typedef;
             this$.applyTheme();
-            return $scope.render();
+            return $scope.renderAsync();
           } else if (data.type === 'loaded') {
-            if (!this$.chart) {
-              return;
-            }
             if ($scope.render.payload) {
-              this$.canvas.window.postMessage((ref1$ = {
-                type: 'render'
-              }, ref1$.payload = (ref$ = $scope.render).payload, ref1$.rebind = ref$.rebind, ref1$), this$.plotdbDomain);
+              if (this$.chart) {
+                this$.canvas.window.postMessage((ref1$ = {
+                  type: 'render'
+                }, ref1$.payload = (ref$ = $scope.render).payload, ref1$.rebind = ref$.rebind, ref1$), this$.plotdbDomain);
+              }
               $scope.render.payload = null;
             }
             if ($scope.parse.chart.pending) {
@@ -1429,6 +1449,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       this.paledit.init();
       this.backup.init();
       this.fieldAgent.init();
+      this.settingPanel.init();
       if (this.type === 'theme') {
         this.charts.init();
       }

@@ -150,7 +150,8 @@ angular.module \plotDB
         $scope.render <<< {payload, rebind}
         if !rebind => @canvas.window.postMessage {type: \render, payload, rebind}, @plotdb-domain
         else @canvas.window.postMessage {type: \reload}, @plotdb-domain
-      render-async: (rebind = true)  ->
+      render-async: (rebind = true) ->
+        if @parse.theme.pending or @parse.chart.pending => return
         if !@chart => return
         if @render-async.handler => $timeout.cancel @render-async.handler
         @render-async.handler = $timeout (~>
@@ -251,13 +252,13 @@ angular.module \plotDB
       charts:
         list: chart-service.sample.map -> new chart-service.chart it
         set: ->
+          if it and $scope.chart and $scope.chart.key == it.key => return
           $scope.chart = it
           if !it => return
           if it._type.location == \sample => #Better way ? integrate with chart-service.load?
             $scope.chart = new chart-service.chart(it)
             $scope.chart.theme = $scope.theme
             $scope.reset-config!
-            $scope.render!
             $scope.parse.theme!
             return
           chart-service.load it._type, it.key
@@ -265,11 +266,7 @@ angular.module \plotDB
               $scope.chart = new chart-service.chart(ret)
               $scope.chart.theme = $scope.theme
               $scope.reset-config!
-              $scope.render!
               $scope.parse.theme!
-              #TBR $scope.canvas.window.postMessage {
-              #  type: \parse-theme, payload: $scope.theme.code.content
-              #}, $scope.plotdb-domain
             .catch (ret) ~>
               console.error ret
               plNotify.send \error, "failed to load chart. please try reloading"
@@ -336,8 +333,17 @@ angular.module \plotDB
             @idx = (@idx + 1) % (@modes.length)
             $scope.editor.update!
       setting-panel: do
+        init: ->
+          $scope.$watch 'setting-panel.chart', (~>
+            if $scope.chart => $scope.chart <<< @chart
+          ), true
         toggle: -> @toggled = !!!@toggled
         toggled: false
+        chart: do
+          basetype: null
+          visualencoding: null
+          category: null
+          tags: null
       data-panel: do
         toggle: -> @toggled = !!!@toggled
         toggled: false
@@ -605,6 +611,7 @@ angular.module \plotDB
           @render-async!
           if @chart => @chart.theme = if theme => theme.key else null
         @$watch 'chart', (chart) ~>
+          if !chart => return
           @render-async!
           if @theme => @theme.chart = if chart => chart.key else null
 
@@ -617,7 +624,6 @@ angular.module \plotDB
           @communicate.parse-handler = $timeout (~>
             @communicate.parse-handler = null
             $scope.parse.chart!
-            #TBR @canvas.window.postMessage {type: \parse, payload: code}, @plotdb-domain
           ), 500
         @$watch 'theme.code.content', (code) ~>
           if !@theme => return
@@ -625,7 +631,6 @@ angular.module \plotDB
           @communicate.parse-theme-handler = $timeout (~>
             @communicate.parse-theme-handler = null
             $scope.parse.theme!
-            #TBR @canvas.window.postMessage {type: \parse-theme, payload: code}, @plotdb-domain
           ), 500
         @$watch 'chart.config', ((n,o={}) ~>
           ret = !!([[k,v] for k,v of n]
@@ -660,17 +665,16 @@ angular.module \plotDB
           for k,v of config => if !(v.value?) => v.value = v.default
           @chart <<< {config, dimension}
           @inited = true
-          $scope.render!
+          $scope.render-async!
         else if data.type == \parse-theme =>
           $scope.parse.theme.pending = false
           {config,typedef} = JSON.parse(data.payload)
           @theme <<< {config,typedef}
           @apply-theme!
-          $scope.render!
+          $scope.render-async!
         else if data.type == \loaded =>
-          if !@chart => return
           if $scope.render.payload =>
-            @canvas.window.postMessage {type: \render} <<< $scope.render{payload,rebind}, @plotdb-domain
+            if @chart => @canvas.window.postMessage {type: \render} <<< $scope.render{payload,rebind}, @plotdb-domain
             $scope.render.payload = null
           if $scope.parse.chart.pending =>
             if @chart => @canvas.window.postMessage {type: \parse-chart, payload: @chart.code.content}, @plotdb-domain
@@ -678,8 +682,6 @@ angular.module \plotDB
           if $scope.parse.theme.pending =>
             if @theme => @canvas.window.postMessage {type: \parse-theme, payload: @theme.code.content}, @plotdb-domain
             $scope.parse.theme.pending = null
-          #@canvas.window.postMessage {type: \parse, payload: @chart.code.content}, @plotdb-domain
-          #if @theme => @canvas.window.postMessage {type: \parse-theme, payload: @theme.code.content}, @plotdb-domain
         else if data.type == \click =>
           if document.dispatchEvent
             event = document.createEvent \MouseEvents
@@ -743,6 +745,7 @@ angular.module \plotDB
         @paledit.init!
         @backup.init!
         @field-agent.init!
+        @setting-panel.init!
         if @type == \theme => @charts.init!
         if @type == \chart => @themes.init!
 
