@@ -4717,8 +4717,9 @@ plotdb.chart = {
     resize: function(root, data, config){},
     render: function(root, data, config){}
   },
-  getSampleData: function(chart){
-    var ref$, dimension, sample, k, v, data, len, i$, i, ret, that;
+  getSampleData: function(chart, dimension){
+    var ref$, sample, k, v, data, len, i$, i, ret, that;
+    dimension == null && (dimension = null);
     if (!chart.sample) {
       return [];
     }
@@ -4728,7 +4729,7 @@ plotdb.chart = {
     if (typeof chart.sample !== 'function') {
       return [];
     }
-    ref$ = [chart.dimension, chart.sample()], dimension = ref$[0], sample = ref$[1];
+    ref$ = [dimension || chart.dimension, chart.sample()], dimension = ref$[0], sample = ref$[1];
     sample = chart.sample();
     for (k in dimension) {
       v = dimension[k];
@@ -5341,13 +5342,7 @@ $(document).ready(function(){
         root = document.getElementById('container');
         chart = module.exports;
         if ((!data || !data.length) && chart.sample) {
-          if (typeof chart.sample === "function") {
-            data = loadSample(dimension, chart.sample());
-          } else if (Array.isArray(chart.sample)) {
-            data = chart.sample;
-          } else {
-            data = [];
-          }
+          data = plotdb.chart.getSampleData(chart, dimension);
         }
         for (k in ref$ = config || {}) {
           v = ref$[k];

@@ -2,7 +2,7 @@
 var plotdbDomain;
 plotdbDomain = window.plConfig.urlschema + "" + window.plConfig.domain;
 plotdb.load = function(arg$){
-  var root, chart, theme, fields, fieldhash, k, ref$, v;
+  var root, chart, theme, fields, fieldhash, k, ref$, v, resize;
   root = arg$.root, chart = arg$.chart, theme = arg$.theme, fields = arg$.fields;
   if (chart) {
     chart = import$(eval(chart.code.content), chart);
@@ -30,9 +30,29 @@ plotdb.load = function(arg$){
   chart.resize();
   chart.bind();
   chart.render();
-  return root.setAttribute('class', root.getAttribute('class').split(' ').filter(function(it){
+  root.setAttribute('class', root.getAttribute('class').split(' ').filter(function(it){
     return it !== 'loading';
   }).join(" "));
+  resize = function(){
+    var this$ = this;
+    if (resize.handle) {
+      clearTimeout(resize.handle);
+    }
+    return resize.handle = setTimeout(function(){
+      resize.handle = null;
+      chart.resize();
+      return chart.render();
+    }, 500);
+  };
+  window.addEventListener('resize', function(){
+    return resize();
+  });
+  return {
+    root: root,
+    chart: chart,
+    theme: theme,
+    fields: fields
+  };
   function fn$(it){
     return fieldhash.get(it.key);
   }
@@ -45,7 +65,6 @@ plotdb.load = function(arg$){
     });
   }
 };
-'plotdb.viewer = do\n  sample: (dimension, sample) ->\n    if Array.isArray(sample) => return sample\n    for k,v of dimension\n      if sample[k] => v.fields = sample[k]\n    data = []\n    len = Math.max.apply null,\n      [v for k,v of dimension]\n        .reduce(((a,b) -> (a) ++ (b.fields or [])),[])\n        .filter(->it.data)\n        .map(->it.data.length) ++ [0]\n    for i from 0 til len\n      ret = {}\n      for k,v of dimension\n        if v.multiple =>\n          ret[k] = if v.[]fields.length => v.[]fields.map(->it.[]data[i]) else []\n          v.field-name = v.[]fields.map -> it.name\n        else\n          ret[k] = if v.[]fields.0 => that.[]data[i] else null\n          v.field-name = if v.[]fields.0 => that.name else null\n        #TODO need correct type matching\n        if v.type.filter(->it.name == Number).length =>\n          if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))\n          else ret[k] = parseFloat(ret[k])\n      data.push ret\n    return data\n\n  render: (payload, rebind = true) ->\n    [code,style,doc] = <[code style doc]>.map(->payload.{}chart[it].content)\n    [data,assets] = <[data assets]>.map(->payload.chart[it])\n    dimension = payload.chart.dimension or {}\n    config = payload.chart.config or {}\n    theme = payload.theme or {}\n    reboot = !window.module or !window.module.inited or window.module.exec-error\n    if reboot => sched.clear!\n    # sometimes multiple thread enter this function\n    # they stop at proper-eval which overwrite module again and again\n    # this leads to the reinit of chart, then duplicate charts.\n    # use thread.racing to prevent this situaiton.\n    thread.inc reboot\n    try\n      if false and "script tag disallow" =>\n        ret = /<s*script[^>]*>.*<s*/s*scripts*>/g.exec(doc.toLowerCase!)\n        if ret => throw new Error("script tag is not allowed in document.")\n      if reboot =>\n        node = document.getElementById("wrapper")\n        if !node =>\n          node = document.createElement("div")\n          node.setAttribute("id", "wrapper")\n          document.body.appendChild(node)\n        # the first space in container is crucial for elliminating margin collapsing\n        $(node).html([\n          "<style type=\'text/css\'>/* <![CDATA[ */#style/* ]]> */</style>"\n          "<style type=\'text/css\'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme.{}style.content\n          "<div id=\'container\'>"\n          "<div style=\'height:0\'>&nbsp;</div>"\n          doc\n          theme.doc.content if theme.{}doc.content\n          "</div>"\n        ].join(""))\n        promise = proper-eval code\n      else promise = Promise.resolve window.module\n      promise.then (module) ->\n        if thread.racing! => return thread.dec reboot\n        #window.module = module\n        root = document.getElementById container\n        chart = module.exports\n        if (!data or !data.length) and chart.sample =>\n          if typeof(chart.sample) == "function" => data := plotdb.viewer.sample dimension, chart.sample!\n          else if Array.isArray(chart.sample) => data := chart.sample\n          else data := []\n        for k,v of (config or {}) =>\n          for type in (v.type or [])=>\n            try\n              type = plotdb[type.name]\n              if type.test and type.parse and type.test(v.value) =>\n                v.value = type.parse v.value\n                break\n            catch e\n              console.log "chart config: type parsing exception ( #k / #type )"\n              console.log "#{e.stack}"\n              thread.dec reboot\n              return error-handling "Exception parsing chart config \'#k\'"\n        for k,v of chart.config =>\n          if !(config[k]?) => config[k] = v.default\n          else if !(config[k].value?) => config[k] = (v or config[k]).default\n          else config[k] = config[k].value\n        chart.assets = assetsmap = {}\n        for file in assets =>\n          raw = atob(file.content)\n          array = new Uint8Array(raw.length)\n          for idx from 0 til raw.length => array[idx] = raw.charCodeAt idx\n          file.blob = new Blob([array],{type: file.type})\n          file.url = URL.createObjectURL(file.blob)\n          file.datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")\n          assetsmap[file.name] = file\n        chart <<< {config}\n        if rebind or reboot or !(chart.root and chart.data) => chart <<< {root, data, dimension}\n        promise = Promise.resolve!\n        if reboot and chart.init => promise = promise.then ->\n          if thread.racing! => return\n          ret = if !module.inited => chart.init! else null\n          module.inited = true\n          ret\n        <~ promise.then\n        if thread.racing! => return thread.dec reboot\n        chart.resize!\n        if rebind or reboot => chart.bind!\n        chart.render!\n        module.exec-error = false\n        window.parent.postMessage {type: error, payload: window.error-message or ""}, plotdb-domain\n      .catch (e) ->\n        module.exec-error = true\n        thread.dec reboot\n        return error-handling e\n    catch e\n      thread.dec reboot\n      error-handling e\n    brand-new := false';
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];

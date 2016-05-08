@@ -199,9 +199,7 @@ render = (payload, rebind = true) ->
       root = document.getElementById \container
       chart = module.exports
       if (!data or !data.length) and chart.sample =>
-        if typeof(chart.sample) == "function" => data := load-sample dimension, chart.sample!
-        else if Array.isArray(chart.sample) => data := chart.sample
-        else data := []
+        data := plotdb.chart.get-sample-data chart, dimension
       for k,v of (config or {}) =>
         for type in (v.type or [])=>
           try

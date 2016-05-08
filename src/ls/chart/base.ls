@@ -97,11 +97,11 @@ plotdb.chart = do
     render: (root, data, config) ->
 
 
-  get-sample-data: (chart) ->
+  get-sample-data: (chart, dimension = null) ->
     if !chart.sample => return []
     if Array.isArray(chart.sample) => return chart.sample
     if typeof(chart.sample) != \function => return []
-    [dimension,sample] = [chart.dimension, chart.sample!]
+    [dimension,sample] = [dimension or chart.dimension, chart.sample!]
     sample = chart.sample!
     for k,v of dimension
       if sample[k] => v.fields = sample[k]

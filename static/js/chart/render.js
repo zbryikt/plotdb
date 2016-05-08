@@ -336,13 +336,7 @@ $(document).ready(function(){
         root = document.getElementById('container');
         chart = module.exports;
         if ((!data || !data.length) && chart.sample) {
-          if (typeof chart.sample === "function") {
-            data = loadSample(dimension, chart.sample());
-          } else if (Array.isArray(chart.sample)) {
-            data = chart.sample;
-          } else {
-            data = [];
-          }
+          data = plotdb.chart.getSampleData(chart, dimension);
         }
         for (k in ref$ = config || {}) {
           v = ref$[k];

@@ -238,8 +238,9 @@ plotdb.chart = {
     resize: function(root, data, config){},
     render: function(root, data, config){}
   },
-  getSampleData: function(chart){
-    var ref$, dimension, sample, k, v, data, len, i$, i, ret, that;
+  getSampleData: function(chart, dimension){
+    var ref$, sample, k, v, data, len, i$, i, ret, that;
+    dimension == null && (dimension = null);
     if (!chart.sample) {
       return [];
     }
@@ -249,7 +250,7 @@ plotdb.chart = {
     if (typeof chart.sample !== 'function') {
       return [];
     }
-    ref$ = [chart.dimension, chart.sample()], dimension = ref$[0], sample = ref$[1];
+    ref$ = [dimension || chart.dimension, chart.sample()], dimension = ref$[0], sample = ref$[1];
     sample = chart.sample();
     for (k in dimension) {
       v = dimension[k];
