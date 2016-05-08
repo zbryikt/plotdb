@@ -28,6 +28,12 @@
         /js/share/config.js
         /js/chart/view.js
       ]>
+    loader:
+      <[
+        /js/chart/base.js
+        /js/share/config.js
+        /js/chart/view.js
+      ]>
 
   if module? => module.exports = config
   else if angular? =>

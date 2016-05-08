@@ -96,7 +96,6 @@ plotdb.chart = do
     resize: (root, data, config) ->
     render: (root, data, config) ->
 
-
   get-sample-data: (chart, dimension = null) ->
     if !chart.sample => return []
     if Array.isArray(chart.sample) => return chart.sample
