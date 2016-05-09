@@ -422,10 +422,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }
       }
       if (this.theme) {
-        this.paledit.fromTheme(this.theme);
-      }
-      if (this.theme) {
-        return console.log(this.theme.config);
+        return this.paledit.fromTheme(this.theme);
       }
     }
   });
@@ -507,8 +504,17 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }),
       set: function(it){
         var this$ = this;
-        if (it && $scope.chart && $scope.chart.key === it.key) {
+        if (it && $scope.chart && ($scope.chart.key === it.key || $scope.chart.key === it)) {
           return;
+        }
+        if (typeof it === 'number') {
+          it = {
+            _type: {
+              location: 'server',
+              name: 'chart'
+            },
+            key: it
+          };
         }
         $scope.chart = it;
         if (!it) {
@@ -1226,9 +1232,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       });
       this.$watch('theme.chart', function(key){
         if (this$.type === 'theme') {
-          return this$.charts.set(this$.charts.list.filter(function(it){
-            return it.key === key;
-          })[0]);
+          return this$.charts.set(key);
         }
       });
       this.$watch("chart.code.content", function(code){

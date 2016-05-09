@@ -207,7 +207,6 @@ angular.module \plotDB
             else if v.default => @chart.config[k].value = v.default
             else @chart.config[k].value = v
         if @theme => @paledit.from-theme @theme
-        if @theme => console.log @theme.config
 
     #########  Behaviors  ################################################################
     $scope <<< do
@@ -254,7 +253,8 @@ angular.module \plotDB
       charts:
         list: chart-service.sample.map -> new chart-service.chart it
         set: ->
-          if it and $scope.chart and $scope.chart.key == it.key => return
+          if it and $scope.chart and ($scope.chart.key == it.key || $scope.chart.key == it) => return
+          if typeof(it) == \number => it = {_type: {location: \server, name: \chart}, key: it}
           $scope.chart = it
           if !it => return
           if it._type.location == \sample => #Better way ? integrate with chart-service.load?
@@ -627,8 +627,7 @@ angular.module \plotDB
           @render-async!
         @$watch 'chart.theme', (key) ~>
           if @type == \chart => @theme = @themes.list.filter(-> it.key == key).0
-        @$watch 'theme.chart', (key) ~>
-          if @type == \theme => @charts.set @charts.list.filter(-> it.key == key).0
+        @$watch 'theme.chart', (key) ~> if @type == \theme => @charts.set key
         @$watch "chart.code.content", (code) ~>
           if @communicate.parse-handler => $timeout.cancel @communicate.parse-handler
           @communicate.parse-handler = $timeout (~>
