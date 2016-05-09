@@ -21,7 +21,7 @@ engine.router.api.get "/chart/", (req, res) ->
     basetype: (req.query.type or "").split(\,).filter(->it)
     visualencoding: (req.query.enc or "").split(\,).filter(->it)
     category: (req.query.cat or "").split(\,).filter(->it)
-    tags: keyword
+    #tags: keyword
   equal = do
     dimlen: req.query.dim
     owner: req.query.owner
@@ -34,16 +34,19 @@ engine.router.api.get "/chart/", (req, res) ->
     equal.map((d,i) -> ["charts.#{d.0} = ",d.1])
   ).map((d,i) -> ["#{d.0} $#{i + 1}", d.1])
   paging = [[1,2].map(-> "$#{it + conditions.length}"), [offset, limit]]
+  tagidx = conditions.length + 3
+
+  #TODO check if we need to optimize this
   io.query([
     'select users.displayname as ownername,charts.*'
-    [
-      "from charts,users where users.key = charts.owner and"
-      "#{conditions.map(->it.0).join(" and ")}"
-      "offset #{paging.0.0} limit #{paging.0.1}"
-    ]
-      .filter(->it)
-      .join(" ")
-  ].join(" "), conditions.map(->it.1) ++ paging.1)
+    "from charts,users where users.key = charts.owner and"
+    (conditions.map(->it.0) ++ [
+      "(charts.tags && $#tagidx or lower(charts.name) ~ ANY($#tagidx))" if keyword.length
+    ]).filter(->it).join(" and ")
+    "offset #{paging.0.0} limit #{paging.0.1}"
+  ].join(" "), (
+    conditions.map(->it.1) ++ paging.1 ++ (if keyword.length => [keyword.map(->it.toLowerCase!)] else [])
+  ))
     .then -> res.send it.rows
     .catch (e) ->
       console.log e.stack
