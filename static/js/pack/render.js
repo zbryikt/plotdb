@@ -5358,6 +5358,7 @@ $(document).ready(function(){
         if (!node) {
           node = document.createElement("div");
           node.setAttribute("id", "wrapper");
+          node.setAttribute("class", "pdb-root");
           document.body.appendChild(node);
         }
         $(node).html(["<style type='text/css'>/* <![CDATA[ */" + style + "/* ]]> */</style>", (theme.style || (theme.style = {})).content ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div id='container'>", "<div style='height:0'>&nbsp;</div>", doc, (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8, "</div>"].join(""));

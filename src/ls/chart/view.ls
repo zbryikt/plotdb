@@ -15,6 +15,8 @@ plotdb.view = do
     if chart => chart = eval(chart.code.content) <<< chart
     if theme => theme = eval(theme.code.content) <<< theme
     fieldhash = d3.map fields, -> it.key
+    root.setAttribute("class", (root.getAttribute("class")
+      .split(" ").filter(->it!=\pdb-root) ++ <[pdb-root]>).join(" "))
     root.innerHTML = [
       "<style type='text/css'>/* <![CDATA[ */#{chart.style.content}/* ]]> */</style>" if chart and chart.style
       "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme and theme.style

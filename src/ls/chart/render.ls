@@ -180,6 +180,7 @@ render = (payload, rebind = true) ->
       if !node =>
         node = document.createElement("div")
         node.setAttribute("id", "wrapper")
+        node.setAttribute("class", "pdb-root")
         document.body.appendChild(node)
       # the first space in container is crucial for elliminating margin collapsing
       $(node).html([

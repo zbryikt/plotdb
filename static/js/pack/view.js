@@ -597,6 +597,9 @@ plotdb.view = {
     fieldhash = d3.map(fields, function(it){
       return it.key;
     });
+    root.setAttribute("class", (root.getAttribute("class").split(" ").filter(function(it){
+      return it !== 'pdb-root';
+    }).concat(['pdb-root'])).join(" "));
     root.innerHTML = [chart && chart.style ? "<style type='text/css'>/* <![CDATA[ */" + chart.style.content + "/* ]]> */</style>" : void 8, theme && theme.style ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div style='position:relative;width:100%;height:100%;'>", chart.doc.content, "</div>", theme && (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8].join("");
     for (k in ref$ = chart.dimension) {
       v = ref$[k];
