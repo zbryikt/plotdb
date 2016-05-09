@@ -3,73 +3,13 @@ block head
   title #{chart.name} by #{chart.author}
   link(rel="icon",type="image/x-icon",href="/assets/img/favicon-16.png")
 block body
-  style(type="text/css").
-    html,body,#container {
-      width: 100%;
-      height: 100%;
-      background: initial;
-    }
-    #container {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      z-index: 1;
-    }
-    #container.loading {
-      background: url(/assets/img/loading-lg.gif) center center no-repeat;
-    }
-    #container > div:last-of-type {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      z-index: 1;
-    }
-    #plotdb-mark {
-      position: fixed;
-      z-index: 999999;
-      bottom: 10px;
-      right: 10px;
-      text-align: center;
-      font-size: 12px;
-      font-family: optima;
-      cursor: pointer;
-      color: #000;
-      text-decoration: none;
-      background: rgba(255,255,255,0.5);
-      padding: 5px;
-      border-radius: 3px;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-  style(type="text/css") #{chart.style.content}
-  //-  script(type="text/javascript",src="/assets/d3js/3.5.12/d3.v3.min.js")
-    script(type="text/javascript",src="#{assets}/topojson/1.6.24/topojson.min.js")
-    script(type="text/javascript",src="/js/chart/base.js")
-    script(type="text/javascript",src="/js/chart/view.js")
-  //-script(type="text/javascript") !{chart.code.content}
-  //- the first space in container is crucial for elliminating margin collapsing
-  //-#container
-    div(style="height:0") &nbsp;
-    style(type="text/css").
-      !{chart.style.content}
-    if theme && theme.style
-      style(type="text/css").
-        !{theme.style.content}
-    | !{chart.doc.content}
-    if theme && theme.doc
-      | !{theme.doc.content}
+  include /render/pdb-style.jade
+  include /render/base-style.jade
+  div(style="height:0") &nbsp;
   #container.loading.pdb-root
-  a#plotdb-mark(href="http://plotdb.com",target="_blank")
-    img(src="/assets/img/poweredby.png",style="width:64px;margin-top:5px")
+  a#plotdb-mark(href="http://plotdb.com",target="_blank") &nbsp;
 block foot
   script(type="text/javascript",src="/js/pack/view.js")
-  //-script(type="text/javascript").
-    !{chart.code.content}
-    /*plotdb.viewer.render(!{JSON.stringify(chart)});*/
   script(type="text/javascript").
     var chart = !{JSON.stringify(chart)};
     var theme = !{JSON.stringify(theme)};
