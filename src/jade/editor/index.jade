@@ -233,7 +233,7 @@ block body
         .tab.cat.shown(ng-click="showsrc=!!!showsrc")
           div.text-right #[span src]
           .desc.text-right
-            i.glyphicon.glyphicon-chevron-right(ng-show="!showsrc")
+            i.glyphicon.glyphicon-chevron-right(ng-cloak,ng-show="!showsrc")
             i.glyphicon.glyphicon-chevron-left(ng-show="showsrc")
         .tab.shown(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'",ng-cloak)
           div #[span preview]
