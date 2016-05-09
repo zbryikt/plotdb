@@ -47,7 +47,8 @@ plotdb.view = do
         chart.render!
       ), 500
     window.addEventListener \resize, (-> resize! )
-    if cb => cb {root, chart, theme, fields}
+    # call cb later to let everything be prepared
+    if cb => setTimeout (-> cb {root, chart, theme, fields}), 0
 
 plotdb.load = ({root, chart}, cb) ->
   if typeof(chart) == \object =>

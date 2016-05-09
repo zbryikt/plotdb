@@ -622,12 +622,14 @@ plotdb.view = {
       return resize();
     });
     if (cb) {
-      return cb({
-        root: root,
-        chart: chart,
-        theme: theme,
-        fields: fields
-      });
+      return setTimeout(function(){
+        return cb({
+          root: root,
+          chart: chart,
+          theme: theme,
+          fields: fields
+        });
+      }, 0);
     }
     function fn$(it){
       return fieldhash.get(it.key);
