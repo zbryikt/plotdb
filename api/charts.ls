@@ -41,7 +41,7 @@ engine.router.api.get "/chart/", (req, res) ->
     'select users.displayname as ownername,charts.*'
     "from charts,users where users.key = charts.owner and"
     (conditions.map(->it.0) ++ [
-      "(charts.tags && $#tagidx or lower(charts.name) ~ ANY($#tagidx))" if keyword.length
+      "(charts.tags && $#tagidx or lower(charts.name) ~ ANY($#tagidx) or lower(charts.description) ~ ANY($#tagidx))" if keyword.length
     ]).filter(->it).join(" and ")
     "offset #{paging.0.0} limit #{paging.0.1}"
   ].join(" "), (
