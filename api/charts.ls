@@ -4,6 +4,15 @@ require! <[../engine/aux ../engine/share/model/ ./thumb]>
 
 charttype = model.type.chart
 
+# for cross domain loading chart. disabled for now
+# shall lookup if source domain is registered by subscribed users
+if true =>
+  engine.router.api.all \*, (req, res, next) ->
+    res.header("Access-Control-Allow-Origin", "*")
+    res.header("Access-Control-Allow-Headers", "X-Requested-With")
+    res.header('Access-Control-Allow-Headers', 'Content-Type')
+    next!
+
 engine.router.api.get "/chart/", (req, res) ->
   keyword = (req.query.keyword or "").split(/[, ]/).map(->it.trim!).filter(->it)
   offset = req.query.offset or 0

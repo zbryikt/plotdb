@@ -77,7 +77,5 @@ block foot
   script(type="text/javascript").
     var mychart = plotdb.load({
       root: document.getElementById("container"),
-      chart: chart,
-      theme: theme,
-      fields: fields
+      chart: {chart: chart, theme: theme, fields: fields}
     });

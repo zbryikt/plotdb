@@ -14,7 +14,9 @@
 
   if module? => module.exports = config
   else if angular? =>
-    angular.module \plotDB
-      ..service \plConfig <[]> ++ -> config
-  else window.plConfig = config
+    try
+      angular.module \plotDB
+        ..service \plConfig <[]> ++ -> config
+    catch e
+  if window? => window.plConfig = config
 )!
