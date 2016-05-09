@@ -340,9 +340,15 @@ angular.module \plotDB
             $scope.editor.update!
       setting-panel: do
         init: ->
-          $scope.$watch 'setting-panel.chart', (~>
-            if $scope.chart => $scope.chart <<< @chart
+          $scope.$watch 'settingPanel.chart', ((cur, old) ~>
+            for k,v of cur =>
+              if !v and !old[k] => continue
+              $scope.chart[k] = v
           ), true
+          $scope.$watch 'chart.basetype', ~> @chart.basetype = it
+          $scope.$watch 'chart.visualencoding', ~> @chart.visualencoding = it
+          $scope.$watch 'chart.category', ~> @chart.category = it
+          $scope.$watch 'chart.tags', ~> @chart.tags = it
         toggle: -> @toggled = !!!@toggled
         toggled: false
         chart: do

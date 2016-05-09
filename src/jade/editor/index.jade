@@ -309,7 +309,7 @@ block body
                   .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
                     i.fa.fa-caret-down.pull-right
                     span {{chart.name || 'No Chart'}}
-                  ul.dropdown-menu
+                  ul.dropdown-menu.charts-dropdown-menu
                     li: a(ng-click="charts.set(null)") No Chart
                     li(ng-repeat="item in charts.list"): a(ng-click="charts.set(item)") {{item.name}}
 

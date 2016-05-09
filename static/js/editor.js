@@ -634,11 +634,29 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     settingPanel: {
       init: function(){
         var this$ = this;
-        return $scope.$watch('setting-panel.chart', function(){
-          if ($scope.chart) {
-            return import$($scope.chart, this$.chart);
+        $scope.$watch('settingPanel.chart', function(cur, old){
+          var k, v, results$ = [];
+          for (k in cur) {
+            v = cur[k];
+            if (!v && !old[k]) {
+              continue;
+            }
+            results$.push($scope.chart[k] = v);
           }
+          return results$;
         }, true);
+        $scope.$watch('chart.basetype', function(it){
+          return this$.chart.basetype = it;
+        });
+        $scope.$watch('chart.visualencoding', function(it){
+          return this$.chart.visualencoding = it;
+        });
+        $scope.$watch('chart.category', function(it){
+          return this$.chart.category = it;
+        });
+        return $scope.$watch('chart.tags', function(it){
+          return this$.chart.tags = it;
+        });
       },
       toggle: function(){
         return this.toggled = !this.toggled;
