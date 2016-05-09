@@ -336,8 +336,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     countline: function(){
       var this$ = this;
       return ['code', 'style', 'doc'].map(function(it){
-        this$.target()[it].lines = this$.target()[it].content.split('\n').length;
-        return this$.target()[it].size = this$.target()[it].content.length;
+        this$.target()[it].lines = (this$.target()[it].content || "").split('\n').length;
+        return this$.target()[it].size = (this$.target()[it].content || "").length;
       });
     },
     download: {
@@ -412,15 +412,20 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             this.chart.config[k] = import$({
               _bytheme: true
             }, v);
-          } else if (this.chart.config[k].type[0].name !== v.type[0].name) {
+          } else if (v.type && this.chart.config[k].type[0].name !== v.type[0].name) {
             continue;
-          } else {
+          } else if (v['default']) {
             this.chart.config[k].value = v['default'];
+          } else {
+            this.chart.config[k].value = v;
           }
         }
       }
       if (this.theme) {
-        return this.paledit.fromTheme(this.theme);
+        this.paledit.fromTheme(this.theme);
+      }
+      if (this.theme) {
+        return console.log(this.theme.config);
       }
     }
   });

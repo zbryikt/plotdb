@@ -171,8 +171,8 @@ angular.module \plotDB
 
       countline: ->
         <~ <[code style doc]>.map
-        @target![it].lines = @target![it].content.split(\\n).length
-        @target![it].size = @target![it].content.length
+        @target![it].lines = (@target![it].content or "").split(\\n).length
+        @target![it].size = (@target![it].content or "").length
       download: do
         prepare: -> <[svg png plotdb]>.map (n) ~>
           setTimeout (~> $scope.$apply ~> [@[n].url = '', @[n]!]), 300
@@ -203,9 +203,11 @@ angular.module \plotDB
               @chart.config[k].value = preset[@chart.config[k].hint]
           for k,v of @theme.config =>
             if !@chart.config[k] => @chart.config[k] = {_bytheme: true} <<< v
-            else if @chart.config[k].type.0.name != v.type.0.name => continue
-            else @chart.config[k].value = v.default
+            else if v.type and @chart.config[k].type.0.name != v.type.0.name => continue
+            else if v.default => @chart.config[k].value = v.default
+            else @chart.config[k].value = v
         if @theme => @paledit.from-theme @theme
+        if @theme => console.log @theme.config
 
     #########  Behaviors  ################################################################
     $scope <<< do
