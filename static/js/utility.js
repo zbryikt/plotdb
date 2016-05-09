@@ -83,7 +83,6 @@ x$.directive('ngselect2', function(){
       $(e).select2(config).on('change', function(){
         if (changed()) {
           return setTimeout(function(){
-            console.log("ui change reflect to model: ", s.model, $(e).val());
             return s.$apply(function(){
               return s.model = $(e).val();
             });

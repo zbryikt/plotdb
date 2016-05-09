@@ -30,9 +30,7 @@ angular.module \plotDB
       $(e).select2 config .on \change, ~>
         # angularjs create object for chart if s.model = chart.blah and chart = undefined.
         # be aware of this behavior
-        if changed! => setTimeout (->
-          console.log "ui change reflect to model: ", s.model, $(e)val!
-          s.$apply -> s.model = $(e)val!),0
+        if changed! => setTimeout (-> s.$apply -> s.model = $(e)val!),0
       s.$watch 'model', (vals) ~>
         # escaped html from jquery.
         # jquery.val won't help select2 build option tags so we have to do this by ourselves
