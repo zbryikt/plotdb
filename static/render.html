@@ -4,7 +4,49 @@
   margin: 0;
   font-family: verdana;
 }
-.pdb-title { text-align: center; }
+.pdb-title {
+  text-align: center;
+}
+
+.pdb-popup {
+  position: absolute;
+  background: rgba(0,0,0,1.0);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: none;
+}
+.pdb-popup .title, .popup .desc {
+  margin-left: 23px;
+}
+.pdb-popup .mark {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  left: 10px;
+  top: 5px;
+}
+.pdb-popup:after {
+  content: " ";
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: #ff0;
+  position: absolute;
+  transform: rotate(45deg);
+  background: rgba(0,0,0,1.0);
+  top: 50%;
+  margin-top: -5px;
+}
+.pdb-popup.left:after {
+  right: -5px;
+}
+.pdb-popup.right:after {
+  left: -5px;
+}
+
 
 .hover-box,.hover-margin { position:absolute;z-index:99999;pointer-events:none }
 .hover-box { border:1px dashed red }

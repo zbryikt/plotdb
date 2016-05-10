@@ -5,8 +5,7 @@ block head
 block body
   include /render/pdb-style.jade
   include /render/base-style.jade
-  div(style="height:0") &nbsp;
-  #container.loading.pdb-root
+  #wrapper.loading.pdb-root
   a#plotdb-mark(href="http://plotdb.com",target="_blank") &nbsp;
 block foot
   script(type="text/javascript",src="/js/pack/view.js")
@@ -16,6 +15,6 @@ block foot
     var fields = !{JSON.stringify(fields)};
   script(type="text/javascript").
     var mychart = plotdb.load({
-      root: document.getElementById("container"),
+      root: document.getElementById("wrapper"),
       chart: {chart: chart, theme: theme, fields: fields}
     });

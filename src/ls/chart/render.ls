@@ -186,7 +186,7 @@ render = (payload, rebind = true) ->
       $(node).html([
         "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style>"
         "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme.{}style.content
-        "<div id='container'>"
+        "<div id='container' style='position:relative;width:100%;height:100%;'>"
         "<div style='height:0'>&nbsp;</div>"
         doc
         theme.doc.content if theme.{}doc.content

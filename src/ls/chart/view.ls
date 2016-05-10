@@ -20,7 +20,7 @@ plotdb.view = do
     root.innerHTML = [
       "<style type='text/css'>/* <![CDATA[ */#{chart.style.content}/* ]]> */</style>" if chart and chart.style
       "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme and theme.style
-      "<div style='position:relative;width:100%;height:100%;'>"
+      "<div style='position:relative;width:100%;height:100%;'><div style='height:0;'>&nbsp;</div>"
       chart.doc.content
       "</div>"
       theme.doc.content if theme and theme.{}doc.content
