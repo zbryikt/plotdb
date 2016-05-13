@@ -11,11 +11,14 @@ engine.router.api.get "/dataset/", (req, res) ->
   limit = (req.query.limit or 20) <? 100
   params = [offset, limit, (req.user or {}).key]
   count = -> params.length + 1
-  if !req.query.owner => condition = "datasets.searchable=true"
+  if !req.query.owner =>
+    condition = "(datasets.searchable=true or datasets.owner=$#{count!})"
+    params.push ((req.user or {}).key or 0)
   else
     if userkey == req.user.key => condition = "datasets.owner=$#{count!}"
-    else condition = "(datasets.owner=$#{count!} and datasets.searchable=true)"
-    params.push parseInt(req.query.owner or req.user.key)
+    else condition = "(datasets.owner=$#{count!} and (datasets.searchable=true or datasets.owner=$#{count!})"
+    params.push parseInt(req.query.owner or ((req.user or {}).key or 0))
+    params.push ((req.user or {}).key or 0)
   if keyword =>
     condition += " and datasets.name ~ $#{count!}"
     params.push keyword
