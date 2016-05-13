@@ -73,7 +73,7 @@ io.query "select * from users where username=$1", [user.username]
       pairs = io.aux.insert.assemble pairs
       console.log "not found. insert one..."
       io.query "insert into users #{pairs.0} values #{pairs.1} returning key", pairs.2
-    else Promise.resolve({rows:[{key: r.rows.0.key}]})
+    else bluebird.resolve({rows:[{key: r.rows.0.key}]})
   .then (r={}) ->
     owner := r.[]rows.0.key
     console.log "taiwan stat owner key = #owner, listing all datasets from it..."
@@ -83,7 +83,7 @@ io.query "select * from users where username=$1", [user.username]
     console.log "total #{keys.length} dataset. drop all datafields from them..."
     if keys.length =>
       return io.query( "delete from datafields where dataset in (#{keys.join(\,)})" )
-    else return Promise.resolve!
+    else return bluebird.resolve!
   .then ->
     console.log "drop all dataset from taiwan stat..."
     io.query("delete from datasets where owner=$1", [owner])
