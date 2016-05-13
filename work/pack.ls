@@ -16,7 +16,7 @@ console.log "query all charts.."
 io.query "select * from charts where owner=4"
   .then (r) ->
     console.log "dumping charts..."
-    ret = r.rows.map -> it.theme = null
+    ret = r.rows.map -> it <<< {theme: null}
     fs.write-file-sync \chart-dump.json, JSON.stringify(ret)
     console.log "done."
 
