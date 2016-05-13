@@ -191,14 +191,14 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
         .filter(->it)
       if !fieldkeys.length => return bluebird.resolve!
       io.query([
-        "select *,datasets.owner,datasets.permission"
+        "select datafields.*,datasets.owner,datasets.permission"
         "from datafields,datasets"
         "where datafields.key in (#{fieldkeys.join(\,)})"
-        "and datasets.key == datafields.dataset"
+        "and datasets.key = datafields.dataset"
       ].join(" "))
     .then (r={}) ->
       fields = r.[]rows
-      fields = fields.filter(->
+      fields = fields.filter((f)->
         (f.{}permission.[]switch.indexOf(\public) >= 0) or (req.user and f.owner == req.user.key)
       )
       fields ++= [v.[]fields.filter(->!it.key) for k,v of chart.dimension].reduce(((a,b)->a++b),[])
