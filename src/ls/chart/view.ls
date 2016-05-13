@@ -27,7 +27,8 @@ plotdb.view = do
     ].join("")
     for k,v of chart.dimension =>
       v.fields = v.fields.map(->fieldhash.get(it.key)).filter(->it)
-      v.fields.forEach -> it.data = it.data.map -> parseFloat(it)
+      v.fields.forEach -> if (v.type or []).filter(->it.name == \Number).length =>
+        it.data = it.data.map -> parseFloat(it)
     plotdb.chart.update-data chart
     plotdb.chart.update-config chart, chart.config
     plotdb.chart.update-assets chart, chart.assets

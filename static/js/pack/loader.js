@@ -641,9 +641,13 @@ plotdb.view = {
       return it;
     }
     function fn2$(it){
-      return it.data = it.data.map(function(it){
-        return parseFloat(it);
-      });
+      if ((v.type || []).filter(function(it){
+        return it.name === 'Number';
+      }).length) {
+        return it.data = it.data.map(function(it){
+          return parseFloat(it);
+        });
+      }
     }
   }
 };
