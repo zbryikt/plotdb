@@ -164,7 +164,7 @@ plotdb.chart = do
           ret[k] = if v.[]fields.0 => that.[]data[i] else null
           v.field-name = if v.[]fields.0 => that.name else null
         #TODO need correct type matching
-        if v.type.filter(->it.name == \Number).length =>
+        if (v.type or []).filter(->it.name == \Number).length =>
           if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
           else ret[k] = parseFloat(ret[k])
       chart.data.push ret

@@ -4865,7 +4865,7 @@ plotdb.chart = {
           ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
           v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
         }
-        if (v.type.filter(fn2$).length) {
+        if ((v.type || []).filter(fn2$).length) {
           if (Array.isArray(ret[k])) {
             ret[k] = ret[k].map(fn3$);
           } else {
