@@ -213,7 +213,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       $scope.dataset.setFields($scope.parse.result);
       isCreate = !$scope.dataset.key ? true : false;
       $scope.loading = true;
-      return $scope.dataset.save().then(function(){
+      return $scope.dataset.save().then(function(r){
         $scope.$apply(function(){
           return plNotify.send('success', "dataset saved");
         });
@@ -635,7 +635,18 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
     });
   };
   $scope.inlineCreate = function(it){
-    return $scope.datasets.splice(0, 0, it);
+    var this$ = this;
+    return dataService.load(it._type, it.key).then(function(ret){
+      var ds;
+      ds = new dataService.dataset(ret);
+      return $scope.datasets.splice(0, 0, ds);
+    })['catch'](function(ret){
+      console.error(ret);
+      plNotify.send('error', "failed to load dataset. please try reloading");
+      if (ret[1] === 'forbidden') {
+        return window.location.href = '/403.html';
+      }
+    });
   };
   $scope.cur = null;
   $scope.setcur = function(it){
@@ -669,13 +680,11 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
     };
   }
   return $scope.transpose = function(dataset){
-    console.log(dataset);
     dataset.fields.map(function(it){
       return it.update();
     });
     return setTimeout(function(){
       var head, fields, i$, to$, i, j$, to1$, j, ref$, index;
-      console.log("old: ", dataset.fields);
       head = dataset.fields[0];
       fields = head.data.map(function(){
         return new dataService.Field({

@@ -162,7 +162,7 @@ angular.module \plotDB
       is-create = if !$scope.dataset.key => true else false
       $scope.loading = true
       $scope.dataset.save!
-        .then ->
+        .then (r) ->
           $scope.$apply -> plNotify.send \success, "dataset saved"
           if is-create =>
             if $scope.$parent and $scope.$parent.inline-create =>
@@ -395,7 +395,16 @@ angular.module \plotDB
           plNotify.send \success, "dataset deleted."
         .catch ~>
           plNotify.send \danger, "failed to delete dataset."
-    $scope.inline-create = -> $scope.datasets.splice 0, 0, it
+    $scope.inline-create = (it) ->
+      data-service.load it._type, it.key
+        .then (ret) ~>
+          ds = new data-service.dataset ret
+          $scope.datasets.splice 0, 0, ds
+        .catch (ret) ~>
+          console.error ret
+          plNotify.send \error, "failed to load dataset. please try reloading"
+          #TODO check at server time?
+          if ret.1 == \forbidden => window.location.href = \/403.html #window.location.pathname
     $scope.cur = null
     $scope.setcur = -> $scope.cur = it
     if document.querySelectorAll(".ds-list").0 => $scope.limitscroll that
@@ -414,10 +423,8 @@ angular.module \plotDB
 
     #experimental functionality
     $scope.transpose = (dataset) ->
-      console.log dataset
       dataset.fields.map -> it.update!
       setTimeout (->
-        console.log "old: ", dataset.fields
         head = dataset.fields.0
         fields = head.data.map -> new dataService.Field {location: \sample}
         for i from 1 til dataset.fields.length
