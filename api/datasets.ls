@@ -9,7 +9,7 @@ engine.router.api.get "/dataset/", (req, res) ->
   offset = req.query.offset or 0
   userkey = parseInt(req.query.owner)
   limit = (req.query.limit or 20) <? 100
-  params = [offset, limit, req.user.key]
+  params = [offset, limit, (req.user or {}).key]
   count = -> params.length + 1
   if !req.query.owner => condition = "datasets.searchable=true"
   else
