@@ -6,10 +6,6 @@ usertype = model.type.user
 auth-limit = {strategy: \hard, limit: 10, upper-delta: 1800, json: true}
 edit-limit = {strategy: \hard, limit: 30, upper-delta: 120, json: true}
 
-engine.app.get \/me/, throttle.limit {lower-delta: 2, upper-delta: 6, penalty: 1, limit: 6}, (req, res) ->
-  if !req.user => return res.redirect "/"
-  res.render \view/me/profile.jade, {user: req.user}
-
 get-user = (req, key) ->
   user = null
   io.query "select * from users where key = $1", [key]
@@ -26,6 +22,15 @@ get-user = (req, key) ->
       stat = r.[]rows.0
       if !stat => return bluebird.reject "no user stat"
       user <<< {stat}
+
+engine.app.get \/me/, throttle.limit {lower-delta: 2, upper-delta: 6, penalty: 1, limit: 6}, (req, res) ->
+  if !req.user => return aux.r404 res, "", true
+  get-user req, req.user.key
+    .then (user) ->
+      if !user => return aux.r404 res, "user not found", true
+      res.render \view/me/profile.jade, {user}
+      return null
+    .catch -> return aux.r403 res, "", true
 
 engine.app.get \/user/:id, aux.numid true, (req, res) ->
   get-user req, req.params.id
