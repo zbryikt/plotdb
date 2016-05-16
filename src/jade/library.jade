@@ -1,23 +1,6 @@
 mixin margin-break
   .margin-break &nbsp;
-meta(charset="utf-8")
-meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0')
-title #{title}
-meta(property="og:locale",content="zh_TW")
-meta(property="og:image",content="#{thumbnail}")
-meta(property="og:image:type",content="#{thumbtype}")
-meta(property="og:image:width",content="#{thumb_width}")
-meta(property="og:image:height",content="#{thumb_height}")
-meta(property='og:type', content='website')
-meta(property='og:url', content='#{url}')
-meta(property='og:title', content='#{title}')
-meta(property='og:description', content='#{description}')
-meta(name="twitter:card",content="summary")
-meta(name="twitter:site",content="@plotdb")
-meta(name="twitter:title",content="#{title}")
-meta(name="twitter:description",content="#{description}")
-meta(name="twitter:creator",content="@plotdb")
-meta(name="twitter:image",content="#{thumbnail}")
+include meta.jade
 link(rel="icon",type="image/x-icon",href="#{favicon}")
 link(rel="stylesheet",type="text/css",href="#{assets}/bootstrap/3.3.5/css/bootstrap.min.css")
 link(rel="stylesheet",type="text/css",href="#{assets}/fontawesome/4.6.1/css/font-awesome.min.css")

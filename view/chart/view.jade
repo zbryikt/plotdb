@@ -1,4 +1,9 @@
 extends /render.jade
+block vars
+  - var thumbnail = "http://plotdb.com/s/chart/" + chart.key + ".png"
+  - var title = chart.name
+  - var description = chart.description
+  - var url = "http://plotdb.com/v/chart/" + chart.key
 block head
   title #{chart.name} by #{chart.author}
   link(rel="icon",type="image/x-icon",href="/assets/img/favicon-16.png")
