@@ -18,7 +18,7 @@ engine.router.api.get "/dataset/", (req, res) ->
     if userkey == req.user.key => condition = "datasets.owner=$#{count!}"
     else condition = "(datasets.owner=$#{count!} and (datasets.searchable=true or datasets.owner=$#{count!})"
     params.push parseInt(req.query.owner or ((req.user or {}).key or 0))
-    params.push ((req.user or {}).key or 0)
+    if userkey != req.user.key => params.push ((req.user or {}).key or 0)
   if keyword =>
     condition += " and datasets.name ~ $#{count!}"
     params.push keyword
@@ -28,7 +28,8 @@ engine.router.api.get "/dataset/", (req, res) ->
     "order by case owner when $3 then 1 else 2 end"
     "offset $1 limit $2"
   ].join(" "), params)
-    .then -> res.send it.rows
+    .then ->
+      res.send it.rows
     .catch (e) ->
       console.log e.stack
       return aux.r403 res
