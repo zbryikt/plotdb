@@ -158,6 +158,8 @@ angular.module \plotDB
         return plNotify.send \danger, "maximal 40 columns is allowed. you have #{column-length}"
       <- $scope.parse.run true .then
       $scope.dataset._type.location = (if locally => \local else \server)
+      #TODO permission interface. data are now default public
+      $scope.dataset.permission = {"value": [], "switch": ["public"]}
       $scope.dataset.set-fields $scope.parse.result
       is-create = if !$scope.dataset.key => true else false
       $scope.loading = true

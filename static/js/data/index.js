@@ -210,6 +210,10 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     return $scope.parse.run(true).then(function(){
       var isCreate;
       $scope.dataset._type.location = locally ? 'local' : 'server';
+      $scope.dataset.permission = {
+        "value": [],
+        "switch": ["public"]
+      };
       $scope.dataset.setFields($scope.parse.result);
       isCreate = !$scope.dataset.key ? true : false;
       $scope.loading = true;
