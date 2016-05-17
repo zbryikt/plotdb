@@ -2,14 +2,17 @@ div
   .dataset-entry(ng-repeat="dataset in datasets",ng-attr-id="dataset-{{dataset.key}}")
     .dse-ctrl.pull-right
       //-i.fa.fa-share
-      i.fa.fa-trash.clickable(ng-click="delete(dataset)")
+      i.fa.fa-trash.clickable(ng-click="delete(dataset)",ng-cloak,ng-show="dataset._type.location=='server'")
+      span(ng-cloak,ng-show="dataset._type.location=='sample'") sample
     .dse-head
       .dse-thumb
         img(src="/assets/img/dataset/grid.png")
         .text-center CSV
       .dse-title
         .grayed dataset
-        h3(style="margin:0 0 4px"): a(ng-cloak,ng-attr-href="/dataset/{{dataset.key}}/") {{dataset.name}}
+        h3(style="margin:0 0 4px",ng-show="dataset._type.location=='server'",ng-cloak)
+          a(ng-attr-href="/dataset/{{dataset.key}}/") {{dataset.name}}
+        h3(style="margin:0 0 4px",ng-show="dataset._type.location=='sample'",ng-cloak) {{dataset.name}}
         .dse-desc(ng-cloak) {{dataset.description || 'no description. '}}
     .dse-content
       .dse-props
