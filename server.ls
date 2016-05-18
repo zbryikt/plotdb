@@ -2,7 +2,6 @@ require! <[bluebird fs-extra]>
 require! <[./secret ./engine ./engine/aux ./api/]>
 require! <[./engine/io/localfs ./engine/io/postgresql/]>
 config = require "./engine/config/#{secret.config}"
-require! 'uglify-js': uglify-js, LiveScript: lsc
 
 config = aux.merge-config config, secret
 
