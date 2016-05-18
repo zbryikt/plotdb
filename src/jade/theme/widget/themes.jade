@@ -14,5 +14,8 @@
       .favorite #[i.fa.fa-heart] 15
 
   .flexend
-  #list-end.text-center: span(ng-cloak,ng-show="paging.end") this is the end :)
+  #list-end.text-center: span(ng-cloak,ng-show="paging.end")
+    br
+    br
+    span this is the end :)
   .loader.alone.sm.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")

@@ -1,0 +1,35 @@
+extends /base.jade
+block vars
+  - var rootid = "landview"
+  - var title = 'PlotDB: Share Visualizations with Everyone'
+  - var description = "Create, share and request visualizations online."
+  - var thumbnail = "http://plotdb.com/assets/img/thumbnail.png"
+  - var thumbtype = "image/png"
+  - var url = "http://plotdb.com/"
+block head
+block body
+  .spc1
+  .page-header.simple: .inner
+    .title Privacy Policy
+    .desc we share, but we also keep.
+  #root.narrow.with-header.simple
+    p We collect information from you when you:
+    ul
+      li register on our site
+      li fill out a form
+      li creating assets with our tool
+    p You may, however, visit our site anonymously
+    br
+    p Information we collect from you may be used for:
+    ul
+      li personalize your experience
+      li improve our service.
+      li share with other users, if it's published.
+    br
+    p Additionally:
+    ul
+      li We use cookie fo optimize your experience.
+      li We do not sell, or trade your personal information like name, email to outside parties
+      li Every registered user will have a personal profile page with generated assets shown.
+      li This privacy policy may be updated in the future, which will be applied directly to this page.
+  include /footer.jade

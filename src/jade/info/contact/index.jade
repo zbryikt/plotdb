@@ -1,0 +1,25 @@
+extends /base.jade
+block vars
+  - var rootid = "landview"
+  - var title = 'PlotDB: Share Visualizations with Everyone'
+  - var description = "Create, share and request visualizations online."
+  - var thumbnail = "http://plotdb.com/assets/img/thumbnail.png"
+  - var thumbtype = "image/png"
+  - var url = "http://plotdb.com/"
+block head
+block body
+  .spc1
+  .page-header.simple: .inner
+    .title Suggestion + Contact
+    .desc your help make plotdb a better service
+  #root.narrow.with-header.simple
+    p Hey! We are trying to build the world's best visualization service, which is not possible without your help. Before we have a better feedback channel, let's discuss with email at first!
+    p Please mail your suggestion to following address:
+    blockquote tkirby@plotdb.com
+    p thanks for your interest in PlotDB :)
+    br
+    p Kirby
+    p founder of PlotDB
+
+
+  include /footer.jade
