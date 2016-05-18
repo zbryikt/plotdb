@@ -3,6 +3,7 @@ require! <[express body-parser express-session connect-multiparty]>
 require! <[passport passport-local passport-facebook passport-google-oauth2]>
 require! <[nodemailer nodemailer-smtp-transport]>
 require! <[./aux ./watch]>
+require! 'uglify-js': uglify-js, LiveScript: lsc
 
 
 backend = do
@@ -133,7 +134,10 @@ backend = do
   watch: ->
     build = ~>
       console.log "[BUILD] Config 'engine/config/#{@config.config}.ls -> 'static/js/share/config.js'"
-      ret = fs.read-file-sync("engine/config/#{@config.config}.ls").toString!
+      ret = lsc.compile(
+        fs.read-file-sync("engine/config/#{@config.config}.ls").toString!,
+        {bare: true}
+      )
       if !@config.debug => ret = uglify-js.minify(ret,{fromString:true}).code
       fs-extra.mkdirs 'static/js/share'
       fs.write-file-sync 'static/js/share/config.js', ret
