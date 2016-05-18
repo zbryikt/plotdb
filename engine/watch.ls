@@ -113,7 +113,7 @@ base = do
 
     if type == \jade =>
       if /^src\/jade\/view\//.exec(src) => return
-      data = reload "./share/config.ls"
+      data = reload "./config/#{@config.config}.ls"
       try
         jade-tree.parse src
         srcs = jade-tree.find-root src

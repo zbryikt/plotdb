@@ -1,0 +1,16 @@
+#dataset-filter .items {
+  min-height: 100px;
+  height: 100px;
+  overflow-y: scroll;
+}
+#dataset-filter .item {
+  padding: 5px;
+  cursor: pointer;
+}
+#dataset-filter .item:nth-of-type(2n+1) {
+  background: rgba(0,0,0,0.05);
+}
+#dataset-filter .item:hover {
+  background: #ed1d78;
+  color: #fff;
+}

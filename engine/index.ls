@@ -1,4 +1,4 @@
-require! <[fs path bluebird crypto LiveScript]>
+require! <[fs fs-extra path bluebird crypto LiveScript chokidar]>
 require! <[express body-parser express-session connect-multiparty]>
 require! <[passport passport-local passport-facebook passport-google-oauth2]>
 require! <[nodemailer nodemailer-smtp-transport]>
@@ -130,8 +130,19 @@ backend = do
 
     @ <<< {config, app, express, router, postman, multi}
     res!
+  watch: ->
+    build = ~>
+      console.log "[BUILD] Config 'engine/config/#{@config.config}.ls -> 'static/js/share/config.js'"
+      ret = fs.read-file-sync("engine/config/#{@config.config}.ls").toString!
+      if !@config.debug => ret = uglify-js.minify(ret,{fromString:true}).code
+      fs-extra.mkdirs 'static/js/share'
+      fs.write-file-sync 'static/js/share/config.js', ret
+    chokidar.watch "engine/config/#{@config.config}.ls", ignored: (~>), persistent: true
+      .on \add, ~> build!
+      .on \change, ~> build!
 
   start: (cb) ->
+    @watch!
     if !@config.debug =>
       (err, req, res, next) <- @app.use
       -> if err => res.status 500 .render '500' else next!
