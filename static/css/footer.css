@@ -16,14 +16,17 @@
   max-width: 1200px;
   margin: auto;
 }
-#footer span {
+#footer span,
+#footer a {
   margin-left: 20px;
+  color: #fff;
 }
 @media (max-width: 800px) {
   #footer {
     font-size: 0.9em;
   }
-  #footer span {
+  #footer span,
+  #footer a {
     margin-left: 13px;
     font-size: 0.9em;
   }

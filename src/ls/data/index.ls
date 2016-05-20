@@ -440,3 +440,20 @@ angular.module \plotDB
         fields = [index] ++ fields
         $scope.$apply -> dataset.fields = fields
       ), 1000
+    $scope.columnize = (dataset) ->
+      dataset.fields.map -> it.update!
+      setTimeout (->
+        fields = [0,0,0].map -> new dataService.Field {location: \sample}
+        fields.0.name = dataset.fields.0.name
+        fields.1.name = \指標
+        fields.2.name = \數值
+        for i from 0 til dataset.fields.0.data.length =>
+          value = dataset.fields.0.data[i]
+          for j from 1 til dataset.fields.length =>
+            fields.0.data.push value
+            fields.1.data.push dataset.fields[j].name
+            fields.2.data.push dataset.fields[j].data[i]
+        $scope.$apply ->
+          dataset.fields = fields
+      ), 1000
+

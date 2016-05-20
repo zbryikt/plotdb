@@ -683,7 +683,7 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
       return $scope.scrollto($("#dataset-" + dataset.key));
     };
   }
-  return $scope.transpose = function(dataset){
+  $scope.transpose = function(dataset){
     dataset.fields.map(function(it){
       return it.update();
     });
@@ -712,6 +712,35 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
       index.data.splice(0, 1);
       index.name = '欄位';
       fields = [index].concat(fields);
+      return $scope.$apply(function(){
+        return dataset.fields = fields;
+      });
+    }, 1000);
+  };
+  return $scope.columnize = function(dataset){
+    dataset.fields.map(function(it){
+      return it.update();
+    });
+    return setTimeout(function(){
+      var fields, i$, to$, i, value, j$, to1$, j;
+      fields = [0, 0, 0].map(function(){
+        return new dataService.Field({
+          location: 'sample'
+        });
+      });
+      fields[0].name = dataset.fields[0].name;
+      fields[1].name = '指標';
+      fields[2].name = '數值';
+      for (i$ = 0, to$ = dataset.fields[0].data.length; i$ < to$; ++i$) {
+        i = i$;
+        value = dataset.fields[0].data[i];
+        for (j$ = 1, to1$ = dataset.fields.length; j$ < to1$; ++j$) {
+          j = j$;
+          fields[0].data.push(value);
+          fields[1].data.push(dataset.fields[j].name);
+          fields[2].data.push(dataset.fields[j].data[i]);
+        }
+      }
       return $scope.$apply(function(){
         return dataset.fields = fields;
       });
