@@ -462,6 +462,7 @@ plotdb.data = {
   sample: {
     category: ['IT', 'RD', 'GM', 'FIN', 'LEGAL', 'HR', 'SALES'],
     name: ['James', 'Joe', 'Amelie', 'Doraemon', 'Cindy', 'David', 'Frank', 'Kim', 'Ken', 'Leland', 'Mike', 'Nick', 'Oliver', 'Randy'],
+    fruit: ['Apple', 'Orange', 'Banana', 'Grape', 'Longan', 'Litchi', 'Peach', 'Guava', 'Melon', 'Pineapple', 'Pomelo', 'Durian', 'Berry', 'Pear'],
     generate: function(dimension){
       var ret, res$, i$, to$, i, node, k, v;
       res$ = [];
@@ -488,6 +489,7 @@ plotdb.rand = function(){
 };
 plotdb.data.sample.name.rand = plotdb.rand;
 plotdb.data.sample.category.rand = plotdb.rand;
+plotdb.data.sample.fruit.rand = plotdb.rand;
 import$(plotdb.data.sample, {
   crimeanWar: {
     "month": {
