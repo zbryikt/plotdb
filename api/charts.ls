@@ -38,7 +38,9 @@ engine.router.api.get "/chart/", (req, res) ->
 
   #TODO check if we need to optimize this
   io.query([
-    'select users.displayname as ownername,charts.*'
+    'select users.displayname as ownername,'
+    'charts.key, charts.name, charts.description, charts.basetype, charts.visualencoding, charts.category,'
+    'charts.tags, charts.likes, charts.searchable, charts.dimlen, charts.createdtime, charts.modifiedtime'
     "from charts,users where users.key = charts.owner and"
     (conditions.map(->it.0) ++ [
       "(charts.tags && $#tagidx or lower(charts.name) ~ ANY($#tagidx) or lower(charts.description) ~ ANY($#tagidx))" if keyword.length
