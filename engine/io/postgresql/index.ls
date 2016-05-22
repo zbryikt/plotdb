@@ -10,7 +10,8 @@ ret = (config) ->
           .then (users = {}) ~>
             user = (users.[]rows.0)
             if !user => return @authio.user.create username, pw, usepasswd, detail
-            if user and (usepasswd or user.usepasswd) and user.password != pw => return bluebird.reject!
+            if user and (usepasswd or user.usepasswd) and user.password != pw =>
+              return bluebird.reject new Error('failed')
             return user
           .then (user) ~>
             delete user.password
