@@ -6,7 +6,7 @@ angular.module \plotDB
       sample: sampleChart
       link: (chart) -> "/chart/#{chart.key}/"
       thumblink: (chart) -> "/s/chart/#{chart.key}.png"
-      sharelink: (chart) -> "#{plConfig.urlschema}#{plConfig.domain}/v/chart/#{chart.key}"
+      sharelink: (chart) -> "#{plConfig.urlschema}#{plConfig.domainIO}/v/chart/#{chart.key}"
     object = (src, lazy = false) ->
       @ <<< do
         name: \untitled
