@@ -1765,6 +1765,13 @@ a.dropdown-toggle {
   bottom: 10px;
   left: 10px;
 }
+.chart-config .input-group-addon div {
+  width: 85px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
 .chart-config .input-group > span,
 .chart-config .btn-group > span {
   width: 90px;

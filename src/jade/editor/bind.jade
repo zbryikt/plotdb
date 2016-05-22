@@ -9,7 +9,7 @@ div(ng-controller="datasetList",ng-cloak)
           | choose dataset you want to use ...
         .panel-body
           .input-group
-            input.input-sm.form-control(ng-model="qLazy.keyword")
+            input.input-sm.form-control(ng-model="qLazy.keyword",placeholder="search by dataset name ...")
             span.input-group-btn
               .loader.alone.xs.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")
               .btn.btn-default.btn-sm: i.fa.fa-search

@@ -89,7 +89,7 @@ angular.module \plotDB
       type: [
         "Other" "Bar Chart" "Line Chart" "Pie Chart"
         "Area Chart" "Bubble Chart" "Radial Chart" "Calendar"
-        "Treemap" "Choropleth" "Cartogram" "Heatmap" "Sankey"
+        "Treemap" "Map" "Cartogram" "Heatmap" "Sankey"
         "Venn Diagram" "Word Cloud" "Timeline" "Mixed" "Pictogram" "Scatter Plot"
       ]
       enc: [

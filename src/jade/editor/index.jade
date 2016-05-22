@@ -38,7 +38,7 @@ block body
         .pull-right(ng-cloak,ng-show="target().parent")
           span derived from 
           //TODO fetch parent name
-          a(ng-attr-href="/{{type}}/?k=s{{target().parent}}",target="_blank") {{target().parent}}
+          a(ng-attr-href="/{{type}}/s{{target().parent}}",target="_blank") {{target().parent}}
         label Name
         input.form-control(placeholder="Name", ng-model="target().name")
         br
@@ -56,7 +56,7 @@ block body
           option(value="6") Radial Chart
           option(value="7") Calendar
           option(value="8") Treemap
-          option(value="9") Choropleth
+          option(value="9") Map
           option(value="10") Cartogram
           option(value="11") Heatmap
           option(value="12") Sankey
@@ -315,10 +315,10 @@ block body
 
             .chart-config(ng-cloak,ng-repeat="(name,v) in chart.config",ng-show="!v._bytheme")
               .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color'")
-                span.input-group-addon {{v.name || name}}
+                span.input-group-addon: div {{v.name || name}}
                 input.form-control(type="text",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value",style="text-align:center")
               .btn-group(ng-if="v.type[0].name=='Choice'")
-                span.input-group-addon {{v.name || name}}
+                span.input-group-addon: div {{v.name || name}}
                 .dropdown
                   .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
                     i.fa.fa-caret-down.pull-right
@@ -328,17 +328,17 @@ block body
 
               //TODO coloredit
               .btn-group(ng-if="v.type[0].name=='Color'",ng-click="coloredit.edit(v);")
-                span.input-group-addon {{v.name || name}}
+                span.input-group-addon: div {{v.name || name}}
                 div(style="display:table-cell;float:left;width:100%;height:100%;border:1px solid #ccc;padding:5px;text-align:center;cursor:pointer;border-top-right-radius:3px;border-bottom-right-radius:3px;")
                   div(ng-attr-style="background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:24px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v,$index)") &nbsp;
               //- Palette
               .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);")
-                span.input-group-addon {{v.name || name}}
+                span.input-group-addon: div {{v.name || name}}
                 div(style="display:flex;float:left;width:100%;height:100%;border:1px solid #ccc;padding:5px 4px;text-align:center;cursor:pointer;border-top-right-radius:3px;border-bottom-right-radius:3px;box-shadow:inset 0 1px 1px rgba(0,0,0,.075)")
                   div(ng-repeat="c in v.value.colors",ng-attr-style="background:{{c.hex}};height:100%;display:inline-block;border-radius:2px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 1px") &nbsp;
               //- Boolean
               .btn-group(ng-if="v.type[0].name=='Boolean'")
-                span.input-group-addon {{v.name || name}}
+                span.input-group-addon: div {{v.name || name}}
                 .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
 
       .col-sm-9(style="padding-left:0;position:relative"): .ib(style="position:relative")
