@@ -159,7 +159,7 @@ plotdb.chart = do
 
   update-config: (chart, config) ->
     for k,v of chart.config =>
-      type = config[k].type.map(->it.name)
+      type = (config[k].type or []).map(->it.name)
       if !(config[k]?) => config[k] = v.default
       else if !(config[k].value?) => config[k] = (v or config[k]).default
       else config[k] = config[k].value
