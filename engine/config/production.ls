@@ -4,7 +4,7 @@
     domainIO: \plotdb.io
     #domain: \localhost
     #domainIO: \localhost.io
-    urlschema: "http://"
+    urlschema: "https://"
     name: \plotdb
     debug: true
     facebook:
