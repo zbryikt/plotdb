@@ -1,6 +1,7 @@
 require! <[bluebird crypto fs fs-extra lwip read-chunk image-type]>
-require! <[../secret ../engine/aux ../engine/share/config ../engine/io/postgresql/]>
+require! <[../secret ../engine/aux ../engine/io/postgresql/]>
 require! <[../engine/share/model/]>
+config = require "../engine/config/#{secret.config}"
 
 config = aux.merge-config config, secret
 io = new postgresql config

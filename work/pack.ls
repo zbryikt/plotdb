@@ -1,6 +1,7 @@
 require! <[fs bluebird]>
 require! <[../engine/aux ../engine/share/model/ ../engine/io/postgresql/]>
-require! <[../secret ../engine/share/config]>
+require! <[../secret]>
+config = require "../engine/config/#{secret.config}"
 
 config = aux.merge-config config, secret
 
