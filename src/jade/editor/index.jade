@@ -4,18 +4,18 @@ block vars
     - var rootid = "chartview"
     - var title = 'Visualization Editor @ PlotDB'
     - var description = "Create, share and request visualizations online."
-    - var thumbnail = "http://plotdb.com/assets/img/thumbnail.png"
+    - var thumbnail = "https://plotdb.com/assets/img/thumbnail.png"
     - var thumbtype = "image/png"
     - var rootpath = "/module"
-    - var url = "http://plotdb.com/"
+    - var url = "https://plotdb.com/"
   else
     - var rootid = "chartview"
     - var title = chart.name + ' / Visualize with PlotDB'
     - var description = chart.description
-    - var thumbnail = "http://plotdb.com/s/chart/" + chart.key + ".png"
+    - var thumbnail = "https://plotdb.com/s/chart/" + chart.key + ".png"
     - var thumbtype = "image/png"
     - var rootpath = "/module"
-    - var url = "http://plotdb.com/chart/" + chart.key
+    - var url = "https://plotdb.com/chart/" + chart.key
 mixin SaveFork
   span(ng-cloak,ng-show="target().owner==user.data.key") Save
   span(ng-cloak,ng-show="target().owner!=user.data.key") Fork

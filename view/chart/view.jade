@@ -1,9 +1,9 @@
 extends /render.jade
 block vars
-  - var thumbnail = "http://plotdb.com/s/chart/" + chart.key + ".png"
+  - var thumbnail = "https://plotdb.com/s/chart/" + chart.key + ".png"
   - var title = chart.name
   - var description = chart.description
-  - var url = "http://plotdb.com/v/chart/" + chart.key
+  - var url = "https://plotdb.com/v/chart/" + chart.key
 block head
   title #{chart.name} by #{chart.author}
   link(rel="icon",type="image/x-icon",href="/assets/img/favicon-16.png")
@@ -11,7 +11,7 @@ block body
   include /render/pdb-style.jade
   include /render/base-style.jade
   #wrapper.loading.pdb-root
-  a#plotdb-mark(href="http://plotdb.com",target="_blank") &nbsp;
+  a#plotdb-mark(href="https://plotdb.com",target="_blank") &nbsp;
 block foot
   script(type="text/javascript",src="/js/pack/view.js")
   script(type="text/javascript").

@@ -4,21 +4,21 @@ doctype html
 - var assets = "/assets"
 - var title = 'PlotDB: Share Visualizations with Everyone'
 - var description = "Create, share and request visualizations online."
-- var thumbnail = "http://plotdb.com/assets/img/thumbnail.png"
+- var thumbnail = "//plotdb.com/assets/img/thumbnail.png"
 - var thumbtype = "image/png"
 - var thumb_width = "1200"
 - var thumb_height = "630"
 - var favicon = assets + "/img/favicon-16.png"
 - var rootid = ""
-- var url = "http://plotdb.com/"
+- var url = "https://plotdb.com/"
 html(lang="en")
   block vars
   head(prefix="og: http://ogp.me/ns#")
     include library.jade
     link(rel="stylesheet",type="text/css",href="/css/index.css?"+version)
-    link(href='https://fonts.googleapis.com/css?family=Lato:300,400,700',rel='stylesheet',type='text/css')
+    link(href='//fonts.googleapis.com/css?family=Lato:300,400,700',rel='stylesheet',type='text/css')
     //- think about Lato, Open Sans ( Condensed ), Noto Sans, Helvetica Neue, Century Gothic.
-    link(href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700',rel='stylesheet',type='text/css')
+    link(href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700',rel='stylesheet',type='text/css')
     //-link(rel="chrome-webstore-item",href="https://chrome.google.com/webstore/detail/einojbmllcjnkcapgajdbjjnpibkjnhh")
     link(rel="stylesheet",type="text/css",href="/assets/codemirror/5.10/lib/codemirror.css")
     script(type="text/javascript",src="/assets/codemirror/5.10/lib/codemirror.js")
