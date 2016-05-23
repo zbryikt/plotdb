@@ -717,30 +717,55 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
       });
     }, 1000);
   };
-  return $scope.columnize = function(dataset){
+  return $scope.columnize = function(dataset, start, end){
+    start == null && (start = 1);
+    end == null && (end = -1);
     dataset.fields.map(function(it){
       return it.update();
     });
     return setTimeout(function(){
-      var fields, i$, to$, i, value, j$, to1$, j;
-      fields = [0, 0, 0].map(function(){
+      var ref$, end, list, i, fields, pair, i$, to$, j$, j, k$, to1$, k;
+      start >= 0 || (start = 0);
+      start <= (ref$ = dataset.fields.length - 1) || (start = ref$);
+      if (end < 0) {
+        end = dataset.fields.length - 1;
+      }
+      end <= (ref$ = dataset.fields.length - 1) || (end = ref$);
+      list = (function(){
+        var i$, to$, results$ = [];
+        for (i$ = 0, to$ = dataset.fields.length; i$ < to$; ++i$) {
+          i = i$;
+          results$.push(i);
+        }
+        return results$;
+      }()).filter(function(it){
+        return it < start || it > end;
+      });
+      fields = list.map(function(it){
         return new dataService.Field({
-          location: 'sample'
+          location: 'sample',
+          name: dataset.fields[it].name
         });
       });
-      fields[0].name = dataset.fields[0].name;
-      fields[1].name = '指標';
-      fields[2].name = '數值';
+      pair = ['Index', 'Value'].map(function(it){
+        return new dataService.Field({
+          location: 'sample',
+          name: it
+        });
+      });
       for (i$ = 0, to$ = dataset.fields[0].data.length; i$ < to$; ++i$) {
         i = i$;
-        value = dataset.fields[0].data[i];
-        for (j$ = 1, to1$ = dataset.fields.length; j$ < to1$; ++j$) {
+        for (j$ = start; j$ <= end; ++j$) {
           j = j$;
-          fields[0].data.push(value);
-          fields[1].data.push(dataset.fields[j].name);
-          fields[2].data.push(dataset.fields[j].data[i]);
+          for (k$ = 0, to1$ = fields.length; k$ < to1$; ++k$) {
+            k = k$;
+            fields[k].data.push(dataset.fields[list[k]].data[i]);
+          }
+          pair[0].data.push(dataset.fields[j].name);
+          pair[1].data.push(dataset.fields[j].data[i]);
         }
       }
+      fields = fields.concat(pair);
       return $scope.$apply(function(){
         return dataset.fields = fields;
       });

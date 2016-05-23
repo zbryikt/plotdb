@@ -440,19 +440,24 @@ angular.module \plotDB
         fields = [index] ++ fields
         $scope.$apply -> dataset.fields = fields
       ), 1000
-    $scope.columnize = (dataset) ->
+    $scope.columnize = (dataset, start = 1, end = -1) ->
       dataset.fields.map -> it.update!
       setTimeout (->
-        fields = [0,0,0].map -> new dataService.Field {location: \sample}
-        fields.0.name = dataset.fields.0.name
-        fields.1.name = \指標
-        fields.2.name = \數值
+        start >?= 0
+        start <?= dataset.fields.length - 1
+        if end < 0 => end = dataset.fields.length - 1
+        end <?= dataset.fields.length - 1
+        list = [i for i from 0 til dataset.fields.length].filter(->it < start or it > end)
+        fields = list.map -> new dataService.Field {location: \sample, name: dataset.fields[it].name}
+        pair = <[Index Value]>.map -> new dataService.Field {location: \sample, name: it}
         for i from 0 til dataset.fields.0.data.length =>
-          value = dataset.fields.0.data[i]
-          for j from 1 til dataset.fields.length =>
-            fields.0.data.push value
-            fields.1.data.push dataset.fields[j].name
-            fields.2.data.push dataset.fields[j].data[i]
+          for j from start to end =>
+            for k from 0 til fields.length =>
+              fields[k].data.push dataset.fields[list[k]].data[i]
+            pair.0.data.push dataset.fields[j].name
+            pair.1.data.push dataset.fields[j].data[i]
+        fields = fields ++ pair
+
         $scope.$apply ->
           dataset.fields = fields
       ), 1000

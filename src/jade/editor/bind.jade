@@ -55,7 +55,7 @@ div(ng-controller="datasetList",ng-cloak)
           ng-class="{'active':fieldAgent.data}")
             i.fa.fa-bars
             .detail
-              .name {{fieldAgent.data.name || '(empty)'}}&nbsp;
+              .name(ng-attr-title="{{fieldAgent.data.name || '(empty)'}}")  {{fieldAgent.data.name || '(empty)'}}&nbsp;
               .grayed: small {{fieldAgent.data.type || 'Any'}}
           .ds-fields
             .ds-field(ng-repeat="field in cur.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
