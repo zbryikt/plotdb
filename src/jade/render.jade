@@ -8,6 +8,7 @@ doctype html
 - var thumb_height = "630"
 - var favicon = assets + "/img/favicon-16.png"
 - var rootid = "renderview"
+- var renderSrc = "pdb-renderer"
 html(lang="en")
   block vars
   head(prefix="og: http://ogp.me/ns#")
@@ -19,6 +20,6 @@ html(lang="en")
     include render/base-style.jade
     include render/pdb-style.jade
     include colorblind.jade
-  body
+  body(class=renderSrc)
     block body
   block foot

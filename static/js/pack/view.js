@@ -686,6 +686,7 @@ plotdb.view = {
       if ((v.type || []).filter(function(it){
         return it.name === 'Number';
       }).length) {
+        console.log(it);
         return it.data = it.data.map(function(it){
           return parseFloat(it);
         });
