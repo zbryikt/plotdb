@@ -4203,7 +4203,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           $scope.$watch('sharePanel.link', function(it){
             var fbobj, k, v, pinobj, emailobj, linkedinobj, twitterobj;
             this$.embedcode = "<iframe src=\"" + it + "\"><iframe>";
-            this$.thumblink = $scope.service.thumblink($scope.chart);
+            this$.thumblink = $scope.service.thumblink($scope.chart, true);
             fbobj = {
               app_id: '1546734828988373',
               display: 'popup',
@@ -7927,8 +7927,9 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
     link: function(chart){
       return "/chart/" + chart.key + "/";
     },
-    thumblink: function(chart){
-      return "/s/chart/" + chart.key + ".png";
+    thumblink: function(chart, full){
+      full == null && (full = false);
+      return (full ? plConfig.urlschema + "" + plConfig.domain : "") + ("/s/chart/" + chart.key + ".png");
     },
     sharelink: function(chart){
       return plConfig.urlschema + "" + plConfig.domainIO + "/v/chart/" + chart.key;

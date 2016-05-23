@@ -382,7 +382,7 @@ angular.module \plotDB
             setTimeout((->$(eventsrc).tooltip('hide')), 1000)
           $scope.$watch 'sharePanel.link', ~>
             @embedcode = "<iframe src=\"#it\"><iframe>"
-            @thumblink = $scope.service.thumblink $scope.chart
+            @thumblink = $scope.service.thumblink $scope.chart, true
             fbobj = do
               #TODO verify
               app_id: \1546734828988373
