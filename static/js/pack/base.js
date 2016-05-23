@@ -8714,7 +8714,7 @@ x$.service('Paging', ['$rootScope', '$timeout'].concat(function($rootScope, $tim
         d = list[i];
         width = 320;
         if (Math.random() > 0.6 && !hit) {
-          width = Math.random() > 0.8 ? 960 : 640;
+          width = Math.random() > 0.8 ? 640 : 480;
           hit = true;
         }
         if (i % 3 === 2) {
