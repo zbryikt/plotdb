@@ -609,7 +609,9 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
           ? []
           : $scope.mydatasets).concat(data);
         $scope.datasets = $scope.mydatasets.concat($scope.samplesets);
-        return $scope.setcur($scope.datasets[0]);
+        if (!$scope.cur) {
+          return $scope.setcur($scope.datasets[0]);
+        }
       });
     });
   };

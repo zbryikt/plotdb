@@ -378,7 +378,7 @@ angular.module \plotDB
         Paging.flex-width data
         $scope.mydatasets = (if reset => [] else $scope.mydatasets) ++ data
         $scope.datasets = $scope.mydatasets ++ $scope.samplesets
-        $scope.setcur $scope.datasets[0]
+        if !$scope.cur => $scope.setcur $scope.datasets[0]
 
     # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large
     $scope.chosen = do
