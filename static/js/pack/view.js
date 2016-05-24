@@ -49,7 +49,7 @@ import$(plotdb, {
           var ref$, results$ = [];
           for (k in ref$ = this.match) {
             v = ref$[k];
-            results$.push([k, v[it]]);
+            results$.push(v.exec(it));
           }
           return results$;
         }.call(this)).filter(function(it){
@@ -58,13 +58,29 @@ import$(plotdb, {
         if (!matched) {
           return false;
         }
-      } else {
-        return true;
       }
-      return !(d instanceof Date) || isNaN(d.getTime()) ? false : true;
+      return true;
     },
     parse: function(it){
-      return new Date(it);
+      var d, matched, k, v;
+      d = new Date(it);
+      if (!(d instanceof Date) || isNaN(d.getTime())) {
+        matched = (function(){
+          var ref$, results$ = [];
+          for (k in ref$ = this.match) {
+            v = ref$[k];
+            results$.push(v.exec(it));
+          }
+          return results$;
+        }.call(this)).filter(function(it){
+          return it;
+        })[0];
+        if (!matched) {
+          return null;
+        }
+        return null;
+      }
+      return d;
     }
   },
   Choice: function(v){
@@ -686,7 +702,6 @@ plotdb.view = {
       if ((v.type || []).filter(function(it){
         return it.name === 'Number';
       }).length) {
-        console.log(it);
         return it.data = it.data.map(function(it){
           return parseFloat(it);
         });

@@ -4,9 +4,6 @@ plotdb <<< do
   String: name: \String, test: (-> true), level: 1, parse: -> it
   Date: 
     name: \Date, level: 2
-    #yyyy-mm-dd
-    #dd-mm-yyyy
-    #mm-dd-yyyy
     match: do
       type1: /^(\d{4})[/-](\d{1,2})[/-]\d{1,2} ((\d{1,2}):(\d{1,2})(:(\d{1,2}))?)?/
       type2: /^(\d{1,2})[/-](\d{1,2})[/-]\d{4} ((\d{1,2}):(\d{1,2})(:(\d{1,2}))?)?/
@@ -15,18 +12,16 @@ plotdb <<< do
     test: -> 
       d = new Date(it)
       if !(d instanceof Date) or isNaN(d.getTime!) =>
-        matched = [[k,v[it]] for k,v of @match].filter(->it).0
+        matched = [v.exec(it) for k,v of @match].filter(->it).0
         if !matched => return false
-        #matched.1
-        #matched.2
-        #matched.3
-        #matched.4
-        #matched.5
-        #matched.6
-      else return true
-
-      return if !(d instanceof Date) or isNaN(d.getTime!) => false else true
-    parse: -> new Date(it)
+      return true
+    parse: ->
+      d = new Date(it)
+      if !(d instanceof Date) or isNaN(d.getTime!) =>
+        matched = [v.exec(it) for k,v of @match].filter(->it).0
+        if !matched => return null
+        return null
+      return d
   Choice: (v) -> 
     return do
       name: \Choice
