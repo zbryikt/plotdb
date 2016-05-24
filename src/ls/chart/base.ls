@@ -202,6 +202,24 @@ plotdb.theme = do
     config: do
       padding: {type: [plotdb.Number], default: 10}
 
+plotdb.d3 = {}
+plotdb.d3.popup = (root, sel, cb) ->
+  popup = root.querySelector(\.pdb-popup)
+  if !popup =>
+    popup = d3.select root .append \div .attr class: 'pdb-popup float'
+    popup.each (d,i) -> d3.select(@)
+      ..append \div .attr class: \title
+      ..append \div .attr class: \value
+  sel
+    ..on \mousemove, (d,i) ->
+      [x,y] = [d3.event.clientX, d3.event.clientY]
+      cb.call @,d,i,popup
+      popup.style {display: \block, top: "#{y}px", left: "#{x}px"}
+    ..on \mouseout, ->
+      if sel.hide-popup => clearTimeout sel.hide-popup
+      sel.hide-popup = setTimeout (-> popup.style {display: \none}), 1000
+
+
 plotdb.data = do
   sample: do
     category: <[IT RD GM FIN LEGAL HR SALES]>

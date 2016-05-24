@@ -474,6 +474,49 @@ plotdb.theme = {
     }
   }
 };
+plotdb.d3 = {};
+plotdb.d3.popup = function(root, sel, cb){
+  var popup, x$;
+  popup = root.querySelector('.pdb-popup');
+  if (!popup) {
+    popup = d3.select(root).append('div').attr({
+      'class': 'pdb-popup float'
+    });
+    popup.each(function(d, i){
+      var x$;
+      x$ = d3.select(this);
+      x$.append('div').attr({
+        'class': 'title'
+      });
+      x$.append('div').attr({
+        'class': 'value'
+      });
+      return x$;
+    });
+  }
+  x$ = sel;
+  x$.on('mousemove', function(d, i){
+    var ref$, x, y;
+    ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
+    cb.call(this, d, i, popup);
+    return popup.style({
+      display: 'block',
+      top: y + "px",
+      left: x + "px"
+    });
+  });
+  x$.on('mouseout', function(){
+    if (sel.hidePopup) {
+      clearTimeout(sel.hidePopup);
+    }
+    return sel.hidePopup = setTimeout(function(){
+      return popup.style({
+        display: 'none'
+      });
+    }, 1000);
+  });
+  return x$;
+};
 plotdb.data = {
   sample: {
     category: ['IT', 'RD', 'GM', 'FIN', 'LEGAL', 'HR', 'SALES'],
