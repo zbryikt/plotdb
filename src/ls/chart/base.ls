@@ -210,6 +210,7 @@ plotdb.d3.popup = (root, sel, cb) ->
     popup.each (d,i) -> d3.select(@)
       ..append \div .attr class: \title
       ..append \div .attr class: \value
+  else popup = d3.select popup
   sel
     ..on \mousemove, (d,i) ->
       [x,y] = [d3.event.clientX, d3.event.clientY]

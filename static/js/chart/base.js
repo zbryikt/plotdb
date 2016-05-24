@@ -493,6 +493,8 @@ plotdb.d3.popup = function(root, sel, cb){
       });
       return x$;
     });
+  } else {
+    popup = d3.select(popup);
   }
   x$ = sel;
   x$.on('mousemove', function(d, i){
