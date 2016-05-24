@@ -381,7 +381,7 @@ angular.module \plotDB
             $(eventsrc).tooltip({title: 'Press Ctrl+C to Copy', trigger: 'click'}).tooltip('show')
             setTimeout((->$(eventsrc).tooltip('hide')), 1000)
           $scope.$watch 'sharePanel.link', ~>
-            @embedcode = "<iframe src=\"#it\"><iframe>"
+            @embedcode = "<iframe src=\"#it\" width=\"100%\" height=\"600px\" frameborder=\"0\"></iframe>"
             @thumblink = $scope.service.thumblink $scope.chart, true
             fbobj = do
               #TODO verify

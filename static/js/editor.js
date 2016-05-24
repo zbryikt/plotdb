@@ -724,7 +724,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           });
           $scope.$watch('sharePanel.link', function(it){
             var fbobj, k, v, pinobj, emailobj, linkedinobj, twitterobj;
-            this$.embedcode = "<iframe src=\"" + it + "\"><iframe>";
+            this$.embedcode = "<iframe src=\"" + it + "\" width=\"100%\" height=\"600px\" frameborder=\"0\"></iframe>";
             this$.thumblink = $scope.service.thumblink($scope.chart, true);
             fbobj = {
               app_id: '1546734828988373',
