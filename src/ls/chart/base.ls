@@ -215,6 +215,9 @@ plotdb.d3.popup = (root, sel, cb) ->
     ..on \mousemove, (d,i) ->
       [x,y] = [d3.event.clientX, d3.event.clientY]
       cb.call @,d,i,popup
+      pbox = popup.0.0.getBoundingClientRect!
+      rbox = root.getBoundingClientRect!
+      if y > rbox.top + rbox.height - pbox.height - 50 => y = y - pbox.height - 40
       popup.style {display: \block, top: "#{y}px", left: "#{x}px"}
     ..on \mouseout, ->
       if sel.hide-popup => clearTimeout sel.hide-popup

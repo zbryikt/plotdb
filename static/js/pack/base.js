@@ -7792,9 +7792,14 @@ plotdb.d3.popup = function(root, sel, cb){
   }
   x$ = sel;
   x$.on('mousemove', function(d, i){
-    var ref$, x, y;
+    var ref$, x, y, pbox, rbox;
     ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
     cb.call(this, d, i, popup);
+    pbox = popup[0][0].getBoundingClientRect();
+    rbox = root.getBoundingClientRect();
+    if (y > rbox.top + rbox.height - pbox.height - 50) {
+      y = y - pbox.height - 40;
+    }
     return popup.style({
       display: 'block',
       top: y + "px",
