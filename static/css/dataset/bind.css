@@ -102,7 +102,7 @@
   height: 12px;
 }
 .ds-fields-panel .ds-fields {
-  max-height: 200px;
+  max-height: 330px;
   overflow-y: scroll;
   display: -webkit-flex;
   display: flex;
@@ -124,13 +124,14 @@
 .ds-field {
   display: inline-block;
   margin: 5px 10px 0 0;
-  padding: 3px 8px;
+  padding: 3px 5px;
   background: #8cc63f;
   background: #58aab2;
   background: #eee;
   border-radius: 5px;
   color: #555;
-  width: 160px;
+  width: 140px;
+  font-size: 0.9em;
   border-bottom: 2px solid #999;
   cursor: move;
   -webkit-flex: 1 1 auto;
@@ -147,19 +148,18 @@
 }
 .ds-field .fa {
   vertical-align: top;
-  margin: 8px 8px 0 0;
+  margin: 8px 5px 0 0;
   font-size: 1.5em;
   color: #fff;
 }
 .ds-field .detail {
   display: inline-block;
   vertical-align: middle;
-  width: 110px;
+  width: 90px;
 }
 .ds-field .grayed {
   font-size: 0.85em;
   line-height: 1.1em;
-  margin-top: 2px;
 }
 .ds-field .name {
   height: 18px;
