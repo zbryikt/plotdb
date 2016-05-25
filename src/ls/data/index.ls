@@ -439,7 +439,7 @@ angular.module \plotDB
         index.name = \欄位
         fields = [index] ++ fields
         $scope.$apply -> dataset.fields = fields
-      ), 1000
+      ), 2000
     $scope.columnize = (dataset, start = 1, end = -1) ->
       dataset.fields.map -> it.update!
       setTimeout (->
@@ -460,5 +460,5 @@ angular.module \plotDB
 
         $scope.$apply ->
           dataset.fields = fields
-      ), 1000
+      ), 2000
 

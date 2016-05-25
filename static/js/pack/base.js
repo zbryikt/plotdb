@@ -7231,7 +7231,7 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
       return $scope.$apply(function(){
         return dataset.fields = fields;
       });
-    }, 1000);
+    }, 2000);
   };
   return $scope.columnize = function(dataset, start, end){
     start == null && (start = 1);
@@ -7285,7 +7285,7 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
       return $scope.$apply(function(){
         return dataset.fields = fields;
       });
-    }, 1000);
+    }, 2000);
   };
 }));
 function import$(obj, src){
