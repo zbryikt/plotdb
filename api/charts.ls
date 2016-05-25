@@ -125,7 +125,9 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
 
 engine.router.api.delete "/chart/:id", aux.numid false, (req, res) ~>
   if !req.user => return aux.r403 res
-  io.query "select * from charts where key = $1", [req.params.id]
+  io.query "update charts set parent = null where parent = $1", [req.params.id]
+    .then ->
+      io.query "select * from charts where key = $1", [req.params.id]
     .then (r = {}) ->
       chart = r.[]rows.0
       if !chart => return aux.r404 res
