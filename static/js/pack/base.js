@@ -7769,6 +7769,45 @@ plotdb.theme = {
   }
 };
 plotdb.d3 = {};
+plotdb.d3.axis = {
+  overlap: function(axisGroup, axis, fontSize){
+    var range, selection, minWidth, maxWidth, overlap;
+    range = axis.scale().range();
+    selection = axisGroup.selectAll(".tick text");
+    if (!selection[0].length) {
+      return;
+    }
+    minWidth = (range[1] - range[0]) / selection.length;
+    maxWidth = d3.max(selection[0].map(function(d){
+      return d.getBBox().width;
+    }));
+    overlap = maxWidth / minWidth;
+    console.log(">", overlap, fontSize);
+    if (fontSize && overlap < 2) {
+      selection.attr({
+        transform: function(d, i){
+          return ["translate(0,", overlap > 1 && i % 2 ? fontSize : 0, ")"].join(" ");
+        }
+      });
+      return axisGroup.selectAll(".tick").style({
+        opacity: 1
+      });
+    } else {
+      selection.attr({
+        transform: ""
+      });
+      return axisGroup.selectAll(".tick").style({
+        opacity: function(d, i){
+          if (i % parseInt(overlap + 1)) {
+            return 0;
+          } else {
+            return 1;
+          }
+        }
+      });
+    }
+  }
+};
 plotdb.d3.popup = function(root, sel, cb){
   var popup, x$;
   popup = root.querySelector('.pdb-popup');
@@ -7820,7 +7859,7 @@ plotdb.d3.popup = function(root, sel, cb){
 };
 plotdb.data = {
   sample: {
-    category: ['IT', 'RD', 'GM', 'FIN', 'LEGAL', 'HR', 'SALES'],
+    category: ['IT', 'RD', 'GM', 'FIN', 'LEGAL', 'HR', 'SALES', 'BD'],
     name: ['James', 'Joe', 'Amelie', 'Doraemon', 'Cindy', 'David', 'Frank', 'Kim', 'Ken', 'Leland', 'Mike', 'Nick', 'Oliver', 'Randy'],
     fruit: ['Apple', 'Orange', 'Banana', 'Grape', 'Longan', 'Litchi', 'Peach', 'Guava', 'Melon', 'Pineapple', 'Pomelo', 'Durian', 'Berry', 'Pear'],
     generate: function(dimension){

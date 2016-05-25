@@ -203,6 +203,30 @@ plotdb.theme = do
       padding: {type: [plotdb.Number], default: 10}
 
 plotdb.d3 = {}
+plotdb.d3.axis = do
+  overlap: (axis-group, axis, font-size) ->
+    range = axis.scale!range!
+    selection = axis-group.selectAll(".tick text")
+    if !selection.0.length => return
+    min-width = ((range.1 - range.0) / selection.length)
+    max-width = d3.max(selection.0.map (d) -> d.getBBox!width)
+    overlap = maxWidth / minWidth
+    console.log ">", overlap, font-size
+    if font-size and overlap <2
+      selection.attr do
+        transform: (d,i) ->
+          [
+            "translate(0,",
+            if ((overlap>1) and (i % 2)) => font-size else 0,
+            ")"
+          ].join(" ")
+      axisGroup.selectAll(".tick").style { opacity: 1 }
+    else
+      selection.attr {transform: "" }
+      axisGroup.selectAll(".tick").style do
+        opacity: (d,i) -> if (i % parseInt(overlap + 1)) => 0 else 1
+
+
 plotdb.d3.popup = (root, sel, cb) ->
   popup = root.querySelector(\.pdb-popup)
   if !popup =>
@@ -226,7 +250,7 @@ plotdb.d3.popup = (root, sel, cb) ->
 
 plotdb.data = do
   sample: do
-    category: <[IT RD GM FIN LEGAL HR SALES]>
+    category: <[IT RD GM FIN LEGAL HR SALES BD]>
     name: <[James Joe Amelie Doraemon Cindy David Frank Kim Ken Leland Mike Nick Oliver Randy]>
     fruit: <[Apple Orange Banana Grape Longan Litchi Peach Guava Melon Pineapple Pomelo Durian Berry Pear]>
     generate: (dimension) ->

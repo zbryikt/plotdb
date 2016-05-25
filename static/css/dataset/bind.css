@@ -68,6 +68,7 @@
 }
 .ds-list-panel .ds-list-item .name {
   height: 16px;
+  font-size: 13px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
