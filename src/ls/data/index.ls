@@ -425,40 +425,42 @@ angular.module \plotDB
 
     #experimental functionality
     $scope.transpose = (dataset) ->
-      dataset.fields.map -> it.update!
-      setTimeout (->
-        head = dataset.fields.0
-        fields = head.data.map -> new dataService.Field {location: \sample}
-        for i from 1 til dataset.fields.length
-          for j from 0 til head.data.length
-            fields[j].[]data[i - 1] = dataset.fields[i].data[j]
-            fields[j].name = head.data[j]
-        index = new dataService.Field {location: \sample}
-        index.data = dataset.fields.map -> it.name
-        index.data.splice 0,1
-        index.name = \欄位
-        fields = [index] ++ fields
-        $scope.$apply -> dataset.fields = fields
-      ), 2000
-    $scope.columnize = (dataset, start = 1, end = -1) ->
-      dataset.fields.map -> it.update!
-      setTimeout (->
-        start >?= 0
-        start <?= dataset.fields.length - 1
-        if end < 0 => end = dataset.fields.length - 1
-        end <?= dataset.fields.length - 1
-        list = [i for i from 0 til dataset.fields.length].filter(->it < start or it > end)
-        fields = list.map -> new dataService.Field {location: \sample, name: dataset.fields[it].name}
-        pair = <[Index Value]>.map -> new dataService.Field {location: \sample, name: it}
-        for i from 0 til dataset.fields.0.data.length =>
-          for j from start to end =>
-            for k from 0 til fields.length =>
-              fields[k].data.push dataset.fields[list[k]].data[i]
-            pair.0.data.push dataset.fields[j].name
-            pair.1.data.push dataset.fields[j].data[i]
-        fields = fields ++ pair
+      Promise.all dataset.fields.map -> it.update!
+        .then ->
+          setTimeout (->
+            head = dataset.fields.0
+            fields = head.data.map -> new dataService.Field {location: \sample}
+            for i from 1 til dataset.fields.length
+              for j from 0 til head.data.length
+                fields[j].[]data[i - 1] = dataset.fields[i].data[j]
+                fields[j].name = head.data[j]
+            index = new dataService.Field {location: \sample}
+            index.data = dataset.fields.map -> it.name
+            index.data.splice 0,1
+            index.name = \欄位
+            fields = [index] ++ fields
+            $scope.$apply -> dataset.fields = fields
+          ), 0
 
-        $scope.$apply ->
-          dataset.fields = fields
-      ), 2000
+    $scope.columnize = (dataset, start = 1, end = -1) ->
+      Promise.all dataset.fields.map -> it.update!
+        .then ->
+          setTimeout (->
+            start >?= 0
+            start <?= dataset.fields.length - 1
+            if end < 0 => end = dataset.fields.length - 1
+            end <?= dataset.fields.length - 1
+            list = [i for i from 0 til dataset.fields.length].filter(->it < start or it > end)
+            fields = list.map -> new dataService.Field {location: \sample, name: dataset.fields[it].name}
+            pair = <[Index Value]>.map -> new dataService.Field {location: \sample, name: it}
+            for i from 0 til dataset.fields.0.data.length =>
+              for j from start to end =>
+                for k from 0 til fields.length =>
+                  fields[k].data.push dataset.fields[list[k]].data[i]
+                pair.0.data.push dataset.fields[j].name
+                pair.1.data.push dataset.fields[j].data[i]
+            fields = fields ++ pair
+            $scope.$apply ->
+              dataset.fields = fields
+          ), 0
 

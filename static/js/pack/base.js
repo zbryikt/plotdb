@@ -7200,92 +7200,94 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
     };
   }
   $scope.transpose = function(dataset){
-    dataset.fields.map(function(it){
+    return Promise.all(dataset.fields.map(function(it){
       return it.update();
-    });
-    return setTimeout(function(){
-      var head, fields, i$, to$, i, j$, to1$, j, ref$, index;
-      head = dataset.fields[0];
-      fields = head.data.map(function(){
-        return new dataService.Field({
+    })).then(function(){
+      return setTimeout(function(){
+        var head, fields, i$, to$, i, j$, to1$, j, ref$, index;
+        head = dataset.fields[0];
+        fields = head.data.map(function(){
+          return new dataService.Field({
+            location: 'sample'
+          });
+        });
+        for (i$ = 1, to$ = dataset.fields.length; i$ < to$; ++i$) {
+          i = i$;
+          for (j$ = 0, to1$ = head.data.length; j$ < to1$; ++j$) {
+            j = j$;
+            ((ref$ = fields[j]).data || (ref$.data = []))[i - 1] = dataset.fields[i].data[j];
+            fields[j].name = head.data[j];
+          }
+        }
+        index = new dataService.Field({
           location: 'sample'
         });
-      });
-      for (i$ = 1, to$ = dataset.fields.length; i$ < to$; ++i$) {
-        i = i$;
-        for (j$ = 0, to1$ = head.data.length; j$ < to1$; ++j$) {
-          j = j$;
-          ((ref$ = fields[j]).data || (ref$.data = []))[i - 1] = dataset.fields[i].data[j];
-          fields[j].name = head.data[j];
-        }
-      }
-      index = new dataService.Field({
-        location: 'sample'
-      });
-      index.data = dataset.fields.map(function(it){
-        return it.name;
-      });
-      index.data.splice(0, 1);
-      index.name = '欄位';
-      fields = [index].concat(fields);
-      return $scope.$apply(function(){
-        return dataset.fields = fields;
-      });
-    }, 2000);
+        index.data = dataset.fields.map(function(it){
+          return it.name;
+        });
+        index.data.splice(0, 1);
+        index.name = '欄位';
+        fields = [index].concat(fields);
+        return $scope.$apply(function(){
+          return dataset.fields = fields;
+        });
+      }, 0);
+    });
   };
   return $scope.columnize = function(dataset, start, end){
     start == null && (start = 1);
     end == null && (end = -1);
-    dataset.fields.map(function(it){
+    return Promise.all(dataset.fields.map(function(it){
       return it.update();
-    });
-    return setTimeout(function(){
-      var ref$, end, list, i, fields, pair, i$, to$, j$, j, k$, to1$, k;
-      start >= 0 || (start = 0);
-      start <= (ref$ = dataset.fields.length - 1) || (start = ref$);
-      if (end < 0) {
-        end = dataset.fields.length - 1;
-      }
-      end <= (ref$ = dataset.fields.length - 1) || (end = ref$);
-      list = (function(){
-        var i$, to$, results$ = [];
-        for (i$ = 0, to$ = dataset.fields.length; i$ < to$; ++i$) {
-          i = i$;
-          results$.push(i);
+    })).then(function(){
+      return setTimeout(function(){
+        var ref$, end, list, i, fields, pair, i$, to$, j$, j, k$, to1$, k;
+        start >= 0 || (start = 0);
+        start <= (ref$ = dataset.fields.length - 1) || (start = ref$);
+        if (end < 0) {
+          end = dataset.fields.length - 1;
         }
-        return results$;
-      }()).filter(function(it){
-        return it < start || it > end;
-      });
-      fields = list.map(function(it){
-        return new dataService.Field({
-          location: 'sample',
-          name: dataset.fields[it].name
-        });
-      });
-      pair = ['Index', 'Value'].map(function(it){
-        return new dataService.Field({
-          location: 'sample',
-          name: it
-        });
-      });
-      for (i$ = 0, to$ = dataset.fields[0].data.length; i$ < to$; ++i$) {
-        i = i$;
-        for (j$ = start; j$ <= end; ++j$) {
-          j = j$;
-          for (k$ = 0, to1$ = fields.length; k$ < to1$; ++k$) {
-            k = k$;
-            fields[k].data.push(dataset.fields[list[k]].data[i]);
+        end <= (ref$ = dataset.fields.length - 1) || (end = ref$);
+        list = (function(){
+          var i$, to$, results$ = [];
+          for (i$ = 0, to$ = dataset.fields.length; i$ < to$; ++i$) {
+            i = i$;
+            results$.push(i);
           }
-          pair[0].data.push(dataset.fields[j].name);
-          pair[1].data.push(dataset.fields[j].data[i]);
+          return results$;
+        }()).filter(function(it){
+          return it < start || it > end;
+        });
+        fields = list.map(function(it){
+          return new dataService.Field({
+            location: 'sample',
+            name: dataset.fields[it].name
+          });
+        });
+        pair = ['Index', 'Value'].map(function(it){
+          return new dataService.Field({
+            location: 'sample',
+            name: it
+          });
+        });
+        for (i$ = 0, to$ = dataset.fields[0].data.length; i$ < to$; ++i$) {
+          i = i$;
+          for (j$ = start; j$ <= end; ++j$) {
+            j = j$;
+            for (k$ = 0, to1$ = fields.length; k$ < to1$; ++k$) {
+              k = k$;
+              fields[k].data.push(dataset.fields[list[k]].data[i]);
+            }
+            pair[0].data.push(dataset.fields[j].name);
+            pair[1].data.push(dataset.fields[j].data[i]);
+          }
         }
-      }
-      fields = fields.concat(pair);
-      return $scope.$apply(function(){
-        return dataset.fields = fields;
-      });
-    }, 2000);
+        fields = fields.concat(pair);
+        return $scope.$apply(function(){
+          return dataset.fields = fields;
+        });
+      }, 0);
+    });
   };
 }));
 function import$(obj, src){
