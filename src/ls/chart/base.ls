@@ -34,7 +34,9 @@ plotdb <<< do
     level: 4
     test: -> !!!/(rgba?|hsla?)\([0-9.,]+\)|#[0-9a-f]{3,6}|[a-z0-9]+/.exec(it.trim!)
     default: \#dc4521
-    gray: \#cccccc
+    Gray: \#cccccc
+    Positive: \#4c4
+    Negative: \#c44
     subtype: do
       negative: "negative"
       positive: "positive"
@@ -211,7 +213,6 @@ plotdb.d3.axis = do
     min-width = ((range.1 - range.0) / selection.length)
     max-width = d3.max(selection.0.map (d) -> d.getBBox!width)
     overlap = maxWidth / minWidth
-    console.log ">", overlap, font-size
     if font-size and overlap <2
       selection.attr do
         transform: (d,i) ->
@@ -242,6 +243,8 @@ plotdb.d3.popup = (root, sel, cb) ->
       pbox = popup.0.0.getBoundingClientRect!
       rbox = root.getBoundingClientRect!
       if y > rbox.top + rbox.height - pbox.height - 50 => y = y - pbox.height - 40
+      if x < 10 => x = 10
+      if x > rbox.left + rbox.width - pbox.width - 10 => x = rbox.left + rbox.width - pbox.width - 10
       popup.style {display: \block, top: "#{y}px", left: "#{x}px"}
     ..on \mouseout, ->
       if sel.hide-popup => clearTimeout sel.hide-popup

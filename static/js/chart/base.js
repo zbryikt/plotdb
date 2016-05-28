@@ -97,7 +97,9 @@ import$(plotdb, {
       return !/(rgba?|hsla?)\([0-9.,]+\)|#[0-9a-f]{3,6}|[a-z0-9]+/.exec(it.trim());
     },
     'default': '#dc4521',
-    gray: '#cccccc',
+    Gray: '#cccccc',
+    Positive: '#4c4',
+    Negative: '#c44',
     subtype: {
       negative: "negative",
       positive: "positive"
@@ -488,7 +490,6 @@ plotdb.d3.axis = {
       return d.getBBox().width;
     }));
     overlap = maxWidth / minWidth;
-    console.log(">", overlap, fontSize);
     if (fontSize && overlap < 2) {
       selection.attr({
         transform: function(d, i){
@@ -544,6 +545,12 @@ plotdb.d3.popup = function(root, sel, cb){
     rbox = root.getBoundingClientRect();
     if (y > rbox.top + rbox.height - pbox.height - 50) {
       y = y - pbox.height - 40;
+    }
+    if (x < 10) {
+      x = 10;
+    }
+    if (x > rbox.left + rbox.width - pbox.width - 10) {
+      x = rbox.left + rbox.width - pbox.width - 10;
     }
     return popup.style({
       display: 'block',
