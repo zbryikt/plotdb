@@ -20,7 +20,9 @@ module.exports = plotdb.chart.create({
     value: { type: [plotdb.Number], require: true, desc: "" }
   },
   config: {
-    padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: false }
+    padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: false },
+    margin: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: false },
+    fontSize: { name: "Padding", type: [plotdb.Number], default: 12, rebindOnChange: false }
   },
   init: function() {
     var that = this;
