@@ -75,7 +75,7 @@ div(ng-controller="datasetList",ng-cloak)
             span dimension
             small.pull-right(ng-show="dim.multiple",data-toggle="tooltip",data-placement="top",title="You can drag multiple fields here!",style="margin-top: 4px",ng-mouseover="tooltip.show($event)") multiple #[i.fa.fa-question-circle]
           .panel-body
-            b {{name}}
+            b {{name}} #[i.fa.fa-asterisk(style="color:#f00;font-size:0.7em",ng-show="dim.require")]
             .desc {{dim.desc}}
             .grayed accept: 
               i(ng-repeat="type in dim.type") {{type.name}}
@@ -87,3 +87,6 @@ div(ng-controller="datasetList",ng-cloak)
                 .name {{field.name}}&nbsp;
                 small.grayed in {{field.datasetname}}
         .chart-dim.flexend
+        div
+          i.fa.fa-asterisk(style="color:#f00;font-size: 0.8em")
+          span &nbsp;= required
