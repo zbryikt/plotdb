@@ -103,6 +103,10 @@
   font-size: 1.2em;
   font-weight: bold;
   margin: 0;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .pdb-popup.float .desc {
   font-weight: bold;
