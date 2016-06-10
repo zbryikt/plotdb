@@ -17,6 +17,7 @@
         /js/chart/base.js
         /js/share/config.js
         /js/chart/render.js
+        /js/chart/plotd3.js
       ]>
     view:
       <[
@@ -29,6 +30,7 @@
         /js/chart/base.js
         /js/share/config.js
         /js/chart/view.js
+        /js/chart/plotd3.js
       ]>
     loader:
       <[
