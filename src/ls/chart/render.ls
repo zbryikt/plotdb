@@ -203,9 +203,12 @@ render = (payload, rebind = true) ->
       chart <<< {config}
       if rebind or reboot or !(chart.root and chart.data) => chart <<< {root, data, dimension}
       promise = Promise.resolve!
-      if reboot and chart.init => promise = promise.then ->
+      if reboot => promise = promise.then ->
         if thread.racing! => return
-        ret = if !module.inited => chart.init! else null
+        ret = if !module.inited =>
+          if chart.init => chart.init!
+          if chart.parse => chart.parse!
+        else null
         module.inited = true
         ret
       <~ promise.then

@@ -11,8 +11,8 @@ plotdb.view = do
     if typeof(key) == \number => req.open \get, "#{@host}/d/chart/#key", true
     else if typeof(key) == \string => req.open \get, key, true
     req.send!
-  chart: (chart, {theme, fields, root, data}) ->
-    @_ = {handler: {}, chart, fields, root, inited: false}
+  chart: (chart, {theme, fields, root, data}={}) ->
+    @_ = {handler: {}, _chart: JSON.stringify(chart), chart, fields, root, inited: false}
     if chart =>
       delete chart.assets
       @_.chart = chart = eval(chart.code.content) <<< chart
@@ -20,9 +20,9 @@ plotdb.view = do
     plotdb.chart.update-assets chart, chart.assets
     if data => @data data
     if fields => @sync fields
-    if !data and !fields => @data chart.sample
-    if theme => @theme theme
-    if fields => @sync fields
+    if !data and (!fields? or !fields.length) => @data chart.sample
+    if theme? => @theme theme
+    if fields? => @sync fields
     if root => @attach root
     @
 
@@ -52,8 +52,8 @@ plotdb.view.chart.prototype <<< do
     window.addEventListener \resize, (-> resize! )
     chart.init!
     if chart.parse => chart.parse!
-    chart.bind!
     chart.resize!
+    chart.bind!
     chart.render!
     root.setAttribute(
       \class
@@ -68,7 +68,8 @@ plotdb.view.chart.prototype <<< do
   resize: -> @_.chart.resize!
   bind: -> @_.chart.bind!
   render: -> @_.chart.render!
-  clone: -> new plotdb.view.chart(@_.chart, @_)
+  clone: ->
+    new plotdb.view.chart(JSON.parse(@_._chart), @_{theme, fields})
   on: (event, cb) -> @_.handler[][event].push cb
   theme: (theme) -> @_.theme = eval(theme.code.content) <<< theme
 

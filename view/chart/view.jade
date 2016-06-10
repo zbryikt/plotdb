@@ -20,9 +20,7 @@ block foot
     var theme = !{JSON.stringify(theme)};
     var fields = !{JSON.stringify(fields)};
   script(type="text/javascript").
-    var mychart = plotdb.load({
-      root: document.getElementById("wrapper"),
-      chart: {chart: chart, theme: theme, fields: fields}
-    });
+    var mychart = new plotdb.view.chart(chart, {theme: theme, fields: fields}); //, {theme: theme, fields: fields})
+    mychart.attach(document.getElementById("wrapper"));
   include /ga.jade
   include /fb.jade

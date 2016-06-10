@@ -327,13 +327,13 @@ $(document).ready(function(){
           chart.dimension = dimension;
         }
         promise = Promise.resolve();
-        if (reboot && chart.init) {
+        if (reboot) {
           promise = promise.then(function(){
             var ret;
             if (thread.racing()) {
               return;
             }
-            ret = !module.inited ? chart.init() : null;
+            ret = !module.inited ? (chart.init && chart.init(), chart.parse ? chart.parse() : void 8) : null;
             module.inited = true;
             return ret;
           });
