@@ -230,6 +230,27 @@ import$(plotdb, {
           return it;
         });
         return d3.scale.ordinal().domain(domain).range(range);
+      },
+      linear: function(pal, domain){
+        var c, range;
+        c = pal.colors;
+        range = c.filter(function(it){
+          return it.keyword;
+        }).map(function(it){
+          return it.hex;
+        }).concat(c.filter(function(it){
+          return !it.keyword;
+        }).map(function(it){
+          return it.hex;
+        }));
+        if (!domain) {
+          domain = c.map(function(it){
+            return it.keyword;
+          }).filter(function(it){
+            return it != null;
+          });
+        }
+        return d3.scale.linear().domain(domain).range(range);
       }
     }
   },

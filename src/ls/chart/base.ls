@@ -85,6 +85,11 @@ plotdb <<< do
         range = (c.filter(->it.keyword).map(->it.hex) ++ c.filter(->!it.keyword).map(->it.hex))
         domain = c.map(-> it.keyword).filter(-> it)
         d3.scale.ordinal!domain domain .range range
+      linear: (pal, domain) ->
+        c = pal.colors
+        range = (c.filter(->it.keyword).map(->it.hex) ++ c.filter(->!it.keyword).map(->it.hex))
+        if !domain => domain = c.map(->it.keyword).filter(->it?)
+        d3.scale.linear!domain domain .range range
 
   Boolean:
     name: \Boolean, level: 2,
