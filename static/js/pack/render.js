@@ -4759,26 +4759,8 @@ plotdb.chart = {
     resize: function(root, data, config){},
     render: function(root, data, config){}
   },
-  getSampleData: function(chart, dimension){
-    var ref$, sample, k, v, data, len, i$, i, ret, that;
-    dimension == null && (dimension = null);
-    if (!chart.sample) {
-      return [];
-    }
-    if (Array.isArray(chart.sample)) {
-      return chart.sample;
-    }
-    if (typeof chart.sample !== 'function') {
-      return [];
-    }
-    ref$ = [dimension || chart.dimension, chart.sample()], dimension = ref$[0], sample = ref$[1];
-    sample = chart.sample();
-    for (k in dimension) {
-      v = dimension[k];
-      if (sample[k]) {
-        v.fields = sample[k];
-      }
-    }
+  dataFromDimension: function(dimension){
+    var data, len, k, v, i$, i, ret, that;
     data = [];
     len = Math.max.apply(null, (function(){
       var ref$, results$ = [];
@@ -4808,7 +4790,7 @@ plotdb.chart = {
           ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
           v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
         }
-        if (v.type.filter(fn2$).length) {
+        if ((v.type || []).filter(fn2$).length) {
           if (Array.isArray(ret[k])) {
             ret[k] = ret[k].map(fn3$);
           } else {
@@ -4832,8 +4814,35 @@ plotdb.chart = {
       return parseFloat(it);
     }
   },
+  dataFromHash: function(dimension, source){
+    var k, v;
+    if (!dimension || !source) {
+      return [];
+    }
+    if (Array.isArray(source)) {
+      return source;
+    }
+    if (typeof source === 'function') {
+      source = source();
+    }
+    for (k in dimension) {
+      v = dimension[k];
+      if (source[k]) {
+        v.fields = source[k];
+      }
+    }
+    return plotdb.chart.dataFromDimension(dimension);
+  },
+  getSampleData: function(chart, dimension){
+    dimension == null && (dimension = null);
+    return plotdb.chart.dataFromHash(dimension || chart.dimension, chart.sample);
+  },
+  updateData: function(chart){
+    return chart.data = plotdb.chart.dataFromDimension(chart.dimension);
+  },
   updateAssets: function(chart, assets){
     var ret, i$, len$, file, raw, array, j$, to$, idx;
+    assets == null && (assets = []);
     ret = {};
     for (i$ = 0, len$ = assets.length; i$ < len$; ++i$) {
       file = assets[i$];
@@ -4874,61 +4883,6 @@ plotdb.chart = {
     }
     function fn1$(it){
       return it === 'Number';
-    }
-  },
-  updateData: function(chart){
-    var len, k, v, i$, i, ret, ref$, that, results$ = [];
-    chart.data = [];
-    len = Math.max.apply(null, (function(){
-      var ref$, results$ = [];
-      for (k in ref$ = chart.dimension) {
-        v = ref$[k];
-        results$.push(v);
-      }
-      return results$;
-    }()).reduce(function(a, b){
-      return a.concat(b.fields || []);
-    }, []).filter(function(it){
-      return it.data;
-    }).map(function(it){
-      return it.data.length;
-    }).concat([0]));
-    for (i$ = 0; i$ < len; ++i$) {
-      i = i$;
-      ret = {};
-      for (k in ref$ = chart.dimension) {
-        v = ref$[k];
-        if (v.multiple) {
-          ret[k] = (v.fields || (v.fields = [])).length
-            ? (v.fields || (v.fields = [])).map(fn$)
-            : [];
-          v.fieldName = (v.fields || (v.fields = [])).map(fn1$);
-        } else {
-          ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
-          v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
-        }
-        if ((v.type || []).filter(fn2$).length) {
-          if (Array.isArray(ret[k])) {
-            ret[k] = ret[k].map(fn3$);
-          } else {
-            ret[k] = parseFloat(ret[k]);
-          }
-        }
-      }
-      results$.push(chart.data.push(ret));
-    }
-    return results$;
-    function fn$(it){
-      return (it.data || (it.data = []))[i];
-    }
-    function fn1$(it){
-      return it.name;
-    }
-    function fn2$(it){
-      return it.name === 'Number';
-    }
-    function fn3$(it){
-      return parseFloat(it);
     }
   }
 };
@@ -5021,8 +4975,13 @@ plotdb.d3.popup = function(root, sel, cb){
     var ref$, x, y, pbox, rbox;
     ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
     cb.call(this, d, i, popup);
+    popup.style({
+      display: 'block'
+    });
     pbox = popup[0][0].getBoundingClientRect();
     rbox = root.getBoundingClientRect();
+    x = x - pbox.width / 2;
+    y = y + 20;
     if (y > rbox.top + rbox.height - pbox.height - 50) {
       y = y - pbox.height - 40;
     }
@@ -5033,7 +4992,6 @@ plotdb.d3.popup = function(root, sel, cb){
       x = rbox.left + rbox.width - pbox.width - 10;
     }
     return popup.style({
-      display: 'block',
       top: y + "px",
       left: x + "px"
     });
@@ -5579,4 +5537,125 @@ function in$(x, xs){
   var i = -1, l = xs.length >>> 0;
   while (++i < l) if (x === xs[i]) return true;
   return false;
-}
+}// Generated by LiveScript 1.3.1
+var plotd3;
+plotd3 = {
+  svg: {},
+  html: {}
+};
+plotd3.html.popup = function(root, sel, cb){
+  var popup, x$;
+  popup = root.querySelector('.pdb-popup');
+  if (!popup) {
+    popup = d3.select(root).append('div').attr({
+      'class': 'pdb-popup float'
+    });
+    popup.each(function(d, i){
+      var x$;
+      x$ = d3.select(this);
+      x$.append('div').attr({
+        'class': 'title'
+      });
+      x$.append('div').attr({
+        'class': 'value'
+      });
+      return x$;
+    });
+  } else {
+    popup = d3.select(popup);
+  }
+  x$ = sel;
+  x$.on('mousemove', function(d, i){
+    var ref$, x, y, pbox, rbox;
+    ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
+    cb.call(this, d, i, popup);
+    popup.style({
+      display: 'block'
+    });
+    pbox = popup[0][0].getBoundingClientRect();
+    rbox = root.getBoundingClientRect();
+    x = x - pbox.width / 2;
+    y = y + 20;
+    if (y > rbox.top + rbox.height - pbox.height - 50) {
+      y = y - pbox.height - 40;
+    }
+    if (x < 10) {
+      x = 10;
+    }
+    if (x > rbox.left + rbox.width - pbox.width - 10) {
+      x = rbox.left + rbox.width - pbox.width - 10;
+    }
+    return popup.style({
+      top: y + "px",
+      left: x + "px"
+    });
+  });
+  x$.on('mouseout', function(){
+    if (sel.hidePopup) {
+      clearTimeout(sel.hidePopup);
+    }
+    return sel.hidePopup = setTimeout(function(){
+      return popup.style({
+        display: 'none'
+      });
+    }, 1000);
+  });
+  return x$;
+};
+plotd3.svg.rwdAxis = function(){
+  var ret;
+  ret = d3.svg.axis();
+  ret.autotick = function(size, fontSize, group){
+    var maxCount, scale, orient, ref$, its, ots, tp, offset, format, count, ticks, step;
+    fontSize == null && (fontSize = 12);
+    maxCount = 10;
+    scale = this.scale();
+    orient = this.orient();
+    ref$ = [this.innerTickSize(), this.outerTickSize(), this.tickPadding()], its = ref$[0], ots = ref$[1], tp = ref$[2];
+    offset = d3.max([its, ots]) + tp + 1;
+    format = this.tickFormat();
+    if (orient === 'left' || orient === 'right') {
+      count = size / (2 * fontSize || 16);
+      ticks = scale.ticks
+        ? this.tickValues() || scale.ticks(this.ticks())
+        : scale.domain();
+      count = Math.ceil(ticks.length / count);
+      ticks = ticks.filter(function(d, i){
+        return !(i % count);
+      });
+      this.tickValues(ticks);
+      group.call(this);
+      group.selectAll('.tick text').attr({
+        'font-size': fontSize
+      });
+      this._offset = d3.max(group.selectAll('text')[0].map(function(d, i){
+        return d.getBBox().width;
+      }));
+      return this._offset += offset;
+    } else {
+      ticks = scale.ticks
+        ? this.tickValues() || scale.ticks(this.ticks())
+        : scale.domain();
+      group.call(this);
+      group.selectAll('.tick text').attr({
+        'font-size': fontSize
+      });
+      step = 2 * d3.max(group.selectAll('text')[0].map(function(d, i){
+        return d.getBBox().width;
+      }));
+      count = Math.ceil(ticks.length / (size / step));
+      ticks = ticks.filter(function(d, i){
+        return !(i % count);
+      });
+      this.tickValues(ticks);
+      this._offset = 2 * fontSize + offset;
+      if (group) {
+        return group.call(this);
+      }
+    }
+  };
+  ret.offset = function(){
+    return this._offset;
+  };
+  return ret;
+};

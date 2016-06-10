@@ -7575,26 +7575,8 @@ plotdb.chart = {
     resize: function(root, data, config){},
     render: function(root, data, config){}
   },
-  getSampleData: function(chart, dimension){
-    var ref$, sample, k, v, data, len, i$, i, ret, that;
-    dimension == null && (dimension = null);
-    if (!chart.sample) {
-      return [];
-    }
-    if (Array.isArray(chart.sample)) {
-      return chart.sample;
-    }
-    if (typeof chart.sample !== 'function') {
-      return [];
-    }
-    ref$ = [dimension || chart.dimension, chart.sample()], dimension = ref$[0], sample = ref$[1];
-    sample = chart.sample();
-    for (k in dimension) {
-      v = dimension[k];
-      if (sample[k]) {
-        v.fields = sample[k];
-      }
-    }
+  dataFromDimension: function(dimension){
+    var data, len, k, v, i$, i, ret, that;
     data = [];
     len = Math.max.apply(null, (function(){
       var ref$, results$ = [];
@@ -7624,7 +7606,7 @@ plotdb.chart = {
           ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
           v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
         }
-        if (v.type.filter(fn2$).length) {
+        if ((v.type || []).filter(fn2$).length) {
           if (Array.isArray(ret[k])) {
             ret[k] = ret[k].map(fn3$);
           } else {
@@ -7648,8 +7630,35 @@ plotdb.chart = {
       return parseFloat(it);
     }
   },
+  dataFromHash: function(dimension, source){
+    var k, v;
+    if (!dimension || !source) {
+      return [];
+    }
+    if (Array.isArray(source)) {
+      return source;
+    }
+    if (typeof source === 'function') {
+      source = source();
+    }
+    for (k in dimension) {
+      v = dimension[k];
+      if (source[k]) {
+        v.fields = source[k];
+      }
+    }
+    return plotdb.chart.dataFromDimension(dimension);
+  },
+  getSampleData: function(chart, dimension){
+    dimension == null && (dimension = null);
+    return plotdb.chart.dataFromHash(dimension || chart.dimension, chart.sample);
+  },
+  updateData: function(chart){
+    return chart.data = plotdb.chart.dataFromDimension(chart.dimension);
+  },
   updateAssets: function(chart, assets){
     var ret, i$, len$, file, raw, array, j$, to$, idx;
+    assets == null && (assets = []);
     ret = {};
     for (i$ = 0, len$ = assets.length; i$ < len$; ++i$) {
       file = assets[i$];
@@ -7690,61 +7699,6 @@ plotdb.chart = {
     }
     function fn1$(it){
       return it === 'Number';
-    }
-  },
-  updateData: function(chart){
-    var len, k, v, i$, i, ret, ref$, that, results$ = [];
-    chart.data = [];
-    len = Math.max.apply(null, (function(){
-      var ref$, results$ = [];
-      for (k in ref$ = chart.dimension) {
-        v = ref$[k];
-        results$.push(v);
-      }
-      return results$;
-    }()).reduce(function(a, b){
-      return a.concat(b.fields || []);
-    }, []).filter(function(it){
-      return it.data;
-    }).map(function(it){
-      return it.data.length;
-    }).concat([0]));
-    for (i$ = 0; i$ < len; ++i$) {
-      i = i$;
-      ret = {};
-      for (k in ref$ = chart.dimension) {
-        v = ref$[k];
-        if (v.multiple) {
-          ret[k] = (v.fields || (v.fields = [])).length
-            ? (v.fields || (v.fields = [])).map(fn$)
-            : [];
-          v.fieldName = (v.fields || (v.fields = [])).map(fn1$);
-        } else {
-          ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
-          v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
-        }
-        if ((v.type || []).filter(fn2$).length) {
-          if (Array.isArray(ret[k])) {
-            ret[k] = ret[k].map(fn3$);
-          } else {
-            ret[k] = parseFloat(ret[k]);
-          }
-        }
-      }
-      results$.push(chart.data.push(ret));
-    }
-    return results$;
-    function fn$(it){
-      return (it.data || (it.data = []))[i];
-    }
-    function fn1$(it){
-      return it.name;
-    }
-    function fn2$(it){
-      return it.name === 'Number';
-    }
-    function fn3$(it){
-      return parseFloat(it);
     }
   }
 };
@@ -7837,8 +7791,13 @@ plotdb.d3.popup = function(root, sel, cb){
     var ref$, x, y, pbox, rbox;
     ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
     cb.call(this, d, i, popup);
+    popup.style({
+      display: 'block'
+    });
     pbox = popup[0][0].getBoundingClientRect();
     rbox = root.getBoundingClientRect();
+    x = x - pbox.width / 2;
+    y = y + 20;
     if (y > rbox.top + rbox.height - pbox.height - 50) {
       y = y - pbox.height - 40;
     }
@@ -7849,7 +7808,6 @@ plotdb.d3.popup = function(root, sel, cb){
       x = rbox.left + rbox.width - pbox.width - 10;
     }
     return popup.style({
-      display: 'block',
       top: y + "px",
       left: x + "px"
     });

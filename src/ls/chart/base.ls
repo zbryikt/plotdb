@@ -2,14 +2,14 @@ plotdb = {}
 plotdb <<< do
   Number: name: \Number, test: (-> !isNaN(+it)), level: 3, parse: -> parseFloat(it)
   String: name: \String, test: (-> true), level: 1, parse: -> it
-  Date: 
+  Date:
     name: \Date, level: 2
     match: do
       type1: /^(\d{4})[/-](\d{1,2})[/-]\d{1,2} ((\d{1,2}):(\d{1,2})(:(\d{1,2}))?)?/
       type2: /^(\d{1,2})[/-](\d{1,2})[/-]\d{4} ((\d{1,2}):(\d{1,2})(:(\d{1,2}))?)?/
       type3: /^(\d{4})[/-](\d{1,2})$/
       type4: /^(\d{1,2})[/-](\d{4})$/
-    test: -> 
+    test: ->
       d = new Date(it)
       if !(d instanceof Date) or isNaN(d.getTime!) =>
         matched = [v.exec(it) for k,v of @match].filter(->it).0
@@ -22,7 +22,7 @@ plotdb <<< do
         if !matched => return null
         return null
       return d
-  Choice: (v) -> 
+  Choice: (v) ->
     return do
       name: \Choice
       level: 4
@@ -44,11 +44,11 @@ plotdb <<< do
     name: \Palette
     level: 5
     re: /^((rgb|hsl)\((\s*[0-9.]+\s*,){2}\s*[0-9.]+\s*\)|(rgb|hsl)a\((\s*[0-9.]+\s*,){3}\s*[0-9.]+\s*\)|\#[0-9a-f]{3}|\#[0-9a-f]{6}|[a-zA-Z][a-zA-Z0-9]*)$/
-    test: -> 
+    test: ->
       if !it => return true
       if typeof(it) == typeof("") =>
         if it.charAt(0) != '[' => it = it.split(\,)
-        else 
+        else
           try
             it = JSON.parse(it)
           catch
@@ -59,7 +59,7 @@ plotdb <<< do
         if !(it.colors?) => return true
         if it.colors.filter(->!it.hex).length => return true
       return false
-    parse: -> 
+    parse: ->
       if !it => return it
       if Array.isArray(it) => return it
       if typeof(it) == typeof("") =>
@@ -67,7 +67,7 @@ plotdb <<< do
           return JSON.parse(it)
         catch
           return it.split(\,).map(->{hex: it.trim!})
-      return it 
+      return it
     default: {colors: <[#1d3263 #226c87 #f8d672 #e48e11 #e03215 #ab2321]>.map(->{hex:it})}
     plotdb:  {colors: <[#ed1d78 #c59b6d #8cc63f #28aae2]>.map(->{hex:it})}
     qualitative: {colors: <[#c05ae0 #cf2d0c #e9ab1e #86ffb5 #64dfff #003f7d]>.map(->{hex:it})}
@@ -89,7 +89,7 @@ plotdb <<< do
   Boolean:
     name: \Boolean, level: 2,
     test: -> !!/^(true|false|1|0|yes|no)$/.exec(it)
-    parse: -> 
+    parse: ->
       if it and typeof(it) == typeof("") =>
         if /^(yes|true)$/.exec(it.trim!) => return true
         if /\d+/.exec(it.trim!) and it.trim! != "0" => return true
@@ -112,14 +112,7 @@ plotdb.chart = do
     resize: (root, data, config) ->
     render: (root, data, config) ->
 
-  get-sample-data: (chart, dimension = null) ->
-    if !chart.sample => return []
-    if Array.isArray(chart.sample) => return chart.sample
-    if typeof(chart.sample) != \function => return []
-    [dimension,sample] = [dimension or chart.dimension, chart.sample!]
-    sample = chart.sample!
-    for k,v of dimension
-      if sample[k] => v.fields = sample[k]
+  data-from-dimension: (dimension) ->
     data = []
     len = Math.max.apply null,
       [v for k,v of dimension]
@@ -136,13 +129,28 @@ plotdb.chart = do
           ret[k] = if v.[]fields.0 => that.[]data[i] else null
           v.field-name = if v.[]fields.0 => that.name else null
         #TODO need correct type matching
-        if v.type.filter(->it.name == \Number).length =>
+        if (v.type or []).filter(->it.name == \Number).length =>
           if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
           else ret[k] = parseFloat(ret[k])
       data.push ret
     return data
 
-  update-assets: (chart, assets) ->
+  data-from-hash: (dimension, source) ->
+    if !dimension or !source => return []
+    if Array.isArray(source) => return source
+    if typeof(source) == \function => source = source!
+    for k,v of dimension => if source[k] => v.fields = source[k]
+    return plotdb.chart.data-from-dimension dimension
+
+  get-sample-data: (chart, dimension = null) ->
+    plotdb.chart.data-from-hash (dimension or chart.dimension), chart.sample
+
+  update-data: (chart) ->
+    #TODO abstract so that sample data in renderer can also use this. we now just copy it.
+    #TODO fields data load by demand
+    chart.data = plotdb.chart.data-from-dimension chart.dimension
+
+  update-assets: (chart, assets = []) ->
     ret = {}
     for file in assets =>
       raw = atob(file.content)
@@ -161,30 +169,6 @@ plotdb.chart = do
       else if !(config[k].value?) => config[k] = (v or config[k]).default
       else config[k] = config[k].value
       if type.filter(->it == \Number).length => config[k] = parseFloat(config[k])
-  update-data: (chart) ->
-    chart.data = []
-    #TODO abstract so that sample data in renderer can also use this. we now just copy it.
-    #TODO fields data load by demand
-    len = Math.max.apply null,
-      [v for k,v of chart.dimension]
-        .reduce(((a,b) -> (a) ++ (b.fields or [])),[])
-        .filter(->it.data)
-        .map(->it.data.length) ++ [0]
-    for i from 0 til len
-      ret = {}
-      for k,v of chart.dimension
-        if v.multiple =>
-          ret[k] = if v.[]fields.length => v.[]fields.map(->it.[]data[i]) else []
-          v.field-name = v.[]fields.map -> it.name
-        else
-          ret[k] = if v.[]fields.0 => that.[]data[i] else null
-          v.field-name = if v.[]fields.0 => that.name else null
-        #TODO need correct type matching
-        if (v.type or []).filter(->it.name == \Number).length =>
-          if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
-          else ret[k] = parseFloat(ret[k])
-      chart.data.push ret
-
 
 plotdb.theme = do
   create: (config) ->
@@ -240,12 +224,15 @@ plotdb.d3.popup = (root, sel, cb) ->
     ..on \mousemove, (d,i) ->
       [x,y] = [d3.event.clientX, d3.event.clientY]
       cb.call @,d,i,popup
+      popup.style display: \block
       pbox = popup.0.0.getBoundingClientRect!
       rbox = root.getBoundingClientRect!
+      x = x - pbox.width / 2
+      y = y + 20
       if y > rbox.top + rbox.height - pbox.height - 50 => y = y - pbox.height - 40
       if x < 10 => x = 10
       if x > rbox.left + rbox.width - pbox.width - 10 => x = rbox.left + rbox.width - pbox.width - 10
-      popup.style {display: \block, top: "#{y}px", left: "#{x}px"}
+      popup.style {top: "#{y}px", left: "#{x}px"}
     ..on \mouseout, ->
       if sel.hide-popup => clearTimeout sel.hide-popup
       sel.hide-popup = setTimeout (-> popup.style {display: \none}), 1000

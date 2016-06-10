@@ -7,51 +7,78 @@ plotdb.view = {
     req.onload = function(){
       var e;
       try {
-        return cb(JSON.parse(this.responseText));
+        return cb(new plotdb.view.chart(JSON.parse(this.responseText), {}));
       } catch (e$) {
         e = e$;
         console.error("load chart " + key + " failed when parsing response: ");
         return console.error(e);
       }
     };
-    req.open('get', this.host + "/d/chart/" + key, true);
+    if (typeof key === 'number') {
+      req.open('get', this.host + "/d/chart/" + key, true);
+    } else if (typeof key === 'string') {
+      req.open('get', key, true);
+    }
     return req.send();
   },
-  render: function(arg$, cb){
-    var root, chart, theme, fields, fieldhash, k, ref$, v, resize;
-    root = arg$.root, chart = arg$.chart, theme = arg$.theme, fields = arg$.fields;
+  chart: function(chart, arg$){
+    var theme, fields, root, data;
+    theme = arg$.theme, fields = arg$.fields, root = arg$.root, data = arg$.data;
+    this._ = {
+      handler: {},
+      chart: chart,
+      fields: fields,
+      root: root,
+      inited: false
+    };
     if (chart) {
-      chart = import$(eval(chart.code.content), chart);
+      delete chart.assets;
+      this._.chart = chart = import$(eval(chart.code.content), chart);
+    }
+    plotdb.chart.updateConfig(chart, chart.config);
+    plotdb.chart.updateAssets(chart, chart.assets);
+    if (data) {
+      this.data(data);
+    }
+    if (fields) {
+      this.sync(fields);
+    }
+    if (!data && !fields) {
+      this.data(chart.sample);
     }
     if (theme) {
-      theme = import$(eval(theme.code.content), theme);
+      this.theme(theme);
     }
-    fieldhash = d3.map(fields, function(it){
-      return it.key;
+    if (fields) {
+      this.sync(fields);
+    }
+    if (root) {
+      this.attach(root);
+    }
+    return this;
+  }
+};
+import$(plotdb.view.chart.prototype, {
+  update: function(){
+    var this$ = this;
+    return ['resize', 'bind', 'render'].map(function(it){
+      if (this$._.chart[it]) {
+        return this$._.chart[it]();
+      }
     });
-    root.setAttribute("class", (root.getAttribute("class").split(" ").filter(function(it){
+  },
+  attach: function(root){
+    var ref$, chart, theme, resize;
+    this._.root = root;
+    ref$ = {
+      chart: (ref$ = this._).chart,
+      theme: ref$.theme
+    }, chart = ref$.chart, theme = ref$.theme;
+    root.setAttribute("class", ((root.getAttribute("class") || "").split(" ").filter(function(it){
       return it !== 'pdb-root';
     }).concat(['pdb-root'])).join(" "));
     root.innerHTML = [chart && chart.style ? "<style type='text/css'>/* <![CDATA[ */" + chart.style.content + "/* ]]> */</style>" : void 8, theme && theme.style ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div style='position:relative;width:100%;height:100%;'><div style='height:0;'>&nbsp;</div>", chart.doc.content, "</div>", theme && (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8].join("");
-    for (k in ref$ = chart.dimension) {
-      v = ref$[k];
-      v.fields = v.fields.map(fn$).filter(fn1$);
-      v.fields.forEach(fn2$);
-    }
-    plotdb.chart.updateData(chart);
-    plotdb.chart.updateConfig(chart, chart.config);
-    plotdb.chart.updateAssets(chart, chart.assets);
-    if (!chart.data || !chart.data.length) {
-      chart.data = plotdb.chart.getSampleData(chart);
-    }
     chart.root = root.querySelector("div:first-of-type");
-    chart.init();
-    chart.resize();
-    chart.bind();
-    chart.render();
-    root.setAttribute('class', (root.getAttribute('class') || "").split(' ').filter(function(it){
-      return it !== 'loading';
-    }).join(" ").trim());
     resize = function(){
       var this$ = this;
       if (resize.handle) {
@@ -66,51 +93,83 @@ plotdb.view = {
     window.addEventListener('resize', function(){
       return resize();
     });
-    if (cb) {
-      return setTimeout(function(){
-        return cb({
-          root: root,
-          chart: chart,
-          theme: theme,
-          fields: fields
-        });
-      }, 0);
+    chart.init();
+    if (chart.parse) {
+      chart.parse();
+    }
+    chart.bind();
+    chart.resize();
+    chart.render();
+    root.setAttribute('class', (root.getAttribute('class') || "").split(' ').filter(function(it){
+      return it !== 'loading';
+    }).join(" ").trim());
+    return this.inited = true;
+  },
+  config: function(config){
+    return import$(this._.chart.config, config);
+  },
+  init: function(root){
+    return this._.chart.init();
+  },
+  parse: function(){
+    return this._.chart.parse();
+  },
+  resize: function(){
+    return this._.chart.resize();
+  },
+  bind: function(){
+    return this._.chart.bind();
+  },
+  render: function(){
+    return this._.chart.render();
+  },
+  clone: function(){
+    return new plotdb.view.chart(this._.chart, this._);
+  },
+  on: function(event, cb){
+    var ref$;
+    return ((ref$ = this._.handler)[event] || (ref$[event] = [])).push(cb);
+  },
+  theme: function(theme){
+    return this._.theme = import$(eval(theme.code.content), theme);
+  },
+  data: function(data){
+    if (data == null) {
+      return this._.data;
+    }
+    this._.data = data;
+    return this.sync();
+  },
+  sync: function(fields){
+    var hash, k, ref$, v;
+    fields == null && (fields = []);
+    if (this._.data) {
+      return this._.chart.data = plotdb.chart.dataFromHash(this._.chart.dimension, this._.data);
+    }
+    hash = d3.map(fields, function(it){
+      return it.key;
+    });
+    for (k in ref$ = this._.chart.dimension) {
+      v = ref$[k];
+      v.fields = (v.fields || []).map(fn$).filter(fn1$);
+    }
+    plotdb.chart.updateData(this._.chart);
+    if (this._.chart.parse) {
+      return this._.chart.parse();
     }
     function fn$(it){
-      return fieldhash.get(it.key);
+      return hash.get(it.key);
     }
     function fn1$(it){
       return it;
     }
-    function fn2$(it){
-      if ((v.type || []).filter(function(it){
-        return it.name === 'Number';
-      }).length) {
-        return it.data = it.data.map(function(it){
-          return parseFloat(it);
-        });
-      }
-    }
   }
+});
+plotdb.load = function(key, cb){
+  return plotdb.view.loader(key, cb);
 };
-plotdb.load = function(arg$, cb){
-  var root, chart;
-  root = arg$.root, chart = arg$.chart;
-  if (typeof chart === 'object') {
-    return plotdb.view.render({
-      root: root,
-      chart: chart.chart,
-      theme: chart.theme,
-      fields: chart.fields
-    }, cb);
-  } else if (typeof chart === 'number') {
-    return plotdb.view.loader(chart, function(r){
-      return plotdb.view.render({
-        root: root,
-        chart: r
-      }, cb);
-    });
-  }
+plotdb.render = function(config, cb){
+  return plotdb.view.render(config, cb);
 };
 function import$(obj, src){
   var own = {}.hasOwnProperty;
