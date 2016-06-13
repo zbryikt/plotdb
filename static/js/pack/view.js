@@ -727,7 +727,6 @@ plotdb.view = {
       inited: false
     };
     if (chart) {
-      delete chart.assets;
       this._.chart = chart = import$(eval(chart.code.content), chart);
     }
     plotdb.chart.updateConfig(chart, chart.config);
@@ -880,72 +879,222 @@ plotd3 = {
   html: {},
   rwd: {}
 };
-plotd3.html.popup = function(root, sel, cb){
-  var popup, x$;
-  popup = root.querySelector('.pdb-popup');
-  if (!popup) {
-    popup = d3.select(root).append('div').attr({
-      'class': 'pdb-popup float'
-    });
-    popup.each(function(d, i){
-      var x$;
-      x$ = d3.select(this);
-      x$.append('div').attr({
-        'class': 'title'
+plotd3.html.tooltip = function(root, sel, cb){
+  var store, ret, popup;
+  store = {
+    handler: {}
+  };
+  ret = plotd3.html.popup(root, null, null, store);
+  popup = store.popup;
+  ret.nodes = function(sel){
+    var x$;
+    x$ = sel;
+    x$.on('mousemove', function(d, i){
+      var rbox, box, isLeft, update;
+      rbox = d3.select(root)[0][0].getBoundingClientRect();
+      box = this.getBoundingClientRect();
+      ret.fire('mousemove', d, i, this);
+      popup.attr({
+        'class': "pdb-popup tooltip " + "left"
       });
-      x$.append('div').attr({
-        'class': 'value'
+      isLeft = box.left > rbox.width / 2 + rbox.left ? true : false;
+      popup.attr({
+        'class': "pdb-popup tooltip " + (isLeft ? 'left' : 'right')
       });
-      return x$;
+      update = function(){
+        var pbox;
+        pbox = popup[0][0].getBoundingClientRect();
+        popup.style({
+          top: (box.top + box.height / 2 - pbox.height / 2) + "px",
+          opacity: 1
+        });
+        if (isLeft) {
+          return popup.style({
+            left: (box.left - pbox.width - 10) + "px"
+          });
+        } else {
+          return popup.style({
+            left: (box.left + box.width + 10) + "px"
+          });
+        }
+      };
+      if (popup.style("display") !== 'block') {
+        popup.style({
+          display: 'block',
+          opacity: 0.01
+        });
+        return setTimeout(update, 0);
+      } else {
+        return update();
+      }
     });
-  } else {
-    popup = d3.select(popup);
-  }
-  x$ = sel;
-  x$.on('mousemove', function(d, i){
-    var ref$, x, y, pbox, rbox;
-    ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
-    cb.call(this, d, i, popup);
+    x$.on('mouseout', function(d, i){
+      ret.fire('mouseout', d, i, this);
+      return popup.style({
+        display: 'none'
+      });
+    });
+    return ret;
+  };
+  ret.direction = function(it){
+    store.direction = it === 'left' ? 'left' : 'right';
+    return popup.attr({
+      'class': "pdb-popup tooltip " + store.direction
+    });
+  };
+  ret.show = function(x, y){
+    var bbox;
+    bbox = popup[0][0].getBoundingClientRect();
+    if (store.direction !== 'right') {
+      x = x - (bbox.right - bbox.left) - 10;
+    } else {
+      x = x + 10;
+    }
     popup.style({
       display: 'block'
     });
-    pbox = popup[0][0].getBoundingClientRect();
-    rbox = root.getBoundingClientRect();
-    x = x - pbox.width / 2;
-    y = y + 20;
-    if (y > rbox.top + rbox.height - pbox.height - 50) {
-      y = y - pbox.height - 40;
-    }
-    if (x < 10) {
-      x = 10;
-    }
-    if (x > rbox.left + rbox.width - pbox.width - 10) {
-      x = rbox.left + rbox.width - pbox.width - 10;
-    }
-    return popup.style({
-      top: y + "px",
+    popup.style({
+      top: (y - (bbox.bottom - bbox.top) / 2) + "px",
       left: x + "px"
     });
+    return ret.hide();
+  };
+  ret.type('tooltip');
+  return ret;
+};
+plotd3.html.float = function(root, sel, cb){
+  var ret;
+  ret = plotd3.html.popup(root, sel, cb);
+  ret.type('float');
+  return ret;
+};
+plotd3.html.popup = function(root, sel, cb, store){
+  var popup, ret;
+  store == null && (store = {
+    handler: {}
   });
-  x$.on('mouseout', function(){
-    if (sel.hidePopup) {
-      clearTimeout(sel.hidePopup);
+  popup = store.popup = d3.select(root).append('div');
+  popup.each(function(d, i){
+    var x$;
+    x$ = d3.select(this);
+    x$.append('div').attr({
+      'class': 'title'
+    });
+    x$.append('div').attr({
+      'class': 'value'
+    });
+    return x$;
+  });
+  popup.on('mouseover', function(){
+    return d3.select(this).style({
+      display: 'none'
+    });
+  });
+  ret = function(){};
+  ret.hide = function(d, i){
+    if (d != null && i != null) {
+      ret.fire('mouseout', d, i, this);
     }
-    return sel.hidePopup = setTimeout(function(){
+    if (store.hidePopup) {
+      clearTimeout(store.hidePopup);
+    }
+    return store.hidePopup = setTimeout(function(){
       return popup.style({
         display: 'none'
       });
     }, 1000);
-  });
-  return x$;
+  };
+  ret.nodes = function(sel){
+    var x$;
+    x$ = sel;
+    x$.on('mouseout', ret.hide);
+    x$.on('mousemove', function(d, i){
+      var ref$, x, y, pbox, rbox;
+      ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
+      ret.fire('mousemove', d, i, this);
+      popup.style({
+        display: 'block'
+      });
+      pbox = popup[0][0].getBoundingClientRect();
+      rbox = root.getBoundingClientRect();
+      x = x - pbox.width / 2 - rbox.left;
+      y = y + 20 - rbox.top;
+      if (y > rbox.height - pbox.height - 50) {
+        y = y - pbox.height - 40;
+      }
+      if (x < 10) {
+        x = 10;
+      }
+      if (x > +rbox.width - pbox.width - 10) {
+        x = rbox.width - pbox.width - 10;
+      }
+      return popup.style({
+        top: y + "px",
+        left: x + "px"
+      });
+    });
+    return ret;
+  };
+  ret.call = function(cb){
+    return cb.call(popup[0][0]);
+  };
+  ret.show = function(x, y){
+    popup.style({
+      display: 'block'
+    });
+    popup.style({
+      top: y + "px",
+      left: x + "px"
+    });
+    return ret.hide();
+  };
+  ret.fire = function(event, d, i, node){
+    var ref$;
+    return ((ref$ = store.handler)[event] || (ref$[event] = [])).forEach(function(cb){
+      return cb.call(node, d, i, popup);
+    });
+  };
+  ret.fontSize = function(fs){
+    if (fs != null) {
+      store.fontSize = fs;
+      popup.style({
+        "font-size": fs + "px"
+      });
+      return ret;
+    } else {
+      return store.fontSize;
+    }
+  };
+  ret.on = function(event, cb){
+    var ref$;
+    return ((ref$ = store.handler)[event] || (ref$[event] = [])).push(cb);
+  };
+  ret.type = function(type){
+    var that;
+    if (!type) {
+      return store.type;
+    }
+    store.type = type;
+    return popup.attr({
+      'class': ("pdb-popup " + ((that = store.type) ? that : "")).trim()
+    });
+  };
+  if (sel) {
+    ret.nodes(sel);
+  }
+  if (cb) {
+    ret.on('mousemove', cb);
+  }
+  ret.type('float');
+  return ret;
 };
-plotd3.rwd.legend = function(fontSize){
+plotd3.rwd.legend = function(){
   var store, ret;
   store = {
-    padding: 10
+    padding: [10, 5]
   };
   ret = function(){
-    var that, data, x$, offset, max;
+    var that, data, x$, offset, max, label, ref$;
     store.group = this;
     if (that = store.tickValues) {
       data = that;
@@ -969,31 +1118,67 @@ plotd3.rwd.legend = function(fontSize){
     });
     x$.exit().remove();
     this.selectAll('g.legend').each(function(d, i){
-      var node, size, m;
+      var node, x$, size, m, r, dx;
+      if (store.type === 'radius' && !d) {
+        return;
+      }
       node = d3.select(this);
-      if (fontSize != null) {
-        node.select('text').text(d).attr("font-size", fontSize);
+      x$ = node.select('text');
+      x$.text(d);
+      if (store.fontSize != null) {
+        x$.attr("font-size", store.fontSize);
       }
       size = node.select('text')[0][0].getBBox().height * 0.8;
       if (store.marker) {
         store.marker.call(node.select('path.marker')[0][0], d, i);
       } else {
         m = node.select('path.marker');
-        m.attr({
-          d: ("M" + size / 2 + " 0 A" + size / 2 + " " + size / 2 + " 0 0 0 " + size / 2 + " " + size) + ("A" + size / 2 + " " + size / 2 + " 0 0 0 " + size / 2 + " 0"),
-          fill: store.scale(d)
-        });
+        if ((store.type || 'color') === 'color') {
+          m.attr({
+            d: ("M" + size / 2 + " 0 A" + size / 2 + " " + size / 2 + " 0 0 0 " + size / 2 + " " + size) + ("A" + size / 2 + " " + size / 2 + " 0 0 0 " + size / 2 + " 0"),
+            fill: store.scale(d)
+          });
+        } else if (store.type === 'radius') {
+          r = store.scale(d);
+          m.attr({
+            cx: r,
+            cy: r,
+            r: r,
+            d: ("M" + size / 2 + " " + (size / 2 - r) + " A" + r + " " + r + " 0 0 0 " + size / 2 + " " + (size / 2 + r)) + ("A" + r + " " + r + " 0 0 0 " + size / 2 + " " + (size / 2 - r)),
+            fill: '#999'
+          });
+        }
+      }
+      dx = 0;
+      if (store.type === 'radius') {
+        dx = store.scale(data[data.length - 1]);
       }
       return node.select('text').attr({
         "dominant-baseline": "hanging",
         "text-anchor": "start",
         dy: 1,
-        dx: size + 3,
-        "font-size": fontSize != null ? fontSize : void 8
+        dx: size + 3 + dx,
+        "font-size": store.fontSize != null ? store.fontSize : void 8
       });
     });
     offset = [0, 0];
     max = [0, 0];
+    this.select('text.label').remove();
+    if (store.label) {
+      label = this.append('text').attr({
+        'class': 'label'
+      }).text(store.label);
+      label.attr({
+        "font-size": store.fontSize != null ? store.fontSize * 1.1 : void 8,
+        "font-weight": 'bold',
+        "dominant-baseline": 'hanging'
+      });
+      if ((ref$ = store.orient) === 'bottom' || ref$ === 'top') {
+        offset[0] += label[0][0].getBBox().width + store.padding[0] || 10;
+      } else {
+        offset[1] += label[0][0].getBBox().height + store.padding[1] || 5;
+      }
+    }
     return this.selectAll('g.legend').each(function(d, i){
       var node, ref$, w, h;
       node = d3.select(this).attr({
@@ -1020,7 +1205,8 @@ plotd3.rwd.legend = function(fontSize){
             transform: "translate(" + offset[0] + " " + offset[1] + ")"
           });
         }
-        return offset[1] += h + (store.padding[1] || 5);
+        offset[1] += h + (store.padding[1] || 5);
+        return offset[1] += store.type === 'radius' ? 3 : 0;
       }
     });
   };
@@ -1032,7 +1218,7 @@ plotd3.rwd.legend = function(fontSize){
     box = store.group[0][0].getBBox();
     return [box.width, box.height];
   };
-  ['type', 'marker', 'tickValues', 'ticks', 'orient', 'scale', 'size', 'padding'].map(function(k){
+  ['label', 'fontSize', 'type', 'marker', 'tickValues', 'ticks', 'orient', 'scale', 'size', 'padding'].map(function(k){
     return ret[k] = function(k){
       return function(it){
         if (!it) {
@@ -1045,8 +1231,8 @@ plotd3.rwd.legend = function(fontSize){
   });
   return ret;
 };
-plotd3.rwd.axis = function(fontSize){
-  var store, axis, ret, k, v;
+plotd3.rwd.axis = function(){
+  var store, axis, ret, k, v, render;
   store = {};
   axis = d3.svg.axis();
   ret = function(){
@@ -1061,47 +1247,98 @@ plotd3.rwd.axis = function(fontSize){
   ret.offset = function(){
     return this._offset;
   };
+  render = function(group, sizes, offset, orient){
+    var mid, node;
+    mid = (sizes[0] + sizes[1]) / 2;
+    group.select('text.label').remove();
+    group.call(axis);
+    group.selectAll('text').attr({
+      "font-size": store.fontSize != null ? store.fontSize : void 8
+    });
+    if (orient === 'bottom') {
+      setTimeout(function(){
+        return group.selectAll('.tick text').attr({
+          "dy": "0.71em"
+        });
+      }, 0);
+    }
+    if (store.label) {
+      node = group.append('text').attr({
+        'class': 'label'
+      }).text(store.label);
+      if (store.fontSize != null) {
+        node.attr({
+          "font-size": store.fontSize
+        });
+      }
+      if (orient === 'bottom' || orient === 'top') {
+        if (store.labelPosition === 'in') {
+          return node.attr({
+            transform: "translate(" + sizes[1] + " -3)",
+            "text-anchor": "end"
+          });
+        } else {
+          return node.attr({
+            transform: "translate(" + mid + " " + (offset + 5) + ")",
+            "text-anchor": "middle"
+          });
+        }
+      } else {
+        if (store.labelPosition === 'in') {
+          return node.attr({
+            transform: "translate(0 " + sizes[0] + ") rotate(-90)",
+            dy: "1em",
+            "text-anchor": "end"
+          });
+        } else {
+          return node.attr({
+            transform: "translate(" + (-offset - 5) + " " + mid + ") rotate(-90)",
+            "text-anchor": "middle"
+          });
+        }
+      }
+    }
+  };
   ret.autotick = function(group, args){
-    var ref$, scale, orient, sizes, size, its, ots, tp, offset, format, tickHeight, count, ticks, step, gbox, pbox;
+    var ref$, scale, orient, sizes, size, its, ots, tp, offset, format, ticks, tickHeight, count, step, gbox, pbox;
     args == null && (args = []);
     axis.apply(group, args);
     ref$ = [axis.scale(), axis.orient()], scale = ref$[0], orient = ref$[1];
-    sizes = scale.range();
-    size = sizes[1] - sizes[0];
+    if (scale.rangeExtent) {
+      sizes = scale.rangeExtent();
+    } else {
+      sizes = scale.range();
+      sizes = [sizes[0], sizes[1]];
+      sizes.sort();
+    }
+    size = Math.abs(sizes[1] - sizes[0]);
     ref$ = [axis.innerTickSize(), axis.outerTickSize(), axis.tickPadding()], its = ref$[0], ots = ref$[1], tp = ref$[2];
     offset = d3.max([its, ots]) + tp + 1;
     format = axis.tickFormat();
+    ticks = scale.ticks
+      ? axis.tickValues() || scale.ticks(axis.ticks())
+      : scale.domain();
     if (orient === 'left' || orient === 'right') {
-      tickHeight = d3.max(group.selectAll('text')[0].map(function(d, i){
+      tickHeight = d3.max(group.selectAll('.tick text')[0].map(function(d, i){
         return d.getBBox().height;
       }));
-      count = size / (2 * tickHeight || 16);
-      ticks = scale.ticks
-        ? axis.tickValues() || scale.ticks(axis.ticks())
-        : scale.domain();
+      count = size / (1.4 * tickHeight || 14);
       count = Math.ceil(ticks.length / count);
       ticks = ticks.filter(function(d, i){
         return !(i % count);
       });
       axis.tickValues(ticks);
-      if (fontSize != null) {
-        group.call(axis).selectAll('text').attr({
-          "font-size": fontSize
-        });
-      }
-      this._offset = d3.max(group.selectAll('text')[0].map(function(d, i){
+      render(group, sizes, offset, orient);
+      this._offset = d3.max(group.selectAll('.tick text')[0].map(function(d, i){
         return d.getBBox().width;
       }));
       this._offset += offset;
     } else {
-      ticks = scale.ticks
-        ? axis.tickValues() || scale.ticks(axis.ticks())
-        : scale.domain();
-      group.call(axis);
-      step = 2 * d3.max(group.selectAll('text')[0].map(function(d, i){
+      render(group, sizes, offset, orient);
+      step = 1.15 * d3.max(group.selectAll('.tick text')[0].map(function(d, i){
         return d.getBBox().width;
       }));
-      tickHeight = d3.max(group.selectAll('text')[0].map(function(d, i){
+      tickHeight = d3.max(group.selectAll('.tick text')[0].map(function(d, i){
         return d.getBBox().height;
       }));
       count = Math.ceil(ticks.length / (size / step));
@@ -1111,12 +1348,9 @@ plotd3.rwd.axis = function(fontSize){
       axis.tickValues(ticks);
       this._offset = tickHeight + offset;
     }
-    if (group) {
-      if (fontSize != null) {
-        group.call(axis).selectAll('text').attr({
-          "font-size": fontSize
-        });
-      }
+    render(group, sizes, this._offset, orient);
+    if (store.label && store.labelPosition !== 'in') {
+      this._offset += group.select('text.label')[0][0].getBBox().height + 5;
     }
     if (group && false) {
       gbox = group[0][0].getBBox();
@@ -1154,6 +1388,17 @@ plotd3.rwd.axis = function(fontSize){
       }
     }
   };
+  ['fontSize', 'label', 'labelPosition'].map(function(k){
+    return ret[k] = function(k){
+      return function(it){
+        if (it == null) {
+          return store[k];
+        }
+        store[k] = it;
+        return ret;
+      };
+    }(k);
+  });
   return ret;
   function fn$(k){
     return function(){

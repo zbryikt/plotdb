@@ -14,7 +14,6 @@ plotdb.view = do
   chart: (chart, {theme, fields, root, data}={}) ->
     @_ = {handler: {}, _chart: JSON.stringify(chart), chart, fields, root, inited: false}
     if chart =>
-      delete chart.assets
       @_.chart = chart = eval(chart.code.content) <<< chart
     plotdb.chart.update-config chart, chart.config
     plotdb.chart.update-assets chart, chart.assets

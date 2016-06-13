@@ -15,6 +15,7 @@
 .pdb-title {
   text-align: center;
 }
+/* deprecated START */
 .pdb-legend {
   text-align: center;
 }
@@ -28,7 +29,7 @@
   background: rgba(255,255,255,0.5);
   transform: scale(1.2);
 }
-.pdb-legend .entry .mark {
+.pdb-legend .entry .marker {
   display: inline-block;
   width: 14px;
   height: 14px;
@@ -40,6 +41,19 @@
   display: inline-block;
   vertical-align: middle;
 }
+.hover-box,
+.hover-margin {
+  position: absolute;
+  z-index: 99999;
+  pointer-events: none;
+}
+.hover-box {
+  border: 1px dashed #f00;
+}
+.hover-margin {
+  border: 1px dashed rgba(255,192,0,0.5);
+}
+/* deprecated END */
 .pdb-popup {
   position: absolute;
   background: #000;
@@ -48,11 +62,7 @@
   border-radius: 5px;
   display: none;
 }
-.pdb-popup .title,
-.popup .desc {
-  margin-left: 23px;
-}
-.pdb-popup .mark {
+.pdb-popup.marker {
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -116,18 +126,6 @@
 }
 .pdb-popup.float .value {
   font-size: 0.9em;
-}
-.hover-box,
-.hover-margin {
-  position: absolute;
-  z-index: 99999;
-  pointer-events: none;
-}
-.hover-box {
-  border: 1px dashed #f00;
-}
-.hover-margin {
-  border: 1px dashed rgba(255,192,0,0.5);
 }
 .axis .domain,
 .axis .tick line {

@@ -28,7 +28,7 @@
   background: rgba(255,255,255,0.5);
   transform: scale(1.2);
 }
-.pdb-legend .entry .mark {
+.pdb-legend .entry .marker {
   display: inline-block;
   width: 14px;
   height: 14px;
@@ -48,11 +48,7 @@
   border-radius: 5px;
   display: none;
 }
-.pdb-popup .title,
-.popup .desc {
-  margin-left: 23px;
-}
-.pdb-popup .mark {
+.pdb-popup.marker {
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -103,6 +99,10 @@
   font-size: 1.2em;
   font-weight: bold;
   margin: 0;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .pdb-popup.float .desc {
   font-weight: bold;

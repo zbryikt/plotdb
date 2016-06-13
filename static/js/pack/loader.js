@@ -716,7 +716,6 @@ plotdb.view = {
       inited: false
     };
     if (chart) {
-      delete chart.assets;
       this._.chart = chart = import$(eval(chart.code.content), chart);
     }
     plotdb.chart.updateConfig(chart, chart.config);
