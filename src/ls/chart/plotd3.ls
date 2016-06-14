@@ -8,6 +8,9 @@ plotd3.html.tooltip = (root, sel, cb) ->
       ..on \mousemove, (d,i) ->
         rbox = d3.select root .0.0.getBoundingClientRect!
         box = @getBoundingClientRect! #TODO getBBox fallback?
+        if store.coord =>
+          [left,top,width,height] = store.coord.call @, d, i
+          box = {left,top,width,height}
         ret.fire \mousemove, d, i, @
         popup.attr class: "pdb-popup tooltip " + "left"
         isLeft = if box.left > rbox.width/2 + rbox.left => true else false
@@ -61,6 +64,7 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
       ..on \mouseout, ret.hide
       ..on \mousemove, (d,i) ->
         [x,y] = [d3.event.clientX, d3.event.clientY]
+        if store.coord => [x,y,width,height] = store.coord.call @, d, i
         ret.fire \mousemove, d, i, @
         popup.style display: \block
         pbox = popup.0.0.getBoundingClientRect!
@@ -72,7 +76,9 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
         if x > + rbox.width - pbox.width - 10 => x = rbox.width - pbox.width - 10
         popup.style {top: "#{y}px", left: "#{x}px"}
     ret
-
+  ret.coord = (cb) ->
+    if cb? => store.coord = cb else return store.coord
+    ret
   ret.call = (cb) -> cb.call popup.0.0
   ret.show = (x, y) ->
     popup.style display: \block
@@ -86,7 +92,9 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
       popup.style "font-size": "#{fs}px"
       return ret
     else return store.fontSize
-  ret.on = (event, cb) -> store.handler[][event].push(cb)
+  ret.on = (event, cb) ->
+    store.handler[][event].push(cb)
+    ret
   ret.type = (type) ->
     if !type => return store.type
     store.type = type
@@ -250,6 +258,7 @@ plotd3.rwd.axis = ->
       @_offset = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.width)
       @_offset += offset
     else
+      #TODO implement multiLine ticks
       render group, sizes, offset, orient
       step = 1.15 * d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.width)
       tickHeight = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.height)
@@ -261,7 +270,7 @@ plotd3.rwd.axis = ->
     if store.label and store.labelPosition != 'in' =>
       # top, left, bottom, right all use height since it's made by rotation in left / right case
       @_offset += (group.select \text.label .0.0.getBBox!height + 5)
-    if group and false => # move boundary tick inward
+    if store.boundaryTickInside => # move boundary tick inward
       gbox = group.0.0.getBBox!
       pbox = group.select \path .0.0.getBBox!
       if orient in <[left right]> =>
@@ -283,7 +292,7 @@ plotd3.rwd.axis = ->
             origin = d3.select(@).attr \transform
             return "#origin translate(#{(pbox.width - gbox.width) - (gbox.x - pbox.x)} 0)"
 
-  <[fontSize label labelPosition]>.map (k) ->
+  <[fontSize label labelPosition multiLine boundaryTickInside]>.map (k) ->
     ret[k] = ((k)-> ->
       if !it? => return store[k]
       store[k] = it

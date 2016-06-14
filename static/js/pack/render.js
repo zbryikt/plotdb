@@ -5575,9 +5575,18 @@ plotd3.html.tooltip = function(root, sel, cb){
     var x$;
     x$ = sel;
     x$.on('mousemove', function(d, i){
-      var rbox, box, isLeft, update;
+      var rbox, box, ref$, left, top, width, height, isLeft, update;
       rbox = d3.select(root)[0][0].getBoundingClientRect();
       box = this.getBoundingClientRect();
+      if (store.coord) {
+        ref$ = store.coord.call(this, d, i), left = ref$[0], top = ref$[1], width = ref$[2], height = ref$[3];
+        box = {
+          left: left,
+          top: top,
+          width: width,
+          height: height
+        };
+      }
       ret.fire('mousemove', d, i, this);
       popup.attr({
         'class': "pdb-popup tooltip " + "left"
@@ -5694,8 +5703,11 @@ plotd3.html.popup = function(root, sel, cb, store){
     x$ = sel;
     x$.on('mouseout', ret.hide);
     x$.on('mousemove', function(d, i){
-      var ref$, x, y, pbox, rbox;
+      var ref$, x, y, width, height, pbox, rbox;
       ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
+      if (store.coord) {
+        ref$ = store.coord.call(this, d, i), x = ref$[0], y = ref$[1], width = ref$[2], height = ref$[3];
+      }
       ret.fire('mousemove', d, i, this);
       popup.style({
         display: 'block'
@@ -5718,6 +5730,14 @@ plotd3.html.popup = function(root, sel, cb, store){
         left: x + "px"
       });
     });
+    return ret;
+  };
+  ret.coord = function(cb){
+    if (cb != null) {
+      store.coord = cb;
+    } else {
+      return store.coord;
+    }
     return ret;
   };
   ret.call = function(cb){
@@ -5752,7 +5772,8 @@ plotd3.html.popup = function(root, sel, cb, store){
   };
   ret.on = function(event, cb){
     var ref$;
-    return ((ref$ = store.handler)[event] || (ref$[event] = [])).push(cb);
+    ((ref$ = store.handler)[event] || (ref$[event] = [])).push(cb);
+    return ret;
   };
   ret.type = function(type){
     var that;
@@ -6037,7 +6058,7 @@ plotd3.rwd.axis = function(){
     if (store.label && store.labelPosition !== 'in') {
       this._offset += group.select('text.label')[0][0].getBBox().height + 5;
     }
-    if (group && false) {
+    if (store.boundaryTickInside) {
       gbox = group[0][0].getBBox();
       pbox = group.select('path')[0][0].getBBox();
       if (orient === 'left' || orient === 'right') {
@@ -6073,7 +6094,7 @@ plotd3.rwd.axis = function(){
       }
     }
   };
-  ['fontSize', 'label', 'labelPosition'].map(function(k){
+  ['fontSize', 'label', 'labelPosition', 'multiLine', 'boundaryTickInside'].map(function(k){
     return ret[k] = function(k){
       return function(it){
         if (it == null) {
