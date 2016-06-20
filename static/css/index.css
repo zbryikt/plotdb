@@ -1698,6 +1698,10 @@ a.dropdown-toggle {
 #visualization-canvas2 .closebtn {
   display: none;
 }
+#visualization-canvas2 .dropdown {
+  bottom: 5px;
+  left: 5px;
+}
 #code-editor.fullscreen,
 #visualization-canvas2.fullscreen {
   position: fixed;

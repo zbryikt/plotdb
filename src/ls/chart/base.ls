@@ -35,11 +35,13 @@ plotdb <<< do
     test: -> !!!/(rgba?|hsla?)\([0-9.,]+\)|#[0-9a-f]{3,6}|[a-z0-9]+/.exec(it.trim!)
     default: \#dc4521
     Gray: \#cccccc
-    Positive: \#4c4
-    Negative: \#c44
+    Positive: \#3f7ab5
+    Negative: \#d93510
+    Neutral: \#777777
     subtype: do
       negative: "negative"
       positive: "positive"
+      neutral: "neutral"
   Palette: do
     name: \Palette
     level: 5

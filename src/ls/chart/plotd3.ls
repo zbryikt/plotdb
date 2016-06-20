@@ -57,8 +57,9 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
   ret = ->
   ret.hide = (d,i) ->
     if d? and i? => ret.fire \mouseout, d, i, @
-    if store.hide-popup => clearTimeout store.hide-popup
-    store.hide-popup = setTimeout (-> popup.style {display: \none}), 1000
+    if ret.hide-popup => clearTimeout ret.hide-popup
+    ret.hide-popup = setTimeout (-> popup.style {display: \none}), 1000
+  ret.getPopupNode = -> popup
   ret.nodes = (sel) ->
     sel
       ..on \mouseout, ret.hide
@@ -283,14 +284,10 @@ plotd3.rwd.axis = ->
             origin = d3.select(@).attr \transform
             return "#origin translate(0 #{-((pbox.height - gbox.height) - (gbox.y - pbox.y))})"
       else if orient in <[bottom top]> =>
-        group.select \g.tick:first-of-type .attr do
-          transform: ->
-            origin = d3.select(@).attr \transform
-            "#origin translate(#{pbox.x - gbox.x} 0)"
-        group.select \g.tick:last-of-type .attr do
-          transform: ->
-            origin = d3.select(@).attr \transform
-            return "#origin translate(#{(pbox.width - gbox.width) - (gbox.x - pbox.x)} 0)"
+        group.select 'g.tick:first-of-type text' .style do
+          "text-anchor": \start
+        group.select 'g.tick:last-of-type text' .style do
+          "text-anchor": \end
 
   <[fontSize label labelPosition multiLine boundaryTickInside]>.map (k) ->
     ret[k] = ((k)-> ->

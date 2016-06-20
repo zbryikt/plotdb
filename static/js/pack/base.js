@@ -7394,11 +7394,13 @@ import$(plotdb, {
     },
     'default': '#dc4521',
     Gray: '#cccccc',
-    Positive: '#4c4',
-    Negative: '#c44',
+    Positive: '#3f7ab5',
+    Negative: '#d93510',
+    Neutral: '#777777',
     subtype: {
       negative: "negative",
-      positive: "positive"
+      positive: "positive",
+      neutral: "neutral"
     }
   },
   Palette: {

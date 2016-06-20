@@ -129,14 +129,17 @@ plotd3.html.popup = function(root, sel, cb, store){
     if (d != null && i != null) {
       ret.fire('mouseout', d, i, this);
     }
-    if (store.hidePopup) {
-      clearTimeout(store.hidePopup);
+    if (ret.hidePopup) {
+      clearTimeout(ret.hidePopup);
     }
-    return store.hidePopup = setTimeout(function(){
+    return ret.hidePopup = setTimeout(function(){
       return popup.style({
         display: 'none'
       });
     }, 1000);
+  };
+  ret.getPopupNode = function(){
+    return popup;
   };
   ret.nodes = function(sel){
     var x$;
@@ -517,19 +520,11 @@ plotd3.rwd.axis = function(){
           }
         });
       } else if (orient === 'bottom' || orient === 'top') {
-        group.select('g.tick:first-of-type').attr({
-          transform: function(){
-            var origin;
-            origin = d3.select(this).attr('transform');
-            return origin + " translate(" + (pbox.x - gbox.x) + " 0)";
-          }
+        group.select('g.tick:first-of-type text').style({
+          "text-anchor": 'start'
         });
-        return group.select('g.tick:last-of-type').attr({
-          transform: function(){
-            var origin;
-            origin = d3.select(this).attr('transform');
-            return origin + " translate(" + ((pbox.width - gbox.width) - (gbox.x - pbox.x)) + " 0)";
-          }
+        return group.select('g.tick:last-of-type text').style({
+          "text-anchor": 'end'
         });
       }
     }
