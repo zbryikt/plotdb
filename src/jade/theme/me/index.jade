@@ -8,16 +8,19 @@ block body
   .spc1
   .page-header: .inner
     .title My Themes
-    .desc 35 public themes available for re-user.
+    .desc customize all your visualization with themes.
   #root.narrow.with-header
     div(ng-controller="themeList")
-      include ../widget/themes.jade
-      .loader.alone.loading.block-center.lg(ng-class="{'loading': loading}")
+      div(ng-show='themes.length>0 || loading')
+        include ../widget/themes.jade
+      .loader.alone.loading.block-center.lg(ng-class="{'loading': loading}",ng-show='loading')
       div(ng-cloak,ng-show="themes.length==0 && !loading")
         br
         br
         br
-        .text-center looks like you don't have any charts yet... why not fork from #[a(href="/chart/explore") one]? #[i.fa.fa-smile-o]
+        .text-center looks like you don't have any themes yet... why not create one now? #[i.fa.fa-smile-o]
+        br
+        .text-center: a.btn.btn-primary(href="/theme/") Create Theme
         br
         br
         br

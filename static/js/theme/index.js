@@ -112,6 +112,7 @@ x$.controller('themeList', ['$scope', '$http', 'IOService', 'Paging', 'dataServi
       var this$ = this;
       return $scope.$apply(function(){
         var data;
+        $scope.loading = false;
         data = (ret || []).map(function(it){
           return new themeService.theme(it);
         });

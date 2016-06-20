@@ -58,6 +58,7 @@ angular.module \plotDB
         payload = {} <<< Paging{offset,limit} # <<< $scope.q <<< $scope.q-lazy
         IO-service.list-remotely {name: \theme}, payload
       ), delay, reset).then (ret) -> $scope.$apply ~>
+        $scope.loading = false
         data = (ret or []).map -> new themeService.theme it
         Paging.flex-width data
         $scope.themes = (if reset or !$scope.themes => [] else $scope.themes) ++ data
