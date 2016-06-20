@@ -458,7 +458,9 @@ plotd3.rwd.axis = function(){
     } else {
       sizes = scale.range();
       sizes = [sizes[0], sizes[1]];
-      sizes.sort();
+      sizes.sort(function(a, b){
+        return a - b;
+      });
     }
     size = Math.abs(sizes[1] - sizes[0]);
     ref$ = [axis.innerTickSize(), axis.outerTickSize(), axis.tickPadding()], its = ref$[0], ots = ref$[1], tp = ref$[2];

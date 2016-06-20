@@ -4482,7 +4482,30 @@ OTHER DEALINGS IN THE SOFTWARE.
 var plotdb;
 plotdb = {};
 import$(plotdb, {
+  Order: {
+    'default': function(k, v, i){
+      return i;
+    },
+    name: 'Order',
+    test: function(){
+      [plotdb.Number, plotdb.Date, plotdb.Numstring];
+      return true;
+    },
+    parse: function(it){
+      return it;
+    },
+    sort: function(a, b){
+      if (a > b) {
+        return 1;
+      } else if (a < b) {
+        return -1;
+      } else {
+        return 0;
+      }
+    }
+  },
   Number: {
+    'default': 0,
     name: 'Number',
     test: function(it){
       return !isNaN(+it);
@@ -4492,7 +4515,18 @@ import$(plotdb, {
       return parseFloat(it);
     }
   },
+  Numstring: {
+    'default': "",
+    name: 'Numstring',
+    test: function(it){
+      return /\d+/.exec(it + "");
+    },
+    parse: function(it){
+      return it;
+    }
+  },
   String: {
+    'default': "",
     name: 'String',
     test: function(){
       return true;
@@ -4503,6 +4537,7 @@ import$(plotdb, {
     }
   },
   Date: {
+    'default': '1970/1/1',
     name: 'Date',
     level: 2,
     match: {
@@ -4555,6 +4590,7 @@ import$(plotdb, {
   },
   Choice: function(v){
     return {
+      'default': "",
       name: 'Choice',
       level: 4,
       test: function(it){
@@ -4737,6 +4773,7 @@ import$(plotdb, {
     }
   },
   Boolean: {
+    'default': true,
     name: 'Boolean',
     level: 2,
     test: function(it){
@@ -4783,7 +4820,7 @@ plotdb.chart = {
     render: function(root, data, config){}
   },
   dataFromDimension: function(dimension){
-    var data, len, k, v, i$, i, ret, that;
+    var data, len, k, v, i$, i, ret, that, type, value;
     data = [];
     len = Math.max.apply(null, (function(){
       var ref$, results$ = [];
@@ -4805,13 +4842,18 @@ plotdb.chart = {
       for (k in dimension) {
         v = dimension[k];
         if (v.multiple) {
-          ret[k] = (v.fields || (v.fields = [])).length
-            ? (v.fields || (v.fields = [])).map(fn$)
-            : [];
+          ret[k] = (v.fields || (v.fields = [])).length ? (v.fields || (v.fields = [])).map(fn$) : null;
           v.fieldName = (v.fields || (v.fields = [])).map(fn1$);
         } else {
           ret[k] = (that = (v.fields || (v.fields = []))[0]) ? (that.data || (that.data = []))[i] : null;
           v.fieldName = (that = (v.fields || (v.fields = []))[0]) ? that.name : null;
+        }
+        if (ret[k] === null) {
+          type = v.type[0] || plotdb.String;
+          value = typeof type['default'] === 'function'
+            ? type['default'](k, v, i)
+            : type['default'];
+          ret[k] = v.multiple ? [value] : value;
         }
         if ((v.type || []).filter(fn2$).length) {
           if (Array.isArray(ret[k])) {
@@ -5354,7 +5396,7 @@ $(document).ready(function(){
         }
         svgnode.removeChild(style);
       }
-      styles = document.body.querySelectorAll('#wrapper > style');
+      styles = document.querySelectorAll('html style');
       for (i$ = styles.length - 1; i$ >= 0; --i$) {
         idx = i$;
         style = styles[idx].cloneNode(true);
@@ -6020,7 +6062,9 @@ plotd3.rwd.axis = function(){
     } else {
       sizes = scale.range();
       sizes = [sizes[0], sizes[1]];
-      sizes.sort();
+      sizes.sort(function(a, b){
+        return a - b;
+      });
     }
     size = Math.abs(sizes[1] - sizes[0]);
     ref$ = [axis.innerTickSize(), axis.outerTickSize(), axis.tickPadding()], its = ref$[0], ots = ref$[1], tp = ref$[2];

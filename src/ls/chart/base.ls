@@ -1,8 +1,25 @@
 plotdb = {}
 plotdb <<< do
-  Number: name: \Number, test: (-> !isNaN(+it)), level: 3, parse: -> parseFloat(it)
-  String: name: \String, test: (-> true), level: 1, parse: -> it
+  Order: do
+    default: (k,v,i) -> i
+    name: \Order
+    #TODO type hierarchy
+    test: ->
+      [plotdb.Number,plotdb.Date,plotdb.Numstring]
+      true
+    parse: -> it
+    sort: (a,b)-> if a > b => 1 else if a < b => -1 else 0
+  Number: do
+    default: 0
+    name: \Number, test: (-> !isNaN(+it)), level: 3, parse: -> parseFloat(it)
+  Numstring: do
+    default: ""
+    name: \Numstring, test: (->/\d+/.exec("#it")), parse: -> it
+  String: do
+    default: ""
+    name: \String, test: (-> true), level: 1, parse: -> it
   Date:
+    default: \1970/1/1
     name: \Date, level: 2
     match: do
       type1: /^(\d{4})[/-](\d{1,2})[/-]\d{1,2} ((\d{1,2}):(\d{1,2})(:(\d{1,2}))?)?/
@@ -24,6 +41,7 @@ plotdb <<< do
       return d
   Choice: (v) ->
     return do
+      default: ""
       name: \Choice
       level: 4
       test: -> v and v.length and (it in v)
@@ -94,6 +112,7 @@ plotdb <<< do
         d3.scale.linear!domain domain .range range
 
   Boolean:
+    default: true
     name: \Boolean, level: 2,
     test: -> !!/^(true|false|1|0|yes|no)$/.exec(it)
     parse: ->
@@ -130,11 +149,15 @@ plotdb.chart = do
       ret = {}
       for k,v of dimension
         if v.multiple =>
-          ret[k] = if v.[]fields.length => v.[]fields.map(->it.[]data[i]) else []
+          ret[k] = if v.[]fields.length => v.[]fields.map(->it.[]data[i]) else null
           v.field-name = v.[]fields.map -> it.name
         else
           ret[k] = if v.[]fields.0 => that.[]data[i] else null
           v.field-name = if v.[]fields.0 => that.name else null
+        if ret[k] == null => # not bound dimension: we fill it with default
+          type = (v.type.0 or plotdb.String)
+          value = if (typeof(type.default) == \function) => type.default(k,v,i) else type.default
+          ret[k] = if v.multiple => [value] else value
         #TODO need correct type matching
         if (v.type or []).filter(->it.name == \Number).length =>
           if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))

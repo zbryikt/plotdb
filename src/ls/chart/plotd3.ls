@@ -243,7 +243,7 @@ plotd3.rwd.axis = ->
     else
       sizes = scale.range!
       sizes = [sizes[0], sizes[1]]
-      sizes.sort!
+      sizes.sort (a,b) -> a - b
     size = Math.abs(sizes.1 - sizes.0)
     [its,ots,tp] = [axis.innerTickSize!, axis.outerTickSize!, axis.tickPadding!]
     offset = d3.max([its,ots]) + tp + 1

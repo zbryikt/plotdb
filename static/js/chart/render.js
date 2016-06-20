@@ -191,7 +191,7 @@ $(document).ready(function(){
         }
         svgnode.removeChild(style);
       }
-      styles = document.body.querySelectorAll('#wrapper > style');
+      styles = document.querySelectorAll('html style');
       for (i$ = styles.length - 1; i$ >= 0; --i$) {
         idx = i$;
         style = styles[idx].cloneNode(true);

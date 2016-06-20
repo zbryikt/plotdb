@@ -110,7 +110,7 @@ snapshot = (type='snapshot') ->
       svgnode.removeChild(style)
     # this insert styles into svg everytime.
     # yet cloneNode(true) on svgnode will fail the png generation
-    styles = document.body.querySelectorAll('#wrapper > style')
+    styles = document.querySelectorAll('html style')
     for idx from styles.length - 1 to 0 by -1
       style = styles[idx].cloneNode(true)
       style.generated = true
