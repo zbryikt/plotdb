@@ -443,67 +443,8 @@ block body
           //-iframe#chart-renderer(ng-attr-src="{{plotdbRenderer}}",
           iframe#chart-renderer(
           style="width:100%;height:100%;border:none;background:url(/assets/img/loading-sm.svg) center center no-repeat")
-
-    include /editor/bind.jade
-    //-
-      br
-      #binding-panel.relpos.panel.panel-default(ng-controller="datasetList",ng-show="type=='chart'",ng-cloak): .panel-body
-        .pull-right.clickable(style="margin-top:5px;",
-        ng-click="dataPanel.toggle()") #[i.fa.fa-plus-circle] Add Dataset
-        h3 Data Mapping
-        .sep.light
-        .row
-
-          .col-sm-3(ng-cloak)
-            #data-fields.data-fields(style="height:337px;width:100%;overflow-y:scroll;")
-              .dataset.compact(style="border:none",ng-show="!chosen.key")
-                b choose a dataset to start
-                div: small {{datasets.length}} datasets
-              .dataset.compact(style="border:none",ng-show="chosen.key")
-                b drag field to dimension
-                div: small {{chosen.dataset.fields.length}} datasets
-
-              #field-agent.data-field(ng-drag="true",ng-drag-data="fieldAgent.data",
-              ng-drag-start="fieldAgent.drag.start()",ng-drag-stop="fieldAgent.drag.end()",ng-show="chosen.key")
-                span {{fieldAgent.data.name}}
-                small {{fieldAgent.data.type}}
-              .dataset.compact(ng-repeat="dataset in datasets",style="cursor:pointer",
-              ng-class="{'extend':chosen.key == dataset.key,'mini':chosen.key != dataset.key && chosen.key}")
-                div(ng-click="toggle(dataset)")
-                  .closebtn.inner(ng-cloak,ng-show="chosen.key == dataset.key")
-                  .title {{dataset.name}}
-                  .desc {{dataset.size|size}}, {{dataset.rows}} rows, {{dataset.fields.length}} fields
-                div
-                  .data-field(ng-repeat="field in dataset.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
-                  ng-attr-style="background:{{dataset.color}}",ng-drag="true",ng-drag-data="field")
-                    span {{field.name}}
-                    small {{field.type}}
-
-          .col-sm-9
-            #datamap-hint.step2(ng-cloak)
-              //-,ng-class="{'step1': !chosen.key, 'step2': chosen.key}")
-              //-p(ng-show="!chosen.key") #[i.fa.fa-arrow-left] select a file to map data
-              p(ng-show="chosen.key")
-                i.fa.fa-arrow-right
-                br
-                | drag
-            .dimensions
-              .dimension(ng-cloak,ng-repeat="(name,dim) in chart.dimension",ng-drop="true",
-              ng-drop-success="dimension.bind($event,dim,$data)")
-                .require(ng-show="dim.require"): i.fa.fa-asterisk
-                .title
-                  | {{name}}
-                  small(ng-cloak,ng-show="dim.multiple",
-                  style="color:#999;font-weight:200;font-size:0.7em;margin-left:5px") multi-fields
-                .desc
-                  span(ng-show="dim.desc") {{dim.desc}} #[br]
-                  i accept: #[span(ng-repeat="type in dim.type") {{type.name}}] #[span(ng-show="!dim.type.length") Any]
-                .data-field(ng-repeat="field in dim.fields")
-                  .closebtn.inner(ng-click="dimension.unbind($event, dim, field)")
-                  span {{field.name}}
-                  small {{field.type}}
-                  small in dataset "{{field.datasetname}}"
-              .dimension.flexend
+    if chart
+      include /editor/bind.jade
 
     .row(ng-show="target().key && target().owner == user.data.key",ng-cloak)
       .col-sm-12
