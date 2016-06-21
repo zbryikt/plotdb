@@ -275,14 +275,16 @@ plotd3.rwd.axis = ->
       gbox = group.0.0.getBBox!
       pbox = group.select \path .0.0.getBBox!
       if orient in <[left right]> =>
-        group.select \g.tick:first-of-type .attr do
-          transform: ->
-            origin = d3.select(@).attr \transform
-            "#origin translate(0 #{-(pbox.y - gbox.y)})"
-        group.select \g.tick:last-of-type .attr do
-          transform: ->
-            origin = d3.select(@).attr \transform
-            return "#origin translate(0 #{-((pbox.height - gbox.height) - (gbox.y - pbox.y))})"
+        group.select 'g.tick:first-of-type text' .attr do
+          dy: -store.fontSize/2
+          #transform: ->
+          # origin = d3.select(@).attr \transform
+          # "#origin translate(0 #{-(pbox.y - gbox.y)})"
+        group.select 'g.tick:last-of-type text' .attr do
+          dy: store.fontSize
+          #transform: ->
+          # origin = d3.select(@).attr \transform
+          # return "#origin translate(0 #{-((pbox.height - gbox.height) - (gbox.y - pbox.y))})"
       else if orient in <[bottom top]> =>
         group.select 'g.tick:first-of-type text' .style do
           "text-anchor": \start

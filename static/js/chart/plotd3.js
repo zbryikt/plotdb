@@ -507,19 +507,11 @@ plotd3.rwd.axis = function(){
       gbox = group[0][0].getBBox();
       pbox = group.select('path')[0][0].getBBox();
       if (orient === 'left' || orient === 'right') {
-        group.select('g.tick:first-of-type').attr({
-          transform: function(){
-            var origin;
-            origin = d3.select(this).attr('transform');
-            return origin + " translate(0 " + (-(pbox.y - gbox.y)) + ")";
-          }
+        group.select('g.tick:first-of-type text').attr({
+          dy: -store.fontSize / 2
         });
-        return group.select('g.tick:last-of-type').attr({
-          transform: function(){
-            var origin;
-            origin = d3.select(this).attr('transform');
-            return origin + " translate(0 " + (-((pbox.height - gbox.height) - (gbox.y - pbox.y))) + ")";
-          }
+        return group.select('g.tick:last-of-type text').attr({
+          dy: store.fontSize
         });
       } else if (orient === 'bottom' || orient === 'top') {
         group.select('g.tick:first-of-type text').style({
