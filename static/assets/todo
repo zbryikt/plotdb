@@ -1,0 +1,1 @@
+remove voronoijs and d3.geo.projection since they are already in /lib/
