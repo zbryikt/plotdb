@@ -112,7 +112,8 @@ init-charts-table = """create table if not exists charts (
   code jsonb,
   assets jsonb,
   permission jsonb,
-  config jsonb
+  config jsonb,
+  library text[]
 )"""
 
 alter-themes-table = """alter table themes add column chart int references charts(key)"""

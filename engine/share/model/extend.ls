@@ -92,6 +92,7 @@ base = (model) ->
       code: {type: base.file}
       assets: {required: false, type: model.type.array({type: base.file})}
       permission: {required: false, type: model.type.permission}
+      library: { required: false, type: model.type.array({type: model.type.string})}
       #TODO: add mapping or binding for dataset fields in chart
 
   base.request = new model do
