@@ -325,6 +325,12 @@ base = function(model){
       permission: {
         required: false,
         type: model.type.permission
+      },
+      library: {
+        required: false,
+        type: model.type.array({
+          type: model.type.string
+        })
       }
     }
   });

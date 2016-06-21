@@ -6,10 +6,12 @@ block vars
   - var url = "https://plotdb.com/v/chart/" + chart.key
   - var renderSrc = "pdb-viewer"
 block head
-  meta(http-equiv="Content-Security-Policy: default-src 'none'")
-  //-meta(http-equiv="Content-Security-Policy: default-src 'self'; script-src 'self' https://www.google-analytics.com; img-src 'self' data: https://www.google-analytics.com 'none'")
   title #{chart.name} by #{chart.author}
   link(rel="icon",type="image/x-icon",href="/assets/img/favicon-16.png")
+  each lib in chart.library || []
+    - var path = lib.split('/')
+    - var min = ( path[2]?'.' + path[2] : '' )
+    script(src= "/lib/" + path[0] + "/" + path[1] + "/index" + min + ".js")
 block body
   include /render/pdb-style.jade
   include /render/base-style.jade
@@ -18,11 +20,12 @@ block body
 block foot
   script(type="text/javascript",src="/js/pack/view.js")
   script(type="text/javascript").
-    var chart = !{JSON.stringify(chart)};
-    var theme = !{JSON.stringify(theme)};
-    var fields = !{JSON.stringify(fields)};
+    var chart = !{JSON.stringify(chart).replace(/<\//g, "<\\/")};
+    var theme = !{JSON.stringify(theme).replace(/<\//g, "<\\/")};
+    var fields = !{JSON.stringify(fields).replace(/<\//g, "<\\/")};
   script(type="text/javascript").
     var mychart = new plotdb.view.chart(chart, {theme: theme, fields: fields}); //, {theme: theme, fields: fields})
+    mychart.loadlib();
     mychart.attach(document.getElementById("wrapper"));
   include /ga.jade
   //-include /fb.jade

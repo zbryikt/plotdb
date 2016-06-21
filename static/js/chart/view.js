@@ -69,6 +69,10 @@ import$(plotdb.view.chart.prototype, {
       }
     });
   },
+  loadlib: function(root){
+    var libs;
+    return libs = this._.chart.library || [];
+  },
   attach: function(root){
     var ref$, chart, theme, resize;
     this._.root = root;
@@ -160,7 +164,7 @@ import$(plotdb.view.chart.prototype, {
       v.fields = (v.fields || []).map(fn$).filter(fn1$);
     }
     plotdb.chart.updateData(this._.chart);
-    if (this._.chart.parse) {
+    if (this.inited && this._.chart.parse) {
       return this._.chart.parse();
     }
     function fn$(it){

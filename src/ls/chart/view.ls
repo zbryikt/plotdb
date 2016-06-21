@@ -27,6 +27,9 @@ plotdb.view = do
 
 plotdb.view.chart.prototype <<< do
   update: -> <[resize bind render]>.map ~> if @_.chart[it] => @_.chart[it]!
+  loadlib: (root) ->
+    libs = @_.chart.library or []
+
   attach: (root) ->
     @_.root = root
     {chart, theme} = @_.{chart,theme}
@@ -82,7 +85,7 @@ plotdb.view.chart.prototype <<< do
     for k,v of @_.chart.dimension =>
       v.fields = (v.fields or []).map(->hash.get(it.key)).filter(->it)
     plotdb.chart.update-data @_.chart
-    if @_.chart.parse => @_.chart.parse!
+    if @inited and @_.chart.parse => @_.chart.parse!
 
 
 plotdb.load = (key, cb) ->

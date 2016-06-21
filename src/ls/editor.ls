@@ -144,12 +144,14 @@ angular.module \plotDB
         if !@inited => return
         if !@chart => return
         @chart.update-data!
-        payload = JSON.parse(angular.toJson({theme: @theme, chart: @chart}))
-        # trigger a full reload of renderer in case any previous code ( such as timeout recursive )
-        # and actually render it once loaded
-        $scope.render <<< {payload, rebind}
-        if !rebind => @canvas.window.postMessage {type: \render, payload, rebind}, @plotdb-domain
-        else @canvas.window.postMessage {type: \reload}, @plotdb-domain
+        $scope.library.load @chart.library .then (libhash) ~>
+          payload = JSON.parse(angular.toJson({theme: @theme, chart: @chart, library: libhash }))
+          # trigger a full reload of renderer in case any previous code ( such as timeout recursive )
+          # and actually render it once loaded
+          $scope.render <<< {payload, rebind}
+          if !rebind => @canvas.window.postMessage {type: \render, payload, rebind}, @plotdb-domain
+          else @canvas.window.postMessage {type: \reload}, @plotdb-domain
+
       render-async: (rebind = true) ->
         if @parse.theme.pending or @parse.chart.pending => return
         if !@chart => return
@@ -210,6 +212,26 @@ angular.module \plotDB
 
     #########  Behaviors  ################################################################
     $scope <<< do
+      library: do
+        hash: {}
+        load: (list) ->
+          if !list => list = $scope.chart.library or []
+          tasks = list.map(-> [it, it.split '/']).filter(~> !@hash[it.0])
+          Promise.all(for item in tasks =>
+            ((item) ~> new Promise (res, rej) ~>
+              url = item.1
+              url = "/lib/#{url.0}/#{url.1}/index.#{if url.2 => that+'.' else ''}js"
+              $http url: url, method: \GET
+                .success (js) ~>
+                  bloburl = URL.createObjectURL new Blob [js], {type: \text/javascript}
+                  @hash[item.0] = bloburl
+                  res!
+            ) item
+          ) .then ~>
+            ret = {}
+            list.map ~> ret[it] = @hash[it]
+            ret
+
       tooltip: do
         show: (e) -> setTimeout (->$(e.target).tooltip('show')), 0
 
@@ -349,6 +371,7 @@ angular.module \plotDB
           $scope.$watch 'chart.visualencoding', ~> @chart.visualencoding = it
           $scope.$watch 'chart.category', ~> @chart.category = it
           $scope.$watch 'chart.tags', ~> @chart.tags = it
+          $scope.$watch 'chart.library', ~> @chart.library = it
         toggle: -> @toggled = !!!@toggled
         toggled: false
         chart: do
@@ -356,6 +379,8 @@ angular.module \plotDB
           visualencoding: null
           category: null
           tags: null
+          library: null
+        tab: 0
       data-panel: do
         toggle: -> @toggled = !!!@toggled
         toggled: false

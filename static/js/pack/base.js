@@ -3743,7 +3743,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       return this.render();
     },
     render: function(rebind){
-      var payload, ref$;
+      var this$ = this;
       rebind == null && (rebind = true);
       if (!this.inited) {
         return;
@@ -3752,24 +3752,28 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         return;
       }
       this.chart.updateData();
-      payload = JSON.parse(angular.toJson({
-        theme: this.theme,
-        chart: this.chart
-      }));
-      ref$ = $scope.render;
-      ref$.payload = payload;
-      ref$.rebind = rebind;
-      if (!rebind) {
-        return this.canvas.window.postMessage({
-          type: 'render',
-          payload: payload,
-          rebind: rebind
-        }, this.plotdbDomain);
-      } else {
-        return this.canvas.window.postMessage({
-          type: 'reload'
-        }, this.plotdbDomain);
-      }
+      return $scope.library.load(this.chart.library).then(function(libhash){
+        var payload, ref$;
+        payload = JSON.parse(angular.toJson({
+          theme: this$.theme,
+          chart: this$.chart,
+          library: libhash
+        }));
+        ref$ = $scope.render;
+        ref$.payload = payload;
+        ref$.rebind = rebind;
+        if (!rebind) {
+          return this$.canvas.window.postMessage({
+            type: 'render',
+            payload: payload,
+            rebind: rebind
+          }, this$.plotdbDomain);
+        } else {
+          return this$.canvas.window.postMessage({
+            type: 'reload'
+          }, this$.plotdbDomain);
+        }
+      });
     },
     renderAsync: function(rebind){
       var this$ = this;
@@ -3900,6 +3904,53 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     }
   });
   import$($scope, {
+    library: {
+      hash: {},
+      load: function(list){
+        var tasks, item, this$ = this;
+        if (!list) {
+          list = $scope.chart.library || [];
+        }
+        tasks = list.map(function(it){
+          return [it, it.split('/')];
+        }).filter(function(it){
+          return !this$.hash[it[0]];
+        });
+        return Promise.all((function(){
+          var i$, ref$, len$, results$ = [];
+          for (i$ = 0, len$ = (ref$ = tasks).length; i$ < len$; ++i$) {
+            item = ref$[i$];
+            results$.push(fn$(item));
+          }
+          return results$;
+          function fn$(item){
+            return new Promise(function(res, rej){
+              var url, that;
+              url = item[1];
+              url = "/lib/" + url[0] + "/" + url[1] + "/index." + ((that = url[2]) ? that + '.' : '') + "js";
+              return $http({
+                url: url,
+                method: 'GET'
+              }).success(function(js){
+                var bloburl;
+                bloburl = URL.createObjectURL(new Blob([js], {
+                  type: 'text/javascript'
+                }));
+                this$.hash[item[0]] = bloburl;
+                return res();
+              });
+            });
+          }
+        }())).then(function(){
+          var ret;
+          ret = {};
+          list.map(function(it){
+            return ret[it] = this$.hash[it];
+          });
+          return ret;
+        });
+      }
+    },
     tooltip: {
       show: function(e){
         return setTimeout(function(){
@@ -4133,8 +4184,11 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         $scope.$watch('chart.category', function(it){
           return this$.chart.category = it;
         });
-        return $scope.$watch('chart.tags', function(it){
+        $scope.$watch('chart.tags', function(it){
           return this$.chart.tags = it;
+        });
+        return $scope.$watch('chart.library', function(it){
+          return this$.chart.library = it;
         });
       },
       toggle: function(){
@@ -4145,8 +4199,10 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         basetype: null,
         visualencoding: null,
         category: null,
-        tags: null
-      }
+        tags: null,
+        library: null
+      },
+      tab: 0
     },
     dataPanel: {
       toggle: function(){

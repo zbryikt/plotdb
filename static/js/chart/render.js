@@ -229,7 +229,7 @@ $(document).ready(function(){
     }
   };
   render = function(payload, rebind){
-    var ref$, code, style, doc, data, assets, dimension, config, theme, reboot, ret, node, promise, e;
+    var ref$, code, style, doc, data, assets, dimension, config, theme, reboot, ret, node, head, script, k, urljs, n, promise, e;
     rebind == null && (rebind = true);
     ref$ = ['code', 'style', 'doc'].map(function(it){
       return (payload.chart || (payload.chart = {}))[it].content;
@@ -259,6 +259,16 @@ $(document).ready(function(){
           node.setAttribute("id", "wrapper");
           node.setAttribute("class", "pdb-root");
           document.body.appendChild(node);
+        }
+        head = document.getElementsByTagName("head")[0];
+        script = document.getElementsByTagName("script");
+        script = script[script.length - 1];
+        for (k in ref$ = payload.library) {
+          urljs = ref$[k];
+          n = document.createElement("script");
+          n.setAttribute("type", "text/javascript");
+          n.setAttribute("src", urljs);
+          head.appendChild(n);
         }
         $(node).html(["<style type='text/css'>/* <![CDATA[ */" + style + "/* ]]> */</style>", (theme.style || (theme.style = {})).content ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div id='container' style='position:relative;width:100%;height:100%;'>", "<div style='height:0'>&nbsp;</div>", doc, (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8, "</div>"].join(""));
         promise = properEval(code);

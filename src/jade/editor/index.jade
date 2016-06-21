@@ -22,10 +22,10 @@ mixin SaveFork
 block head
   if chart
     script.
-      window.chart = !{JSON.stringify(chart)}
+      window.chart = !{JSON.stringify(chart).replace(/<\//g, "<\\/")}
   if theme
     script.
-      window.theme = !{JSON.stringify(theme)}
+      window.theme = !{JSON.stringify(theme).replace(/<\//g, "<\\/")}}
 block body
   .spc1
   #root.pleditor(ng-controller="plEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
@@ -34,7 +34,13 @@ block body
       .closebtn(ng-click="settingPanel.toggle()")
       h3 Settings
       br
-      div(style="width: 80%;margin:auto")
+      ul.nav.nav-tabs
+        li.clickable(ng-class="{'active': settingPanel.tab == 0}",ng-click="settingPanel.tab=0"): a General
+        li.clickable(ng-class="{'active': settingPanel.tab == 1}",ng-show="type=='chart'",
+        ng-click="settingPanel.tab=1"): a Library
+
+      div(ng-show="settingPanel.tab == 0",style="width: 80%;margin:auto")
+        br
         .pull-right(ng-cloak,ng-show="target().parent")
           span derived from 
           //TODO fetch parent name
@@ -92,7 +98,6 @@ block body
           option(value="5") Statistics
           option(value="6") Business
           option(value="99") Other
-
         br
         label Tags
         div: select#editor-setting-tags.form-control(multiple="multiple",
@@ -104,6 +109,11 @@ block body
           | backuped at {{backup.last.timestamp|date}}.&nbsp;
           a(href="#",ng-click="backup.recover()") Recover
         p.grayed(ng-cloak,ng-show="!backup.list.length") No backup found.
+      div(ng-show="settingPanel.tab == 1",style="width: 80%;margin:auto")
+        br
+        select.form-control(multiple="multiple",ngselect2,ng-data="settingPanel.chart.library")
+          option(value="worldmap/0.1.0") worldmap 0.1.0
+          option(value="topojson/1.6.24/min") topojson 1.6.24
       div
         hr(style="margin-bottom:10px")
         .btn.btn-default(ng-click="clone()") Make a copy

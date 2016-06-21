@@ -157,6 +157,14 @@ render = (payload, rebind = true) ->
         node.setAttribute("class", "pdb-root")
         document.body.appendChild(node)
       # the first space in container is crucial for elliminating margin collapsing
+      head = document.getElementsByTagName("head")[0]
+      script = document.getElementsByTagName("script")
+      script = script[script.length - 1]
+      for k,urljs of payload.library =>
+        n = document.createElement("script")
+        n.setAttribute("type", "text/javascript")
+        n.setAttribute("src", urljs)
+        head.appendChild(n)
       $(node).html([
         "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style>"
         "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme.{}style.content
