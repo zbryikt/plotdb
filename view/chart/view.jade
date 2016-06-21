@@ -6,6 +6,8 @@ block vars
   - var url = "https://plotdb.com/v/chart/" + chart.key
   - var renderSrc = "pdb-viewer"
 block head
+  meta(http-equiv="Content-Security-Policy: default-src 'none'")
+  //-meta(http-equiv="Content-Security-Policy: default-src 'self'; script-src 'self' https://www.google-analytics.com; img-src 'self' data: https://www.google-analytics.com 'none'")
   title #{chart.name} by #{chart.author}
   link(rel="icon",type="image/x-icon",href="/assets/img/favicon-16.png")
 block body
@@ -23,4 +25,4 @@ block foot
     var mychart = new plotdb.view.chart(chart, {theme: theme, fields: fields}); //, {theme: theme, fields: fields})
     mychart.attach(document.getElementById("wrapper"));
   include /ga.jade
-  include /fb.jade
+  //-include /fb.jade
