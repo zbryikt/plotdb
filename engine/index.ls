@@ -14,6 +14,14 @@ backend = do
     session-store = -> @ <<< authio.session
     session-store.prototype = express-session.Store.prototype
     app = express!
+    app.use (req, res, next) ->
+      res.setHeader \Content-Security-Policy, [
+        "default-src 'self'"
+        "script-src 'self' https://www.google-analytics.com 'unsafe-inline' 'unsafe-eval'"
+        "style-src 'self' https://www.google-analytics.com 'unsafe-inline'"
+        "img-src 'self' data: https://www.google-analytics.com 'none'"
+      ].join("; ")
+      next!
     app.use body-parser.json limit: config.limit
     app.use body-parser.urlencoded extended: true, limit: config.limit
     app.set 'view engine', 'jade'
