@@ -1226,12 +1226,17 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         });
       },
       handle: function(files){
-        var i$, len$, file, results$ = [];
-        for (i$ = 0, len$ = files.length; i$ < len$; ++i$) {
-          file = files[i$];
-          results$.push(this.read(file));
-        }
-        return results$;
+        var file;
+        return Promise.all((function(){
+          var i$, ref$, len$, results$ = [];
+          for (i$ = 0, len$ = (ref$ = files).length; i$ < len$; ++i$) {
+            file = ref$[i$];
+            results$.push(this.read(file));
+          }
+          return results$;
+        }.call(this))).then(function(){
+          return $scope.renderAsync();
+        });
       },
       node: null,
       init: function(){
@@ -1265,6 +1270,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         return this$.renderAsync();
       });
       this.$watch($scope.type + ".style.content", function(){
+        return this$.renderAsync();
+      });
+      this.$watch($scope.type + ".assets.length", function(){
         return this$.renderAsync();
       });
       this.$watch('theme', function(theme){

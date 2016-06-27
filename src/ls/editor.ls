@@ -630,7 +630,8 @@ angular.module \plotDB
             $scope.$apply-async -> file <<< {type, content}
             res file
           fr.readAsDataURL fobj
-        handle: (files) -> for file in files => @read file
+        handle: (files) -> 
+          Promise.all [@read(file) for file in files] .then -> $scope.render-async!
         node: null
         init: ->
           @node = $('#code-editor-assets input')
@@ -644,6 +645,7 @@ angular.module \plotDB
         @$watch "#{$scope.type}.code.content", ~> @countline!
         @$watch "#{$scope.type}.doc.content", ~> @render-async!
         @$watch "#{$scope.type}.style.content", ~> @render-async!
+        @$watch "#{$scope.type}.assets.length", ~> @render-async!
         @$watch 'theme', (theme) ~>
           @render-async!
           if @chart => @chart.theme = if theme => theme.key else null
