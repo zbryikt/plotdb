@@ -36,6 +36,9 @@ backend = do
         <[frame-src
           'self' blob: http://staticxx.facebook.com/
         ]>
+        <[connect-src
+          'self' data: blob:
+        ]>
       ].map(-> it.join(" ")).join("; ")
       next!
     app.use body-parser.json limit: config.limit
