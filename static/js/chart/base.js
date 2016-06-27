@@ -136,7 +136,7 @@ import$(plotdb, {
     Gray: '#cccccc',
     Positive: '#3f7ab5',
     Negative: '#d93510',
-    Neutral: '#777777',
+    Neutral: '#cccccc',
     subtype: {
       negative: "negative",
       positive: "positive",
@@ -595,10 +595,13 @@ plotdb.d3.popup = function(root, sel, cb){
 };
 plotdb.data = {
   sample: {
-    country: ['Afghanistan', 'Albania', 'Antarctica', 'Algeria', 'American', 'Samoa', 'Andorra', 'Angola', 'Antigua', 'and', 'Barbuda', 'Azerbaijan', 'Argentina', 'Australia', 'Austria', 'Bahamas', 'Bahrain', 'Bangladesh', 'Armenia', 'Barbados', 'Belgium', 'Bermuda', 'Bhutan', 'Bolivia', 'Bosnia', 'and', 'Herzegovina', 'Botswana', 'Bouvet', 'Island', 'Brazil', 'Belize', 'British', 'Indian', 'Ocean', 'Territory', 'Solomon', 'Islands', 'British', 'Virgin', 'Islands', 'Brunei', 'Bulgaria', 'Myanmar', 'Burundi', 'Belarus', 'Cambodia', 'Cameroon', 'Canada', 'Cape', 'Verde', 'Cayman', 'Islands', 'Central', 'African', 'Republic', 'Sri', 'Lanka', 'Chad', 'Chile', 'China', 'Taiwan', 'Christmas', 'Island', 'Cocos', 'Keeling', 'Islands', 'Colombia', 'Comoros', 'Mayotte', 'Congo', 'Rep.', 'Congo', 'Dem.', 'Rep.', 'Cook', 'Islands', 'Costa', 'Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech', 'Republic', 'Benin', 'Denmark', 'Dominica', 'Dominican', 'Republic', 'Ecuador', 'El', 'Salvador', 'Equatorial', 'Guinea', 'Ethiopia', 'Eritrea', 'Estonia', 'Faroe', 'Islands', 'Falkland', 'Islands', 'SGSSI', 'Fiji', 'Finland', 'Åland', 'Islands', 'France', 'French', 'Guiana', 'French', 'Polynesia', 'French', 'Southern', 'Territories', 'Djibouti', 'Gabon', 'Georgia', 'Gambia', 'Palestine', 'Germany', 'Ghana', 'Gibraltar', 'Kiribati', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guinea', 'Guyana', 'Haiti', 'HIMI', 'Holy', 'See', 'Honduras', 'Hong', 'Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Cote', 'd\'Ivoire', 'Jamaica', 'Japan', 'Kazakhstan', 'Jordan', 'Kenya', 'North', 'Korea', 'South', 'Korea', 'Kuwait', 'Kyrgyz', 'Republic', 'Lao', 'Lebanon', 'Lesotho', 'Latvia', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Martinique', 'Mauritania', 'Mauritius', 'Mexico', 'Monaco', 'Mongolia', 'Moldova', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Oman', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'Curaçao', 'Aruba', 'Sint', 'Maarten', 'Bonaire', 'Sint', 'Eustatius', 'and', 'Saba', 'New', 'Caledonia', 'Vanuatu', 'New', 'Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk', 'Island', 'Norway', 'Northern', 'Mariana', 'Islands', 'United', 'States', 'Minor', 'Outlying', 'Islands', 'Micronesia', 'Fed.', 'Sts.', 'Marshall', 'Islands', 'Palau', 'Pakistan', 'Panama', 'Papua', 'New', 'Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'Guinea-Bissau', 'Timor-Leste', 'Puerto', 'Rico', 'Qatar', 'Réunion', 'Romania', 'Russia', 'Rwanda', 'Saint', 'Barthélemy', 'Saint', 'Helena', 'Ascension', 'and', 'Tristan', 'da', 'Cunha', 'Saint', 'Kitts', 'and', 'Nevis', 'Anguilla', 'St.', 'Lucia', 'Saint', 'Martin', 'Saint', 'Pierre', 'and', 'Miquelon', 'St.', 'Vincent', 'and', 'the', 'Grenadines', 'San', 'Marino', 'Sao', 'Tome', 'and', 'Principe', 'Saudi', 'Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra', 'Leone', 'Singapore', 'Slovak', 'Republic', 'Vietnam', 'Slovenia', 'Somalia', 'South', 'Africa', 'Zimbabwe', 'Spain', 'South', 'Sudan', 'Sudan', 'Western', 'Sahara', 'Suriname', 'Svalbard', 'and', 'Jan', 'Mayen', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Tajikistan', 'Thailand', 'Togo', 'Tokelau', 'Tonga', 'Trinidad', 'and', 'Tobago', 'United', 'Arab', 'Emirates', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks', 'and', 'Caicos', 'Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'Macedonia', 'FYR', 'Egypt', 'United', 'Kingdom', 'Guernsey', 'Jersey', 'Isle', 'of', 'Man', 'Tanzania', 'United', 'States', 'Virgin', 'Islands', 'Burkina', 'Faso', 'Uruguay', 'Uzbekistan', 'Venezuela', 'Wallis', 'and', 'Futuna', 'Samoa', 'Yemen', 'Zambia'],
+    country: ["Afghanistan", "Albania", "Antarctica", "Algeria", "American Samoa", "Andorra", "Angola", "Antigua and Barbuda", "Azerbaijan", "Argentina", "Australia", "Austria", "Bahamas", "Bahrain", "Bangladesh", "Armenia", "Barbados", "Belgium", "Bermuda", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "Belize", "British Indian Ocean Territory", "Solomon Islands", "British Virgin Islands", "Brunei", "Bulgaria", "Myanmar", "Burundi", "Belarus", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central African Republic", "Sri Lanka", "Chad", "Chile", "China", "Taiwan", "Christmas Island", "Cocos Keeling Islands", "Colombia", "Comoros", "Mayotte", "Congo, Rep.", "Congo, Dem. Rep.", "Cook Islands", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Benin", "Denmark", "Dominica", "Dominican Republic", "Ecuador", "El Salvador", "Equatorial Guinea", "Ethiopia", "Eritrea", "Estonia", "Faroe Islands", "Falkland Islands", "SGSSI", "Fiji", "Finland", "Åland Islands", "France", "French Guiana", "French Polynesia", "French Southern Territories", "Djibouti", "Gabon", "Georgia", "Gambia", "Palestine", "Germany", "Ghana", "Gibraltar", "Kiribati", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guinea", "Guyana", "Haiti", "HIMI", "Holy See", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Cote d'Ivoire", "Jamaica", "Japan", "Kazakhstan", "Jordan", "Kenya", "North Korea", "South Korea", "Kuwait", "Kyrgyz Republic", "Lao", "Lebanon", "Lesotho", "Latvia", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Martinique", "Mauritania", "Mauritius", "Mexico", "Monaco", "Mongolia", "Moldova", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Oman", "Namibia", "Nauru", "Nepal", "Netherlands", "Curaçao", "Aruba", "Sint Maarten", "Bonaire, Sint Eustatius and Saba", "New Caledonia", "Vanuatu", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "Norway", "Northern Mariana Islands", "United States Minor Outlying Islands", "Micronesia, Fed. Sts.", "Marshall Islands", "Palau", "Pakistan", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcairn", "Poland", "Portugal", "Guinea-Bissau", "Timor-Leste", "Puerto Rico", "Qatar", "Réunion", "Romania", "Russia", "Rwanda", "Saint Barthélemy", "Saint Helena, Ascension and Tristan da Cunha", "Saint Kitts and Nevis", "Anguilla", "St. Lucia", "Saint Martin", "Saint Pierre and Miquelon", "St. Vincent and the Grenadines", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovak Republic", "Vietnam", "Slovenia", "Somalia", "South Africa", "Zimbabwe", "Spain", "South Sudan", "Sudan", "Western Sahara", "Suriname", "Svalbard and Jan Mayen", "Swaziland", "Sweden", "Switzerland", "Syria", "Tajikistan", "Thailand", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "United Arab Emirates", "Tunisia", "Turkey", "Turkmenistan", "Turks and Caicos Islands", "Tuvalu", "Uganda", "Ukraine", "Macedonia, FYR", "Egypt", "United Kingdom", "Guernsey", "Jersey", "Isle of Man", "Tanzania", "United States", "Virgin Islands", "Burkina Faso", "Uruguay", "Uzbekistan", "Venezuela", "Wallis and Futuna", "Samoa", "Yemen", "Zambia"],
+    continent: ['Asia', 'Europe', 'America', 'Oceania', 'Australia', 'Africa'],
     category: ['IT', 'RD', 'GM', 'FIN', 'LEGAL', 'HR', 'SALES', 'BD'],
-    name: ['James', 'Joe', 'Amelie', 'Doraemon', 'Cindy', 'David', 'Frank', 'Kim', 'Ken', 'Leland', 'Mike', 'Nick', 'Oliver', 'Randy'],
+    name: ['James', 'Joe', 'Amelie', 'Yale', 'Doraemon', 'Cindy', 'David', 'Frank', 'Kim', 'Ken', 'Leland', 'Mike', 'Nick', 'Oliver', 'Randy', 'Andy', 'Angelica', 'Zack', 'Alfred', 'Edward', 'Thomas', 'Percy', 'Frankenstein', 'Mary', 'Toby', 'Tim', 'Timonthy', 'Smith', 'Karen', 'Kenny', 'Jim', 'Victor', 'Xavier', 'Jimmy', 'Bob', 'Cynthia', 'Dory', 'Dolce', 'Kirby', 'Gabriel', 'Gabby', 'Watson', 'Wade', 'Wallace', 'Gasper', 'Karmen', 'Ian', 'Larry', 'Rachel', 'Parker', 'Parry', 'Eagle', 'Falcon', 'Hades', 'Helen', 'Sabrinaa', 'Oscar', 'Victoria'],
     fruit: ['Apple', 'Orange', 'Banana', 'Grape', 'Longan', 'Litchi', 'Peach', 'Guava', 'Melon', 'Pineapple', 'Pomelo', 'Durian', 'Berry', 'Pear'],
+    weekday: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     generate: function(dimension){
       var ret, res$, i$, to$, i, node, k, v;
       res$ = [];
@@ -620,13 +623,47 @@ plotdb.data = {
     }
   }
 };
-plotdb.rand = function(){
-  return this[parseInt(Math.random() * this.length)];
-};
-plotdb.data.sample.name.rand = plotdb.rand;
-plotdb.data.sample.country.rand = plotdb.rand;
-plotdb.data.sample.category.rand = plotdb.rand;
-plotdb.data.sample.fruit.rand = plotdb.rand;
+(function(){
+  var helper, target, k;
+  helper = {
+    get: function(idx){
+      return this[idx % this.length];
+    },
+    order: function(len){
+      var ret, i$, i;
+      ret = new Array(len);
+      for (i$ = 0; i$ < len; ++i$) {
+        i = i$;
+        ret[i] = this[i % this.length];
+      }
+      return ret;
+    },
+    rand: function(){
+      return this[parseInt(Math.random() * this.length)];
+    },
+    rands: function(len){
+      var ret, i$, i;
+      ret = new Array(len);
+      for (i$ = 0; i$ < len; ++i$) {
+        i = i$;
+        ret[i] = this[parseInt(Math.random() * this.length)];
+      }
+      return ret;
+    }
+  };
+  target = ['name', 'country', 'category', 'fruit', 'weekday', 'month', 'continent'];
+  return (function(){
+    var results$ = [];
+    for (k in helper) {
+      results$.push(k);
+    }
+    return results$;
+  }()).map(function(h){
+    return target.map(function(t){
+      return plotdb.data.sample[t][h] = helper[h];
+    });
+  });
+})();
 import$(plotdb.data.sample, {
   crimeanWar: {
     "month": {

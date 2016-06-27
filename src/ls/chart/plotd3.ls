@@ -5,21 +5,21 @@ plotd3.html.tooltip = (root, sel, cb) ->
   popup = store.popup
   ret.nodes = (sel) ->
     sel
+      ..on \mouseover, (d,i) -> ret.fire \mouseover, d, i, @
       ..on \mousemove, (d,i) ->
-        rbox = d3.select root .0.0.getBoundingClientRect!
+        rbox = root.getBoundingClientRect!
         box = @getBoundingClientRect! #TODO getBBox fallback?
         if store.coord =>
           [left,top,width,height] = store.coord.call @, d, i
           box = {left,top,width,height}
         ret.fire \mousemove, d, i, @
-        popup.attr class: "pdb-popup tooltip " + "left"
         isLeft = if box.left > rbox.width/2 + rbox.left => true else false
         popup.attr class: "pdb-popup tooltip #{if isLeft => 'left' else 'right'}"
         update = ->
           pbox = popup.0.0.getBoundingClientRect!
-          popup.style top: "#{box.top + box.height / 2 - pbox.height/2}px", opacity: 1
-          if isLeft => popup.style left: "#{box.left - pbox.width - 10}px"
-          else popup.style left: "#{box.left + box.width + 10}px"
+          popup.style top: "#{box.top + box.height / 2 - pbox.height/2 - rbox.top}px", opacity: 1
+          if isLeft => popup.style left: "#{box.left - pbox.width - 10 - rbox.left}px"
+          else popup.style left: "#{box.left + box.width + 10 - rbox.left}px"
         if popup.style("display") != \block =>
           popup.style display: \block, opacity: 0.01
           setTimeout update, 0
@@ -62,6 +62,7 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
   ret.getPopupNode = -> popup
   ret.nodes = (sel) ->
     sel
+      ..on \mouseover, (d,i) -> ret.fire \mouseove, d, i, @
       ..on \mouseout, ret.hide
       ..on \mousemove, (d,i) ->
         [x,y] = [d3.event.clientX, d3.event.clientY]
@@ -105,6 +106,39 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
   ret.type \float
   ret
 
+plotd3.rwd.overlap = ->
+  store = {padding: [10,5]}
+  ret = ->
+  ret.nodes = (sel,accessor=(->it)) ->
+    bbox = sel[0].map (d,i) -> [d.getBBox!, accessor(d3.select(d).datum!,i),1,i]
+    if store.fitText => bbox.forEach (d) ->
+      b = d.0
+      center = (b.top + b.height / 2)
+      b.top = center - b.height * (store.fitText/2)
+      b.height = b.height * ( 1 - store.fitText)
+    bbox.sort (a,b) -> b.1 - a.1
+    for i from 0 til bbox.length
+      if !bbox[i].2 => continue
+      for j from i + 1 til bbox.length
+        [ni,nj] = [bbox[i].0, bbox[j].0]
+        if !(nj.x > ni.x + ni.width or nj.x + nj.width < ni.x or
+        nj.y > ni.y + ni.height or nj.y + nj.height < ni.y) => bbox[j].2 = 0
+    bbox.forEach (d) ->
+      data = d3.select(sel[0][d.3]).datum!
+      if !data => return
+      data.overlap = !!!d.2
+      if store.opacity => d3.select(sel[0][d.3]).attr opacity: (if d.2 => 1 else (store.opacity or 0))
+      if store.remove and !d.2 => d3.select(sel[0][d.3]).remove!
+    sel
+  <[remove opacity fitText]>.map (k) ->
+    ret[k] = ((k)-> ->
+      if !it? => return store[k]
+      store[k] = it
+      return ret
+    ) k
+
+  ret
+
 plotd3.rwd.legend = ->
   store = {padding: [10,5]}
   ret = ->
@@ -124,7 +158,7 @@ plotd3.rwd.legend = ->
       if store.type == \radius and !d => return
       node = d3.select @
       node.select \text
-        ..text d
+        ..text "#d"
         ..attr "font-size", store.font-size if store.font-size?
       size = node.select \text .0.0.getBBox!height * 0.8
       if store.marker => store.marker.call (node.select \path.marker .0.0), d, i
@@ -199,7 +233,7 @@ plotd3.rwd.legend = ->
 
 #TODO: axis labelPosition : add right, left, middle.
 plotd3.rwd.axis = ->
-  store = {}
+  store = {orient: "bottom"}
   axis = d3.svg.axis!
   ret = -> ret.autotick @, arguments
   for k,v of axis =>
@@ -215,6 +249,51 @@ plotd3.rwd.axis = ->
     group.call axis
     group.selectAll \text .attr do
       "font-size": store.font-size if store.font-size?
+    if orient == \radius =>
+      scale = axis.scale!
+      ticks = (if scale.ticks => (axis.tickValues! or scale.ticks(axis.ticks!)) else scale.domain!)
+      group.selectAll \path.textpath .data(ticks or [])
+        ..exit!remove!
+        ..enter!append \path .attr class: \textpath
+      group.selectAll \path.textpath .attr do
+        id: (d,i) -> "plotd3-rwd-axis-radius-#d-#i"
+        fill: \none
+        stroke: \#999
+        display: \none if !store.showGrid
+        "stroke-width": 1
+        d: (d,i) ->
+          r = scale(d)
+          "M1 #{-r} A#r #r 0 1 1 0 #{-r}"
+      group.selectAll \.tick .attr do
+        transform: (d,i) ->
+          if store.showGrid => return "translate(0 0)"
+          x = scale(d) * Math.sin((store.angle or 0))
+          y = scale(d) * -Math.cos((store.angle or 0))
+          "translate(#x #y)"
+      group.selectAll '.tick line' .attr display: \none
+      group.selectAll '.tick text'
+        .attr do
+          x: 0, y: 0, dx: 1, dy: -2,
+          transform: "rotate(#{180 * store.angle / Math.PI})" if !store.showGrid
+        .style do
+          "text-anchor": \start
+      if store.showGrid => group.selectAll '.tick text' .each (d,i) ->
+        d3.select @ .text ""
+        d3.select @ .selectAll \textPath .data [1] .enter!append \textPath
+          ..attr do
+            "xlink:href": -> "\#plotd3-rwd-axis-radius-#d-#i"
+            "startOffset": "#{store.angle * 100 /(Math.PI * 2)}%"
+            "spacing": "auto"
+          ..text d
+
+      group.select \.domain .attr do
+        d: ->
+          domain = scale.domain!
+          x1 = scale(domain[0]) * Math.sin(store.angle or 0)
+          y1 = scale(domain[0]) * -Math.cos(store.angle or 0)
+          x2 = scale(domain[* - 1]) * Math.sin(store.angle or 0)
+          y2 = scale(domain[* - 1]) * -Math.cos(store.angle or 0)
+          "M#x1 #y1 L#x2 #y2"
     if orient == \bottom =>
       setTimeout (->group.selectAll '.tick text' .attr "dy": "0.71em"), 0
     if store.label =>
@@ -224,21 +303,29 @@ plotd3.rwd.axis = ->
         if store.labelPosition == 'in' => node.attr do
           transform: "translate(#{sizes.1} -3)"
           "text-anchor": "end"
-        else node.attr do
-          transform: "translate(#mid #{offset + 5})"
-          "text-anchor": "middle"
+        else
+          dy = offset + 5
+          if orient == \bottom => dy += store.font-size or 0
+          else dy *= -1
+          node.attr do
+            transform: "translate(#mid #dy)"
+            "text-anchor": "middle"
       else =>
         if store.labelPosition == 'in' => node.attr do
           transform: "translate(0 #{sizes.0}) rotate(-90)"
           dy: "1em"
           "text-anchor": "end"
-        else node.attr do
-          transform: "translate(#{-offset - 5} #mid) rotate(-90)"
-          "text-anchor": "middle"
+        else
+          dx = (offset + 5)
+          if orient == \right => dx += store.font-size or 0
+          else dx *= -1
+          node.attr do
+            transform: "translate(#dx #mid) rotate(-90)"
+            "text-anchor": "middle"
 
   ret.autotick = (group, args = []) ->
     axis.apply group, args
-    [scale,orient] = [axis.scale!, axis.orient!]
+    [scale,orient] = [axis.scale!, store.orient]
     if scale.rangeExtent => sizes = scale.rangeExtent!
     else
       sizes = scale.range!
@@ -275,26 +362,21 @@ plotd3.rwd.axis = ->
       gbox = group.0.0.getBBox!
       pbox = group.select \path .0.0.getBBox!
       if orient in <[left right]> =>
-        group.select 'g.tick:first-of-type text' .attr do
-          dy: -store.fontSize/2
-          #transform: ->
-          # origin = d3.select(@).attr \transform
-          # "#origin translate(0 #{-(pbox.y - gbox.y)})"
-        group.select 'g.tick:last-of-type text' .attr do
-          dy: store.fontSize
-          #transform: ->
-          # origin = d3.select(@).attr \transform
-          # return "#origin translate(0 #{-((pbox.height - gbox.height) - (gbox.y - pbox.y))})"
+        group.select 'g.tick:first-of-type text' .attr dy: -store.fontSize/2
+        group.select 'g.tick:last-of-type text' .attr dy: store.fontSize
       else if orient in <[bottom top]> =>
-        group.select 'g.tick:first-of-type text' .style do
-          "text-anchor": \start
-        group.select 'g.tick:last-of-type text' .style do
-          "text-anchor": \end
+        group.select 'g.tick:first-of-type text' .style "text-anchor": \start
+        group.select 'g.tick:last-of-type text' .style "text-anchor": \end
 
-  <[fontSize label labelPosition multiLine boundaryTickInside]>.map (k) ->
+  <[fontSize label labelPosition multiLine boundaryTickInside angle showGrid]>.map (k) ->
     ret[k] = ((k)-> ->
       if !it? => return store[k]
       store[k] = it
       return ret
     ) k
+  ret.orient = ->
+    if !it? => return store.orient
+    store.orient = it
+    axis.orient it
+    return ret
   ret

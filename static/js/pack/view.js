@@ -146,7 +146,7 @@ import$(plotdb, {
     Gray: '#cccccc',
     Positive: '#3f7ab5',
     Negative: '#d93510',
-    Neutral: '#777777',
+    Neutral: '#cccccc',
     subtype: {
       negative: "negative",
       positive: "positive",
@@ -605,10 +605,13 @@ plotdb.d3.popup = function(root, sel, cb){
 };
 plotdb.data = {
   sample: {
-    country: ['Afghanistan', 'Albania', 'Antarctica', 'Algeria', 'American', 'Samoa', 'Andorra', 'Angola', 'Antigua', 'and', 'Barbuda', 'Azerbaijan', 'Argentina', 'Australia', 'Austria', 'Bahamas', 'Bahrain', 'Bangladesh', 'Armenia', 'Barbados', 'Belgium', 'Bermuda', 'Bhutan', 'Bolivia', 'Bosnia', 'and', 'Herzegovina', 'Botswana', 'Bouvet', 'Island', 'Brazil', 'Belize', 'British', 'Indian', 'Ocean', 'Territory', 'Solomon', 'Islands', 'British', 'Virgin', 'Islands', 'Brunei', 'Bulgaria', 'Myanmar', 'Burundi', 'Belarus', 'Cambodia', 'Cameroon', 'Canada', 'Cape', 'Verde', 'Cayman', 'Islands', 'Central', 'African', 'Republic', 'Sri', 'Lanka', 'Chad', 'Chile', 'China', 'Taiwan', 'Christmas', 'Island', 'Cocos', 'Keeling', 'Islands', 'Colombia', 'Comoros', 'Mayotte', 'Congo', 'Rep.', 'Congo', 'Dem.', 'Rep.', 'Cook', 'Islands', 'Costa', 'Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech', 'Republic', 'Benin', 'Denmark', 'Dominica', 'Dominican', 'Republic', 'Ecuador', 'El', 'Salvador', 'Equatorial', 'Guinea', 'Ethiopia', 'Eritrea', 'Estonia', 'Faroe', 'Islands', 'Falkland', 'Islands', 'SGSSI', 'Fiji', 'Finland', 'Åland', 'Islands', 'France', 'French', 'Guiana', 'French', 'Polynesia', 'French', 'Southern', 'Territories', 'Djibouti', 'Gabon', 'Georgia', 'Gambia', 'Palestine', 'Germany', 'Ghana', 'Gibraltar', 'Kiribati', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guinea', 'Guyana', 'Haiti', 'HIMI', 'Holy', 'See', 'Honduras', 'Hong', 'Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Cote', 'd\'Ivoire', 'Jamaica', 'Japan', 'Kazakhstan', 'Jordan', 'Kenya', 'North', 'Korea', 'South', 'Korea', 'Kuwait', 'Kyrgyz', 'Republic', 'Lao', 'Lebanon', 'Lesotho', 'Latvia', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macao', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Martinique', 'Mauritania', 'Mauritius', 'Mexico', 'Monaco', 'Mongolia', 'Moldova', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Oman', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'Curaçao', 'Aruba', 'Sint', 'Maarten', 'Bonaire', 'Sint', 'Eustatius', 'and', 'Saba', 'New', 'Caledonia', 'Vanuatu', 'New', 'Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'Norfolk', 'Island', 'Norway', 'Northern', 'Mariana', 'Islands', 'United', 'States', 'Minor', 'Outlying', 'Islands', 'Micronesia', 'Fed.', 'Sts.', 'Marshall', 'Islands', 'Palau', 'Pakistan', 'Panama', 'Papua', 'New', 'Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn', 'Poland', 'Portugal', 'Guinea-Bissau', 'Timor-Leste', 'Puerto', 'Rico', 'Qatar', 'Réunion', 'Romania', 'Russia', 'Rwanda', 'Saint', 'Barthélemy', 'Saint', 'Helena', 'Ascension', 'and', 'Tristan', 'da', 'Cunha', 'Saint', 'Kitts', 'and', 'Nevis', 'Anguilla', 'St.', 'Lucia', 'Saint', 'Martin', 'Saint', 'Pierre', 'and', 'Miquelon', 'St.', 'Vincent', 'and', 'the', 'Grenadines', 'San', 'Marino', 'Sao', 'Tome', 'and', 'Principe', 'Saudi', 'Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra', 'Leone', 'Singapore', 'Slovak', 'Republic', 'Vietnam', 'Slovenia', 'Somalia', 'South', 'Africa', 'Zimbabwe', 'Spain', 'South', 'Sudan', 'Sudan', 'Western', 'Sahara', 'Suriname', 'Svalbard', 'and', 'Jan', 'Mayen', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Tajikistan', 'Thailand', 'Togo', 'Tokelau', 'Tonga', 'Trinidad', 'and', 'Tobago', 'United', 'Arab', 'Emirates', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks', 'and', 'Caicos', 'Islands', 'Tuvalu', 'Uganda', 'Ukraine', 'Macedonia', 'FYR', 'Egypt', 'United', 'Kingdom', 'Guernsey', 'Jersey', 'Isle', 'of', 'Man', 'Tanzania', 'United', 'States', 'Virgin', 'Islands', 'Burkina', 'Faso', 'Uruguay', 'Uzbekistan', 'Venezuela', 'Wallis', 'and', 'Futuna', 'Samoa', 'Yemen', 'Zambia'],
+    country: ["Afghanistan", "Albania", "Antarctica", "Algeria", "American Samoa", "Andorra", "Angola", "Antigua and Barbuda", "Azerbaijan", "Argentina", "Australia", "Austria", "Bahamas", "Bahrain", "Bangladesh", "Armenia", "Barbados", "Belgium", "Bermuda", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "Belize", "British Indian Ocean Territory", "Solomon Islands", "British Virgin Islands", "Brunei", "Bulgaria", "Myanmar", "Burundi", "Belarus", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central African Republic", "Sri Lanka", "Chad", "Chile", "China", "Taiwan", "Christmas Island", "Cocos Keeling Islands", "Colombia", "Comoros", "Mayotte", "Congo, Rep.", "Congo, Dem. Rep.", "Cook Islands", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Benin", "Denmark", "Dominica", "Dominican Republic", "Ecuador", "El Salvador", "Equatorial Guinea", "Ethiopia", "Eritrea", "Estonia", "Faroe Islands", "Falkland Islands", "SGSSI", "Fiji", "Finland", "Åland Islands", "France", "French Guiana", "French Polynesia", "French Southern Territories", "Djibouti", "Gabon", "Georgia", "Gambia", "Palestine", "Germany", "Ghana", "Gibraltar", "Kiribati", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guinea", "Guyana", "Haiti", "HIMI", "Holy See", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Cote d'Ivoire", "Jamaica", "Japan", "Kazakhstan", "Jordan", "Kenya", "North Korea", "South Korea", "Kuwait", "Kyrgyz Republic", "Lao", "Lebanon", "Lesotho", "Latvia", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Martinique", "Mauritania", "Mauritius", "Mexico", "Monaco", "Mongolia", "Moldova", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Oman", "Namibia", "Nauru", "Nepal", "Netherlands", "Curaçao", "Aruba", "Sint Maarten", "Bonaire, Sint Eustatius and Saba", "New Caledonia", "Vanuatu", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "Norway", "Northern Mariana Islands", "United States Minor Outlying Islands", "Micronesia, Fed. Sts.", "Marshall Islands", "Palau", "Pakistan", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcairn", "Poland", "Portugal", "Guinea-Bissau", "Timor-Leste", "Puerto Rico", "Qatar", "Réunion", "Romania", "Russia", "Rwanda", "Saint Barthélemy", "Saint Helena, Ascension and Tristan da Cunha", "Saint Kitts and Nevis", "Anguilla", "St. Lucia", "Saint Martin", "Saint Pierre and Miquelon", "St. Vincent and the Grenadines", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovak Republic", "Vietnam", "Slovenia", "Somalia", "South Africa", "Zimbabwe", "Spain", "South Sudan", "Sudan", "Western Sahara", "Suriname", "Svalbard and Jan Mayen", "Swaziland", "Sweden", "Switzerland", "Syria", "Tajikistan", "Thailand", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "United Arab Emirates", "Tunisia", "Turkey", "Turkmenistan", "Turks and Caicos Islands", "Tuvalu", "Uganda", "Ukraine", "Macedonia, FYR", "Egypt", "United Kingdom", "Guernsey", "Jersey", "Isle of Man", "Tanzania", "United States", "Virgin Islands", "Burkina Faso", "Uruguay", "Uzbekistan", "Venezuela", "Wallis and Futuna", "Samoa", "Yemen", "Zambia"],
+    continent: ['Asia', 'Europe', 'America', 'Oceania', 'Australia', 'Africa'],
     category: ['IT', 'RD', 'GM', 'FIN', 'LEGAL', 'HR', 'SALES', 'BD'],
-    name: ['James', 'Joe', 'Amelie', 'Doraemon', 'Cindy', 'David', 'Frank', 'Kim', 'Ken', 'Leland', 'Mike', 'Nick', 'Oliver', 'Randy'],
+    name: ['James', 'Joe', 'Amelie', 'Yale', 'Doraemon', 'Cindy', 'David', 'Frank', 'Kim', 'Ken', 'Leland', 'Mike', 'Nick', 'Oliver', 'Randy', 'Andy', 'Angelica', 'Zack', 'Alfred', 'Edward', 'Thomas', 'Percy', 'Frankenstein', 'Mary', 'Toby', 'Tim', 'Timonthy', 'Smith', 'Karen', 'Kenny', 'Jim', 'Victor', 'Xavier', 'Jimmy', 'Bob', 'Cynthia', 'Dory', 'Dolce', 'Kirby', 'Gabriel', 'Gabby', 'Watson', 'Wade', 'Wallace', 'Gasper', 'Karmen', 'Ian', 'Larry', 'Rachel', 'Parker', 'Parry', 'Eagle', 'Falcon', 'Hades', 'Helen', 'Sabrinaa', 'Oscar', 'Victoria'],
     fruit: ['Apple', 'Orange', 'Banana', 'Grape', 'Longan', 'Litchi', 'Peach', 'Guava', 'Melon', 'Pineapple', 'Pomelo', 'Durian', 'Berry', 'Pear'],
+    weekday: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     generate: function(dimension){
       var ret, res$, i$, to$, i, node, k, v;
       res$ = [];
@@ -630,13 +633,47 @@ plotdb.data = {
     }
   }
 };
-plotdb.rand = function(){
-  return this[parseInt(Math.random() * this.length)];
-};
-plotdb.data.sample.name.rand = plotdb.rand;
-plotdb.data.sample.country.rand = plotdb.rand;
-plotdb.data.sample.category.rand = plotdb.rand;
-plotdb.data.sample.fruit.rand = plotdb.rand;
+(function(){
+  var helper, target, k;
+  helper = {
+    get: function(idx){
+      return this[idx % this.length];
+    },
+    order: function(len){
+      var ret, i$, i;
+      ret = new Array(len);
+      for (i$ = 0; i$ < len; ++i$) {
+        i = i$;
+        ret[i] = this[i % this.length];
+      }
+      return ret;
+    },
+    rand: function(){
+      return this[parseInt(Math.random() * this.length)];
+    },
+    rands: function(len){
+      var ret, i$, i;
+      ret = new Array(len);
+      for (i$ = 0; i$ < len; ++i$) {
+        i = i$;
+        ret[i] = this[parseInt(Math.random() * this.length)];
+      }
+      return ret;
+    }
+  };
+  target = ['name', 'country', 'category', 'fruit', 'weekday', 'month', 'continent'];
+  return (function(){
+    var results$ = [];
+    for (k in helper) {
+      results$.push(k);
+    }
+    return results$;
+  }()).map(function(h){
+    return target.map(function(t){
+      return plotdb.data.sample[t][h] = helper[h];
+    });
+  });
+})();
 import$(plotdb.data.sample, {
   crimeanWar: {
     "month": {
@@ -938,9 +975,12 @@ plotd3.html.tooltip = function(root, sel, cb){
   ret.nodes = function(sel){
     var x$;
     x$ = sel;
+    x$.on('mouseover', function(d, i){
+      return ret.fire('mouseover', d, i, this);
+    });
     x$.on('mousemove', function(d, i){
       var rbox, box, ref$, left, top, width, height, isLeft, update;
-      rbox = d3.select(root)[0][0].getBoundingClientRect();
+      rbox = root.getBoundingClientRect();
       box = this.getBoundingClientRect();
       if (store.coord) {
         ref$ = store.coord.call(this, d, i), left = ref$[0], top = ref$[1], width = ref$[2], height = ref$[3];
@@ -952,9 +992,6 @@ plotd3.html.tooltip = function(root, sel, cb){
         };
       }
       ret.fire('mousemove', d, i, this);
-      popup.attr({
-        'class': "pdb-popup tooltip " + "left"
-      });
       isLeft = box.left > rbox.width / 2 + rbox.left ? true : false;
       popup.attr({
         'class': "pdb-popup tooltip " + (isLeft ? 'left' : 'right')
@@ -963,16 +1000,16 @@ plotd3.html.tooltip = function(root, sel, cb){
         var pbox;
         pbox = popup[0][0].getBoundingClientRect();
         popup.style({
-          top: (box.top + box.height / 2 - pbox.height / 2) + "px",
+          top: (box.top + box.height / 2 - pbox.height / 2 - rbox.top) + "px",
           opacity: 1
         });
         if (isLeft) {
           return popup.style({
-            left: (box.left - pbox.width - 10) + "px"
+            left: (box.left - pbox.width - 10 - rbox.left) + "px"
           });
         } else {
           return popup.style({
-            left: (box.left + box.width + 10) + "px"
+            left: (box.left + box.width + 10 - rbox.left) + "px"
           });
         }
       };
@@ -1068,6 +1105,9 @@ plotd3.html.popup = function(root, sel, cb, store){
   ret.nodes = function(sel){
     var x$;
     x$ = sel;
+    x$.on('mouseover', function(d, i){
+      return ret.fire('mouseove', d, i, this);
+    });
     x$.on('mouseout', ret.hide);
     x$.on('mousemove', function(d, i){
       var ref$, x, y, width, height, pbox, rbox;
@@ -1161,6 +1201,78 @@ plotd3.html.popup = function(root, sel, cb, store){
   ret.type('float');
   return ret;
 };
+plotd3.rwd.overlap = function(){
+  var store, ret;
+  store = {
+    padding: [10, 5]
+  };
+  ret = function(){};
+  ret.nodes = function(sel, accessor){
+    var bbox, i$, to$, i, j$, to1$, j, ref$, ni, nj;
+    accessor == null && (accessor = function(it){
+      return it;
+    });
+    bbox = sel[0].map(function(d, i){
+      return [d.getBBox(), accessor(d3.select(d).datum(), i), 1, i];
+    });
+    if (store.fitText) {
+      bbox.forEach(function(d){
+        var b, center;
+        b = d[0];
+        center = b.top + b.height / 2;
+        b.top = center - b.height * (store.fitText / 2);
+        return b.height = b.height * (1 - store.fitText);
+      });
+    }
+    bbox.sort(function(a, b){
+      return b[1] - a[1];
+    });
+    for (i$ = 0, to$ = bbox.length; i$ < to$; ++i$) {
+      i = i$;
+      if (!bbox[i][2]) {
+        continue;
+      }
+      for (j$ = i + 1, to1$ = bbox.length; j$ < to1$; ++j$) {
+        j = j$;
+        ref$ = [bbox[i][0], bbox[j][0]], ni = ref$[0], nj = ref$[1];
+        if (!(nj.x > ni.x + ni.width || nj.x + nj.width < ni.x || nj.y > ni.y + ni.height || nj.y + nj.height < ni.y)) {
+          bbox[j][2] = 0;
+        }
+      }
+    }
+    bbox.forEach(function(d){
+      var data;
+      data = d3.select(sel[0][d[3]]).datum();
+      if (!data) {
+        return;
+      }
+      data.overlap = !d[2];
+      if (store.opacity) {
+        d3.select(sel[0][d[3]]).attr({
+          opacity: d[2]
+            ? 1
+            : store.opacity || 0
+        });
+      }
+      if (store.remove && !d[2]) {
+        return d3.select(sel[0][d[3]]).remove();
+      }
+    });
+    return sel;
+  };
+  ['remove', 'opacity', 'fitText'].map(function(k){
+    return ret[k] = function(k){
+      return function(it){
+        if (it == null) {
+          return store[k];
+        }
+        store[k] = it;
+        return ret;
+      };
+    }(k);
+  });
+  return ret;
+};
 plotd3.rwd.legend = function(){
   var store, ret;
   store = {
@@ -1197,7 +1309,7 @@ plotd3.rwd.legend = function(){
       }
       node = d3.select(this);
       x$ = node.select('text');
-      x$.text(d);
+      x$.text(d + "");
       if (store.fontSize != null) {
         x$.attr("font-size", store.fontSize);
       }
@@ -1306,7 +1418,9 @@ plotd3.rwd.legend = function(){
 };
 plotd3.rwd.axis = function(){
   var store, axis, ret, k, v, render;
-  store = {};
+  store = {
+    orient: "bottom"
+  };
   axis = d3.svg.axis();
   ret = function(){
     return ret.autotick(this, arguments);
@@ -1321,13 +1435,88 @@ plotd3.rwd.axis = function(){
     return this._offset;
   };
   render = function(group, sizes, offset, orient){
-    var mid, node;
+    var mid, scale, ticks, x$, node, dy, dx;
     mid = (sizes[0] + sizes[1]) / 2;
     group.select('text.label').remove();
     group.call(axis);
     group.selectAll('text').attr({
       "font-size": store.fontSize != null ? store.fontSize : void 8
     });
+    if (orient === 'radius') {
+      scale = axis.scale();
+      ticks = scale.ticks
+        ? axis.tickValues() || scale.ticks(axis.ticks())
+        : scale.domain();
+      x$ = group.selectAll('path.textpath').data(ticks || []);
+      x$.exit().remove();
+      x$.enter().append('path').attr({
+        'class': 'textpath'
+      });
+      group.selectAll('path.textpath').attr({
+        id: function(d, i){
+          return "plotd3-rwd-axis-radius-" + d + "-" + i;
+        },
+        fill: 'none',
+        stroke: '#999',
+        display: !store.showGrid ? 'none' : void 8,
+        "stroke-width": 1,
+        d: function(d, i){
+          var r;
+          r = scale(d);
+          return "M1 " + (-r) + " A" + r + " " + r + " 0 1 1 0 " + (-r);
+        }
+      });
+      group.selectAll('.tick').attr({
+        transform: function(d, i){
+          var x, y;
+          if (store.showGrid) {
+            return "translate(0 0)";
+          }
+          x = scale(d) * Math.sin(store.angle || 0);
+          y = scale(d) * -Math.cos(store.angle || 0);
+          return "translate(" + x + " " + y + ")";
+        }
+      });
+      group.selectAll('.tick line').attr({
+        display: 'none'
+      });
+      group.selectAll('.tick text').attr({
+        x: 0,
+        y: 0,
+        dx: 1,
+        dy: -2,
+        transform: !store.showGrid ? "rotate(" + 180 * store.angle / Math.PI + ")" : void 8
+      }).style({
+        "text-anchor": 'start'
+      });
+      if (store.showGrid) {
+        group.selectAll('.tick text').each(function(d, i){
+          var x$;
+          d3.select(this).text("");
+          x$ = d3.select(this).selectAll('textPath').data([1]).enter().append('textPath');
+          x$.attr({
+            "xlink:href": function(){
+              return "#plotd3-rwd-axis-radius-" + d + "-" + i;
+            },
+            "startOffset": store.angle * 100 / (Math.PI * 2) + "%",
+            "spacing": "auto"
+          });
+          x$.text(d);
+          return x$;
+        });
+      }
+      group.select('.domain').attr({
+        d: function(){
+          var domain, x1, y1, x2, y2;
+          domain = scale.domain();
+          x1 = scale(domain[0]) * Math.sin(store.angle || 0);
+          y1 = scale(domain[0]) * -Math.cos(store.angle || 0);
+          x2 = scale(domain[domain.length - 1]) * Math.sin(store.angle || 0);
+          y2 = scale(domain[domain.length - 1]) * -Math.cos(store.angle || 0);
+          return "M" + x1 + " " + y1 + " L" + x2 + " " + y2;
+        }
+      });
+    }
     if (orient === 'bottom') {
       setTimeout(function(){
         return group.selectAll('.tick text').attr({
@@ -1351,8 +1540,14 @@ plotd3.rwd.axis = function(){
             "text-anchor": "end"
           });
         } else {
+          dy = offset + 5;
+          if (orient === 'bottom') {
+            dy += store.fontSize || 0;
+          } else {
+            dy *= -1;
+          }
           return node.attr({
-            transform: "translate(" + mid + " " + (offset + 5) + ")",
+            transform: "translate(" + mid + " " + dy + ")",
             "text-anchor": "middle"
           });
         }
@@ -1364,8 +1559,14 @@ plotd3.rwd.axis = function(){
             "text-anchor": "end"
           });
         } else {
+          dx = offset + 5;
+          if (orient === 'right') {
+            dx += store.fontSize || 0;
+          } else {
+            dx *= -1;
+          }
           return node.attr({
-            transform: "translate(" + (-offset - 5) + " " + mid + ") rotate(-90)",
+            transform: "translate(" + dx + " " + mid + ") rotate(-90)",
             "text-anchor": "middle"
           });
         }
@@ -1376,7 +1577,7 @@ plotd3.rwd.axis = function(){
     var ref$, scale, orient, sizes, size, its, ots, tp, offset, format, ticks, tickHeight, count, step, gbox, pbox;
     args == null && (args = []);
     axis.apply(group, args);
-    ref$ = [axis.scale(), axis.orient()], scale = ref$[0], orient = ref$[1];
+    ref$ = [axis.scale(), store.orient], scale = ref$[0], orient = ref$[1];
     if (scale.rangeExtent) {
       sizes = scale.rangeExtent();
     } else {
@@ -1447,7 +1648,7 @@ plotd3.rwd.axis = function(){
       }
     }
   };
-  ['fontSize', 'label', 'labelPosition', 'multiLine', 'boundaryTickInside'].map(function(k){
+  ['fontSize', 'label', 'labelPosition', 'multiLine', 'boundaryTickInside', 'angle', 'showGrid'].map(function(k){
     return ret[k] = function(k){
       return function(it){
         if (it == null) {
@@ -1458,6 +1659,14 @@ plotd3.rwd.axis = function(){
       };
     }(k);
   });
+  ret.orient = function(it){
+    if (it == null) {
+      return store.orient;
+    }
+    store.orient = it;
+    axis.orient(it);
+    return ret;
+  };
   return ret;
   function fn$(k){
     return function(){

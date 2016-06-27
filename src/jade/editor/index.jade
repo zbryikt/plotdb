@@ -116,6 +116,7 @@ block body
           option(value="topojson/1.6.24/min") topojson 1.6.24
           option(value="voronoijs/0.0.1/min") voronoijs 0.0.1
           option(value="d3.geo.projection/0.2.16/min") d3.geo.projection 0.2.16
+          option(value="taiwan-mrt/0.0.1") Taiwan MRT Map 0.0.1
       div
         hr(style="margin-bottom:10px")
         .btn.btn-default(ng-click="clone()") Make a copy
@@ -393,7 +394,7 @@ block body
         #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
           .closebtn.inner(ng-click="editor.fullscreen.toggle()")
 
-          .dropdown(style="position:absolute",ng-show="editor.fullscreen.toggled")
+          .dropup(style="position:absolute",ng-show="editor.fullscreen.toggled")
             .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
               i.fa.fa-download
               span.caret

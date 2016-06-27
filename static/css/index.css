@@ -1698,7 +1698,7 @@ a.dropdown-toggle {
 #visualization-canvas2 .closebtn {
   display: none;
 }
-#visualization-canvas2 .dropdown {
+#visualization-canvas2 .dropup {
   bottom: 5px;
   left: 5px;
 }
