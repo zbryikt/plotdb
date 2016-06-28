@@ -12,9 +12,24 @@ plotdb <<< do
   Number: do
     default: 0
     name: \Number, test: (-> !isNaN(+it)), level: 3, parse: -> parseFloat(it)
+    order: Descending: ((a,b) -> b - a), Ascending: ((a,b) -> a - b), index: -> it
   Numstring: do
     default: ""
-    name: \Numstring, test: (->/\d+/.exec("#it")), parse: -> it
+    name: \Numstring, test: (->/\d+/.exec("#it")), parse: ->
+      numbers = it.replace(/([^0-9.]+|[^0-9]\.)/g, " ").replace(/ +/g, ' ').split(' ').map(->parseFloat(it))
+      return {raw: it, numbers, toString: -> @raw}
+    order: do
+      Descending: (a,b) ->
+        if !a => return if !b => 0 else -1
+        lenA = (a.numbers or []).length
+        lenB = (b.numbers or []).length
+        len = Math.min(lenA, lenB)
+        for i from 0 til len
+          if a.numbers[i] > b.numbers[i] => return -1
+          if a.numbers[i] < b.numbers[i] => return 1
+        return if lenA > lenB => -1 else 1
+      Ascending: (a,b) -> return @Descending(b,a)
+      index: -> it.numbers.0
   String: do
     default: ""
     name: \String, test: (-> true), level: 1, parse: -> it
@@ -39,6 +54,10 @@ plotdb <<< do
         if !matched => return null
         return null
       return d
+    order: do
+      Descending: (a,b) -> return b.getTime! - a.getTime!
+      Ascending: (b,a) -> return b.getTime! - a.getTime!
+      index: -> it.getTime!
   Choice: (v) ->
     return do
       default: ""
@@ -169,7 +188,7 @@ plotdb.chart = do
     if !dimension or !source => return []
     if Array.isArray(source) => return source
     if typeof(source) == \function => source = source!
-    for k,v of dimension => if source[k] => v.fields = source[k]
+    for k,v of dimension => v.fields = (source[k] or [])
     return plotdb.chart.data-from-dimension dimension
 
   get-sample-data: (chart, dimension = null) ->

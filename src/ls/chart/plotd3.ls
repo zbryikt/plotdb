@@ -7,12 +7,14 @@ plotd3.html.tooltip = (root, sel, cb) ->
     sel
       ..on \mouseover, (d,i) -> ret.fire \mouseover, d, i, @
       ..on \mousemove, (d,i) ->
+        if typeof(store.active) == \function => if !store.active(d,i) => return
+        else if !store.active => return
         rbox = root.getBoundingClientRect!
         box = @getBoundingClientRect! #TODO getBBox fallback?
         if store.coord =>
           [left,top,width,height] = store.coord.call @, d, i
           box = {left,top,width,height}
-        ret.fire \mousemove, d, i, @
+        ret.fire(\mousemove, d, i, @)
         isLeft = if box.left > rbox.width/2 + rbox.left => true else false
         popup.attr class: "pdb-popup tooltip #{if isLeft => 'left' else 'right'}"
         update = ->
@@ -65,9 +67,11 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
       ..on \mouseover, (d,i) -> ret.fire \mouseove, d, i, @
       ..on \mouseout, ret.hide
       ..on \mousemove, (d,i) ->
+        if typeof(store.active) == \function => if !store.active(d,i) => return
+        else if !store.active => return
         [x,y] = [d3.event.clientX, d3.event.clientY]
         if store.coord => [x,y,width,height] = store.coord.call @, d, i
-        ret.fire \mousemove, d, i, @
+        ret.fire(\mousemove, d, i, @)
         popup.style display: \block
         pbox = popup.0.0.getBoundingClientRect!
         rbox = root.getBoundingClientRect!
@@ -97,6 +101,13 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
   ret.on = (event, cb) ->
     store.handler[][event].push(cb)
     ret
+  <[active]>.map (k) ->
+    ret[k] = ((k)-> ->
+      if !it? => return store[k]
+      store[k] = it
+      return ret
+    ) k
+
   ret.type = (type) ->
     if !type => return store.type
     store.type = type
@@ -110,11 +121,20 @@ plotd3.rwd.overlap = ->
   store = {padding: [10,5]}
   ret = ->
   ret.nodes = (sel,accessor=(->it)) ->
-    bbox = sel[0].map (d,i) -> [d.getBBox!, accessor(d3.select(d).datum!,i),1,i]
+    #bbox = sel[0].map (d,i) -> [d.getBBox!, accessor(d3.select(d).datum!,i),1,i]
+    # this bounding box is formed from minimal and maximal values in x / y coordinates,
+    # which covers unused space, even the text is diagonal placed.
+    bbox = sel[0].map (d,i) -> [d.getBoundingClientRect!, accessor(d3.select(d).datum!,i),1,i]
+    bbox.forEach (d) ->
+      b = d[0]
+      b.height = b.bottom - b.top
+      b.width = b.right - b.left
+      b.x = b.left
+      b.y = b.top
     if store.fitText => bbox.forEach (d) ->
       b = d.0
-      center = (b.top + b.height / 2)
-      b.top = center - b.height * (store.fitText/2)
+      center = (b.y + b.height / 2)
+      b.y = center - b.height * (store.fitText/2)
       b.height = b.height * ( 1 - store.fitText)
     bbox.sort (a,b) -> b.1 - a.1
     for i from 0 til bbox.length
@@ -123,6 +143,7 @@ plotd3.rwd.overlap = ->
         [ni,nj] = [bbox[i].0, bbox[j].0]
         if !(nj.x > ni.x + ni.width or nj.x + nj.width < ni.x or
         nj.y > ni.y + ni.height or nj.y + nj.height < ni.y) => bbox[j].2 = 0
+
     bbox.forEach (d) ->
       data = d3.select(sel[0][d.3]).datum!
       if !data => return

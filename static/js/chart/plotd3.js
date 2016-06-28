@@ -19,6 +19,13 @@ plotd3.html.tooltip = function(root, sel, cb){
     });
     x$.on('mousemove', function(d, i){
       var rbox, box, ref$, left, top, width, height, isLeft, update;
+      if (typeof store.active === 'function') {
+        if (!store.active(d, i)) {
+          return;
+        } else if (!store.active) {
+          return;
+        }
+      }
       rbox = root.getBoundingClientRect();
       box = this.getBoundingClientRect();
       if (store.coord) {
@@ -150,6 +157,13 @@ plotd3.html.popup = function(root, sel, cb, store){
     x$.on('mouseout', ret.hide);
     x$.on('mousemove', function(d, i){
       var ref$, x, y, width, height, pbox, rbox;
+      if (typeof store.active === 'function') {
+        if (!store.active(d, i)) {
+          return;
+        } else if (!store.active) {
+          return;
+        }
+      }
       ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
       if (store.coord) {
         ref$ = store.coord.call(this, d, i), x = ref$[0], y = ref$[1], width = ref$[2], height = ref$[3];
@@ -221,6 +235,17 @@ plotd3.html.popup = function(root, sel, cb, store){
     ((ref$ = store.handler)[event] || (ref$[event] = [])).push(cb);
     return ret;
   };
+  ['active'].map(function(k){
+    return ret[k] = function(k){
+      return function(it){
+        if (it == null) {
+          return store[k];
+        }
+        store[k] = it;
+        return ret;
+      };
+    }(k);
+  });
   ret.type = function(type){
     var that;
     if (!type) {
@@ -252,14 +277,22 @@ plotd3.rwd.overlap = function(){
       return it;
     });
     bbox = sel[0].map(function(d, i){
-      return [d.getBBox(), accessor(d3.select(d).datum(), i), 1, i];
+      return [d.getBoundingClientRect(), accessor(d3.select(d).datum(), i), 1, i];
+    });
+    bbox.forEach(function(d){
+      var b;
+      b = d[0];
+      b.height = b.bottom - b.top;
+      b.width = b.right - b.left;
+      b.x = b.left;
+      return b.y = b.top;
     });
     if (store.fitText) {
       bbox.forEach(function(d){
         var b, center;
         b = d[0];
-        center = b.top + b.height / 2;
-        b.top = center - b.height * (store.fitText / 2);
+        center = b.y + b.height / 2;
+        b.y = center - b.height * (store.fitText / 2);
         return b.height = b.height * (1 - store.fitText);
       });
     }

@@ -7393,6 +7393,17 @@ import$(plotdb, {
     level: 3,
     parse: function(it){
       return parseFloat(it);
+    },
+    order: {
+      Descending: function(a, b){
+        return b - a;
+      },
+      Ascending: function(a, b){
+        return a - b;
+      },
+      index: function(it){
+        return it;
+      }
     }
   },
   Numstring: {
@@ -7402,7 +7413,46 @@ import$(plotdb, {
       return /\d+/.exec(it + "");
     },
     parse: function(it){
-      return it;
+      var numbers;
+      numbers = it.replace(/([^0-9.]+|[^0-9]\.)/g, " ").replace(/ +/g, ' ').split(' ').map(function(it){
+        return parseFloat(it);
+      });
+      return {
+        raw: it,
+        numbers: numbers,
+        toString: function(){
+          return this.raw;
+        }
+      };
+    },
+    order: {
+      Descending: function(a, b){
+        var lenA, lenB, len, i$, i;
+        if (!a) {
+          return !b
+            ? 0
+            : -1;
+        }
+        lenA = (a.numbers || []).length;
+        lenB = (b.numbers || []).length;
+        len = Math.min(lenA, lenB);
+        for (i$ = 0; i$ < len; ++i$) {
+          i = i$;
+          if (a.numbers[i] > b.numbers[i]) {
+            return -1;
+          }
+          if (a.numbers[i] < b.numbers[i]) {
+            return 1;
+          }
+        }
+        return lenA > lenB ? -1 : 1;
+      },
+      Ascending: function(a, b){
+        return this.Descending(b, a);
+      },
+      index: function(it){
+        return it.numbers[0];
+      }
     }
   },
   String: {
@@ -7466,6 +7516,17 @@ import$(plotdb, {
         return null;
       }
       return d;
+    },
+    order: {
+      Descending: function(a, b){
+        return b.getTime() - a.getTime();
+      },
+      Ascending: function(b, a){
+        return b.getTime() - a.getTime();
+      },
+      index: function(it){
+        return it.getTime();
+      }
     }
   },
   Choice: function(v){
@@ -7772,9 +7833,7 @@ plotdb.chart = {
     }
     for (k in dimension) {
       v = dimension[k];
-      if (source[k]) {
-        v.fields = source[k];
-      }
+      v.fields = source[k] || [];
     }
     return plotdb.chart.dataFromDimension(dimension);
   },
