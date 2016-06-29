@@ -12,28 +12,6 @@ if(t==e.dx){for((r||s>e.dy)&&(s=e.dy);++i<a;)u=n[i],u.x=o,u.y=c,u.dy=s,o+=u.dx=M
 var plotdb;
 plotdb = {};
 import$(plotdb, {
-  Order: {
-    'default': function(k, v, i){
-      return i;
-    },
-    name: 'Order',
-    test: function(){
-      [plotdb.Number, plotdb.Date, plotdb.Numstring];
-      return true;
-    },
-    parse: function(it){
-      return it;
-    },
-    sort: function(a, b){
-      if (a > b) {
-        return 1;
-      } else if (a < b) {
-        return -1;
-      } else {
-        return 0;
-      }
-    }
-  },
   Number: {
     'default': 0,
     name: 'Number',
@@ -42,14 +20,18 @@ import$(plotdb, {
     },
     level: 3,
     parse: function(it){
-      return parseFloat(it);
+      if (typeof it === 'string') {
+        return it = parseFloat(it.replace(/,/g, ''));
+      } else {
+        return it;
+      }
     },
     order: {
-      Descending: function(a, b){
-        return b - a;
-      },
       Ascending: function(a, b){
         return a - b;
+      },
+      Descending: function(a, b){
+        return b - a;
       },
       index: function(it){
         return it;
@@ -63,42 +45,45 @@ import$(plotdb, {
       return /\d+/.exec(it + "");
     },
     parse: function(it){
-      var numbers;
-      numbers = it.replace(/([^0-9.]+|[^0-9]\.)/g, " ").replace(/ +/g, ' ').split(' ').map(function(it){
-        return parseFloat(it);
-      });
+      var numbers, num, i$, to$, j;
+      numbers = [];
+      num = it.split(/\.?[^0-9.]+/g);
+      for (i$ = 0, to$ = num.length; i$ < to$; ++i$) {
+        j = i$;
+        if (num[j]) {
+          numbers.push(parseFloat(num[j]));
+        }
+      }
       return {
         raw: it,
         numbers: numbers,
+        len: numbers.length,
         toString: function(){
           return this.raw;
         }
       };
     },
     order: {
-      Descending: function(a, b){
-        var lenA, lenB, len, i$, i;
+      Ascending: function(a, b){
+        var na, nb, i$, to$, i, v;
         if (!a) {
           return !b
             ? 0
             : -1;
         }
-        lenA = (a.numbers || []).length;
-        lenB = (b.numbers || []).length;
-        len = Math.min(lenA, lenB);
-        for (i$ = 0; i$ < len; ++i$) {
+        na = a.numbers;
+        nb = b.numbers;
+        for (i$ = 0, to$ = a.len; i$ < to$; ++i$) {
           i = i$;
-          if (a.numbers[i] > b.numbers[i]) {
-            return -1;
-          }
-          if (a.numbers[i] < b.numbers[i]) {
-            return 1;
+          v = na[i] - nb[i];
+          if (v) {
+            return v;
           }
         }
-        return lenA > lenB ? -1 : 1;
+        return a.len - b.len;
       },
-      Ascending: function(a, b){
-        return this.Descending(b, a);
+      Descending: function(a, b){
+        return plotdb.Numstring.order.Ascending(b, a);
       },
       index: function(it){
         return it.numbers[0];
@@ -121,61 +106,38 @@ import$(plotdb, {
     name: 'Date',
     level: 2,
     match: {
-      type1: /^(\d{4})[/-](\d{1,2})[/-]\d{1,2} ((\d{1,2}):(\d{1,2})(:(\d{1,2}))?)?/,
-      type2: /^(\d{1,2})[/-](\d{1,2})[/-]\d{4} ((\d{1,2}):(\d{1,2})(:(\d{1,2}))?)?/,
-      type3: /^(\d{4})[/-](\d{1,2})$/,
       type4: /^(\d{1,2})[/-](\d{4})$/
     },
-    test: function(it){
-      var d, matched, k, v;
-      d = new Date(it);
-      if (!(d instanceof Date) || isNaN(d.getTime())) {
-        matched = (function(){
-          var ref$, results$ = [];
-          for (k in ref$ = this.match) {
-            v = ref$[k];
-            results$.push(v.exec(it));
-          }
-          return results$;
-        }.call(this)).filter(function(it){
-          return it;
-        })[0];
-        if (!matched) {
-          return false;
-        }
-      }
-      return true;
+    test: function(){
+      return this.parse ? true : false;
     },
     parse: function(it){
-      var d, matched, k, v;
+      var d, ret;
       d = new Date(it);
       if (!(d instanceof Date) || isNaN(d.getTime())) {
-        matched = (function(){
-          var ref$, results$ = [];
-          for (k in ref$ = this.match) {
-            v = ref$[k];
-            results$.push(v.exec(it));
-          }
-          return results$;
-        }.call(this)).filter(function(it){
-          return it;
-        })[0];
-        if (!matched) {
+        ret = /^(\d{1,2})[/-](\d{4})$/.exec(it);
+        if (!ret) {
           return null;
         }
-        return null;
+        d = new Date(ret[2], parseInt(ret[1]) - 1);
       }
-      return d;
+      return {
+        raw: it,
+        toString: function(){
+          return this.raw;
+        },
+        parsed: d
+      };
     },
     order: {
-      Descending: function(a, b){
-        return b.getTime() - a.getTime();
+      Ascending: function(a, b){
+        return a.parsed.getTime() - b.parsed.getTime();
       },
-      Ascending: function(b, a){
-        return b.getTime() - a.getTime();
+      Descending: function(a, b){
+        return b.parsed.getTime() - a.parsed.getTime();
       },
       index: function(it){
-        return it.getTime();
+        return it.parsed.getTime();
       }
     }
   },
@@ -387,6 +349,79 @@ import$(plotdb, {
     }
   }
 });
+import$(plotdb, {
+  Order: {
+    'default': function(d, i){
+      return i;
+    },
+    name: 'Order',
+    test: function(){
+      return !!this.subtype.map(function(type){
+        return type.test(it);
+      }).filter(function(it){
+        return it;
+      })[0];
+    },
+    subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring],
+    parse: function(it){
+      return it;
+    },
+    order: {
+      Ascending: function(a, b){
+        if (b > a) {
+          return -1;
+        } else if (b < a) {
+          return 1;
+        } else {
+          return 0;
+        }
+      },
+      Descending: function(a, b){
+        if (b > a) {
+          return 1;
+        } else if (b < a) {
+          return -1;
+        } else {
+          return 0;
+        }
+      }
+    },
+    sort: function(data, fieldname, isAscending){
+      var field, types, i$, to$, i, j$, to1$, j, type, sorter;
+      isAscending == null && (isAscending = true);
+      field = data.map(function(it){
+        return it[fieldname];
+      });
+      types = this.subtype.map(function(it){
+        return it;
+      });
+      for (i$ = 0, to$ = field.length; i$ < to$; ++i$) {
+        i = i$;
+        for (j$ = 0, to1$ = types.length; j$ < to1$; ++j$) {
+          j = j$;
+          if (!types[j].test(field[i])) {
+            types[j] = null;
+          }
+        }
+        types = types.filter(fn$);
+      }
+      type = types[0];
+      if (type) {
+        for (i$ = 0, to$ = data.length; i$ < to$; ++i$) {
+          i = i$;
+          data[i][fieldname] = type.parse(data[i][fieldname]);
+        }
+      }
+      sorter = ((type || {}).order || this.order)[isAscending ? 'Ascending' : 'Descending'];
+      return data.sort(function(a, b){
+        return sorter(a[fieldname], b[fieldname]);
+      });
+      function fn$(it){
+        return it;
+      }
+    }
+  }
+});
 plotdb.chart = {
   corelib: {},
   create: function(config){
@@ -411,7 +446,7 @@ plotdb.chart = {
     render: function(root, data, config){}
   },
   dataFromDimension: function(dimension){
-    var data, len, k, v, i$, i, ret, that, type, value;
+    var data, len, k, v, i$, i, ret, that, type, value, parse, j$, to$, j;
     data = [];
     len = Math.max.apply(null, (function(){
       var ref$, results$ = [];
@@ -446,11 +481,15 @@ plotdb.chart = {
             : type['default'];
           ret[k] = v.multiple ? [value] : value;
         }
-        if ((v.type || []).filter(fn2$).length) {
+        if (v.type && v.type[0] && plotdb[v.type[0].name].parse) {
+          parse = plotdb[v.type[0].name].parse;
           if (Array.isArray(ret[k])) {
-            ret[k] = ret[k].map(fn3$);
+            for (j$ = 0, to$ = ret[k].length; j$ < to$; ++j$) {
+              j = j$;
+              ret[k][j] = parse(ret[k][j]);
+            }
           } else {
-            ret[k] = parseFloat(ret[k]);
+            ret[k] = parse(ret[k]);
           }
         }
       }
@@ -462,12 +501,6 @@ plotdb.chart = {
     }
     function fn1$(it){
       return it.name;
-    }
-    function fn2$(it){
-      return it.name === 'Number';
-    }
-    function fn3$(it){
-      return parseFloat(it);
     }
   },
   dataFromHash: function(dimension, source){
@@ -527,16 +560,13 @@ plotdb.chart = {
       } else {
         config[k] = config[k].value;
       }
-      if (type.filter(fn1$).length) {
-        results$.push(config[k] = parseFloat(config[k]));
+      if (type[0] && plotdb[type[0].name].parse) {
+        results$.push(config[k] = plotdb[type[0].name].parse(config[k]));
       }
     }
     return results$;
     function fn$(it){
       return it.name;
-    }
-    function fn1$(it){
-      return it === 'Number';
     }
   }
 };

@@ -1,34 +1,34 @@
 plotdb = {}
 plotdb <<< do
-  Order: do
-    default: (k,v,i) -> i
-    name: \Order
-    #TODO type hierarchy
-    test: ->
-      [plotdb.Number,plotdb.Date,plotdb.Numstring]
-      true
-    parse: -> it
-    sort: (a,b)-> if a > b => 1 else if a < b => -1 else 0
   Number: do
     default: 0
-    name: \Number, test: (-> !isNaN(+it)), level: 3, parse: -> parseFloat(it)
-    order: Descending: ((a,b) -> b - a), Ascending: ((a,b) -> a - b), index: -> it
+    name: \Number, test: (-> !isNaN(+it))
+    level: 3
+    parse: ->
+      if typeof(it) == \string => it = parseFloat(it.replace(/,/g,'')) else it
+    order: do
+      Ascending: ((a,b) -> a - b)
+      Descending: ((a,b) -> b - a)
+      index: -> it
   Numstring: do
     default: ""
-    name: \Numstring, test: (->/\d+/.exec("#it")), parse: ->
-      numbers = it.replace(/([^0-9.]+|[^0-9]\.)/g, " ").replace(/ +/g, ' ').split(' ').map(->parseFloat(it))
-      return {raw: it, numbers, toString: -> @raw}
+    name: \Numstring
+    test: (->/\d+/.exec("#it"))
+    parse: ->
+      numbers = []
+      num = it.split(/\.?[^0-9.]+/g)
+      for j from 0 til num.length => if num[j] => numbers.push parseFloat(num[j])
+      return {raw: it, numbers, len: numbers.length, toString: -> @raw}
     order: do
-      Descending: (a,b) ->
+      Ascending: (a,b) ->
         if !a => return if !b => 0 else -1
-        lenA = (a.numbers or []).length
-        lenB = (b.numbers or []).length
-        len = Math.min(lenA, lenB)
-        for i from 0 til len
-          if a.numbers[i] > b.numbers[i] => return -1
-          if a.numbers[i] < b.numbers[i] => return 1
-        return if lenA > lenB => -1 else 1
-      Ascending: (a,b) -> return @Descending(b,a)
+        na = a.numbers
+        nb = b.numbers
+        for i from 0 til a.len
+          v = na[i] - nb[i]
+          if v => return v
+        return a.len - b.len
+      Descending: (a,b) -> plotdb.Numstring.order.Ascending b,a
       index: -> it.numbers.0
   String: do
     default: ""
@@ -37,27 +37,19 @@ plotdb <<< do
     default: \1970/1/1
     name: \Date, level: 2
     match: do
-      type1: /^(\d{4})[/-](\d{1,2})[/-]\d{1,2} ((\d{1,2}):(\d{1,2})(:(\d{1,2}))?)?/
-      type2: /^(\d{1,2})[/-](\d{1,2})[/-]\d{4} ((\d{1,2}):(\d{1,2})(:(\d{1,2}))?)?/
-      type3: /^(\d{4})[/-](\d{1,2})$/
       type4: /^(\d{1,2})[/-](\d{4})$/
-    test: ->
-      d = new Date(it)
-      if !(d instanceof Date) or isNaN(d.getTime!) =>
-        matched = [v.exec(it) for k,v of @match].filter(->it).0
-        if !matched => return false
-      return true
+    test: -> return if @parse => true else false
     parse: ->
       d = new Date(it)
       if !(d instanceof Date) or isNaN(d.getTime!) =>
-        matched = [v.exec(it) for k,v of @match].filter(->it).0
-        if !matched => return null
-        return null
-      return d
+        ret = /^(\d{1,2})[/-](\d{4})$/.exec it
+        if !ret => return null
+        d = new Date(ret.2, parseInt(ret.1) - 1)
+      return {raw: it, toString: (->@raw), parsed: d}
     order: do
-      Descending: (a,b) -> return b.getTime! - a.getTime!
-      Ascending: (b,a) -> return b.getTime! - a.getTime!
-      index: -> it.getTime!
+      Ascending: (a,b) -> return a.parsed.getTime! - b.parsed.getTime!
+      Descending: (a,b) -> return b.parsed.getTime! - a.parsed.getTime!
+      index: -> it.parsed.getTime!
   Choice: (v) ->
     return do
       default: ""
@@ -129,7 +121,6 @@ plotdb <<< do
         range = (c.filter(->it.keyword).map(->it.hex) ++ c.filter(->!it.keyword).map(->it.hex))
         if !domain => domain = c.map(->it.keyword).filter(->it?)
         d3.scale.linear!domain domain .range range
-
   Boolean:
     default: true
     name: \Boolean, level: 2,
@@ -142,6 +133,28 @@ plotdb <<< do
       if it => return true
       return false
 
+plotdb <<< do
+  Order: do
+    default: (d,i) -> i
+    name: \Order
+    test: -> !!(@subtype.map((type)-> type.test it).filter(->it).0)
+    subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring]
+    parse: -> it
+    order: do
+      Ascending: (a,b) -> if b > a => -1 else if b < a => 1 else 0
+      Descending: (a,b) -> if b > a => 1 else if b < a => -1 else 0
+    sort: (data, fieldname, is-ascending = true) ->
+      field = data.map(->it[fieldname])
+      types = @subtype.map(->it)
+      for i from 0 til field.length
+        for j from 0 til types.length
+          if !types[j].test(field[i]) => types[j] = null
+        types = types.filter(->it)
+      type = types[0]
+      if type => for i from 0 til data.length => data[i][fieldname] = type.parse data[i][fieldname]
+      sorter = ((type or {}).order or @order)[if is-ascending => \Ascending else \Descending]
+      data.sort((a,b)-> sorter(a[fieldname], b[fieldname]))
+      #TODO if we can speed up further?
 
 plotdb.chart = do
   corelib: {}
@@ -177,10 +190,14 @@ plotdb.chart = do
           type = (v.type.0 or plotdb.String)
           value = if (typeof(type.default) == \function) => type.default(k,v,i) else type.default
           ret[k] = if v.multiple => [value] else value
-        #TODO need correct type matching
-        if (v.type or []).filter(->it.name == \Number).length =>
-          if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
-          else ret[k] = parseFloat(ret[k])
+        if v.type and v.type.0 and plotdb[v.type.0.name].parse =>
+          parse = plotdb[v.type.0.name].parse
+          if Array.isArray(ret[k]) =>
+            for j from 0 til ret[k].length => ret[k][j] = parse ret[k][j]
+          else ret[k] = parse ret[k]
+        #if (v.type or []).filter(->it.name == \Number).length =>
+        #  if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
+        #  else ret[k] = parseFloat(ret[k])
       data.push ret
     return data
 
@@ -217,7 +234,10 @@ plotdb.chart = do
       if !(config[k]?) => config[k] = v.default
       else if !(config[k].value?) => config[k] = (v or config[k]).default
       else config[k] = config[k].value
-      if type.filter(->it == \Number).length => config[k] = parseFloat(config[k])
+
+      if type.0 and plotdb[type.0.name].parse =>
+        config[k] = plotdb[type.0.name].parse config[k]
+      #if type.filter(->it == \Number).length => config[k] = parseFloat(config[k])
 
 plotdb.theme = do
   create: (config) ->
