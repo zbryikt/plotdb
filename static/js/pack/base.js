@@ -7458,8 +7458,8 @@ import$(plotdb, {
     match: {
       type4: /^(\d{1,2})[/-](\d{4})$/
     },
-    test: function(){
-      return this.parse ? true : false;
+    test: function(it){
+      return this.parse(it) ? true : false;
     },
     parse: function(it){
       var d, ret;

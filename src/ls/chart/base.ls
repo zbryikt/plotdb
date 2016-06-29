@@ -38,7 +38,7 @@ plotdb <<< do
     name: \Date, level: 2
     match: do
       type4: /^(\d{1,2})[/-](\d{4})$/
-    test: -> return if @parse => true else false
+    test: -> return if @parse it => true else false
     parse: ->
       d = new Date(it)
       if !(d instanceof Date) or isNaN(d.getTime!) =>
@@ -47,7 +47,8 @@ plotdb <<< do
         d = new Date(ret.2, parseInt(ret.1) - 1)
       return {raw: it, toString: (->@raw), parsed: d}
     order: do
-      Ascending: (a,b) -> return a.parsed.getTime! - b.parsed.getTime!
+      Ascending: (a,b) ->
+        return a.parsed.getTime! - b.parsed.getTime!
       Descending: (a,b) -> return b.parsed.getTime! - a.parsed.getTime!
       index: -> it.parsed.getTime!
   Choice: (v) ->
