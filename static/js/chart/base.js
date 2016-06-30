@@ -91,6 +91,55 @@ import$(plotdb, {
       return it;
     }
   },
+  Month: {
+    'default': 'Jan',
+    name: 'Month',
+    level: 3,
+    values: {
+      abbr: ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'],
+      en: ['january', 'feburary', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'],
+      zh: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+    },
+    parse: function(it){
+      return it;
+    },
+    test: function(it){
+      var value, k, ref$, v, idx;
+      value = it.toLowerCase();
+      for (k in ref$ = this.values) {
+        v = ref$[k];
+        idx = v.indexOf(value);
+        if (idx >= 0) {
+          return true;
+        }
+      }
+      return false;
+    },
+    order: {
+      index: function(it){
+        var value, k, ref$, v, idx;
+        value = it.toLowerCase();
+        for (k in ref$ = plotdb.Month.values) {
+          v = ref$[k];
+          idx = v.indexOf(value);
+          if (idx >= 0) {
+            return idx;
+          }
+        }
+        return -1;
+      },
+      Ascending: function(a, b){
+        a = plotdb.Month.order.index(a);
+        b = plotdb.Month.order.index(b);
+        return a - b;
+      },
+      Descending: function(a, b){
+        a = plotdb.Month.order.index(a);
+        b = plotdb.Month.order.index(b);
+        return b - a;
+      }
+    }
+  },
   Date: {
     'default': '1970/1/1',
     name: 'Date',
@@ -352,7 +401,7 @@ import$(plotdb, {
         return it;
       })[0];
     },
-    subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring],
+    subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring, plotdb.Month],
     parse: function(it){
       return it;
     },

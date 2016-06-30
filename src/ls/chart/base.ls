@@ -33,6 +33,35 @@ plotdb <<< do
   String: do
     default: ""
     name: \String, test: (-> true), level: 1, parse: -> it
+  Month:
+    default: \Jan
+    name: \Month, level: 3
+    values: do
+      abbr: <[jan feb mar apr may jun jul aug sep oct nov dec]>
+      en: <[january feburary march april may june july august september october november december]>
+      zh: <[一月 二月 三月 四月 五月 六月 七月 八月 九月 十月 十一月 十二月]>
+    parse: -> it
+    test: ->
+      value = it.toLowerCase!
+      for k,v of @values =>
+        idx = v.indexOf(value)
+        if idx >=0 => return true
+      return false
+    order: do
+      index: ->
+        value = it.toLowerCase!
+        for k,v of plotdb.Month.values =>
+          idx = v.indexOf(value)
+          if idx>=0 => return idx
+        return -1
+      Ascending: (a,b) ->
+        a = plotdb.Month.order.index a
+        b = plotdb.Month.order.index b
+        return a - b
+      Descending: (a,b) ->
+        a = plotdb.Month.order.index a
+        b = plotdb.Month.order.index b
+        return b - a
   Date:
     default: \1970/1/1
     name: \Date, level: 2
@@ -138,7 +167,7 @@ plotdb <<< do
     default: (k,v,i) -> i
     name: \Order
     test: -> !!(@subtype.map((type)-> type.test it).filter(->it).0)
-    subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring]
+    subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring, plotdb.Month]
     parse: -> it
     order: do
       Ascending: (a,b) -> if b > a => -1 else if b < a => 1 else 0
