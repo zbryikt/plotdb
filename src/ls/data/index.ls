@@ -381,7 +381,6 @@ angular.module \plotDB
       ), delay, reset).then (ret) -> $scope.$apply ~>
         data = (ret or []).map -> new dataService.dataset it, true
         Paging.flex-width data
-        console.log data.map(->it.name)
         $scope.mydatasets = (if reset => [] else $scope.mydatasets) ++ data
         $scope.datasets = $scope.samplesets ++ $scope.mydatasets
         if !$scope.cur => $scope.setcur $scope.datasets[0]

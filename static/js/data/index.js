@@ -612,9 +612,6 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
           return new dataService.dataset(it, true);
         });
         Paging.flexWidth(data);
-        console.log(data.map(function(it){
-          return it.name;
-        }));
         $scope.mydatasets = (reset
           ? []
           : $scope.mydatasets).concat(data);
