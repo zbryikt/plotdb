@@ -208,10 +208,9 @@ $(document).ready(function(){
       }
       img = new Image();
       img.onload = function(){
-        var newHeight, canvas, ref$;
-        newHeight = height > width ? width : height;
-        canvas = (ref$ = document.createElement("canvas"), ref$.width = width, ref$.height = newHeight, ref$);
-        canvas.getContext('2d').drawImage(img, 0, 0, width, newHeight, 0, 0, width, newHeight);
+        var canvas, ref$;
+        canvas = (ref$ = document.createElement("canvas"), ref$.width = width, ref$.height = height, ref$);
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height, 0, 0, width, height);
         return window.parent.postMessage({
           type: type,
           payload: canvas.toDataURL()

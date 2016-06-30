@@ -320,18 +320,20 @@ angular.module \plotDB
       editor: do
         class: ""
         focus: ->
-          # codemirror won't update if it's not visible. so wait a little
-          # refresh will reset cursor which scroll to the top.
-          # so we only want to refresh once.
-          # EDIT: looks like some other changes made this statement not applicable.
-          # maybe remove it later. TODO
           setTimeout (~>
             $scope.codemirror.objs.map (cm) ->
               ret = [[k,v] for k,v of $scope.codemirror].filter(->it.1.mode == cm.options.mode).0
+              # adopted from codemirror resize process
+              # when resizing manually, cursor goes wrong until we type anything.
+              # only window resizing will fix this issue, and it goes to these 4 lines of code.
+              # so we adopted it here.
+              d = cm.display
+              d.cachedCharWidth = d.cachedTextHeight = d.cachedPaddingH = null
+              d.scrollbarsClipped = false
+              cm.setSize!
               if !ret or !$scope.vis.starts-with(ret.0) => return
               setTimeout (~> cm.focus!), 10
               if ret.1.refreshed => return
-              cm.refresh!
               #WORKAROUND: one refresh only brings partial content
               # use use another refresh to remedy this
               ret.1.refreshed = true # make it happened only once.

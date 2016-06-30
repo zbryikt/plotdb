@@ -367,11 +367,11 @@ block body
               span(ng-class="{'active':vis=='assets'}",ng-click="vis='assets'") #[i.fa.fa-files-o] Assets
 
           #code-editor-code.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",
-          ng-model="target().code.content",ui-refrehs="vis",ng-class="{'active':vis=='code'}")
+          ng-model="target().code.content",ui-refresh="vis",ng-class="{'active':vis=='code'}")
           #code-editor-style.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",
-          ng-model="target().style.content",ui-refrehs="vis",ng-class="{'active':vis=='stylesheet'}")
+          ng-model="target().style.content",ui-refresh="vis",ng-class="{'active':vis=='stylesheet'}")
           #code-editor-doc.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",
-          ng-model="target().doc.content",ui-refrehs="vis",ng-class="{'active':vis=='document'}")
+          ng-model="target().doc.content",ui-refresh="vis",ng-class="{'active':vis=='document'}")
           #code-editor-assets.box(ng-cloak,ng-class="{'active':vis=='assets'}")
             .file.uploader Upload ... #[input(type="file",multiple)]
             .file(ng-repeat="f in target().assets",ng-click="assets.preview(f)")

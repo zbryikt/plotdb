@@ -121,9 +121,9 @@ snapshot = (type='snapshot') ->
       return window.parent.postMessage {type: \getsvg, payload: svg}, plotdb-domain
     img = new Image!
     img.onload = ->
-      newHeight = (if height > width => width else height )
-      canvas = document.createElement("canvas") <<< {width, height: newHeight}
-      canvas.getContext \2d .drawImage img, 0, 0, width, newHeight, 0, 0, width, newHeight
+      #newHeight = (if height > width => width else height ) #TODO crop image in server / service
+      canvas = document.createElement("canvas") <<< {width, height}
+      canvas.getContext \2d .drawImage img, 0, 0, width, height, 0, 0, width, height
       window.parent.postMessage {type, payload: canvas.toDataURL!}, plotdb-domain
     # btoa doesn't work for utf-8 string
     encoded = base64.encode(utf8.encode(svg))

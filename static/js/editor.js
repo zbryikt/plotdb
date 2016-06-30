@@ -640,7 +640,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         var this$ = this;
         return setTimeout(function(){
           return $scope.codemirror.objs.map(function(cm){
-            var ret, k, v, this$ = this;
+            var ret, k, v, d, this$ = this;
             ret = (function(){
               var ref$, results$ = [];
               for (k in ref$ = $scope.codemirror) {
@@ -651,6 +651,10 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             }()).filter(function(it){
               return it[1].mode === cm.options.mode;
             })[0];
+            d = cm.display;
+            d.cachedCharWidth = d.cachedTextHeight = d.cachedPaddingH = null;
+            d.scrollbarsClipped = false;
+            cm.setSize();
             if (!ret || !$scope.vis.startsWith(ret[0])) {
               return;
             }
@@ -660,7 +664,6 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             if (ret[1].refreshed) {
               return;
             }
-            cm.refresh();
             ret[1].refreshed = true;
             return setTimeout(function(){
               cm.refresh();
