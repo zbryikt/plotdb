@@ -47,8 +47,7 @@ plotdb <<< do
         d = new Date(ret.2, parseInt(ret.1) - 1)
       return {raw: it, toString: (->@raw), parsed: d}
     order: do
-      Ascending: (a,b) ->
-        return a.parsed.getTime! - b.parsed.getTime!
+      Ascending: (a,b) ->  return a.parsed.getTime! - b.parsed.getTime!
       Descending: (a,b) -> return b.parsed.getTime! - a.parsed.getTime!
       index: -> it.parsed.getTime!
   Choice: (v) ->
@@ -136,7 +135,7 @@ plotdb <<< do
 
 plotdb <<< do
   Order: do
-    default: (d,i) -> i
+    default: (k,v,i) -> i
     name: \Order
     test: -> !!(@subtype.map((type)-> type.test it).filter(->it).0)
     subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring]
@@ -189,7 +188,8 @@ plotdb.chart = do
           v.field-name = if v.[]fields.0 => that.name else null
         if ret[k] == null => # not bound dimension: we fill it with default
           type = (v.type.0 or plotdb.String)
-          value = if (typeof(type.default) == \function) => type.default(k,v,i) else type.default
+          defval = plotdb[type.name].default
+          value = if (typeof(defval) == \function) => defval(k,v,i) else type.default
           ret[k] = if v.multiple => [value] else value
         if v.type and v.type.0 and plotdb[v.type.0.name].parse =>
           parse = plotdb[v.type.0.name].parse
@@ -231,13 +231,12 @@ plotdb.chart = do
 
   update-config: (chart, config) ->
     for k,v of chart.config =>
-      type = (config[k].type or []).map(->it.name)
       if !(config[k]?) => config[k] = v.default
       else if !(config[k].value?) => config[k] = (v or config[k]).default
       else config[k] = config[k].value
-
-      if type.0 and plotdb[type.0.name].parse =>
-        config[k] = plotdb[type.0.name].parse config[k]
+      type = (config[k].type or []).map(->it.name)
+      if type.0 and plotdb[type.0].parse =>
+        config[k] = plotdb[type.0].parse config[k]
       #if type.filter(->it == \Number).length => config[k] = parseFloat(config[k])
 
 plotdb.theme = do

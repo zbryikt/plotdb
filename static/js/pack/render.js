@@ -4820,7 +4820,7 @@ import$(plotdb, {
 });
 import$(plotdb, {
   Order: {
-    'default': function(d, i){
+    'default': function(k, v, i){
       return i;
     },
     name: 'Order',
@@ -4915,7 +4915,7 @@ plotdb.chart = {
     render: function(root, data, config){}
   },
   dataFromDimension: function(dimension){
-    var data, len, k, v, i$, i, ret, that, type, value, parse, j$, to$, j;
+    var data, len, k, v, i$, i, ret, that, type, defval, value, parse, j$, to$, j;
     data = [];
     len = Math.max.apply(null, (function(){
       var ref$, results$ = [];
@@ -4945,8 +4945,9 @@ plotdb.chart = {
         }
         if (ret[k] === null) {
           type = v.type[0] || plotdb.String;
-          value = typeof type['default'] === 'function'
-            ? type['default'](k, v, i)
+          defval = plotdb[type.name]['default'];
+          value = typeof defval === 'function'
+            ? defval(k, v, i)
             : type['default'];
           ret[k] = v.multiple ? [value] : value;
         }
@@ -5021,7 +5022,6 @@ plotdb.chart = {
     var k, ref$, v, type, results$ = [];
     for (k in ref$ = chart.config) {
       v = ref$[k];
-      type = (config[k].type || []).map(fn$);
       if (!(config[k] != null)) {
         config[k] = v['default'];
       } else if (!(config[k].value != null)) {
@@ -5029,8 +5029,9 @@ plotdb.chart = {
       } else {
         config[k] = config[k].value;
       }
-      if (type[0] && plotdb[type[0].name].parse) {
-        results$.push(config[k] = plotdb[type[0].name].parse(config[k]));
+      type = (config[k].type || []).map(fn$);
+      if (type[0] && plotdb[type[0]].parse) {
+        results$.push(config[k] = plotdb[type[0]].parse(config[k]));
       }
     }
     return results$;
