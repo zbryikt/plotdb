@@ -1338,7 +1338,7 @@ plotd3.html.popup = function(root, sel, cb, store){
   ['active'].map(function(k){
     return ret[k] = function(k){
       return function(it){
-        if (it == null) {
+        if (!arguments.length) {
           return store[k];
         }
         store[k] = it;
@@ -1435,7 +1435,7 @@ plotd3.rwd.overlap = function(){
   ['remove', 'opacity', 'fitText'].map(function(k){
     return ret[k] = function(k){
       return function(it){
-        if (it == null) {
+        if (!arguments.length) {
           return store[k];
         }
         store[k] = it;
@@ -1578,7 +1578,7 @@ plotd3.rwd.legend = function(){
   ['label', 'fontSize', 'type', 'marker', 'tickValues', 'ticks', 'orient', 'scale', 'size', 'padding'].map(function(k){
     return ret[k] = function(k){
       return function(it){
-        if (!it) {
+        if (!arguments.length) {
           return store[k];
         }
         store[k] = it;
@@ -1823,7 +1823,7 @@ plotd3.rwd.axis = function(){
   ['fontSize', 'label', 'labelPosition', 'multiLine', 'boundaryTickInside', 'angle', 'showGrid'].map(function(k){
     return ret[k] = function(k){
       return function(it){
-        if (it == null) {
+        if (!arguments.length) {
           return store[k];
         }
         store[k] = it;

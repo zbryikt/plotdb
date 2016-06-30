@@ -103,7 +103,7 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
     ret
   <[active]>.map (k) ->
     ret[k] = ((k)-> ->
-      if !it? => return store[k]
+      if !arguments.length => return store[k]
       store[k] = it
       return ret
     ) k
@@ -153,7 +153,7 @@ plotd3.rwd.overlap = ->
     sel
   <[remove opacity fitText]>.map (k) ->
     ret[k] = ((k)-> ->
-      if !it? => return store[k]
+      if !arguments.length => return store[k]
       store[k] = it
       return ret
     ) k
@@ -245,7 +245,7 @@ plotd3.rwd.legend = ->
 
   <[label fontSize type marker tickValues ticks orient scale size padding]>.map (k) ->
     ret[k] = ((k)-> ->
-      if !it => return store[k]
+      if !arguments.length => return store[k]
       store[k] = it
       return ret
     ) k
@@ -391,7 +391,7 @@ plotd3.rwd.axis = ->
 
   <[fontSize label labelPosition multiLine boundaryTickInside angle showGrid]>.map (k) ->
     ret[k] = ((k)-> ->
-      if !it? => return store[k]
+      if !arguments.length => return store[k]
       store[k] = it
       return ret
     ) k
