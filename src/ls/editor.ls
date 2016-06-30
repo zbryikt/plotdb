@@ -382,6 +382,7 @@ angular.module \plotDB
           library: null
         tab: 0
       data-panel: do
+        init: -> eventBus.listen \dataset.saved, ~> $timeout (~> @toggled = false), 1000
         toggle: -> @toggled = !!!@toggled
         toggled: false
         edit: (dataset) ->
@@ -783,6 +784,8 @@ angular.module \plotDB
         @backup.init!
         @field-agent.init!
         @setting-panel.init!
+        @share-panel.init!
+        @data-panel.init!
         if @type == \theme => @charts.init!
         if @type == \chart => @themes.init!
 

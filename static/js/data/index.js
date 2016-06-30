@@ -218,6 +218,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       isCreate = !$scope.dataset.key ? true : false;
       $scope.loading = true;
       return $scope.dataset.save().then(function(r){
+        $scope.loading = false;
         $scope.$apply(function(){
           return plNotify.send('success', "dataset saved");
         });
@@ -229,8 +230,6 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
               return window.location.href = dataService.link($scope.dataset);
             }, 1000);
           }
-        } else {
-          $scope.loading = false;
         }
         return eventBus.fire('dataset.saved', $scope.dataset);
       })['catch'](function(e){
@@ -573,6 +572,7 @@ x$.controller('userDatasetList', ['$scope', '$http', 'dataService'].concat(funct
 x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'plNotify', 'eventBus'].concat(function($scope, IOService, dataService, Paging, plNotify, eventBus){
   var that, dsfilter, box;
   $scope.paging = Paging;
+  $scope.paging.limit = 50;
   $scope.datasets = [];
   $scope.mydatasets = [];
   $scope.samplesets = dataService.sample.map(function(it){
@@ -605,10 +605,13 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
           return new dataService.dataset(it, true);
         });
         Paging.flexWidth(data);
+        console.log(data.map(function(it){
+          return it.name;
+        }));
         $scope.mydatasets = (reset
           ? []
           : $scope.mydatasets).concat(data);
-        $scope.datasets = $scope.mydatasets.concat($scope.samplesets);
+        $scope.datasets = $scope.samplesets.concat($scope.mydatasets);
         if (!$scope.cur) {
           return $scope.setcur($scope.datasets[0]);
         }

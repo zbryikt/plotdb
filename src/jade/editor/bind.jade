@@ -23,6 +23,7 @@ div(ng-controller="datasetList",ng-cloak)
                 .name {{dataset.name}}
                 .grayed {{dataset.rows}} Rows, {{dataset.fields.length}} Fields
               small.grayed.sample(ng-show="dataset.isSample") sample data
+              small.grayed.sample(ng-show="dataset.owner==user.data.key") my data
             #list-end.text-center: span(ng-cloak,ng-show="paging.end")
             .loader.alone.sm.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")
             .text-center.grayed(ng-show="paging.end") that's all. #[i.fa.fa-smile-o]

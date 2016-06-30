@@ -732,6 +732,14 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       tab: 0
     },
     dataPanel: {
+      init: function(){
+        var this$ = this;
+        return eventBus.listen('dataset.saved', function(){
+          return $timeout(function(){
+            return this$.toggled = false;
+          }, 1000);
+        });
+      },
       toggle: function(){
         return this.toggled = !this.toggled;
       },
@@ -1548,6 +1556,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       this.backup.init();
       this.fieldAgent.init();
       this.settingPanel.init();
+      this.sharePanel.init();
+      this.dataPanel.init();
       if (this.type === 'theme') {
         this.charts.init();
       }

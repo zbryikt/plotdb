@@ -165,6 +165,7 @@ angular.module \plotDB
       $scope.loading = true
       $scope.dataset.save!
         .then (r) ->
+          $scope.loading = false
           $scope.$apply -> plNotify.send \success, "dataset saved"
           if is-create =>
             if $scope.$parent and $scope.$parent.inline-create =>
@@ -173,7 +174,6 @@ angular.module \plotDB
               setTimeout (->
                 window.location.href = data-service.link $scope.dataset
               ), 1000
-          else => $scope.loading = false
           eventBus.fire \dataset.saved, $scope.dataset
         .catch (e) ->
           console.log e.stack
@@ -358,6 +358,7 @@ angular.module \plotDB
   <[$scope IOService dataService Paging plNotify eventBus]> ++
   ($scope, IOService, data-service, Paging, plNotify, eventBus) ->
     $scope.paging = Paging
+    $scope.paging.limit = 50
     #$scope.filter = { search: "" }
     $scope.datasets = []
     $scope.mydatasets = []
@@ -376,8 +377,9 @@ angular.module \plotDB
       ), delay, reset).then (ret) -> $scope.$apply ~>
         data = (ret or []).map -> new dataService.dataset it, true
         Paging.flex-width data
+        console.log data.map(->it.name)
         $scope.mydatasets = (if reset => [] else $scope.mydatasets) ++ data
-        $scope.datasets = $scope.mydatasets ++ $scope.samplesets
+        $scope.datasets = $scope.samplesets ++ $scope.mydatasets
         if !$scope.cur => $scope.setcur $scope.datasets[0]
 
     # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large
