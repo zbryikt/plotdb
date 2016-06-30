@@ -63,6 +63,7 @@ angular.module \plotDB
         @target!.save!
           .then (ret) ~>
             <~ @$apply
+            if refresh => eventBus.fire \loading.dimmer.on
             if nothumb => plNotify.send \warning, "#{@type} saved, but thumbnail failed to update"
               else plNotify.send \success, "#{@type} saved"
             link = @service.link @target!

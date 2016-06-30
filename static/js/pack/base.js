@@ -3600,6 +3600,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       return this.target().save().then(function(ret){
         return this$.$apply(function(){
           var link;
+          if (refresh) {
+            eventBus.fire('loading.dimmer.on');
+          }
           if (nothumb) {
             plNotify.send('warning', this$.type + " saved, but thumbnail failed to update");
           } else {
