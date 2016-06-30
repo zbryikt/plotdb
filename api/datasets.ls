@@ -25,7 +25,7 @@ engine.router.api.get "/dataset/", (req, res) ->
   io.query([
     "select datasets.*,users.displayname as ownername from datasets,users"
     "where datasets.owner=users.key and #condition"
-    "order by case owner when $3 then 1 else 2 end"
+    "order by case owner when $3 then 1 else datasets.key end"
     "offset $1 limit $2"
   ].join(" "), params)
     .then ->
