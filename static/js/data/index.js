@@ -180,12 +180,16 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
   return dataService;
 }));
 x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'eventBus', 'plNotify'].concat(function($scope, $timeout, $http, dataService, eventBus, plNotify){
+  eventBus.fire('loading.dimmer.on');
   import$($scope, {
     rawdata: "",
     dataset: null,
     worker: new Worker("/js/data/worker.js"),
     loading: true,
     inited: false
+  });
+  $scope.$watch('inited', function(it){
+    return eventBus.fire("loading.dimmer." + (it ? 'off' : 'on'));
   });
   $scope.name = null;
   $scope.save = function(locally){
@@ -226,6 +230,9 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
           if ($scope.$parent && $scope.$parent.inlineCreate) {
             $scope.$parent.inlineCreate($scope.dataset);
           } else {
+            $scope.$apply(function(){
+              return eventBus.fire('loading.dimmer.on');
+            });
             setTimeout(function(){
               return window.location.href = dataService.link($scope.dataset);
             }, 1000);

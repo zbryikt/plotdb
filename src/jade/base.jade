@@ -28,6 +28,7 @@ html(lang="en")
     script(type="text/javascript",src="/assets/papaparse/4.1.2/papaparse.min.js")
     block head
   body(id=rootid,ng-app="plotDB",ng-controller="plSite")
+    #loading-dimmer(ng-class="{'active':loading.dimmer}")
     div(style="height:0") &nbsp;
     include nav.jade
     include auth/panel.jade

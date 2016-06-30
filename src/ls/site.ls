@@ -39,8 +39,8 @@ angular.module \plotDB
     @
 
   ..controller \plSite,
-  <[$scope $http $interval global plNotify dataService chartService]> ++
-  ($scope, $http, $interval, global, plNotify, data-service, chart-service) ->
+  <[$scope $http $interval global plNotify dataService chartService eventBus]> ++
+  ($scope, $http, $interval, global, plNotify, data-service, chart-service, eventBus) ->
     $scope.track-event = (cat, act, label, value) -> ga \send, \event, cat, act, label, value
     $scope.notifications = plNotify.queue
     $scope.alert = plNotify.alert
@@ -76,6 +76,9 @@ angular.module \plotDB
           do-prevent = true
         return if do-prevent => prevent e else undefined
 
+    $scope.loading = dimmer: false
+    eventBus.listen 'loading.dimmer.on', -> $scope.loading.dimmer = true
+    eventBus.listen 'loading.dimmer.off', -> $scope.loading.dimmer = false
     $scope.scrollto = (sel = null) ->
       <- setTimeout _, 0
       top = if sel => ( $(sel).offset!top - 60 ) else 0

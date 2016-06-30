@@ -89,7 +89,7 @@ x$.service('plNotify', ['$rootScope', '$timeout'].concat(function($rootScope, $t
   };
   return this;
 }));
-x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', 'dataService', 'chartService'].concat(function($scope, $http, $interval, global, plNotify, dataService, chartService){
+x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', 'dataService', 'chartService', 'eventBus'].concat(function($scope, $http, $interval, global, plNotify, dataService, chartService, eventBus){
   var that, x$;
   $scope.trackEvent = function(cat, act, label, value){
     return ga('send', 'event', cat, act, label, value);
@@ -143,6 +143,15 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
       return doPrevent ? prevent(e) : undefined;
     });
   };
+  $scope.loading = {
+    dimmer: false
+  };
+  eventBus.listen('loading.dimmer.on', function(){
+    return $scope.loading.dimmer = true;
+  });
+  eventBus.listen('loading.dimmer.off', function(){
+    return $scope.loading.dimmer = false;
+  });
   $scope.scrollto = function(sel){
     sel == null && (sel = null);
     return setTimeout(function(){

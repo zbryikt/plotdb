@@ -143,12 +143,15 @@ angular.module \plotDB
   ..controller \dataEditCtrl,
   <[$scope $timeout $http dataService eventBus plNotify]> ++
   ($scope, $timeout, $http, data-service, eventBus, plNotify) ->
+    eventBus.fire \loading.dimmer.on
     $scope <<< do
       rawdata: ""
       dataset: null
       worker: new Worker("/js/data/worker.js")
       loading: true
       inited: false
+    $scope.$watch 'inited', ->
+      eventBus.fire "loading.dimmer.#{if it => \off else \on}"
     $scope.name = null
     $scope.save = (locally = false) ->
       if !$scope.dataset or !$scope.dataset.name => return
@@ -171,6 +174,7 @@ angular.module \plotDB
             if $scope.$parent and $scope.$parent.inline-create =>
               $scope.$parent.inline-create $scope.dataset
             else
+              $scope.$apply -> eventBus.fire 'loading.dimmer.on'
               setTimeout (->
                 window.location.href = data-service.link $scope.dataset
               ), 1000
