@@ -4584,7 +4584,7 @@ import$(plotdb, {
     },
     test: function(it){
       var value, k, ref$, v, idx;
-      value = it.toLowerCase();
+      value = typeof it === 'string' ? it.toLowerCase() : it;
       for (k in ref$ = this.values) {
         v = ref$[k];
         idx = v.indexOf(value);

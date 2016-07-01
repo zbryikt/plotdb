@@ -117,6 +117,11 @@ block body
           option(value="voronoijs/0.0.1/min") voronoijs 0.0.1
           option(value="d3.geo.projection/0.2.16/min") d3.geo.projection 0.2.16
           option(value="taiwan-mrt/0.0.1") Taiwan MRT Map 0.0.1
+        hr
+        span D3 submodules
+        select.form-control(multiple="multiple",ngselect2,ng-data="settingPanel.chart.d3lib")
+          include d3module.jade
+
       div
         hr(style="margin-bottom:10px")
         .btn.btn-default(ng-click="clone()") Make a copy
