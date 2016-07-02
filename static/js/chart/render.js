@@ -25,7 +25,7 @@ window.thread = {
   }
 };
 $(document).ready(function(){
-  var dispatcher, properEval, errorHandling, colorblind, parse, snapshot, render, resizeHandler;
+  var dispatcher, properEval, errorHandling, colorblind, parse, snapshot, loadscript, render, resizeHandler;
   dispatcher = function(evt){
     var ref$;
     if ((ref$ = evt.data.type) === 'snapshot' || ref$ === 'getsvg' || ref$ === 'getpng') {
@@ -227,8 +227,20 @@ $(document).ready(function(){
       }, plotdbDomain);
     }
   };
+  loadscript = function(lib, url){
+    return new Promise(function(res, rej){
+      var x$, node;
+      x$ = node = document.createElement('script');
+      x$.type = 'text/javascript';
+      x$.src = url;
+      x$.onload = function(){
+        return res(lib);
+      };
+      return document.head.appendChild(node);
+    });
+  };
   render = function(payload, rebind){
-    var ref$, code, style, doc, data, assets, dimension, config, theme, reboot, ret, node, head, script, k, urljs, n, promise, e;
+    var ref$, code, style, doc, data, assets, dimension, config, theme, reboot, ret, node, head, promise, k, url, e;
     rebind == null && (rebind = true);
     ref$ = ['code', 'style', 'doc'].map(function(it){
       return (payload.chart || (payload.chart = {}))[it].content;
@@ -260,17 +272,19 @@ $(document).ready(function(){
           document.body.appendChild(node);
         }
         head = document.getElementsByTagName("head")[0];
-        script = document.getElementsByTagName("script");
-        script = script[script.length - 1];
-        for (k in ref$ = payload.library) {
-          urljs = ref$[k];
-          n = document.createElement("script");
-          n.setAttribute("type", "text/javascript");
-          n.setAttribute("src", urljs);
-          head.appendChild(n);
-        }
-        $(node).html(["<style type='text/css'>/* <![CDATA[ */" + style + "/* ]]> */</style>", (theme.style || (theme.style = {})).content ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div id='container' style='position:relative;width:100%;height:100%;'>", "<div style='height:0'>&nbsp;</div>", doc, (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8, "</div>"].join(""));
-        promise = properEval(code);
+        payload.library['legacy/0.0.1'] = 'http://localhost/js/pack/legacy.js';
+        promise = Promise.all((function(){
+          var ref$, results$ = [];
+          for (k in ref$ = payload.library) {
+            url = ref$[k];
+            results$.push(loadscript(k, url));
+          }
+          return results$;
+        }()));
+        promise = promise.then(function(){
+          $(node).html(["<style type='text/css'>/* <![CDATA[ */" + style + "/* ]]> */</style>", (theme.style || (theme.style = {})).content ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div id='container' style='position:relative;width:100%;height:100%;'>", "<div style='height:0'>&nbsp;</div>", doc, (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8, "</div>"].join(""));
+          return properEval(code);
+        });
       } else {
         promise = Promise.resolve(window.module);
       }

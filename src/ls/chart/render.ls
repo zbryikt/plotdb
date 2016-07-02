@@ -132,6 +132,13 @@ snapshot = (type='snapshot') ->
     console.log e
     window.parent.postMessage {type, payload: null}, plotdb-domain
 
+loadscript = (lib, url) -> new Promise (res,rej) ->
+  node = document.createElement \script
+    ..type = \text/javascript
+    ..src = url
+    ..onload = -> res lib
+  document.head.appendChild node
+
 render = (payload, rebind = true) ->
   [code,style,doc] = <[code style doc]>.map(->payload.{}chart[it].content)
   [data,assets] = <[data assets]>.map(->payload.chart[it])
@@ -156,25 +163,22 @@ render = (payload, rebind = true) ->
         node.setAttribute("id", "wrapper")
         node.setAttribute("class", "pdb-root")
         document.body.appendChild(node)
-      # the first space in container is crucial for elliminating margin collapsing
       head = document.getElementsByTagName("head")[0]
-      script = document.getElementsByTagName("script")
-      script = script[script.length - 1]
-      for k,urljs of payload.library =>
-        n = document.createElement("script")
-        n.setAttribute("type", "text/javascript")
-        n.setAttribute("src", urljs)
-        head.appendChild(n)
-      $(node).html([
-        "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style>"
-        "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme.{}style.content
-        "<div id='container' style='position:relative;width:100%;height:100%;'>"
-        "<div style='height:0'>&nbsp;</div>"
-        doc
-        theme.doc.content if theme.{}doc.content
-        "</div>"
-      ].join(""))
-      promise = proper-eval code
+      payload.library['legacy/0.0.1'] = 'http://localhost/js/pack/legacy.js'
+      promise = Promise.all [loadscript(k,url) for k,url of payload.library]
+      promise = promise.then ->
+        $(node).html([
+          "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style>"
+          "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme.{}style.content
+          "<div id='container' style='position:relative;width:100%;height:100%;'>"
+          # the first space in container is crucial for elliminating margin collapsing
+          "<div style='height:0'>&nbsp;</div>"
+          doc
+          theme.doc.content if theme.{}doc.content
+          "</div>"
+        ].join(""))
+        proper-eval code
+
     else promise = Promise.resolve window.module
     promise.then (module) ->
       if thread.racing! => return thread.dec reboot
