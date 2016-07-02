@@ -63,6 +63,12 @@
         /js/site.js
         /js/service.js
       ]>
+    legacy: <[
+        /js/chart/legacy.js
+        /lib/topojson/1.6.24/index.min.js
+        /lib/d3.geo.projection/0.2.16/index.min.js
+        /lib/voronoijs/0.0.1/index.min.js
+      ]>
 
   if module? => module.exports = config
   else if angular? =>
