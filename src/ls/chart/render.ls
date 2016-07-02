@@ -76,11 +76,18 @@ colorblind = (payload) ->
     "-webkit-filter": "url('\##payload')"
     "filter": "url('\##payload')"
 
+config-preset = (config) ->
+  for k,v of (config or {}) =>
+    if plotdb.config[k] =>
+      for field,value of plotdb.config[k] =>
+        if !(v[field]?) => v[field] = value
+
 parse = (payload, type) ->
   try
     if type == \chart =>
       (module) <- proper-eval payload, false .then
       chart = module.exports
+      config-preset chart.config
       payload = JSON.stringify({} <<< chart{dimension, config})
       window.parent.postMessage {type: \parse-chart, payload}, plotdb-domain
     else if type == \theme =>
@@ -187,6 +194,7 @@ render = (payload, rebind = true) ->
       chart = module.exports
       if (!data or !data.length) and chart.sample =>
         data := plotdb.chart.get-sample-data chart, dimension
+      config-preset config
       for k,v of (config or {}) =>
         for type in (v.type or [])=>
           try

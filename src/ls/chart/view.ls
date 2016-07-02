@@ -12,7 +12,7 @@ plotdb.view = do
     else if typeof(key) == \string => req.open \get, key, true
     req.send!
   chart: (chart, {theme, fields, root, data}={}) ->
-    @_ = {handler: {}, _chart: JSON.stringify(chart), chart, fields, root, inited: false}
+    @_ = {handler: {}, _chart: JSON.stringify(chart), fields, root, inited: false}
     if chart =>
       @_.chart = chart = eval(chart.code.content) <<< chart
     plotdb.chart.update-config chart, chart.config

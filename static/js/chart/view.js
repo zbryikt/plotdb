@@ -29,7 +29,6 @@ plotdb.view = {
     this._ = {
       handler: {},
       _chart: JSON.stringify(chart),
-      chart: chart,
       fields: fields,
       root: root,
       inited: false

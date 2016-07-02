@@ -21,8 +21,8 @@ module.exports = plotdb.chart.create({
   },
   config: {
     padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: false },
-    margin: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: false },
-    fontSize: { name: "Padding", type: [plotdb.Number], default: 12, rebindOnChange: false }
+    margin: { name: "Margin", type: [plotdb.Number], default: 10, rebindOnChange: false },
+    fontSize: { name: "Font Size", type: [plotdb.Number], default: 12, rebindOnChange: false }
   },
   init: function() {
     var that = this;

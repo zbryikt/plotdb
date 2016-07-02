@@ -332,7 +332,8 @@ block body
                     li(ng-repeat="item in charts.list"): a(ng-click="charts.set(item)") {{item.name}}
 
             .chart-config(ng-cloak,ng-repeat="(name,v) in chart.config",ng-show="!v._bytheme")
-              .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color'")
+              // Otherwise
+              .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color' && v.type[0].name!='Range'")
                 span.input-group-addon: div {{v.name || name}}
                 input.form-control(type="text",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value",style="text-align:center")
               .btn-group(ng-if="v.type[0].name=='Choice'")
@@ -349,6 +350,13 @@ block body
                 span.input-group-addon: div {{v.name || name}}
                 div(style="display:table-cell;float:left;width:100%;height:100%;border:1px solid #ccc;padding:5px;text-align:center;cursor:pointer;border-top-right-radius:3px;border-bottom-right-radius:3px;")
                   div(ng-attr-style="background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:24px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v,$index)") &nbsp;
+              //- Range
+              .input-group.chart-config-range(ng-if="v.type[0].name=='Range'")
+                span.input-group-addon: div {{v.name || name}}
+                span.label.min min
+                input.form-control(style="width:50%",ng-model="v.value[0]")
+                span.label.max max
+                input.form-control(style="width:50%",ng-model="v.value[1]")
               //- Palette
               .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);")
                 span.input-group-addon: div {{v.name || name}}

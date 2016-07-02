@@ -11,7 +11,12 @@
         /assets/canvg/1.4.0/canvg.js
         /assets/utf8js/2.0.0/utf8.js
         /assets/base64/0.1.0/base64.js
-        /js/chart/base.js
+        /js/plotdb/main.js
+        /js/plotdb/type.js
+        /js/plotdb/chart.js
+        /js/plotdb/theme.js
+        /js/plotdb/data.js
+        /js/plotdb/config.js
         /js/share/config.js
         /js/chart/render.js
         /js/chart/plotd3.js
@@ -21,14 +26,24 @@
         /js/sched.js
         /assets/jquery/1.10.2/jquery.min.js
         /assets/d3js/3.5.12/d3.v3.min.js
-        /js/chart/base.js
+        /js/plotdb/main.js
+        /js/plotdb/type.js
+        /js/plotdb/chart.js
+        /js/plotdb/theme.js
+        /js/plotdb/data.js
+        /js/plotdb/config.js
         /js/share/config.js
         /js/chart/view.js
         /js/chart/plotd3.js
       ]>
     loader:
       <[
-        /js/chart/base.js
+        /js/plotdb/main.js
+        /js/plotdb/type.js
+        /js/plotdb/chart.js
+        /js/plotdb/theme.js
+        /js/plotdb/data.js
+        /js/plotdb/config.js
         /js/share/config.js
         /js/chart/view.js
       ]>
@@ -53,7 +68,12 @@
         /js/editor.js
         /js/data/sample.js
         /js/data/index.js
-        /js/chart/base.js
+        /js/plotdb/main.js
+        /js/plotdb/type.js
+        /js/plotdb/chart.js
+        /js/plotdb/theme.js
+        /js/plotdb/data.js
+        /js/plotdb/config.js
         /js/chart/sample.js
         /js/chart/index.js
         /js/palette/sample.js

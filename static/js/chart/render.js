@@ -25,7 +25,7 @@ window.thread = {
   }
 };
 $(document).ready(function(){
-  var dispatcher, properEval, errorHandling, colorblind, parse, snapshot, loadscript, render, resizeHandler;
+  var dispatcher, properEval, errorHandling, colorblind, configPreset, parse, snapshot, loadscript, render, resizeHandler;
   dispatcher = function(evt){
     var ref$;
     if ((ref$ = evt.data.type) === 'snapshot' || ref$ === 'getsvg' || ref$ === 'getpng') {
@@ -138,6 +138,23 @@ $(document).ready(function(){
       "filter": "url('#" + payload + "')"
     });
   };
+  configPreset = function(config){
+    var k, ref$, v, lresult$, field, ref1$, value, results$ = [];
+    for (k in ref$ = config || {}) {
+      v = ref$[k];
+      lresult$ = [];
+      if (plotdb.config[k]) {
+        for (field in ref1$ = plotdb.config[k]) {
+          value = ref1$[field];
+          if (!(v[field] != null)) {
+            lresult$.push(v[field] = value);
+          }
+        }
+      }
+      results$.push(lresult$);
+    }
+    return results$;
+  };
   parse = function(payload, type){
     var e;
     try {
@@ -145,6 +162,7 @@ $(document).ready(function(){
         return properEval(payload, false).then(function(module){
           var chart, payload, ref$;
           chart = module.exports;
+          configPreset(chart.config);
           payload = JSON.stringify((ref$ = {}, ref$.dimension = chart.dimension, ref$.config = chart.config, ref$));
           return window.parent.postMessage({
             type: 'parse-chart',
@@ -298,6 +316,7 @@ $(document).ready(function(){
         if ((!data || !data.length) && chart.sample) {
           data = plotdb.chart.getSampleData(chart, dimension);
         }
+        configPreset(config);
         for (k in ref$ = config || {}) {
           v = ref$[k];
           for (i$ = 0, len$ = (ref1$ = v.type || []).length; i$ < len$; ++i$) {
