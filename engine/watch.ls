@@ -1,7 +1,9 @@
-require! <[fs path chokidar child_process jade stylus require-reload]>
+require! <[fs fs-extra path chokidar child_process jade stylus require-reload markdown]>
 require! 'uglify-js': uglify-js, LiveScript: lsc, 'uglifycss': uglify-css
 require! <[./share/scriptpack]>
 reload = require-reload require
+
+markdown = markdown.markdown
 
 RegExp.escape = -> it.replace /[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"
 
@@ -63,6 +65,7 @@ ftype = ->
   | /\.ls$/.exec it => "ls"
   | /\.styl/.exec it => "styl"
   | /\.jade$/.exec it => "jade"
+  | /\.md/.exec it => "md"
   | otherwise => "other"
 
 filecache = {}
@@ -110,6 +113,21 @@ base = do
     [type,cmd,des] = [ftype(src), "",""]
 
     if type == \other => return
+    if type == \md =>
+      try
+        des = src.replace(/src\/md/, "static/doc").replace(/.md/, ".html")
+        result = markdown.toHTML(fs.read-file-sync src .toString!)
+        result = [
+          "<meta charset='utf-8'/>"
+          "<link rel='stylesheet' type='text/css' href='/assets/markdown-air/0.0.1/air.css'/>"
+          result
+        ].join("\n")
+        <- fs-extra.mkdirs path.dirname(des), _
+        fs.write-file-sync des, result
+        console.log "[BUILD]   #src --> #des"
+      catch
+        console.log "[BUILD]   #src failed: "
+        console.log e.message
 
     if type == \jade =>
       if /^src\/jade\/view\//.exec(src) => return
