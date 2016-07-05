@@ -8,6 +8,7 @@ block vars
 block head
   title #{chart.name} by #{chart.author}
   link(rel="icon",type="image/x-icon",href="/assets/img/favicon-16.png")
+  script(type="text/javascript",src="/js/pack/view.js")
   each lib in chart.library || []
     - var path = lib.split('/')
     - var min = ( path[2]?'.' + path[2] : '' )
@@ -18,14 +19,13 @@ block body
   #wrapper.loading.pdb-root
   a#plotdb-mark(href="https://plotdb.com",target="_blank") POWERED BY PLOTDB
 block foot
-  script(type="text/javascript",src="/js/pack/view.js")
   script(type="text/javascript").
     var chart = !{JSON.stringify(chart).replace(/<\//g, "<\\/")};
     var theme = !{JSON.stringify(theme).replace(/<\//g, "<\\/")};
     var fields = !{JSON.stringify(fields).replace(/<\//g, "<\\/")};
   script(type="text/javascript").
     var mychart = new plotdb.view.chart(chart, {theme: theme, fields: fields}); //, {theme: theme, fields: fields})
-    mychart.loadlib();
+    //-mychart.loadlib();
     mychart.attach(document.getElementById("wrapper"));
   include /ga.jade
   //-include /fb.jade
