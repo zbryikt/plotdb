@@ -15,14 +15,20 @@ angular.module \plotDB
         code: content: '''
 var module = {};
 module.exports = plotdb.chart.create({
-  sample: [1,2,3,4,5],
+  sample: function() {
+    return {
+      value: [{name: "Value", data: [1,2,3,4,5]}]
+    };
+  },
   dimension: {
     value: { type: [plotdb.Number], require: true, desc: "" }
   },
   config: {
+    /* you can write with a complete spec */
     padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: false },
-    margin: { name: "Margin", type: [plotdb.Number], default: 10, rebindOnChange: false },
-    fontSize: { name: "Font Size", type: [plotdb.Number], default: 12, rebindOnChange: false }
+    /* .. or leave fields empty to inherit from default values */
+    margin: { },
+    fontSize: { }
   },
   init: function() {
     var that = this;

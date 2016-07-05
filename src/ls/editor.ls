@@ -199,11 +199,11 @@ angular.module \plotDB
         if @chart and @theme and @chart.config =>
           for k,v of @chart.config => if v._bytheme => delete @chart.config[k]
           for k,v of @chart.config =>
-            if !@chart.config[k].hint => continue
+            if !@chart.config[k].subtype => continue
             preset = @theme.{}typedef[@chart.config[k].type.0.name]
             if !preset => continue
-            if preset[@chart.config[k].hint]? =>
-              @chart.config[k].value = preset[@chart.config[k].hint]
+            if preset[@chart.config[k].subtype]? =>
+              @chart.config[k].value = preset[@chart.config[k].subtype]
           for k,v of @theme.config =>
             if !@chart.config[k] => @chart.config[k] = {_bytheme: true} <<< v
             else if v.type and @chart.config[k].type.0.name != v.type.0.name => continue

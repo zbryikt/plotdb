@@ -17,6 +17,11 @@
 # cat in bubble
 # xCriteria, yCriteria
 
+# Candidate
+# Axis Tick Number
+
+# Category
+# Color / Axis / Value / Layout / Label
 plotdb.config = do
   # Color Configuration
   palette: do
@@ -30,6 +35,7 @@ plotdb.config = do
     name: "Negative"
     type: [plotdb.Color]
     desc: "Color for negative values"
+    default: plotdb.Color.Negative
     subtype: plotdb.Color.subtype.Negative
     category: "Color"
 
@@ -37,6 +43,7 @@ plotdb.config = do
     name: "Positive"
     type: [plotdb.Color]
     desc: "Color for positive values"
+    default: plotdb.Color.Positive
     subtype: plotdb.Color.subtype.Positive
     category: "Color"
 
@@ -44,6 +51,7 @@ plotdb.config = do
     name: "Neutral"
     type: [plotdb.Color]
     desc: "Color for neutral values"
+    default: plotdb.Color.Neutral
     subtype: plotdb.Color.subtype.Neutral
     category: "Color"
 
@@ -51,6 +59,7 @@ plotdb.config = do
     name: "Empty"
     type: [plotdb.Color]
     desc: "Color for 'no values'"
+    default: plotdb.Color.Empty
     subtype: plotdb.Color.subtype.Empty
     category: "Color"
 
@@ -65,7 +74,7 @@ plotdb.config = do
     name: "Default Fill Color"
     type: [plotdb.Color]
     desc: "Default color for filling visual encoding"
-    default: \#aaa
+    default: \#e03f0e
     category: "Color"
 
   stroke: do
@@ -137,19 +146,29 @@ plotdb.config = do
     default: 12
     category: "Text"
 
-  LabelShadowOn: do
+  labelShadowOn: do
     name: "Show Label Shadow"
     type: [plotdb.Boolean]
     default: true
     category: "Text"
 
-  xLabel: do
+  xAxisLabel: do
     name: "X Axis Label"
     type: [plotdb.String]
     category: "Text"
 
-  yLabel: do
+  yAxisLabel: do
     name: "Y Axis Label"
+    type: [plotdb.String]
+    category: "Text"
+
+  radialAxisLabel: do
+    name: "Radial Axis Label"
+    type: [plotdb.String]
+    category: "Text"
+
+  angularAxisLabel: do
+    name: "Angular Axis Label"
     type: [plotdb.String]
     category: "Text"
 
@@ -179,7 +198,7 @@ plotdb.config = do
 
   labelPosition: do
     name: "Label Position"
-    type: [plotdb.Choice("in","out")]
+    type: [plotdb.Choice(["in","out"])]
     default: "out"
     category: "Switch"
 
@@ -213,7 +232,7 @@ plotdb.config = do
     category: "Value"
 
   threshold: do
-    name: "Threshold in X axis"
+    name: "Threshold"
     type: [plotdb.Number]
     desc: "Diverging value split threshold"
     defaut: 0
@@ -232,7 +251,7 @@ plotdb.config = do
     default: true
     category: "Value"
 
-  OtherLimit: do
+  otherLimit: do
     name: "Small Data Threshold"
     type: [plotdb.Number]
     desc: "Data smaller than this value will be clustered into one set of data"
@@ -250,4 +269,28 @@ plotdb.config = do
     name: "Axis Outer Tick length"
     type: [plotdb.Number]
     default: 2
+    category: "Axis"
+
+  showXAxis: do
+    name: "Show X Axis"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Axis"
+
+  showYAxis: do
+    name: "Show Y Axis"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Axis"
+
+  showRadialAxis: do
+    name: "Show Radial Axis"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Axis"
+
+  showAngularAxis: do
+    name: "Show Angular Axis"
+    type: [plotdb.Boolean]
+    default: true
     category: "Axis"

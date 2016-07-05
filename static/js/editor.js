@@ -402,15 +402,15 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }
         for (k in ref$ = this.chart.config) {
           v = ref$[k];
-          if (!this.chart.config[k].hint) {
+          if (!this.chart.config[k].subtype) {
             continue;
           }
           preset = ((ref1$ = this.theme).typedef || (ref1$.typedef = {}))[this.chart.config[k].type[0].name];
           if (!preset) {
             continue;
           }
-          if (preset[this.chart.config[k].hint] != null) {
-            this.chart.config[k].value = preset[this.chart.config[k].hint];
+          if (preset[this.chart.config[k].subtype] != null) {
+            this.chart.config[k].value = preset[this.chart.config[k].subtype];
           }
         }
         for (k in ref$ = this.theme.config) {

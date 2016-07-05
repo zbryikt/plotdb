@@ -127,6 +127,7 @@ plotdb.chart = {
     var k, ref$, v, type, results$ = [];
     for (k in ref$ = chart.config) {
       v = ref$[k];
+      type = (chart.config[k].type || []).map(fn$);
       if (!(config[k] != null)) {
         config[k] = v['default'];
       } else if (!(config[k].value != null)) {
@@ -134,7 +135,6 @@ plotdb.chart = {
       } else {
         config[k] = config[k].value;
       }
-      type = (config[k].type || []).map(fn$);
       if (type[0] && plotdb[type[0]].parse) {
         results$.push(config[k] = plotdb[type[0]].parse(config[k]));
       }

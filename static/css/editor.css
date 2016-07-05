@@ -73,6 +73,30 @@
   height: 230px;
   overflow-y: scroll;
 }
+.chart-config .chart-config-range span.label {
+  position: absolute;
+  z-index: 10;
+  display: inline-block;
+  width: 28px;
+  background: rgba(255,255,255,0.3);
+  color: #999;
+  border: 1px solid #ccc;
+  height: 14px;
+  padding: 0;
+  line-height: 12px;
+  font-size: 12px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 100;
+  letter-spacing: 1px;
+}
+.chart-config .chart-config-range span.label.min {
+  border-radius: 0 0 3px 0;
+}
+.chart-config .chart-config-range span.label.max {
+  right: 0;
+  border-radius: 0 3px 0 3px;
+}
 @media (max-width: 800px) {
   .pleditor .row {
     margin: 0;

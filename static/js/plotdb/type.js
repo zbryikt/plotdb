@@ -235,6 +235,7 @@ import$(plotdb, {
     Positive: '#3f7ab5',
     Negative: '#d93510',
     Neutral: '#cccccc',
+    Empty: '#ffffff',
     subtype: {
       negative: "negative",
       positive: "positive",

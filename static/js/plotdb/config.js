@@ -11,6 +11,7 @@ plotdb.config = {
     name: "Negative",
     type: [plotdb.Color],
     desc: "Color for negative values",
+    'default': plotdb.Color.Negative,
     subtype: plotdb.Color.subtype.Negative,
     category: "Color"
   },
@@ -18,6 +19,7 @@ plotdb.config = {
     name: "Positive",
     type: [plotdb.Color],
     desc: "Color for positive values",
+    'default': plotdb.Color.Positive,
     subtype: plotdb.Color.subtype.Positive,
     category: "Color"
   },
@@ -25,6 +27,7 @@ plotdb.config = {
     name: "Neutral",
     type: [plotdb.Color],
     desc: "Color for neutral values",
+    'default': plotdb.Color.Neutral,
     subtype: plotdb.Color.subtype.Neutral,
     category: "Color"
   },
@@ -32,6 +35,7 @@ plotdb.config = {
     name: "Empty",
     type: [plotdb.Color],
     desc: "Color for 'no values'",
+    'default': plotdb.Color.Empty,
     subtype: plotdb.Color.subtype.Empty,
     category: "Color"
   },
@@ -46,7 +50,7 @@ plotdb.config = {
     name: "Default Fill Color",
     type: [plotdb.Color],
     desc: "Default color for filling visual encoding",
-    'default': '#aaa',
+    'default': '#e03f0e',
     category: "Color"
   },
   stroke: {
@@ -114,19 +118,29 @@ plotdb.config = {
     'default': 12,
     category: "Text"
   },
-  LabelShadowOn: {
+  labelShadowOn: {
     name: "Show Label Shadow",
     type: [plotdb.Boolean],
     'default': true,
     category: "Text"
   },
-  xLabel: {
+  xAxisLabel: {
     name: "X Axis Label",
     type: [plotdb.String],
     category: "Text"
   },
-  yLabel: {
+  yAxisLabel: {
     name: "Y Axis Label",
+    type: [plotdb.String],
+    category: "Text"
+  },
+  radialAxisLabel: {
+    name: "Radial Axis Label",
+    type: [plotdb.String],
+    category: "Text"
+  },
+  angularAxisLabel: {
+    name: "Angular Axis Label",
     type: [plotdb.String],
     category: "Text"
   },
@@ -155,7 +169,7 @@ plotdb.config = {
   },
   labelPosition: {
     name: "Label Position",
-    type: [plotdb.Choice("in", "out")],
+    type: [plotdb.Choice(["in", "out"])],
     'default': "out",
     category: "Switch"
   },
@@ -188,7 +202,7 @@ plotdb.config = {
     category: "Value"
   },
   threshold: {
-    name: "Threshold in X axis",
+    name: "Threshold",
     type: [plotdb.Number],
     desc: "Diverging value split threshold",
     defaut: 0,
@@ -207,7 +221,7 @@ plotdb.config = {
     'default': true,
     category: "Value"
   },
-  OtherLimit: {
+  otherLimit: {
     name: "Small Data Threshold",
     type: [plotdb.Number],
     desc: "Data smaller than this value will be clustered into one set of data",
@@ -224,6 +238,30 @@ plotdb.config = {
     name: "Axis Outer Tick length",
     type: [plotdb.Number],
     'default': 2,
+    category: "Axis"
+  },
+  showXAxis: {
+    name: "Show X Axis",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Axis"
+  },
+  showYAxis: {
+    name: "Show Y Axis",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Axis"
+  },
+  showRadialAxis: {
+    name: "Show Radial Axis",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Axis"
+  },
+  showAngularAxis: {
+    name: "Show Angular Axis",
+    type: [plotdb.Boolean],
+    'default': true,
     category: "Axis"
   }
 };

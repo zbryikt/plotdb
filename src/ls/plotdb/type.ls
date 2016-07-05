@@ -112,6 +112,7 @@ plotdb <<< do
     Positive: \#3f7ab5
     Negative: \#d93510
     Neutral: \#cccccc
+    Empty: \#ffffff
     subtype: do
       negative: "negative"
       positive: "positive"
