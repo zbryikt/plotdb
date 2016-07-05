@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+pngquant --force --ext .png -- ../static/s/chart/*.png
