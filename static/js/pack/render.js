@@ -5881,7 +5881,7 @@ $(document).ready(function(){
           document.body.appendChild(node);
         }
         head = document.getElementsByTagName("head")[0];
-        payload.library['legacy/0.0.1'] = '/js/pack/legacy.js';
+        payload.library['legacy/0.0.1'] = plotdbDomain + "/js/pack/legacy.js";
         promise = Promise.all((function(){
           var ref$, results$ = [];
           for (k in ref$ = payload.library) {

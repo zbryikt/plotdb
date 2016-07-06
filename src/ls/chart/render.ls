@@ -171,7 +171,7 @@ render = (payload, rebind = true) ->
         node.setAttribute("class", "pdb-root")
         document.body.appendChild(node)
       head = document.getElementsByTagName("head")[0]
-      payload.library['legacy/0.0.1'] = '/js/pack/legacy.js'
+      payload.library['legacy/0.0.1'] = "#{plotdb-domain}/js/pack/legacy.js"
       promise = Promise.all [loadscript(k,url) for k,url of payload.library]
       promise = promise.then ->
         $(node).html([
