@@ -54,7 +54,7 @@ engine.router.api.get "/chart/", (req, res) ->
     conditions.map(->it.1) ++
     paging.1 ++
     (if keyword.length => [keyword.map(->it.toLowerCase!)] else []) ++
-    (if fav => [req.user.key] else [])
+    (if fav and req.user => [req.user.key] else [])
   ))
     .then ->
       charts := it.rows
