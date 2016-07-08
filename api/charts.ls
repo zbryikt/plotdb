@@ -115,10 +115,16 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
   data = req.body
+  chart = null
   if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
   io.query "select * from charts where key = $1", [req.params.id]
     .then (r = {}) ->
-      chart = r.rows.0
+      chart := r.rows.0
+      if chart.parent => return io.query("select key from charts where key = $1", [chart.parent])
+      else return {rows: []}
+    .then (r = {}) ->
+      if !r.rows or !r.rows.length => chart.parent = null
+      if !chart.parent => delete data.parent
       if !chart => return aux.r404 res
       if chart.owner != req.user.key => return aux.r403 res
       data <<< do
