@@ -34,6 +34,9 @@ module.exports = plotdb.chart.create({
     var that = this;
     this.svg = d3.select(this.root).append("svg");
   },
+  parse: function() {
+    var that = this;
+  },
   bind: function() {
     var that = this;
   },
@@ -41,7 +44,7 @@ module.exports = plotdb.chart.create({
     var that = this;
     var box = this.root.getBoundingClientRect();
     var width = this.width = box.width;
-    var height = this.height = box.height - 10;
+    var height = this.height = box.height;
     this.svg.attr({
       width: width + "px", height: height + "px",
       viewBox: [0,0,width,height].join(" "),
