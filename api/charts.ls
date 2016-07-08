@@ -17,6 +17,7 @@ engine.router.api.get "/chart/", (req, res) ->
   keyword = (req.query.keyword or "").split(/[, ]/).map(->it.trim!).filter(->it)
   offset = req.query.offset or 0
   limit = (req.query.limit or 20) <? 100
+  fav = req.query.fav and req.user
   overlap = do
     basetype: (req.query.type or "").split(\,).filter(->it)
     visualencoding: (req.query.enc or "").split(\,).filter(->it)
@@ -42,19 +43,27 @@ engine.router.api.get "/chart/", (req, res) ->
     'select users.displayname as ownername,'
     'charts.key, charts.name, charts.description, charts.basetype, charts.visualencoding, charts.category,'
     'charts.tags, charts.likes, charts.searchable, charts.dimlen, charts.createdtime, charts.modifiedtime'
-    "from charts,users where users.key = charts.owner and"
+    "from charts,users" + (if fav => ",likes" else "")
+    "where users.key = charts.owner and"
     (conditions.map(->it.0) ++ [
       "(charts.tags && $#tagidx or lower(charts.name) ~ ANY($#tagidx) or lower(charts.description) ~ ANY($#tagidx))" if keyword.length
     ]).filter(->it).join(" and ")
+    (if fav => "and likes.type='chart' and likes.uid=charts.key and likes.owner=$#{tagidx + (if keyword.length => 1 else 0)}" else "")
     "offset #{paging.0.0} limit #{paging.0.1}"
   ].join(" "), (
-    conditions.map(->it.1) ++ paging.1 ++ (if keyword.length => [keyword.map(->it.toLowerCase!)] else [])
+    conditions.map(->it.1) ++
+    paging.1 ++
+    (if keyword.length => [keyword.map(->it.toLowerCase!)] else []) ++
+    (if fav => [req.user.key] else [])
   ))
     .then ->
       charts := it.rows
+      if !charts.length => return {rows: []}
       io.query(
-        ("select uid from likes where owner=$1 and type='chart' " +
-        "and uid in (#{it.rows.map(->it.key).join(\,)})"),
+        (
+          "select uid from likes where owner=$1 and type='chart'" +
+          " and uid in (#{charts.map(->it.key).join(\,)})"
+        ),
         [req.user.key]
       )
     .then (r = {})->

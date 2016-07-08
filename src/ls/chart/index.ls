@@ -133,3 +133,4 @@ angular.module \plotDB
       map = d3.nest!key(->it.0).map(window.location.search.replace(\?,'').split(\&).map(->it.split \=))
       for k,v of $scope.q => if map[k] => $scope.q[k] = map[k].0.1
     Paging.load-on-scroll (-> $scope.load-list!), $(\#list-end)
+    $('#chart-explore-bar .btn[data-toggle="tooltip"]').tooltip!

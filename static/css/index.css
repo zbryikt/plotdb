@@ -3107,6 +3107,12 @@ small.hint {
 #chart-explore-bar li.dropdown a span {
   line-height: 1.5em;
 }
+#chart-explore-bar li.dropdown.active a.dropdown-toggle,
+#chart-explore-bar .btn.active,
+#chart-explore-bar input.active {
+  color: #ed1d78;
+  background: #fff9f9;
+}
 #chart-explore-bar ul.dropdown-menu li.active a {
   color: #fff;
   background: #ed1d78;

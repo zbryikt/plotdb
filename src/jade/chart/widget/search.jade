@@ -3,7 +3,7 @@
   .container-fluid
     div
       ul.nav.navbar-nav
-        li.dropdown
+        li.dropdown(ng-class="{'active':q.type}")
           a.dropdown-toggle(data-toggle="dropdown")
             small chart type
             span(ng-cloak,ng-show="q.type") {{qmap.type[q.type]}}
@@ -33,7 +33,7 @@
             //-
               li(ng-class="{'active':q.type=='99'}"): a(ng-click="q.type='99'") Other
 
-        li.dropdown
+        li.dropdown(ng-class="{'active':q.enc}")
           a.dropdown-toggle(data-toggle="dropdown")
             small encoding
             span(ng-cloak,ng-show="q.enc") {{qmap.enc[q.enc]}}
@@ -53,7 +53,7 @@
             li(ng-class="{'active':q.enc=='10'}"): a(ng-click="q.enc='10'") Saturation
             //-li(ng-class="{'active':q.enc=='99'}"): a(ng-click="q.enc='99'") Other
 
-        li.dropdown
+        li.dropdown(ng-class="{'active':q.cat}")
           a.dropdown-toggle(data-toggle="dropdown")
             small category
             span(ng-cloak,ng-show="q.cat") {{qmap.cat[q.cat]}}
@@ -69,7 +69,7 @@
             li(ng-class="{'active':q.cat=='6'}"): a(ng-click="q.cat='6'") Business
             //-li(ng-class="{'active':q.cat=='99'}"): a(ng-click="q.cat='99'") Other
 
-        li.dropdown
+        li.dropdown(ng-class="{'active':q.dim}")
           a.dropdown-toggle(data-toggle="dropdown")
             small dimension
             span(ng-cloak,ng-show="q.dim") {{qmap.dim[q.dim]}}
@@ -95,7 +95,12 @@
 
       form.navbar-form.navbar-right
         .form-group
+          .btn.btn-default(
+          data-toggle="tooltip",data-placement="top",title="Show My Favorite",
+          ng-class="{'active':q.fav}",ng-click="q.fav=!!!q.fav") #[i.fa.fa-heart]
+          | &nbsp;
           .input-group
-            input.form-control(type="text",placeholder="Search",ng-model="qLazy.keyword")
+            input.form-control(ng-class="{'active': qLazy.keyword}",
+            type="text",placeholder="Search",ng-model="qLazy.keyword")
             .input-group-btn(ng-click="loadList()")
               .btn.btn-default #[i.fa.fa-search]

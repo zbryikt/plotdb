@@ -231,9 +231,10 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging'
       }
     }
   }
-  return Paging.loadOnScroll(function(){
+  Paging.loadOnScroll(function(){
     return $scope.loadList();
   }, $('#list-end'));
+  return $('#chart-explore-bar .btn[data-toggle="tooltip"]').tooltip();
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;
