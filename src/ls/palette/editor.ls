@@ -58,7 +58,7 @@ angular.module \plotDB
       transform: ->
         r = outCircle.r
         rate = 190/r
-        "translate(400 200) scale(#rate)"
+        "translate(400 250) scale(#rate)"
 
     path = d3.geoPath!projection d3.geoAlbersUsa!scale(900).translate([400,200])
     $http do
@@ -71,7 +71,8 @@ angular.module \plotDB
         for item in data => hash[item.code] = item[2013]
         for item in features => 
           item.value = parseInt(hash[item.id] or 0)
-        $scope.path-group = d3.select \#pal-editor-preview .append \g
+        $scope.path-group = d3.select \#pal-editor-preview .append \g .attrs do
+          transform: "translate(0 30)"
         $scope.path-group.selectAll \path .data features .enter!append \path
           .attrs do
             d: path

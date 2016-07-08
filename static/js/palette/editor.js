@@ -108,7 +108,7 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
       var r, rate;
       r = outCircle.r;
       rate = 190 / r;
-      return "translate(400 200) scale(" + rate + ")";
+      return "translate(400 250) scale(" + rate + ")";
     }
   });
   path = d3.geoPath().projection(d3.geoAlbersUsa().scale(900).translate([400, 200]));
@@ -129,7 +129,9 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
         item = ref$[i$];
         item.value = parseInt(hash[item.id] || 0);
       }
-      $scope.pathGroup = d3.select('#pal-editor-preview').append('g');
+      $scope.pathGroup = d3.select('#pal-editor-preview').append('g').attrs({
+        transform: "translate(0 30)"
+      });
       $scope.pathGroup.selectAll('path').data(features).enter().append('path').attrs({
         d: path,
         stroke: '#fff',
