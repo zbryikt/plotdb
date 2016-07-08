@@ -138,6 +138,9 @@ model.type = {} <<< do
     name: \id
     lint: -> [false]
 
+  json: new model do
+    name: \json
+
 # complex type
 model.type <<< do
   # {switch: [], value: [{switch, perm},{}, ...]}

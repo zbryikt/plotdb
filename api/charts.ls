@@ -35,6 +35,7 @@ engine.router.api.get "/chart/", (req, res) ->
   ).map((d,i) -> ["#{d.0} $#{i + 1}", d.1])
   paging = [[1,2].map(-> "$#{it + conditions.length}"), [offset, limit]]
   tagidx = conditions.length + 3
+  charts = []
 
   #TODO check if we need to optimize this
   io.query([
@@ -49,7 +50,18 @@ engine.router.api.get "/chart/", (req, res) ->
   ].join(" "), (
     conditions.map(->it.1) ++ paging.1 ++ (if keyword.length => [keyword.map(->it.toLowerCase!)] else [])
   ))
-    .then -> res.send it.rows
+    .then ->
+      charts := it.rows
+      io.query(
+        ("select uid from likes where owner=$1 and type='chart' " +
+        "and uid in (#{it.rows.map(->it.key).join(\,)})"),
+        [req.user.key]
+      )
+    .then (r = {})->
+      hash = {}
+      for item in r.rows => hash[item.uid] = 1
+      for item in charts => if hash[item.key] => item.liked = true
+      res.send charts
     .catch (e) ->
       console.log e.stack
       res.send []
@@ -156,14 +168,25 @@ engine.app.get \/chart/:id, aux.numid true, (req, res) ->
 
 engine.router.api.put \/chart/:id/like, aux.numid false, (req, res) ->
   if !req.user => return aux.r403 res
-  io.query "select likes,key,permission from charts where key = $1", [req.params.id]
+  liked = false
+  chart = {}
+  Promise.all([
+    io.query "select * from likes where owner = $1 and type='chart' and uid=$2", [req.user.key,req.params.id]
+      .then (r = {}) -> liked := r.rows.length
+    io.query "select likes,key,permission from charts where key = $1", [req.params.id]
+      .then (r = {}) -> chart := r.[]rows.0
+  ]).then ->
     .then (r = {}) ->
-      chart = r.[]rows.0
       if !chart => return aux.r404 res
       if !("public" in chart.{}permission.[]switch) => return aux.r403 res
-      v = req.user.{}likes.{}chart[chart.key] = !req.user.{}likes.{}chart[chart.key]
+      v = !!!liked
+      req.user.{}likes.{}chart[chart.key] = v
       chart.likes = (chart.likes or 0) + (if v => 1 else -1) >? 0
-      io.query "update charts set likes = $1 where key = $2", [chart.likes, chart.key]
+      Promise.all([
+        (if !v => io.query "delete from likes where owner=$1 and type='chart' and uid=$2", [req.user.key, chart.key]
+        else io.query "insert into likes (owner,type,uid) values ($1,'chart',$2)", [req.user.key, chart.key])
+        io.query "update charts set likes = $1 where key = $2", [chart.likes, chart.key]
+      ])
     .then ->
       req.login req.user, -> res.send!
       return null

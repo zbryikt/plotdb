@@ -14,7 +14,7 @@
       .flexend
     .social
       a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownername}}
-      .favorite(ng-click="like(chart)", ng-class="{'active':user.data && user.data.likes.chart[chart.key]}") #[i.fa.fa-heart] {{chart.likes || 0}}
+      .favorite(ng-click="like(chart)", ng-class="{'active':user.data && chart.liked}") #[i.fa.fa-heart] {{chart.likes || 0}}
   .flexend
   #list-end.text-center: span(ng-cloak,ng-show="paging.end") this is the end :)
   .loader.alone.sm.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")

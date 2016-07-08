@@ -253,6 +253,9 @@ model.type = import$({}, {
     lint: function(){
       return [false];
     }
+  }),
+  json: new model({
+    name: 'json'
   })
 });
 import$(model.type, {

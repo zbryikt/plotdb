@@ -116,6 +116,24 @@ init-charts-table = """create table if not exists charts (
   library text[]
 )"""
 
+init-likes-table = """create table if not exists likes (
+  key serial primary key,
+  type text,
+  owner int references users(key),
+  uid int
+)"""
+
+init-palettes-table = """create table if not exists palettes (
+  key serial primary key,
+  name text,
+  owner int references users(key),
+  description text,
+  colors jsonb,
+  createdtime timestamp,
+  modifiedtime timestamp,
+  permission jsonb
+)"""
+
 alter-themes-table = """alter table themes add column chart int references charts(key)"""
 
 client = new pg.Client secret.io-pg.uri
@@ -134,8 +152,10 @@ query init-users-table
   .then -> query init-datafields-table
   .then -> query init-themes-table
   .then -> query init-charts-table
+  .then -> query init-palettes-table
   .then -> query init-requests-table
   .then -> query init-comments-table
+  .then -> query init-likes-table
   .then -> query init-commentimgs-table
   .then ->
     query alter-themes-table

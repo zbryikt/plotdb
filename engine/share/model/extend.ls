@@ -1,8 +1,5 @@
 base = (model) ->
 
-  base.json = new model do
-    name: \json
-
   #TODO: add transformer
   base.dataset = new model do
     name: \dataset
@@ -25,7 +22,7 @@ base = (model) ->
       permission: {type: model.type.permission}
       type: {required: true, type: model.type.string} # static / dynamic / realtime
       format: {required: true, type: model.type.string} # csv / json
-      config: {required: false, max: 1024, type: base.json} # for dynamic / realtime configuration
+      config: {required: false, max: 1024, type: model.json} # for dynamic / realtime configuration
 
   base.datafield = new model do
     name: \datafield
@@ -36,8 +33,8 @@ base = (model) ->
       location: { required: true, type: model.type.string }
       datatype: { type: model.type.string }
       hash: { type: model.type.string} # check if data changed
-      data: { type: base.json} 
-  
+      data: { type: model.json}
+
   base.dataset.config.base.fields = { require: true, type: model.type.array({type: base.datafield}) }
 
   base.file = new model do
@@ -83,8 +80,8 @@ base = (model) ->
       likes: {required: false, type: model.type.number}
       searchable: { required: false, type: model.type.boolean }
       dimlen: { required: true, type: model.type.number }
-      dimension: { required: false, type: base.json }
-      config: { required: false, type: base.json }
+      dimension: { required: false, type: model.json }
+      config: { required: false, type: model.json }
       createdtime: {required: false, type: model.type.date}
       modifiedtime: {required: false, type: model.type.date}
       doc: {type: base.file}
@@ -95,13 +92,25 @@ base = (model) ->
       library: { required: false, type: model.type.array({type: model.type.string})}
       #TODO: add mapping or binding for dataset fields in chart
 
+  base.palette = new model do
+    name: \palette
+    default-fields: true
+    base: do
+      name: {max: 100, min: 1, required: true, type: model.type.string}
+      owner: {required: true, type: model.type.key({type:model.type.user})}
+      description: {max: 200, required: false, type: model.type.string}
+      colors: { required: false, type: model.json }
+      createdtime: {required: false, type: model.type.date}
+      modifiedtime: {required: false, type: model.type.date}
+      permission: {required: false, type: model.type.permission}
+
   base.request = new model do
     name: \request
     default-fields: true
     base: do
       owner: {required: true, type: model.type.key({type:model.type.user})}
       name: {max: 100, min: 1, required: true, type: model.type.string}
-      config: {required: false, type: base.json}
+      config: {required: false, type: model.json}
 
   base.comment = new model do
     name: \discussion

@@ -284,8 +284,9 @@
 #nav-profile span:first-child {
   color: #fff;
   vertical-align: middle;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
   font-weight: 100;
+  font-size: 12px;
   margin-right: 5px;
 }

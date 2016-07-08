@@ -187,15 +187,18 @@ angular.module \plotDB
       $scope.rawdata = ""
       data-service.load _type, key
         .then (ret) ~>
+          <- $scope.$apply
           $scope.dataset = new data-service.dataset ret
           $scope.parse.revert $scope.dataset
           $scope.inited = true
         .catch (ret) ~>
+          <- $scope.$apply
           console.error ret
           plNotify.send \error, "failed to load dataset. please try reloading"
           #TODO check at server time?
           if ret.1 == \forbidden => window.location.href = \/403.html #window.location.pathname
           $scope.inited = true
+          eventBus.fire 'loading.dimmer.off'
     $scope.delete = (dataset) ->
       dataset.delete!
         .then ->
@@ -214,12 +217,13 @@ angular.module \plotDB
     # =============== Functions  ================
     $scope <<< do
       communicate: ->
-        $scope.worker.onmessage = ({data: payload}) ->
+        $scope.worker.onmessage = ({data: payload}) -> $scope.$apply ->
           if typeof(payload) != \object => return
           switch payload.type
           | "parse.revert" =>
             $scope.rawdata = payload.data
             $scope.loading = false
+            eventBus.fire 'loading.dimmer.off'
       reset: (rawdata) ->
         dataset = new dataService.dataset(window.dataset or {})
         if $scope.dataset and $scope.dataset.name => dataset.name = $scope.dataset.name
@@ -320,6 +324,8 @@ angular.module \plotDB
     eventBus.listen \dataset.delete, (key) -> if $scope.dataset.key == key => $scope.dataset = null
     eventBus.listen \dataset.edit, (dataset, load = true) ->
       #TODO: support more type ( currently CSV structure only )
+      #TODO: refactor window heigh
+      $('.float-dataedit textarea').css({height: "#{window.innerHeight - 100}px"})
       $scope.inited = false
       if load and dataset._type.location == \server =>
         $scope.load dataset._type, dataset.key

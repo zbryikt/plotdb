@@ -1,0 +1,13 @@
+extends /base.jade
+block vars
+  - var rootid = "dataview"
+  - var title = 'Create Dataset / PlotDB'
+  - var url = "https://plotdb.com/dataset/"
+block head
+  script(type="text/javascript",src="/js/io.js")
+  script(type="text/javascript",src="/js/chart/base.js")
+  script(type="text/javascript",src="/js/data/sample.js")
+  script(type="text/javascript",src="/js/data/index.js")
+block body
+  include ../footer.jade
+

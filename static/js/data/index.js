@@ -252,16 +252,21 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     var this$ = this;
     $scope.rawdata = "";
     return dataService.load(_type, key).then(function(ret){
-      $scope.dataset = new dataService.dataset(ret);
-      $scope.parse.revert($scope.dataset);
-      return $scope.inited = true;
+      return $scope.$apply(function(){
+        $scope.dataset = new dataService.dataset(ret);
+        $scope.parse.revert($scope.dataset);
+        return $scope.inited = true;
+      });
     })['catch'](function(ret){
-      console.error(ret);
-      plNotify.send('error', "failed to load dataset. please try reloading");
-      if (ret[1] === 'forbidden') {
-        window.location.href = '/403.html';
-      }
-      return $scope.inited = true;
+      return $scope.$apply(function(){
+        console.error(ret);
+        plNotify.send('error', "failed to load dataset. please try reloading");
+        if (ret[1] === 'forbidden') {
+          window.location.href = '/403.html';
+        }
+        $scope.inited = true;
+        return eventBus.fire('loading.dimmer.off');
+      });
     });
   };
   $scope['delete'] = function(dataset){
@@ -293,14 +298,17 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       return $scope.worker.onmessage = function(arg$){
         var payload;
         payload = arg$.data;
-        if (typeof payload !== 'object') {
-          return;
-        }
-        switch (payload.type) {
-        case "parse.revert":
-          $scope.rawdata = payload.data;
-          return $scope.loading = false;
-        }
+        return $scope.$apply(function(){
+          if (typeof payload !== 'object') {
+            return;
+          }
+          switch (payload.type) {
+          case "parse.revert":
+            $scope.rawdata = payload.data;
+            $scope.loading = false;
+            return eventBus.fire('loading.dimmer.off');
+          }
+        });
       };
     },
     reset: function(rawdata){
@@ -522,6 +530,9 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
   });
   eventBus.listen('dataset.edit', function(dataset, load){
     load == null && (load = true);
+    $('.float-dataedit textarea').css({
+      height: (window.innerHeight - 100) + "px"
+    });
     $scope.inited = false;
     if (load && dataset._type.location === 'server') {
       return $scope.load(dataset._type, dataset.key);

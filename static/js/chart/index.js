@@ -96,6 +96,7 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
           url: "/d/chart/" + this$.key + "/like",
           method: 'PUT'
         }).success(function(){
+          this$.liked = !!v;
           return res();
         }).error(function(d, status){
           var ref$;
@@ -204,15 +205,14 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging'
     return $scope.loadList(1000, true);
   }, true);
   $scope.like = function(chart){
-    var mylikes, ref$, ref1$, v;
+    var v;
     if (!$scope.user.authed()) {
       return $scope.auth.toggle(true);
     }
     if (!chart) {
       return;
     }
-    mylikes = (ref$ = (ref1$ = $scope.user.data).likes || (ref1$.likes = {})).chart || (ref$.chart = {});
-    v = mylikes[chart.key] = !mylikes[chart.key];
+    v = !chart.liked;
     return chart.like(v)['catch'](function(){
       plNotify.send('error', "You failed to love. try again later, don't give up!");
       return mylikes[chart.key] = !v;

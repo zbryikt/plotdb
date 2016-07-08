@@ -45,7 +45,9 @@ angular.module \plotDB
       like: (v) -> new Promise (res, rej) ~>
         @likes = @likes + (if v => 1 else -1) >? 0
         $http {url: "/d/chart/#{@key}/like", method: \PUT}
-          .success -> res!
+          .success ~>
+            @liked = !!v
+            res!
           .error (d, status) ~>
             @likes = @likes - (if v => 1 else -1) >? 0
             rej!
@@ -120,8 +122,9 @@ angular.module \plotDB
     $scope.like = (chart) ->
       if !$scope.user.authed! => return $scope.auth.toggle true
       if !chart => return
-      mylikes = $scope.user.data.{}likes.{}chart
-      v = mylikes[chart.key] = !mylikes[chart.key]
+      #mylikes = $scope.user.data.{}likes.{}chart
+      #v = mylikes[chart.key] = !mylikes[chart.key]
+      v = !!!chart.liked
       chart.like v .catch ->
         plNotify.send \error, "You failed to love. try again later, don't give up!"
         mylikes[chart.key] = !v
