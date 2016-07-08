@@ -74,7 +74,7 @@ base = function(model){
       config: {
         required: false,
         max: 1024,
-        type: model.json
+        type: model.type.json
       }
     }
   });
@@ -106,7 +106,7 @@ base = function(model){
         type: model.type.string
       },
       data: {
-        type: model.json
+        type: model.type.json
       }
     }
   });
@@ -290,11 +290,11 @@ base = function(model){
       },
       dimension: {
         required: false,
-        type: model.json
+        type: model.type.json
       },
       config: {
         required: false,
-        type: model.json
+        type: model.type.json
       },
       createdtime: {
         required: false,
@@ -354,7 +354,7 @@ base = function(model){
       },
       colors: {
         required: false,
-        type: model.json
+        type: model.type.json
       },
       createdtime: {
         required: false,
@@ -388,7 +388,7 @@ base = function(model){
       },
       config: {
         required: false,
-        type: model.json
+        type: model.type.json
       }
     }
   });

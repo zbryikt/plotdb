@@ -134,3 +134,4 @@ angular.module \plotDB
       for k,v of $scope.q => if map[k] => $scope.q[k] = map[k].0.1
     Paging.load-on-scroll (-> $scope.load-list!), $(\#list-end)
     $('#chart-explore-bar .btn[data-toggle="tooltip"]').tooltip!
+    $('#chart-explore-pretag .btn[data-toggle="tooltip"]').tooltip!

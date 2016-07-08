@@ -1,0 +1,75 @@
+.colorblind {
+  filter: url("#achromatopsia");
+  -webkit-filter: url("#achromatopsia");
+}
+.pal-typebtn {
+  width: 200px;
+  padding-left: 5px;
+  display: inline-block;
+  vertical-align: top;
+}
+.pal-typebtn select {
+  width: 60px;
+  height: 29px;
+  margin-left: 0;
+  margin-top: -1px;
+}
+.pal-typeimg {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background: #f9f9f9;
+  vertical-align: top;
+  margin-right: 5px;
+}
+.pal-typebtn div:nth-of-type(2) {
+  display: inline-block;
+  width: 150px;
+  text-align: left;
+}
+.pal-colorblock {
+  position: relative;
+}
+.pal-colorblock .pal-color {
+  width: 48px;
+  height: 36px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.pal-colorblock .pal-color.picked {
+  cursor: pointer;
+}
+.pal-colorblock .pal-color.picked.disabled {
+  cursor: not-allowed;
+}
+.pal-colorblock span {
+  font-family: calibri;
+  color: #666;
+}
+#pal-editor-ldcp {
+  position: absolute;
+}
+.pal-pickhint {
+  position: absolute;
+  color: #fff;
+  text-shadow: 0 0 2px #000;
+  display: none;
+  width: 48px;
+  height: 36px;
+  font-size: 12px;
+  line-height: 36px;
+  text-align: center;
+  cursor: not-allowed;
+}
+.pal-pickhint.show {
+  display: inline;
+}
+#pal-blindtest-hint {
+  background: rgba(255,0,0,0.7);
+  padding: 1px 5px;
+  border-radius: 2px;
+  position: absolute;
+  color: #fff;
+  margin: 10px 0 0 10px;
+}

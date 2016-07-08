@@ -1,0 +1,81 @@
+extends /base.jade
+block vars
+  - var rootid = "paletteview"
+  - var title = 'Palette Editor / PlotDB'
+  - var url = "https://plotdb.com/palette/"
+block head
+  link(rel="stylesheet",type="text/css",href="/css/palette/editor.css")
+  script(src="https://d3js.org/d3-selection-multi.v0.4.min.js")
+  script(type="text/javascript",src="http://d3js.org/topojson.v1.min.js")
+  script(type="text/javascript",src="https://d3js.org/d3-array.v1.min.js")
+  script(type="text/javascript",src="https://d3js.org/d3-geo.v1.min.js")
+  script(type="text/javascript",src="https://d3js.org/d3-color.v1.min.js")
+  script(type="text/javascript",src="https://d3js.org/d3-interpolate.v1.min.js")
+  script(type="text/javascript",src="https://d3js.org/d3-scale.v1.min.js")
+  script(type="text/javascript",src="/js/palette/editor.js")
+block body
+  include ../colorblind.jade
+  br
+  #root(ng-controller="palEditor")
+    .text-center
+      .btn-group
+        .btn.btn-default.pal-typebtn(ng-click="type=1",ng-class="{'active':type==1}")
+          .pal-typeimg
+          div
+            div.text-left: b Qualitative
+            div: small use to categorize data
+        .btn.btn-default.pal-typebtn(ng-click="type=2",ng-class="{'active':type==2}")
+          .pal-typeimg
+          div
+            div.text-left: b Sequential
+            div: small use in sequential data
+        .btn.btn-default.pal-typebtn(ng-click="type=3",ng-class="{'active':type==3}")
+          .pal-typeimg
+          div
+            div.text-left: b Diverging
+            div: small emphasise direction
+      .pal-typebtn(style="text-align:left;margin-left: 10px")
+        label number of color
+        br
+        select.form-control(ng-model="count")
+          each i in [2,3,4,5,6,7,8,9,10]
+            option(value=i)= i
+    .sep.break
+    .row(style="max-width:1024px;margin-left:auto;margin-right:auto")
+      #pal-editor-ldcp(ng-show="picker.isOn",
+      ng-attr-style="left:{{picker.ptr.left}}px;top:{{picker.ptr.top}}px")
+        .ldColorPicker.left.no-alpha.no-palette.flat.bubble
+      .col-sm-8
+        #pal-blindtest-hint(ng-cloak,ng-show="blindtest!='normal'")
+          i.fa.fa-eye
+          span &nbsp;colorblind testing &nbsp;
+          i.fa.fa-close.clickable(ng-click="blindtest='normal'")
+        svg#pal-editor-preview(width="100%",height="350px",viewBox="0 0 800 350",
+        preserveAspectRatio="xMidYMin",ng-attr-style="filter:url(#{{blindtest}})")
+      .col-sm-4
+        .pal-colorblock(ng-repeat="c in colors")
+          .pal-pickhint(ng-class="{'show':picker.disabled($index)}"): i.fa.fa-ban
+          .pal-color.picked(ng-attr-style="background:{{c.value}}",ng-click="picker.toggle($event,c)",
+          ng-class="{'disabled':picker.disabled($index)}")
+          .pal-color.colorblind(ng-attr-style="background:{{c.value}}")
+          span {{c.value}}
+        br
+        label colorblind test
+        select.form-control(style="width:120px",ng-model="blindtest")
+          option(value="normal") Normal
+          option(value="deuteranopia") Red-Green
+          option(value="achromatopsia") Monochromasy
+        br
+        label randomize
+        br
+        .btn.btn-default(style="width:120px",ng-click="generate(true);render()") Regenerate
+        br
+    .sep.dark
+    div(style="max-width:1024px;margin:auto")
+      .input-group(style="max-width:400px")
+        input#pal-editor-output.form-control(type="text",ng-model="palette",
+        data-clipboard-target="#pal-editor-output")
+        span.input-group-btn
+          #pal-editor-output-copy.btn.btn-default(data-clipboard-target="#pal-editor-output") Copy
+
+  include ../footer.jade

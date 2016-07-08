@@ -12,5 +12,28 @@ block body
     div(style="height:60px")
     #chart-filter.scroll-stick(data-top="50")
       include ../widget/search.jade
+    div
+      #chart-explore-pretag.text-center
+        br
+        p try these predefined tags?
+        .btn.btn-default(ng-click="qLazy.keyword='basic'",
+        data-toggle="tooltip",data-placement="top",title="5 basic charts for common usecase",
+        ) Basic
+        .btn.btn-default(ng-click="qLazy.keyword='trend'",
+        data-toggle="tooltip",data-placement="top",title="Trend across time",
+        ) Trends
+        .btn.btn-default(ng-click="qLazy.keyword='relation'",
+        data-toggle="tooltip",data-placement="top",title="Relation between stuff",
+        ) Relation
+        .btn.btn-default(ng-click="qLazy.keyword='change'",
+        data-toggle="tooltip",data-placement="top",title="change between two values",
+        ) Change
+        .btn.btn-default(ng-click="qLazy.keyword='frequency'",
+        data-toggle="tooltip",data-placement="top",title="distribution,frequency,etc",
+        ) Frequency
+        .btn.btn-default(ng-click="qLazy.keyword='map'",
+        data-toggle="tooltip",data-placement="top",title="Visualise geographically",
+        ) Map
+        .sep.dark
     include ../widget/charts.jade
   include /footer.jade

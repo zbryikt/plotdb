@@ -4421,6 +4421,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       },
       ldcp: null,
       item: null,
+      paste: null,
       fromTheme: function(theme){
         var themepal, k, v;
         if (!theme || !theme.config || !theme.config.palette) {
@@ -4526,7 +4527,25 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             return it.id === $(e.target).val();
           }
         });
-        return x$;
+        return $scope.$watch('paledit.paste', function(d){
+          var result, e;
+          try {
+            result = JSON.parse(d);
+            if (Array.isArray(result)) {
+              return this$.ldcp.setPalette({
+                colors: result.map(function(it){
+                  return {
+                    hex: it
+                  };
+                })
+              });
+            }
+          } catch (e$) {
+            e = e$;
+            console.log(e);
+            return $scope.paledit.paste = '';
+          }
+        });
       },
       update: function(){
         var ref$, src, des, pairing, i$, to$, i, d, j$, to1$, j, s, len$, pair, unpair;
@@ -8797,7 +8816,8 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging'
   Paging.loadOnScroll(function(){
     return $scope.loadList();
   }, $('#list-end'));
-  return $('#chart-explore-bar .btn[data-toggle="tooltip"]').tooltip();
+  $('#chart-explore-bar .btn[data-toggle="tooltip"]').tooltip();
+  return $('#chart-explore-pretag .btn[data-toggle="tooltip"]').tooltip();
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

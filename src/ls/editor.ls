@@ -501,6 +501,7 @@ angular.module \plotDB
       paledit: do #TODO should be moved to standalone controller
         convert: -> it.map(->{id: it.key or "#{Math.random!}", text: it.name, data: it.colors})
         ldcp: null, item: null
+        paste: null
         from-theme: (theme) ->
           if !theme or !theme.config or !theme.config.palette => return @list = @list.filter -> it.text != \Theme
           themepal = @list.filter(-> it.text == \Theme).0
@@ -545,7 +546,13 @@ angular.module \plotDB
               if !ret => return
               $scope.$apply ~> @item.value = JSON.parse(JSON.stringify({colors: ret.data}))
               @ldcp.set-palette @item.value
-
+          $scope.$watch 'paledit.paste', (d) ~>
+            try
+              result = JSON.parse(d)
+              if Array.isArray(result) => @ldcp.set-palette {colors: result.map(->{hex: it})}
+            catch e
+              console.log e
+              $scope.paledit.paste = ''
         update: -> if @item =>
           [src,des,pairing] = [@item.value, @ldcp.get-palette!, []]
           for i from 0 til des.colors.length =>
