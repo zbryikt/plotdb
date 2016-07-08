@@ -58,7 +58,7 @@ engine.router.api.get "/chart/", (req, res) ->
   ))
     .then ->
       charts := it.rows
-      if !charts.length => return {rows: []}
+      if !charts.length or !req.user => return {rows: []}
       io.query(
         (
           "select uid from likes where owner=$1 and type='chart'" +
