@@ -12,6 +12,7 @@ block head
   script(type="text/javascript",src="//d3js.org/d3-color.v1.min.js")
   script(type="text/javascript",src="//d3js.org/d3-interpolate.v1.min.js")
   script(type="text/javascript",src="//d3js.org/d3-scale.v1.min.js")
+  script(type="text/javascript",src="//d3js.org/d3-hierarchy.v1.min.js")
   script(type="text/javascript",src="/js/palette/editor.js")
 block body
   include ../colorblind.jade
@@ -40,7 +41,7 @@ block body
         select.form-control(ng-model="count")
           each i in [2,3,4,5,6,7,8,9,10]
             option(value=i)= i
-    .sep.break
+    .sep.break(style="margin-bottom:15px")
     .row(style="max-width:1024px;margin-left:auto;margin-right:auto")
       #pal-editor-ldcp(ng-show="picker.isOn",
       ng-attr-style="left:{{picker.ptr.left}}px;top:{{picker.ptr.top}}px")
@@ -52,13 +53,19 @@ block body
           i.fa.fa-close.clickable(ng-click="blindtest='normal'")
         svg#pal-editor-preview(width="100%",height="350px",viewBox="0 0 800 350",
         preserveAspectRatio="xMidYMin",ng-attr-style="filter:url(#{{blindtest}})")
+        .btn-group(style="position:absolute;bottom:10px;left:20px")
+          .btn.btn-default.btn-sm(ng-class="{'active':preview.type=='map'}",ng-click="preview.type='map'") US Map
+          .btn.btn-default.btn-sm(ng-class="{'active':preview.type=='bubble'}",
+          ng-click="preview.type='bubble'") Bubbles
+
       .col-sm-4
-        .pal-colorblock(ng-repeat="c in colors")
-          .pal-pickhint(ng-class="{'show':picker.disabled($index)}"): i.fa.fa-ban
-          .pal-color.picked(ng-attr-style="background:{{c.value}}",ng-click="picker.toggle($event,c)",
-          ng-class="{'disabled':picker.disabled($index)}")
-          .pal-color.colorblind(ng-attr-style="background:{{c.value}}")
-          span {{c.value}}
+        .pal-colorblocks
+          .pal-colorblock(ng-repeat="c in colors")
+            .pal-pickhint(ng-class="{'show':picker.disabled($index)}"): i.fa.fa-ban
+            .pal-color.picked(ng-attr-style="background:{{c.value}}",ng-click="picker.toggle($event,c)",
+            ng-class="{'disabled':picker.disabled($index)}")
+            .pal-color.colorblind(ng-attr-style="background:{{c.value}}")
+            span(ng-cloak) {{c.value}}
         br
         label colorblind test
         select.form-control(style="width:120px",ng-model="blindtest")

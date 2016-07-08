@@ -2,12 +2,20 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scope, $http, $timeout){
-  var d3Scale, path;
-  d3Scale = d3.scaleSqrt().domain([0, 1000, 10000, 100000, 1000000]).range(($scope.colors || []).map(function(it){
-    return it.value;
-  }));
+  var d3Scale, d3ScaleR, circles, outCircle, path;
+  d3Scale = d3.scaleSqrt();
+  d3ScaleR = d3.scaleLinear();
+  $scope.preview = {
+    type: 'map',
+    init: function(){
+      return $scope.$watch('preview.type', function(){
+        return $scope.render();
+      });
+    }
+  };
+  $scope.preview.init();
   $scope.type = 1;
-  $scope.count = 5;
+  $scope.count = 6;
   $scope.colors = [];
   $scope.blindtest = 'normal';
   $scope.generate = function(rand){
@@ -76,6 +84,33 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
   };
   $scope.generate();
   $scope.$watch('count', $scope.generate);
+  circles = d3.range(150).map(function(){
+    return {
+      r: Math.random() * 30
+    };
+  });
+  d3.packSiblings(circles);
+  outCircle = d3.packEnclose(circles);
+  $scope.circleGroup = d3.select('#pal-editor-preview').append('g');
+  $scope.circleGroup.selectAll('circle').data(circles).enter().append('circle').attrs({
+    cx: function(it){
+      return it.x;
+    },
+    cy: function(it){
+      return it.y;
+    },
+    r: function(it){
+      return it.r;
+    }
+  });
+  $scope.circleGroup.attrs({
+    transform: function(){
+      var r, rate;
+      r = outCircle.r;
+      rate = 190 / r;
+      return "translate(400 200) scale(" + rate + ")";
+    }
+  });
   path = d3.geoPath().projection(d3.geoAlbersUsa().scale(900).translate([400, 200]));
   $http({
     url: '/assets/misc/us.json',
@@ -94,7 +129,8 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
         item = ref$[i$];
         item.value = parseInt(hash[item.id] || 0);
       }
-      d3.select('#pal-editor-preview').selectAll('path').data(features).enter().append('path').attrs({
+      $scope.pathGroup = d3.select('#pal-editor-preview').append('g');
+      $scope.pathGroup.selectAll('path').data(features).enter().append('path').attrs({
         d: path,
         stroke: '#fff',
         "stroke-width": 0.5
@@ -136,7 +172,7 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
       return false;
     },
     toggle: function(e, c){
-      var ref$;
+      var ref$, this$ = this;
       if ($scope.type === 2 && c.idx > 0 && c.idx < $scope.colors.length - 1) {
         return;
       }
@@ -151,8 +187,10 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
         top: ref$.top
       };
       this.ptr.left -= 297;
-      this.ptr.top -= 0;
-      this.ldcp.setColor($scope.colors[this.idx].value);
+      this.ptr.top += document.body.scrollTop;
+      setTimeout(function(){
+        return this$.ldcp.setColor($scope.colors[this$.idx].value);
+      }, 0);
       e.preventDefault();
       e.cancelBubble = true;
       return e.stopPropagation();
@@ -174,14 +212,32 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
     }
   };
   $scope.render = function(){
-    d3Scale.range($scope.colors.map(function(it){
+    var type, that;
+    type = $scope.preview.type;
+    d3Scale.domain([0, 1000, 13000, 160000, 2000000]).range(($scope.colors || []).map(function(it){
       return it.value;
     }));
-    return d3.select('#pal-editor-preview').selectAll('path').attrs({
-      fill: function(it){
-        return d3Scale(it.value);
-      }
-    });
+    if (that = $scope.pathGroup) {
+      that.attr('opacity', type !== 'bubble' ? '1' : '0');
+      that.selectAll('path').attrs({
+        fill: function(it){
+          return d3Scale(it.value);
+        }
+      });
+    }
+    if (that = $scope.circleGroup) {
+      d3ScaleR.domain(d3.range($scope.colors.length).map(function(it){
+        return 30 * it / ($scope.colors.length - 1 || 1);
+      })).range(($scope.colors || []).map(function(it){
+        return it.value;
+      }));
+      that.attr('opacity', type === 'bubble' ? '1' : '0');
+      return that.selectAll('circle').attrs({
+        fill: function(it){
+          return d3ScaleR(it.r);
+        }
+      });
+    }
   };
   $scope.$watch('type', function(){
     $scope.generate();

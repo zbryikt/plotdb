@@ -1,12 +1,14 @@
 angular.module \plotDB
   ..controller \palEditor, <[$scope $http $timeout]> ++ ($scope, $http, $timeout) ->
     d3-scale = d3.scaleSqrt!
-      .domain [0, 1000, 10000, 100000, 1000000]
-      .range ($scope.colors or []).map(->it.value)
-      #.interpolate d3.interpolateHcl
+    d3-scale-r = d3.scaleLinear!
 
+    $scope.preview = do
+      type: \map
+      init: -> $scope.$watch 'preview.type', -> $scope.render!
+    $scope.preview.init!
     $scope.type = 1
-    $scope.count = 5
+    $scope.count = 6
     $scope.colors = []
     $scope.blindtest = 'normal'
     $scope.generate = (rand) ->
@@ -44,6 +46,20 @@ angular.module \plotDB
     $scope.generate!
     $scope.$watch 'count', $scope.generate
 
+    circles = d3.range(150).map(-> { r: Math.random!*30 })
+    d3.packSiblings circles
+    outCircle = d3.packEnclose circles
+    $scope.circle-group = d3.select \#pal-editor-preview .append \g
+    $scope.circle-group.selectAll \circle .data circles .enter!append \circle .attrs do
+      cx: -> it.x
+      cy: -> it.y
+      r: -> it.r
+    $scope.circle-group.attrs do
+      transform: ->
+        r = outCircle.r
+        rate = 190/r
+        "translate(400 200) scale(#rate)"
+
     path = d3.geoPath!projection d3.geoAlbersUsa!scale(900).translate([400,200])
     $http do
       url: \/assets/misc/us.json
@@ -55,8 +71,8 @@ angular.module \plotDB
         for item in data => hash[item.code] = item[2013]
         for item in features => 
           item.value = parseInt(hash[item.id] or 0)
-
-        d3.select \#pal-editor-preview .selectAll \path .data features .enter!append \path
+        $scope.path-group = d3.select \#pal-editor-preview .append \g
+        $scope.path-group.selectAll \path .data features .enter!append \path
           .attrs do
             d: path
             stroke: \#fff
@@ -89,8 +105,8 @@ angular.module \plotDB
         @idx = c.idx
         @ptr = e.target.getBoundingClientRect!{left,top}
         @ptr.left -= 297
-        @ptr.top -= 0
-        @ldcp.setColor $scope.colors[@idx].value
+        @ptr.top += document.body.scrollTop
+        setTimeout (~> @ldcp.setColor $scope.colors[@idx].value), 0
         e.preventDefault!
         e.cancelBubble = true
         e.stopPropagation!
@@ -106,15 +122,27 @@ angular.module \plotDB
         @ldcp = new ldColorPicker null, @config, @node
 
     $scope.render = ->
-      d3-scale.range $scope.colors.map(->it.value)
-      d3.select \#pal-editor-preview .selectAll \path .attrs do
-        fill: -> d3-scale it.value
-    #$scope.$watch 'colors', $scope.render, true
+      type = $scope.preview.type
+      d3-scale
+        .domain [0, 1000, 13000, 160000, 2000000]
+        .range ($scope.colors or []).map(->it.value)
+      if $scope.path-group =>
+        that.attr \opacity, (if type != \bubble => \1 else \0)
+        that.selectAll \path .attrs do
+          fill: -> d3-scale it.value
+      if $scope.circle-group =>
+        d3-scale-r
+          .domain d3.range($scope.colors.length).map(->30 * it / (($scope.colors.length - 1) or 1))
+          .range ($scope.colors or []).map(->it.value)
+        that.attr \opacity, (if type == \bubble => \1 else \0)
+        that.selectAll \circle .attrs do
+          fill: -> d3-scale-r it.r
     $scope.$watch 'type', ->
       $scope.generate!
       $scope.render!
     $scope.picker.init!
-    document.body.addEventListener \click, (e) -> $scope.$apply -> $scope.picker.isOn = false
+    document.body.addEventListener \click, (e) ->
+      $scope.$apply -> $scope.picker.isOn = false
 
     (eventsrc) <- <[#pal-editor-output #pal-editor-output-copy]>.map
     clipboard = new Clipboard eventsrc
