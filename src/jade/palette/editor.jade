@@ -13,11 +13,13 @@ block head
   script(type="text/javascript",src="//d3js.org/d3-interpolate.v1.min.js")
   script(type="text/javascript",src="//d3js.org/d3-scale.v1.min.js")
   script(type="text/javascript",src="//d3js.org/d3-hierarchy.v1.min.js")
+  script(type="text/javascript",src="/js/chart/plotd3.js")
   script(type="text/javascript",src="/js/palette/editor.js")
 block body
+  include ../render/pdb-style.jade
   include ../colorblind.jade
-  br
   #root(ng-controller="palEditor")
+    br
     .text-center
       .btn-group
         .btn.btn-default.pal-typebtn(ng-click="type=1",ng-class="{'active':type==1}")
@@ -51,12 +53,13 @@ block body
           i.fa.fa-eye
           span &nbsp;colorblind testing &nbsp;
           i.fa.fa-close.clickable(ng-click="blindtest='normal'")
-        svg#pal-editor-preview(width="100%",height="400px",viewBox="0 0 800 400",
-        preserveAspectRatio="xMidYMin",ng-attr-style="filter:url(#{{blindtest}});background:#fff")
-        .btn-group(style="position:absolute;bottom:10px;left:20px")
-          .btn.btn-default.btn-sm(ng-class="{'active':preview.type=='map'}",ng-click="preview.type='map'") US Map
-          .btn.btn-default.btn-sm(ng-class="{'active':preview.type=='bubble'}",
-          ng-click="preview.type='bubble'") Bubbles
+        #pal-editor-preview-wrap.pdb-root(ng-class="{'loading':loading}")
+          svg#pal-editor-preview(width="100%",height="400px",viewBox="0 0 800 400",
+          preserveAspectRatio="xMidYMin",ng-attr-style="filter:url(#{{blindtest}})")
+          .btn-group(style="position:absolute;bottom:30px;left:20px")
+            .btn.btn-default.btn-sm(ng-class="{'active':preview.type=='map'}",ng-click="preview.type='map'") US Map
+            .btn.btn-default.btn-sm(ng-class="{'active':preview.type=='bubble'}",
+            ng-click="preview.type='bubble'") Bubbles
 
       .col-sm-4
         .pal-colorblocks
@@ -70,7 +73,7 @@ block body
         label colorblind test
         select.form-control(style="width:120px",ng-model="blindtest")
           option(value="normal") Normal
-          option(value="deuteranopia") Red-Green
+          option(value="protanopia") Red-Green
           option(value="achromatopsia") Monochromasy
         br
         label randomize

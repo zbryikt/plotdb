@@ -16,7 +16,7 @@ plotd3.html.tooltip = (root, sel, cb) ->
           box = {left,top,width,height}
         ret.fire(\mousemove, d, i, @)
         isLeft = if box.left > rbox.width/2 + rbox.left => true else false
-        popup.attr class: "pdb-popup tooltip #{if isLeft => 'left' else 'right'}"
+        popup.attr class: "pdb-popup pdb-tooltip #{if isLeft => 'left' else 'right'}"
         update = ->
           pbox = popup.0.0.getBoundingClientRect!
           popup.style top: "#{box.top + box.height / 2 - pbox.height/2 - rbox.top}px", opacity: 1
@@ -32,7 +32,7 @@ plotd3.html.tooltip = (root, sel, cb) ->
     ret
   ret.direction = ->
     store.direction = if it == \left => \left else \right
-    popup.attr class: "pdb-popup tooltip #{store.direction}"
+    popup.attr class: "pdb-popup pdb-tooltip #{store.direction}"
   ret.show = (x,y) ->
     bbox = popup.0.0.getBoundingClientRect!
     if store.direction != \right => x = x - (bbox.right - bbox.left) - 10

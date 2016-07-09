@@ -40,7 +40,7 @@ plotd3.html.tooltip = function(root, sel, cb){
       ret.fire('mousemove', d, i, this);
       isLeft = box.left > rbox.width / 2 + rbox.left ? true : false;
       popup.attr({
-        'class': "pdb-popup tooltip " + (isLeft ? 'left' : 'right')
+        'class': "pdb-popup pdb-tooltip " + (isLeft ? 'left' : 'right')
       });
       update = function(){
         var pbox;
@@ -80,7 +80,7 @@ plotd3.html.tooltip = function(root, sel, cb){
   ret.direction = function(it){
     store.direction = it === 'left' ? 'left' : 'right';
     return popup.attr({
-      'class': "pdb-popup tooltip " + store.direction
+      'class': "pdb-popup pdb-tooltip " + store.direction
     });
   };
   ret.show = function(x, y){

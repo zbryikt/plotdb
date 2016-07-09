@@ -82,3 +82,9 @@
   color: #fff;
   margin: 10px 0 0 10px;
 }
+#pal-editor-preview-wrap svg {
+  background: #fff;
+}
+#pal-editor-preview-wrap.loading svg {
+  background: #fff url("/assets/img/loading-sm.svg") center center no-repeat;
+}

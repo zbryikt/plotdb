@@ -3,7 +3,7 @@ var x$;
 x$ = angular.module('plotDB');
 x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scope, $http, $timeout){
   var d3Scale, d3ScaleR, circles, outCircle, path;
-  d3Scale = d3.scaleSqrt();
+  d3Scale = d3.scaleQuantile();
   d3ScaleR = d3.scaleLinear();
   $scope.preview = {
     type: 'map',
@@ -15,11 +15,23 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
   };
   $scope.preview.init();
   $scope.type = 1;
+  $scope.loading = true;
   $scope.count = 6;
   $scope.colors = [];
   $scope.blindtest = 'normal';
+  $scope.rgb2hex = function(v){
+    return "#" + ['r', 'g', 'b'].map(function(k, i){
+      var d;
+      d = Math.round(v[k]);
+      d >= 0 || (d = 0);
+      d <= 255 || (d = 255);
+      return d.toString(16);
+    }).map(function(it){
+      return repeatString$("0", 2 - it.length) + it;
+    }).join("");
+  };
   $scope.generate = function(rand){
-    var ref$, v1, v2, hclint, len, len2, v3, v4, hclint1, hclint2;
+    var order, i$, to$, i, node, h, c, l, ref$, v1, v2, hclint, len, len2, v3, v4, hclint1, hclint2;
     if (rand) {
       $scope.colors = [];
     }
@@ -43,23 +55,37 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
     } else if ($scope.colors.length > $scope.count) {
       $scope.colors.splice($scope.count, $scope.colors.length - $scope.count);
     }
-    if ($scope.type === 2) {
+    if ($scope.type === 1 && rand) {
+      order = d3.shuffle(d3.range($scope.colors.length));
+      for (i$ = 0, to$ = $scope.colors.length; i$ < to$; ++i$) {
+        i = i$;
+        node = $scope.colors[i];
+        h = parseInt(360 * i / $scope.colors.length + Math.random() * 6 - 3);
+        c = Math.round(Math.random() * 20 + 50);
+        l = Math.round(20 + 60 * order[i] / $scope.colors.length);
+        node.value = $scope.rgb2hex(d3.rgb(d3.hcl(h, c, l)));
+      }
+    } else if ($scope.type === 2) {
       ref$ = [$scope.colors[0].value, (ref$ = $scope.colors)[ref$.length - 1].value], v1 = ref$[0], v2 = ref$[1];
       hclint = d3.interpolateHcl(v1, v2);
       $scope.colors.map(function(d, i){
         var v;
         v = d3.rgb(hclint(i / ($scope.colors.length - 1 || 1)));
-        return d.value = "#" + ['r', 'g', 'b'].map(function(it){
-          return v[it].toString(16);
-        }).map(function(it){
-          return repeatString$("0", 2 - it.length) + it;
-        }).join("");
+        return d.value = $scope.rgb2hex(v);
       });
     } else if ($scope.type === 3) {
       len = $scope.colors.length;
       len2 = parseInt(len / 2);
       ref$ = [$scope.colors[0].value, $scope.colors[len2 - (len + 1) % 2].value], v1 = ref$[0], v2 = ref$[1];
       ref$ = [$scope.colors[len2 - len % 2].value, (ref$ = $scope.colors)[ref$.length - 1].value], v3 = ref$[0], v4 = ref$[1];
+      v2 = d3.hcl(v1);
+      v3 = d3.hcl(v4);
+      v2.l = (100 - v2.l) * 0.9 + v2.l;
+      v2.c = 10;
+      v3.l = (100 - v3.l) * 0.9 + v3.l;
+      v3.c = 10;
+      v2 = v2.toString();
+      v3 = v3.toString();
       hclint1 = d3.interpolateHcl(v1, v2);
       hclint2 = d3.interpolateHcl(v3, v4);
       len2 += len % 2;
@@ -118,27 +144,45 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
   }).success(function(d){
     var features;
     features = topojson.feature(d, d.objects.counties).features;
-    return d3.csv('/assets/misc/us-pop-2013.csv', function(data){
-      var hash, i$, len$, item, ref$;
-      hash = {};
-      for (i$ = 0, len$ = data.length; i$ < len$; ++i$) {
-        item = data[i$];
-        hash[item.code] = item[2013];
-      }
-      for (i$ = 0, len$ = (ref$ = features).length; i$ < len$; ++i$) {
-        item = ref$[i$];
-        item.value = parseInt(hash[item.id] || 0);
-      }
-      $scope.pathGroup = d3.select('#pal-editor-preview').append('g').attrs({
-        transform: "translate(0 30)"
+    return d3.csv('/assets/misc/us-unemployment-rate-2015.csv', function(data){
+      return $scope.$apply(function(){
+        var hash, i$, ref$, len$, item, id, sel;
+        $scope.loading = false;
+        hash = {};
+        $scope.values = data.map(function(it){
+          return it.percent = parseFloat(it.percent);
+        });
+        $scope.valueRange = d3.extent($scope.values);
+        d3Scale.domain($scope.values);
+        for (i$ = 0, len$ = (ref$ = data).length; i$ < len$; ++i$) {
+          item = ref$[i$];
+          hash[item.code] = item.percent;
+        }
+        for (i$ = 0, len$ = (ref$ = features).length; i$ < len$; ++i$) {
+          item = ref$[i$];
+          id = (item.id < 10000 ? "0" : "") + item.id;
+          item.value = parseInt(hash[id] || 0);
+        }
+        $scope.pathGroup = d3.select('#pal-editor-preview').append('g').attrs({
+          transform: "translate(0 30)"
+        });
+        sel = $scope.pathGroup.selectAll('path').data(features).enter().append('path').attrs({
+          d: path,
+          stroke: '#fff',
+          "stroke-width": 0.5
+        });
+        $scope.tooltip = plotd3.html.tooltip(document.getElementById('pal-editor-preview-wrap')).on('mousemove', function(d, i, popup){
+          popup.select(".value").text(d.value);
+          return popup.style({
+            "margin-left": '15px'
+          });
+        });
+        $scope.tooltip.nodes(sel);
+        return $scope.render();
       });
-      $scope.pathGroup.selectAll('path').data(features).enter().append('path').attrs({
-        d: path,
-        stroke: '#fff',
-        "stroke-width": 0.5
-      }).on('mousemove', function(d, i){});
-      return $scope.render();
     });
+  }).error(function(d){
+    return $scope.loading = false;
   });
   $scope.handler = {
     handle: null,
@@ -165,12 +209,13 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
       if (type === 1) {
         return false;
       }
-      if (type === 2 && (idx > 0 && idx < len - 1)) {
+      if ((type === 2 || type === 3) && (idx > 0 && idx < len - 1)) {
         return true;
       }
-      if (type === 3 && (idx > 0 && idx < len - 1) && idx !== parseInt(len / 2) && idx !== parseInt(len / 2) - (len + 1) % 2) {
-        return true;
-      }
+      /*if (type == 3 and
+      (idx > 0 and idx < len - 1) and
+      idx != parseInt(len/2) and idx != parseInt(len/2) - ((len + 1)%2)) => return true
+      */
       return false;
     },
     toggle: function(e, c){
@@ -213,10 +258,11 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
       return this.ldcp = new ldColorPicker(null, this.config, this.node);
     }
   };
+  $scope.valueRange = [0, 1];
   $scope.render = function(){
     var type, that;
     type = $scope.preview.type;
-    d3Scale.domain([0, 1000, 13000, 160000, 2000000]).range(($scope.colors || []).map(function(it){
+    d3Scale.range(($scope.colors || []).map(function(it){
       return it.value;
     }));
     if (that = $scope.pathGroup) {

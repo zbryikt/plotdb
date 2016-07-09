@@ -1,6 +1,7 @@
 angular.module \plotDB
   ..controller \palEditor, <[$scope $http $timeout]> ++ ($scope, $http, $timeout) ->
-    d3-scale = d3.scaleSqrt!
+    #d3-scale = d3.scaleLinear!
+    d3-scale = d3.scaleQuantile!
     d3-scale-r = d3.scaleLinear!
 
     $scope.preview = do
@@ -8,9 +9,17 @@ angular.module \plotDB
       init: -> $scope.$watch 'preview.type', -> $scope.render!
     $scope.preview.init!
     $scope.type = 1
+    $scope.loading = true
     $scope.count = 6
     $scope.colors = []
     $scope.blindtest = 'normal'
+    $scope.rgb2hex = (v)->
+      "#" + (<[r g b]>.map((k,i)->
+        d = Math.round(v[k])
+        d >?= 0
+        d <?= 255
+        d.toString(16)
+      ).map(-> "0" * (2 - it.length) + it).join(""))
     $scope.generate = (rand) ->
       if rand => $scope.colors = []
       if !($scope.count?) or $scope.count < 2 => $scope.count = 2
@@ -22,23 +31,40 @@ angular.module \plotDB
         ).map((d,i)-> {value: d, idx: i})
       else if $scope.colors.length > $scope.count =>
         $scope.colors.splice($scope.count, $scope.colors.length - $scope.count)
-      if $scope.type == 2 =>
+      if $scope.type == 1 and rand =>
+        order = d3.shuffle(d3.range($scope.colors.length))
+        for i from 0 til $scope.colors.length
+          node = $scope.colors[i]
+          h = parseInt((360 * i / $scope.colors.length) + Math.random! * 6 - 3)
+          c = Math.round(Math.random!*20 + 50)
+          l = Math.round(20 + 60 * order[i] / $scope.colors.length)
+          node.value = $scope.rgb2hex(d3.rgb(d3.hcl(h,c,l)))
+      else if $scope.type == 2 =>
         [v1,v2] = [$scope.colors.0.value, $scope.colors[* - 1].value]
         hclint = d3.interpolateHcl v1, v2
         $scope.colors.map (d,i) ->
           v = d3.rgb(hclint(i / (($scope.colors.length - 1) or 1)))
-          d.value = "#" + (<[r g b]>.map(->v[it].toString(16)).map(-> "0" * (2 - it.length) + it).join(""))
+          d.value = $scope.rgb2hex(v)
+          #"#" + (<[r g b]>.map(->v[it].toString(16)).map(-> "0" * (2 - it.length) + it).join(""))
       else if $scope.type == 3 =>
         len = $scope.colors.length
         len2 = parseInt(len/2)
         [v1,v2] = [$scope.colors.0.value, $scope.colors[len2 - ((len + 1)%2)].value]
         [v3,v4] = [$scope.colors[len2 - ((len)%2)].value, $scope.colors[* - 1].value]
+        v2 = d3.hcl(v1)
+        v3 = d3.hcl(v4)
+        v2.l = (100 - v2.l) * 0.9 + v2.l
+        v2.c = 10
+        v3.l = (100 - v3.l) * 0.9 + v3.l
+        v3.c = 10
+        v2 = v2.toString!
+        v3 = v3.toString!
         hclint1 = d3.interpolateHcl v1, v2
         hclint2 = d3.interpolateHcl v3, v4
         len2 += (len%2)
         $scope.colors.map (d,i) ->
           if i < len2 => v = d3.rgb(hclint1(i / ((len2 - 1) or 1)))
-          else 
+          else
             i -= (len2 - (len%2))
             v = d3.rgb(hclint2(i / ((len2 - 1) or 1)))
           d.value = "#" + (<[r g b]>.map(->v[it].toString(16)).map(-> "0" * (2 - it.length) + it).join(""))
@@ -64,29 +90,40 @@ angular.module \plotDB
     $http do
       url: \/assets/misc/us.json
       method: \GET
-    .success (d) -> 
+    .success (d) ->
       features = topojson.feature(d, d.objects.counties).features
-      d3.csv \/assets/misc/us-pop-2013.csv, (data) ->
+      d3.csv \/assets/misc/us-unemployment-rate-2015.csv, (data) -> $scope.$apply ->
+        $scope.loading = false
         hash = {}
-        for item in data => hash[item.code] = item[2013]
-        for item in features => 
-          item.value = parseInt(hash[item.id] or 0)
+        $scope.values = data.map(-> it.percent = parseFloat(it.percent))
+        $scope.valueRange = d3.extent($scope.values)
+        d3-scale.domain $scope.values
+        for item in data => hash[item.code] = item.percent
+        for item in features =>
+          id = (if item.id < 10000 => "0" else "") + item.id
+          item.value = parseInt(hash[id] or 0)
         $scope.path-group = d3.select \#pal-editor-preview .append \g .attrs do
           transform: "translate(0 30)"
-        $scope.path-group.selectAll \path .data features .enter!append \path
+        sel = $scope.path-group.selectAll \path .data features .enter!append \path
           .attrs do
             d: path
             stroke: \#fff
             "stroke-width": 0.5
-          .on \mousemove, (d,i) ->
+        $scope.tooltip = plotd3.html.tooltip(
+          document.getElementById(\pal-editor-preview-wrap)
+        ).on \mousemove, (d,i,popup) ->
+          popup.select(".value").text(d.value)
+          popup.style "margin-left": \15px
+        $scope.tooltip.nodes(sel)
         $scope.render!
+    .error (d) -> $scope.loading = false
     $scope.handler = do
       handle: null
       set: ->
         if @handle => $timeout.cancel @handle
         @handle = $timeout (-> $scope.generate!), 100
     $scope.config = do
-      oncolorchange: -> 
+      oncolorchange: ->
         $scope.handler.set!
         $scope.render!
     $scope.picker = do
@@ -94,10 +131,11 @@ angular.module \plotDB
       disabled: (idx) ->
         [len,type] = [$scope.colors.length, $scope.type]
         if type == 1 => return false
-        if type == 2 and (idx > 0 and idx < len - 1) => return true
-        if (type == 3 and
+        if (type == 2 or type == 3) and (idx > 0 and idx < len - 1) => return true
+        /*if (type == 3 and
         (idx > 0 and idx < len - 1) and
         idx != parseInt(len/2) and idx != parseInt(len/2) - ((len + 1)%2)) => return true
+        */
         return false
       toggle: (e, c) ->
         if $scope.type==2 and c.idx>0 and c.idx < $scope.colors.length - 1 => return
@@ -121,11 +159,16 @@ angular.module \plotDB
       init: ->
         @node = document.querySelector '#pal-editor-ldcp .ldColorPicker'
         @ldcp = new ldColorPicker null, @config, @node
-
+    $scope.valueRange = [0,1]
     $scope.render = ->
       type = $scope.preview.type
+      #d3-scale
+      #  .domain d3.range($scope.colors.length).map(->(
+      #    ($scope.valueRange[1] - $scope.valueRange[0]) * it / (($scope.colors.length - 1) or 1) +
+      #    $scope.valueRange[0]
+      #  ))
+      #  .domain d3.range($scope.colors.length).map(->5240700 * it / (($scope.colors.length - 1) or 1))
       d3-scale
-        .domain [0, 1000, 13000, 160000, 2000000]
         .range ($scope.colors or []).map(->it.value)
       if $scope.path-group =>
         that.attr \opacity, (if type != \bubble => \1 else \0)
