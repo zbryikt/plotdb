@@ -93,9 +93,9 @@ angular.module \plotDB
       if $scope.type == 1 and rand =>
         order = d3.shuffle(d3.range(list.length))
         for i from 0 til list.length
-          h = parseInt((360 * i / list.length) + Math.random! * 6 - 3)
-          c = Math.round(Math.random!*20 + 50)
-          l = Math.round(20 + 60 * order[i] / list.length)
+          h = parseInt((360 * i / list.length) + Math.random! * 4 - 2)
+          c = Math.round(Math.random!*40 + 40)
+          l = Math.round(50 + 25* order[i] / list.length)
           list[i].hex = $scope.rgb2hex(d3.rgb(d3.hcl(h,c,l)))
       else if $scope.type == 2 =>
         [v1,v2] = [list.0.hex, list[* - 1].hex]

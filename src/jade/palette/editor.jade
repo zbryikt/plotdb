@@ -25,17 +25,17 @@ block body
     .text-center
       .btn-group
         .btn.btn-default.pal-typebtn(ng-click="type=1",ng-class="{'active':type==1}")
-          .pal-typeimg
+          .pal-typeimg(style="background-image:url(/assets/img/palette/qualitative.png)")
           div
             div.text-left: b Qualitative
             div: small use to categorize data
         .btn.btn-default.pal-typebtn(ng-click="type=2",ng-class="{'active':type==2}")
-          .pal-typeimg
+          .pal-typeimg(style="background-image:url(/assets/img/palette/sequential.png)")
           div
             div.text-left: b Sequential
             div: small use in sequential data
         .btn.btn-default.pal-typebtn(ng-click="type=3",ng-class="{'active':type==3}")
-          .pal-typeimg
+          .pal-typeimg(style="background-image:url(/assets/img/palette/diverging.png)")
           div
             div.text-left: b Diverging
             div: small emphasise direction

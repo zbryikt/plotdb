@@ -146,9 +146,9 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout', 'paletteService', 'ev
       order = d3.shuffle(d3.range(list.length));
       for (i$ = 0, to$ = list.length; i$ < to$; ++i$) {
         i = i$;
-        h = parseInt(360 * i / list.length + Math.random() * 6 - 3);
-        c = Math.round(Math.random() * 20 + 50);
-        l = Math.round(20 + 60 * order[i] / list.length);
+        h = parseInt(360 * i / list.length + Math.random() * 4 - 2);
+        c = Math.round(Math.random() * 40 + 40);
+        l = Math.round(50 + 25 * order[i] / list.length);
         list[i].hex = $scope.rgb2hex(d3.rgb(d3.hcl(h, c, l)));
       }
     } else if ($scope.type === 2) {
