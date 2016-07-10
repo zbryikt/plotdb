@@ -30,7 +30,7 @@ angular.module \plotDB
         e.stopPropagation!
         e.cancelBubble = true
     $scope.setPalette = (pal) ->
-      $scope.colors = pal.colors.map (d,i)->{value: d.hex, index: i}
+      $scope.colors = pal.colors.map (d,i)->{value: d.hex, idx: i}
       $scope.count = $scope.colors.length
       $scope.generate!
       $scope.render!
@@ -165,7 +165,6 @@ angular.module \plotDB
       idx: 0
       isOn: false
       config: do
-        class: 'text-input'
         oncolorchange: (c) -> $scope.$apply ->
           $scope.colors[$scope.picker.idx].value = c
           $scope.generate!

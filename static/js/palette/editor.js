@@ -50,7 +50,7 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
     $scope.colors = pal.colors.map(function(d, i){
       return {
         value: d.hex,
-        index: i
+        idx: i
       };
     });
     $scope.count = $scope.colors.length;
@@ -276,7 +276,6 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
     idx: 0,
     isOn: false,
     config: {
-      'class': 'text-input',
       oncolorchange: function(c){
         return $scope.$apply(function(){
           $scope.colors[$scope.picker.idx].value = c;
