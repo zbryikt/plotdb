@@ -570,6 +570,7 @@ angular.module \plotDB
           for i from 0 til Math.min(unpair.0.length, unpair.1.length) => unpair.1[i].pair = unpair.0[i]
           src.colors = des.colors.map -> if it.pair => it.pair <<< {hex: it.hex} else it
           src.colors.forEach -> delete it.pair
+          @paste = null
 
         toggled: false
         toggle: ->

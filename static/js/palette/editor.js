@@ -2,9 +2,17 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scope, $http, $timeout){
-  var d3Scale, d3ScaleR, circles, outCircle, path;
-  d3Scale = d3.scaleQuantile();
-  d3ScaleR = d3.scaleLinear();
+  var circles, outCircle, sel, path;
+  $scope.scale = {
+    map: d3.scaleQuantile(),
+    bubble: d3.scaleOrdinal()
+  };
+  $scope.tooltip = plotd3.html.tooltip(document.getElementById('pal-editor-preview-wrap')).on('mousemove', function(d, i, popup){
+    popup.select(".value").text(d.value);
+    return popup.style({
+      "margin-left": '15px'
+    });
+  });
   $scope.preview = {
     type: 'map',
     init: function(){
@@ -30,13 +38,38 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
       return repeatString$("0", 2 - it.length) + it;
     }).join("");
   };
+  $scope.palList = {
+    isOn: false,
+    toggle: function(e){
+      this.isOn = !this.isOn;
+      e.stopPropagation();
+      return e.cancelBubble = true;
+    }
+  };
+  $scope.setPalette = function(pal){
+    $scope.colors = pal.colors.map(function(d, i){
+      return {
+        value: d.hex,
+        index: i
+      };
+    });
+    $scope.count = $scope.colors.length;
+    $scope.generate();
+    return $scope.render();
+  };
   $scope.generate = function(rand){
     var order, i$, to$, i, node, h, c, l, ref$, v1, v2, hclint, len, len2, v3, v4, hclint1, hclint2;
     if (rand) {
       $scope.colors = [];
     }
-    if (!($scope.count != null) || $scope.count < 2) {
+    if (!($scope.count != null)) {
+      $scope.count = 6;
+    }
+    if ($scope.count < 2) {
       $scope.count = 2;
+    }
+    if ($scope.count > 10) {
+      $scope.count = 10;
     }
     if (!$scope.colors) {
       $scope.colors = [];
@@ -109,16 +142,23 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
     }).join(',') + "]";
   };
   $scope.generate();
-  $scope.$watch('count', $scope.generate);
-  circles = d3.range(150).map(function(){
+  $scope.$watch('count', function(){
+    $scope.generate();
+    return $scope.render();
+  });
+  circles = d3.range(150).map(function(d, i){
+    var v;
+    v = Math.random() * 30;
     return {
-      r: Math.random() * 30
+      r: Math.pow(v, 0.5),
+      value: v,
+      category: d
     };
   });
   d3.packSiblings(circles);
   outCircle = d3.packEnclose(circles);
   $scope.circleGroup = d3.select('#pal-editor-preview').append('g');
-  $scope.circleGroup.selectAll('circle').data(circles).enter().append('circle').attrs({
+  sel = $scope.circleGroup.selectAll('circle').data(circles).enter().append('circle').attrs({
     cx: function(it){
       return it.x;
     },
@@ -129,6 +169,7 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
       return it.r;
     }
   });
+  $scope.tooltip.nodes(sel);
   $scope.circleGroup.attrs({
     transform: function(){
       var r, rate;
@@ -153,7 +194,7 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
           return it.percent = parseFloat(it.percent);
         });
         $scope.valueRange = d3.extent($scope.values);
-        d3Scale.domain($scope.values);
+        $scope.scale.map.domain($scope.values);
         for (i$ = 0, len$ = (ref$ = data).length; i$ < len$; ++i$) {
           item = ref$[i$];
           hash[item.code] = item.percent;
@@ -164,18 +205,12 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
           item.value = parseInt(hash[id] || 0);
         }
         $scope.pathGroup = d3.select('#pal-editor-preview').append('g').attrs({
-          transform: "translate(0 30)"
+          transform: "translate(0 18)"
         });
         sel = $scope.pathGroup.selectAll('path').data(features).enter().append('path').attrs({
           d: path,
           stroke: '#fff',
           "stroke-width": 0.5
-        });
-        $scope.tooltip = plotd3.html.tooltip(document.getElementById('pal-editor-preview-wrap')).on('mousemove', function(d, i, popup){
-          popup.select(".value").text(d.value);
-          return popup.style({
-            "margin-left": '15px'
-          });
         });
         $scope.tooltip.nodes(sel);
         return $scope.render();
@@ -212,10 +247,6 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
       if ((type === 2 || type === 3) && (idx > 0 && idx < len - 1)) {
         return true;
       }
-      /*if (type == 3 and
-      (idx > 0 and idx < len - 1) and
-      idx != parseInt(len/2) and idx != parseInt(len/2) - ((len + 1)%2)) => return true
-      */
       return false;
     },
     toggle: function(e, c){
@@ -245,6 +276,7 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
     idx: 0,
     isOn: false,
     config: {
+      'class': 'text-input',
       oncolorchange: function(c){
         return $scope.$apply(function(){
           $scope.colors[$scope.picker.idx].value = c;
@@ -262,27 +294,25 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
   $scope.render = function(){
     var type, that;
     type = $scope.preview.type;
-    d3Scale.range(($scope.colors || []).map(function(it){
+    $scope.scale.map.range(($scope.colors || []).map(function(it){
       return it.value;
     }));
     if (that = $scope.pathGroup) {
       that.attr('opacity', type !== 'bubble' ? '1' : '0');
       that.selectAll('path').attrs({
         fill: function(it){
-          return d3Scale(it.value);
+          return $scope.scale.map(it.value);
         }
       });
     }
     if (that = $scope.circleGroup) {
-      d3ScaleR.domain(d3.range($scope.colors.length).map(function(it){
-        return 30 * it / ($scope.colors.length - 1 || 1);
-      })).range(($scope.colors || []).map(function(it){
+      $scope.scale.bubble.domain(d3.range($scope.colors.length)).range(($scope.colors || []).map(function(it){
         return it.value;
       }));
       that.attr('opacity', type === 'bubble' ? '1' : '0');
       return that.selectAll('circle').attrs({
         fill: function(it){
-          return d3ScaleR(it.r);
+          return $scope.scale.bubble(it.category % $scope.colors.length);
         }
       });
     }
@@ -294,7 +324,8 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout'].concat(function($scop
   $scope.picker.init();
   document.body.addEventListener('click', function(e){
     return $scope.$apply(function(){
-      return $scope.picker.isOn = false;
+      $scope.picker.isOn = false;
+      return $scope.palList.isOn = false;
     });
   });
   return ['#pal-editor-output', '#pal-editor-output-copy'].map(function(eventsrc){

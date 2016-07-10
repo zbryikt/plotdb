@@ -1120,10 +1120,11 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               return it;
             }
           });
-          return src.colors.forEach(function(it){
+          src.colors.forEach(function(it){
             var ref$;
             return ref$ = it.pair, delete it.pair, ref$;
           });
+          return this.paste = null;
         }
       },
       toggled: false,

@@ -1,8 +1,11 @@
 angular.module \plotDB
   ..controller \palEditor, <[$scope $http $timeout]> ++ ($scope, $http, $timeout) ->
-    #d3-scale = d3.scaleLinear!
-    d3-scale = d3.scaleQuantile!
-    d3-scale-r = d3.scaleLinear!
+    $scope.scale = map: d3.scaleQuantile!, bubble: d3.scaleOrdinal!
+    $scope.tooltip = plotd3.html.tooltip(
+      document.getElementById(\pal-editor-preview-wrap)
+    ).on \mousemove, (d,i,popup) ->
+      popup.select(".value").text(d.value)
+      popup.style "margin-left": \15px
 
     $scope.preview = do
       type: \map
@@ -20,9 +23,22 @@ angular.module \plotDB
         d <?= 255
         d.toString(16)
       ).map(-> "0" * (2 - it.length) + it).join(""))
+    $scope.palList = do
+      isOn: false
+      toggle: (e) ->
+        @isOn = !!!@isOn
+        e.stopPropagation!
+        e.cancelBubble = true
+    $scope.setPalette = (pal) ->
+      $scope.colors = pal.colors.map (d,i)->{value: d.hex, index: i}
+      $scope.count = $scope.colors.length
+      $scope.generate!
+      $scope.render!
     $scope.generate = (rand) ->
       if rand => $scope.colors = []
-      if !($scope.count?) or $scope.count < 2 => $scope.count = 2
+      if !($scope.count?) => $scope.count = 6
+      if $scope.count < 2 => $scope.count = 2
+      if $scope.count > 10 => $scope.count = 10
       if !$scope.colors => $scope.colors = []
       if $scope.colors.length < $scope.count =>
         $scope.colors ++= d3.range($scope.count - $scope.colors.length).map(->
@@ -70,16 +86,22 @@ angular.module \plotDB
           d.value = "#" + (<[r g b]>.map(->v[it].toString(16)).map(-> "0" * (2 - it.length) + it).join(""))
       $scope.palette = "[#{$scope.colors.map((d) -> "\"#{d.value}\"").join(',')}]"
     $scope.generate!
-    $scope.$watch 'count', $scope.generate
-
-    circles = d3.range(150).map(-> { r: Math.random!*30 })
+    $scope.$watch 'count', -> (
+      $scope.generate!
+      $scope.render!
+    )
+    circles = d3.range(150).map((d,i)->
+      v = Math.random!* 30
+      { r: v**0.5, value: v, category: d }
+    )
     d3.packSiblings circles
     outCircle = d3.packEnclose circles
     $scope.circle-group = d3.select \#pal-editor-preview .append \g
-    $scope.circle-group.selectAll \circle .data circles .enter!append \circle .attrs do
+    sel =  $scope.circle-group.selectAll \circle .data circles .enter!append \circle .attrs do
       cx: -> it.x
       cy: -> it.y
       r: -> it.r
+    $scope.tooltip.nodes(sel)
     $scope.circle-group.attrs do
       transform: ->
         r = outCircle.r
@@ -97,23 +119,18 @@ angular.module \plotDB
         hash = {}
         $scope.values = data.map(-> it.percent = parseFloat(it.percent))
         $scope.valueRange = d3.extent($scope.values)
-        d3-scale.domain $scope.values
+        $scope.scale.map.domain $scope.values
         for item in data => hash[item.code] = item.percent
         for item in features =>
           id = (if item.id < 10000 => "0" else "") + item.id
           item.value = parseInt(hash[id] or 0)
         $scope.path-group = d3.select \#pal-editor-preview .append \g .attrs do
-          transform: "translate(0 30)"
+          transform: "translate(0 18)"
         sel = $scope.path-group.selectAll \path .data features .enter!append \path
           .attrs do
             d: path
             stroke: \#fff
             "stroke-width": 0.5
-        $scope.tooltip = plotd3.html.tooltip(
-          document.getElementById(\pal-editor-preview-wrap)
-        ).on \mousemove, (d,i,popup) ->
-          popup.select(".value").text(d.value)
-          popup.style "margin-left": \15px
         $scope.tooltip.nodes(sel)
         $scope.render!
     .error (d) -> $scope.loading = false
@@ -132,10 +149,6 @@ angular.module \plotDB
         [len,type] = [$scope.colors.length, $scope.type]
         if type == 1 => return false
         if (type == 2 or type == 3) and (idx > 0 and idx < len - 1) => return true
-        /*if (type == 3 and
-        (idx > 0 and idx < len - 1) and
-        idx != parseInt(len/2) and idx != parseInt(len/2) - ((len + 1)%2)) => return true
-        */
         return false
       toggle: (e, c) ->
         if $scope.type==2 and c.idx>0 and c.idx < $scope.colors.length - 1 => return
@@ -152,6 +165,7 @@ angular.module \plotDB
       idx: 0
       isOn: false
       config: do
+        class: 'text-input'
         oncolorchange: (c) -> $scope.$apply ->
           $scope.colors[$scope.picker.idx].value = c
           $scope.generate!
@@ -162,31 +176,27 @@ angular.module \plotDB
     $scope.valueRange = [0,1]
     $scope.render = ->
       type = $scope.preview.type
-      #d3-scale
-      #  .domain d3.range($scope.colors.length).map(->(
-      #    ($scope.valueRange[1] - $scope.valueRange[0]) * it / (($scope.colors.length - 1) or 1) +
-      #    $scope.valueRange[0]
-      #  ))
-      #  .domain d3.range($scope.colors.length).map(->5240700 * it / (($scope.colors.length - 1) or 1))
-      d3-scale
+      $scope.scale.map
         .range ($scope.colors or []).map(->it.value)
       if $scope.path-group =>
         that.attr \opacity, (if type != \bubble => \1 else \0)
         that.selectAll \path .attrs do
-          fill: -> d3-scale it.value
+          fill: -> $scope.scale.map it.value
       if $scope.circle-group =>
-        d3-scale-r
-          .domain d3.range($scope.colors.length).map(->30 * it / (($scope.colors.length - 1) or 1))
+        $scope.scale.bubble
+          .domain d3.range($scope.colors.length)
           .range ($scope.colors or []).map(->it.value)
         that.attr \opacity, (if type == \bubble => \1 else \0)
         that.selectAll \circle .attrs do
-          fill: -> d3-scale-r it.r
+          fill: -> $scope.scale.bubble(it.category % $scope.colors.length)
     $scope.$watch 'type', ->
       $scope.generate!
       $scope.render!
     $scope.picker.init!
     document.body.addEventListener \click, (e) ->
-      $scope.$apply -> $scope.picker.isOn = false
+      $scope.$apply ->
+        $scope.picker.isOn = false
+        $scope.palList.isOn = false
 
     (eventsrc) <- <[#pal-editor-output #pal-editor-output-copy]>.map
     clipboard = new Clipboard eventsrc

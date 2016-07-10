@@ -4,6 +4,7 @@ block vars
   - var title = 'Palette Editor / PlotDB'
   - var url = "https://plotdb.com/palette/"
 block head
+  link(rel="stylesheet",type="text/css",href="/assets/ldcolorpicker/0.1.1/ldcp.css")
   link(rel="stylesheet",type="text/css",href="/css/palette/editor.css")
   script(src="https://d3js.org/d3-selection-multi.v0.4.min.js")
   script(type="text/javascript",src="//d3js.org/topojson.v1.min.js")
@@ -14,6 +15,7 @@ block head
   script(type="text/javascript",src="//d3js.org/d3-scale.v1.min.js")
   script(type="text/javascript",src="//d3js.org/d3-hierarchy.v1.min.js")
   script(type="text/javascript",src="/js/chart/plotd3.js")
+  script(type="text/javascript",src="/js/palette/index.js")
   script(type="text/javascript",src="/js/palette/editor.js")
 block body
   include ../render/pdb-style.jade
@@ -38,30 +40,47 @@ block body
             div.text-left: b Diverging
             div: small emphasise direction
       .pal-typebtn(style="text-align:left;margin-left: 10px")
-        label number of color
+        label count
         br
-        select.form-control(ng-model="count")
+        select.form-control.input-sm(ng-model="count",style="display:inline;margin-right:5px")
           each i in [2,3,4,5,6,7,8,9,10]
             option(value=i)= i
+        .btn.btn-default.btn-sm(ng-click="generate(true);render()"): i.fa.fa-refresh
     .sep.break(style="margin-bottom:15px")
     .row(style="max-width:1024px;margin-left:auto;margin-right:auto")
       #pal-editor-ldcp(ng-show="picker.isOn",
       ng-attr-style="left:{{picker.ptr.left}}px;top:{{picker.ptr.top}}px")
-        .ldColorPicker.left.no-alpha.no-palette.flat.bubble
+        .ldColorPicker.left.no-alpha.no-palette.bubble.text-input
       .col-sm-8
+        div(ng-cloak,ng-show="palList.isOn")
+          #pal-editor-loader(ng-controller="paletteList")
+            .palette-outer(ng-repeat="pal in palettes",ng-click="setPalette(pal)"): .palette
+              .name {{pal.name}}
+              .palette-color
+                .color(ng-repeat="c in pal.colors",ng-attr-style="background:{{c.hex}};width:{{pal.width}}%")
+            #pal-list-end
+          #pal-editor-loader-arrow
+
         #pal-blindtest-hint(ng-cloak,ng-show="blindtest!='normal'")
           i.fa.fa-eye
           span &nbsp;colorblind testing &nbsp;
           i.fa.fa-close.clickable(ng-click="blindtest='normal'")
-        #pal-editor-preview-wrap.pdb-root(ng-class="{'loading':loading}")
-          svg#pal-editor-preview(width="100%",height="400px",viewBox="0 0 800 400",
+        #pal-editor-preview-wrap.pdb-root(ng-class="{'loading':loading}",style="padding-bottom:5px")
+          svg#pal-editor-preview(width="100%",height="407px",viewBox="0 0 800 407",
           preserveAspectRatio="xMidYMin",ng-attr-style="filter:url(#{{blindtest}})")
-          .btn-group(style="position:absolute;bottom:30px;left:20px")
-            .btn.btn-default.btn-sm(ng-class="{'active':preview.type=='map'}",ng-click="preview.type='map'") US Map
-            .btn.btn-default.btn-sm(ng-class="{'active':preview.type=='bubble'}",
-            ng-click="preview.type='bubble'") Bubbles
+          div(style="position:absolute;bottom:10px;left:20px")
+            .btn-group(style="display:inline-block")
+              .btn.btn-default.btn-sm(ng-class="{'active':preview.type=='map'}",ng-click="preview.type='map'") US Map
+              .btn.btn-default.btn-sm(ng-class="{'active':preview.type=='bubble'}",
+              ng-click="preview.type='bubble'") Bubbles
+          div(style="position:absolute;bottom:10px;right:20px")
+            .text-right: small: b colorblind test&nbsp;
+            select.form-control.input-sm(style="width:100px",ng-model="blindtest")
+              option(value="normal") Normal
+              option(value="protanopia") Red-Green
+              option(value="achromatopsia") Monochromasy
 
-      .col-sm-4
+      #pal-editor-config.col-sm-4
         .pal-colorblocks
           .pal-colorblock(ng-repeat="c in colors")
             .pal-pickhint(ng-class="{'show':picker.disabled($index)}"): i.fa.fa-ban
@@ -70,17 +89,28 @@ block body
             .pal-color.colorblind(ng-attr-style="background:{{c.value}}")
             span(ng-cloak) {{c.value}}
         br
-        label colorblind test
-        select.form-control(style="width:120px",ng-model="blindtest")
-          option(value="normal") Normal
-          option(value="protanopia") Red-Green
-          option(value="achromatopsia") Monochromasy
+        label load palette...
         br
-        label randomize
-        br
-        .btn.btn-default(style="width:120px",ng-click="generate(true);render()") Regenerate
-        br
-    .sep
+        .btn.btn-default.btn-block(style="width:165px",ng-click="palList.toggle($event)") Load
+        //-
+          br
+          label save palette
+          .input-group(style="width:165px")
+            input.form-control(placeholder="palette name")
+            span.input-group-btn: .btn.btn-default Save
+        //-
+          label colorblind test
+          select.form-control(style="width:120px",ng-model="blindtest")
+            option(value="normal") Normal
+            option(value="protanopia") Red-Green
+            option(value="achromatopsia") Monochromasy
+          br
+        //-
+          label randomize
+          br
+          .btn.btn-default(style="width:120px",ng-click="generate(true);render()") Regenerate
+          br
+    .sep.gap
     div(style="max-width:1024px;margin:auto")
       .row
         .col-sm-8
@@ -89,5 +119,5 @@ block body
             data-clipboard-target="#pal-editor-output")
             span.input-group-btn
               #pal-editor-output-copy.btn.btn-default(data-clipboard-target="#pal-editor-output") Copy
-
+        .col-sm-4
   include ../footer.jade

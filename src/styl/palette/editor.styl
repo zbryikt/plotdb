@@ -37,34 +37,32 @@
     padding-top: 5px
   &:last-of-type
     padding-bottom: 5px
+  .pal-color, .pal-pickhint
+    width: 40px
+    height: 24px
+    line-height: 24px
   .pal-color
-    width: 48px
-    height: 36px
     display: inline-block
     vertical-align: middle
     margin-right: 4px
+  .pal-pickhint
+    position: absolute
+    color: #fff
+    text-shadow: 0 0 2px rgba(0,0,0,1)
+    display: none
+    font-size: 12px
+    text-align: center
+    &.show
+      display: inline
   .pal-color.picked
     cursor: pointer
-  .pal-color.picked.disabled
+  .pal-color.picked.disabled, .pal-pickhint
       cursor: not-allowed
   span
     font-family: calibri
     color: #666
 #pal-editor-ldcp
   position: absolute
-.pal-pickhint
-  position: absolute
-  color: #fff
-  text-shadow: 0 0 2px rgba(0,0,0,1)
-  display: none
-  width: 48px
-  height: 36px
-  font-size: 12px
-  line-height: 36px
-  text-align: center
-  cursor: not-allowed
-  &.show
-    display: inline
 
 #pal-blindtest-hint
   background: rgba(255,0,0,0.7)
@@ -78,3 +76,44 @@
   background: #fff
 #pal-editor-preview-wrap.loading svg
   background: #fff url(/assets/img/loading-sm.svg) center center no-repeat
+
+#pal-editor-loader
+  position: absolute
+  top: 10px
+  bottom: 15px
+  right: 0
+  width: 240px
+  background: #fff
+  border-radius: 3px
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3)
+  z-index: index(order, 'palette-modal')
+  padding: 0
+  overflow-y: scroll
+  .palette-outer
+    padding: 10px 20px 5px 10px
+  .palette-outer:hover
+    background: color.primary
+    color: #fff
+  .palette
+    margin: 0
+    width: 100%
+  .palette-color
+    height: 24px
+    box-shadow: none
+    border: 1px transparent
+  .palette-outer:hover .palette-color
+    border: 1px solid #fff
+
+#pal-editor-loader-arrow
+  content: " "
+  display: block
+  width: 15px
+  height: 15px
+  position: absolute
+  background: #fff
+  border-top: 1px solid #ddd
+  border-right: 1px solid #ddd
+  top: 207px
+  right: -9px
+  transform(rotate(45deg))
+  z-index: index(order, 'palette-modal')
