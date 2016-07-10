@@ -84,7 +84,7 @@ angular.module \plotDB
     #TODO: Dataset: save: update field dataset type and key
     Dataset = (config) ->
       @ <<< do
-        name: "" description: ""
+        name: "", description: ""
         type: "static", format: "csv"
         owner: null, createdtime: new Date!, modifiedtime: new Date!
         permission: { switch: [], value: []}

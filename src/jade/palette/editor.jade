@@ -57,8 +57,12 @@ block body
             .palette-outer(ng-repeat="pal in palettes",ng-click="setPalette(pal)"): .palette
               .name {{pal.name}}
               .palette-color
-                .color(ng-repeat="c in pal.colors",ng-attr-style="background:{{c.hex}};width:{{pal.width}}%")
-            #pal-list-end
+                .color(ng-repeat="c in pal.colors",
+                ng-style="{background:c.hex,width:(100/pal.colors.length)+'%'}")
+            .loader.alone.sm.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")
+            #pal-list-end.text-center(style="margin:-20px 0 10px")
+              span(ng-cloak,ng-show="paging.end") this is the end :)
+
           #pal-editor-loader-arrow
 
         #pal-blindtest-hint(ng-cloak,ng-show="blindtest!='normal'")
@@ -82,40 +86,33 @@ block body
 
       #pal-editor-config.col-sm-4
         .pal-colorblocks
-          .pal-colorblock(ng-repeat="c in colors")
+          .pal-colorblock(ng-repeat="c in palette.colors")
             .pal-pickhint(ng-class="{'show':picker.disabled($index)}"): i.fa.fa-ban
-            .pal-color.picked(ng-attr-style="background:{{c.value}}",ng-click="picker.toggle($event,c)",
+            .pal-color.picked(ng-attr-style="background:{{c.hex}}",ng-click="picker.toggle($event,c)",
             ng-class="{'disabled':picker.disabled($index)}")
-            .pal-color.colorblind(ng-attr-style="background:{{c.value}}")
-            span(ng-cloak) {{c.value}}
+            .pal-color.colorblind(ng-attr-style="background:{{c.hex}}")
+            span(ng-cloak) {{c.hex}}
         br
         label load palette...
         br
-        .btn.btn-default.btn-block(style="width:165px",ng-click="palList.toggle($event)") Load
-        //-
-          br
-          label save palette
-          .input-group(style="width:165px")
-            input.form-control(placeholder="palette name")
-            span.input-group-btn: .btn.btn-default Save
-        //-
-          label colorblind test
-          select.form-control(style="width:120px",ng-model="blindtest")
-            option(value="normal") Normal
-            option(value="protanopia") Red-Green
-            option(value="achromatopsia") Monochromasy
-          br
-        //-
-          label randomize
-          br
-          .btn.btn-default(style="width:120px",ng-click="generate(true);render()") Regenerate
-          br
+        .btn-group(style="width:165px")
+          .btn.btn-default(ng-click="palList.toggle($event)",style="width:83px") Load
+          .btn.btn-default(ng-click="create()",style="width:82px") New
+        br
+        br
+        label save palette
+        .input-group(style="width:165px")
+          input#pal-editor-name.form-control(placeholder="palette name",ng-model="palette.name",
+          data-toggle="tooltip",data-placement="bottom",title="give it a name!")
+          span.input-group-btn: .btn.btn-default(ng-click="save()") Save
     .sep.gap
     div(style="max-width:1024px;margin:auto")
       .row
         .col-sm-8
+          .btn.btn-danger(style="margin-left:14px",ng-click="delete()",
+          ng-class="{'disabled':!palette.key || palette._type.location!='server'}") delete #[i.fa.fa-trash]
           .pull-right.input-group(style="max-width:400px")
-            input#pal-editor-output.form-control(type="text",ng-model="palette",
+            input#pal-editor-output.form-control(type="text",ng-model="jsonOutput",
             data-clipboard-target="#pal-editor-output")
             span.input-group-btn
               #pal-editor-output-copy.btn.btn-default(data-clipboard-target="#pal-editor-output") Copy

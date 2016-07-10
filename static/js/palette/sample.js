@@ -2,7 +2,7 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.service('samplePalette', ['$rootScope'].concat(function($rootScope){
-  var ret, i$, len$, item;
+  var ret;
   ret = [
     {
       name: "Default",
@@ -34,14 +34,17 @@ x$.service('samplePalette', ['$rootScope'].concat(function($rootScope){
       colors: ['#F29C98', '#F5B697', '#F5E797', '#A2E4F5', '#009DD3']
     }
   ];
-  for (i$ = 0, len$ = ret.length; i$ < len$; ++i$) {
-    item = ret[i$];
-    item.colors = item.colors.map(fn$);
-  }
-  return ret;
-  function fn$(it){
-    return {
-      hex: it
+  ret.map(function(it){
+    it.colors = it.colors.map(function(d, i){
+      return {
+        hex: d,
+        idx: i
+      };
+    });
+    return it._type = {
+      location: 'sample',
+      name: 'palette'
     };
-  }
+  });
+  return ret;
 }));

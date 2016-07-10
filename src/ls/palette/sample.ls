@@ -9,5 +9,7 @@ angular.module \plotDB
       * name: "The Reporter", key: "D", colors: <[#7a322a #d52c2a #f93634 #dddb83 #ede6de #fdfffa #dbdbdb #48462d]>
       * name: "Pinky", key: "E", colors: <[#F29C98 #F5B697 #F5E797 #A2E4F5 #009DD3]>
     ]
-    for item in ret => item.colors = item.colors.map -> {hex: it}
+    ret.map ->
+      it.colors = it.colors.map (d,i) -> { hex: d, idx: i }
+      it._type = location: \sample, name: \palette
     ret

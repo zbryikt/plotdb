@@ -2,7 +2,8 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.service('paletteService', ['$rootScope', 'samplePalette', 'IOService', 'baseService'].concat(function($rootScope, samplePalette, IOService, baseService){
-  var service, object, paletteService;
+  var name, service, Palette, paletteService;
+  name = 'palette';
   service = {
     sample: samplePalette,
     list2pal: function(name, list){
@@ -26,13 +27,30 @@ x$.service('paletteService', ['$rootScope', 'samplePalette', 'IOService', 'baseS
       });
     }
   };
-  object = function(){
+  Palette = function(config){
+    import$(this, {
+      name: "",
+      colors: [],
+      owner: null,
+      createdtime: new Date(),
+      modifiedtime: new Date(),
+      permission: {
+        'switch': [],
+        value: []
+      },
+      _type: {
+        location: 'server',
+        name: 'palette'
+      }
+    });
+    import$(this, config);
     return this;
   };
-  paletteService = baseService.derive(name, service, object);
+  paletteService = baseService.derive(name, service, Palette);
   return paletteService;
 }));
 x$.controller('paletteList', ['$scope', 'IOService', 'paletteService', 'Paging', 'plNotify', 'eventBus'].concat(function($scope, IOService, paletteService, Paging, plNotify, eventBus){
+  $scope.paging = Paging;
   $scope.samplesets = paletteService.sample.map(function(it){
     return it.key = -Math.random(), it;
   });
@@ -55,7 +73,7 @@ x$.controller('paletteList', ['$scope', 'IOService', 'paletteService', 'Paging',
       return $scope.$apply(function(){
         var data;
         data = (ret || []).map(function(it){
-          return new dataService.palette(it, true);
+          return new paletteService.palette(it);
         });
         $scope.myPalettes = (reset
           ? []
@@ -79,9 +97,24 @@ x$.controller('paletteList', ['$scope', 'IOService', 'paletteService', 'Paging',
   if ($('#pal-list-end')) {
     Paging.loadOnScroll(function(){
       return $scope.loadList();
-    }, $('#pal-list-end'), $(".pal-list"));
+    }, $('#pal-list-end'), $('#pal-editor-loader'));
   }
-  return $scope.loadList();
+  $scope.loadList();
+  eventBus.listen('paledit.update', function(pal){
+    return $scope.myPalettes = $scope.myPalettes.forEach(function(it){
+      if (it.key === pal.key) {
+        return import$(it, pal);
+      }
+    });
+  });
+  return eventBus.listen('paledit.delete', function(key){
+    $scope.myPalettes = $scope.myPalettes.filter(function(it){
+      return it.key !== key;
+    });
+    return $scope.palettes = $scope.palettes.filter(function(it){
+      return it.key !== key;
+    });
+  });
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

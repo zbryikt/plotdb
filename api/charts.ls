@@ -114,10 +114,11 @@ engine.router.api.post "/chart/", (req, res) ->
 engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
+  id = parseInt(req.params.id)
   data = req.body
   chart = null
-  if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
-  io.query "select * from charts where key = $1", [req.params.id]
+  if data.key != id => return aux.r400 res, [true, data.key, \key-mismatch]
+  io.query "select * from charts where key = $1", [id]
     .then (r = {}) ->
       chart := r.rows.0
       if chart.parent => return io.query("select key from charts where key = $1", [chart.parent])
@@ -129,7 +130,7 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
       if chart.owner != req.user.key => return aux.r403 res
       data <<< do
         owner: req.user.key
-        key: req.params.id
+        key: id
         modifiedtime: new Date!toUTCString!
       ret = charttype.lint(data)
       if ret.0 => return aux.r400 res, ret
@@ -140,7 +141,7 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
       thumb.save 'chart', data
       io.query(
         "update charts set #{pairs.0} = #{pairs.1} where key = $#{pairs.2.length + 1}",
-        pairs.2 ++ [req.params.id]
+        pairs.2 ++ [id]
       )
         .then (r={}) -> res.send data
         .catch ->

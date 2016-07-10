@@ -8,7 +8,7 @@
   position: fixed;
   bottom: 10px;
   left: 10px;
-  z-index: 33;
+  z-index: 34;
 }
 .notify {
   border-radius: 2px;
@@ -597,7 +597,7 @@ width: 100%;
   top: 0;
   left: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 32;
+  z-index: 33;
 }
 #alertbox .ib {
   position: relative;
@@ -637,7 +637,7 @@ width: 100%;
 .loader.floating {
   position: absolute;
   left: 50%;
-  z-index: 34;
+  z-index: 35;
 }
 .loader.floating.lg {
   margin-left: -50px;
@@ -706,6 +706,9 @@ width: 100%;
 }
 .sep.nogap {
   margin: 0 auto;
+}
+.sep.gap {
+  margin: 14px auto;
 }
 .sep.dark {
   border-top: 1px solid rgba(0,0,0,0.4);
@@ -785,8 +788,8 @@ a.dropdown-toggle {
   text-align: center;
 }
 .modal-backdrop {
-  z-index: 28 !important;
+  z-index: 29 !important;
 }
 .high-modal {
-  z-index: 29 !important;
+  z-index: 30 !important;
 }
