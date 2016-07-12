@@ -5,7 +5,7 @@ require! <[../engine/aux ../engine/share/model/ ./thumb]>
 paltype = model.type.palette
 
 engine.router.api.get "/palette/", (req, res) ->
-  if !req.user => res.send []
+  if !req.user => return res.send []
   keyword = (req.query.keyword or "").split(/[, ]/).map(->it.trim!).filter(->it)
   offset = req.query.offset or 0
   limit = (req.query.limit or 20) <? 100
