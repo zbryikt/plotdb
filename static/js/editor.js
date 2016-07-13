@@ -1216,8 +1216,16 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return a + b;
         }, 0);
       },
+      download: {
+        url: null,
+        name: null
+      },
       preview: function(file){
         var datauri, iframe;
+        this.download.url = URL.createObjectURL(new Blob([file.content], {
+          type: file.type
+        }));
+        this.download.name = file.name;
         this.preview.toggled = true;
         datauri = ["data:", file.type, ";charset=utf-8;base64,", file.content].join("");
         iframe = document.createElement("iframe");

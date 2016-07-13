@@ -239,6 +239,8 @@ block body
 
     #assets-preview(ng-cloak,ng-show="assets.preview.toggled"): .ib
       .closebtn.inner(ng-click="assets.preview.toggled=false")
+      a(ng-attr-download="{{assets.download.name}}", ng-attr-href="{{assets.download.url}}")
+        i.fa.fa-download(style="top:4px;right:22px;cursor:pointer;position:absolute;")
       .iframe(style="width:100%;height:100%;border:none")
     include /widget/palette-edit-modal.jade
     #fullscreen-dimmer(ng-class="{'fullscreen':editor.fullscreen.toggled}")

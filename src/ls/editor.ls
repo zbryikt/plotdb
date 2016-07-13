@@ -617,7 +617,10 @@ angular.module \plotDB
       assets: do
         measure: ->
           $scope.target!.[]assets.size = $scope.target!.assets.map(-> it.content.length ).reduce(((a,b)->a+b),0)
+        download: url: null, name: null
         preview: (file) ->
+          @download.url = URL.createObjectURL(new Blob [file.content], {type: file.type})
+          @download.name = file.name
           @preview.toggled = true
           datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
           iframe = document.createElement("iframe")
