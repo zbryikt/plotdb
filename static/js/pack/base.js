@@ -7541,6 +7541,55 @@ import$(plotdb, {
       return it;
     }
   },
+  Weekday: {
+    'default': 'Mon',
+    name: 'Weekday',
+    level: 3,
+    values: {
+      abbr: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+      en: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
+      zh: ['週一', '週二', '週三', '週四', '週五', '週六', '週日']
+    },
+    parse: function(it){
+      return it;
+    },
+    test: function(it){
+      var value, k, ref$, v, idx;
+      value = typeof it === 'string' ? it.toLowerCase() : it;
+      for (k in ref$ = this.values) {
+        v = ref$[k];
+        idx = v.indexOf(value);
+        if (idx >= 0) {
+          return true;
+        }
+      }
+      return false;
+    },
+    order: {
+      index: function(it){
+        var value, k, ref$, v, idx;
+        value = it.toLowerCase();
+        for (k in ref$ = plotdb.Weekday.values) {
+          v = ref$[k];
+          idx = v.indexOf(value);
+          if (idx >= 0) {
+            return idx;
+          }
+        }
+        return -1;
+      },
+      Ascending: function(a, b){
+        a = plotdb.Weekday.order.index(a);
+        b = plotdb.Weekday.order.index(b);
+        return a - b;
+      },
+      Descending: function(a, b){
+        a = plotdb.Weekday.order.index(a);
+        b = plotdb.Weekday.order.index(b);
+        return b - a;
+      }
+    }
+  },
   Month: {
     'default': 'Jan',
     name: 'Month',
@@ -7852,7 +7901,7 @@ import$(plotdb, {
         return it;
       })[0];
     },
-    subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring, plotdb.Month],
+    subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring, plotdb.Month, plotdb.Weekday],
     parse: function(it){
       return it;
     },

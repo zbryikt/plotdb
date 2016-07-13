@@ -49,6 +49,36 @@ plotdb <<< do
   String: do
     default: ""
     name: \String, test: (-> true), level: 1, parse: -> it
+  Weekday:
+    default: \Mon
+    name: \Weekday, level: 3
+    values: do
+      abbr: <[mon tue wed thu fri sat sun]>
+      en: <[monday tuesday wednesday thursday friday saturday sunday]>
+      zh: <[週一 週二 週三 週四 週五 週六 週日]>
+    parse: -> it
+    test: ->
+      value = if typeof(it)==\string => it.toLowerCase! else it
+      for k,v of @values =>
+        idx = v.indexOf(value)
+        if idx >=0 => return true
+      return false
+    order: do
+      index: ->
+        value = it.toLowerCase!
+        for k,v of plotdb.Weekday.values =>
+          idx = v.indexOf(value)
+          if idx>=0 => return idx
+        return -1
+      Ascending: (a,b) ->
+        a = plotdb.Weekday.order.index a
+        b = plotdb.Weekday.order.index b
+        return a - b
+      Descending: (a,b) ->
+        a = plotdb.Weekday.order.index a
+        b = plotdb.Weekday.order.index b
+        return b - a
+
   Month:
     default: \Jan
     name: \Month, level: 3
@@ -183,7 +213,7 @@ plotdb <<< do
     default: (k,v,i) -> i
     name: \Order
     test: -> !!(@subtype.map((type)-> type.test it).filter(->it).0)
-    subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring, plotdb.Month]
+    subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring, plotdb.Month, plotdb.Weekday]
     parse: -> it
     order: do
       Ascending: (a,b) -> if b > a => -1 else if b < a => 1 else 0
