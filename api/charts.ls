@@ -219,9 +219,9 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
   ].join(" "), [req.params.id])
     .then (it={}) ->
       chart := it.[]rows.0
-      if !chart => return aux.r404 res
+      if !chart => return bluebird.reject new Error(404)
       if (chart.{}permission.[]switch.indexOf(\public) < 0)
-      and (!req.user or chart.owner != req.user.key) => return aux.r403 res, "forbidden"
+      and (!req.user or chart.owner != req.user.key) => return bluebird.reject new Error(403)
       if !chart.theme => return bluebird.resolve!
       io.query "select * from themes where key = chart.theme"
     .then (r={}) ->
@@ -229,6 +229,7 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
       if r =>
         theme := if (r.{}permission.[]switch.indexOf(\public) < 0)
         and (!req.user or r.owner != req.user.key) => null else r
+      console.log ">", r
       fieldkeys = [v.[]fields.map(->it.key) for k,v of chart.dimension]
         .reduce(((a,b)->a++b),[])
         .filter(->it)
@@ -248,5 +249,7 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
       res.render 'view/chart/view.jade', {chart, theme, fields}
       return null
     .catch ->
+      if it.message == \404 => return res.render 'view/chart/404.jade'
+      if it.message == \403 => return res.render 'view/chart/403.jade'
       console.error it.stack
       return aux.r403 res

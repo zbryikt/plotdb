@@ -1,0 +1,22 @@
+extends /render.jade
+block vars
+  - var thumbnail = "https://plotdb.com/assets/img/thumbnail.png"
+  - var title = "no such chart / plotdb"
+  - var description = "why not make one now with plotdb?"
+  - var renderSrc = "pdb-viewer"
+block head
+  title no such chart
+  link(rel="icon",type="image/x-icon",href="/assets/img/favicon-16.png")
+block body
+  br
+  br
+  div(style="text-align:center")
+    img(src="/assets/img/plotdb-notfound.png")
+    br
+    span "no such chart."
+    br
+    br
+    img(src="/assets/img/favicon-16.png",style="vertical-align:middle")
+    span &nbsp;
+    a(href="http://plotdb.com",style="color:#029;text-decoration:none") make one with plotdb
+block foot
