@@ -101,11 +101,15 @@ x$.controller('paletteList', ['$scope', 'IOService', 'paletteService', 'Paging',
   }
   $scope.loadList();
   eventBus.listen('paledit.update', function(pal){
-    return $scope.myPalettes = $scope.myPalettes.forEach(function(it){
-      if (it.key === pal.key) {
-        return import$(it, pal);
-      }
+    var matched;
+    matched = $scope.myPalettes.filter(function(it){
+      return it.key === pal.key;
     });
+    if (matched.length) {
+      return import$(matched[0], pal);
+    } else {
+      return $scope.loadList();
+    }
   });
   return eventBus.listen('paledit.delete', function(key){
     $scope.myPalettes = $scope.myPalettes.filter(function(it){

@@ -47,7 +47,9 @@ angular.module \plotDB
     if $(\#pal-list-end) => Paging.load-on-scroll (-> $scope.load-list!), $(\#pal-list-end), $(\#pal-editor-loader)
     $scope.load-list!
     eventBus.listen \paledit.update, (pal) ->
-      $scope.myPalettes = $scope.myPalettes.forEach(-> if it.key == pal.key => it <<< pal)
+      matched = $scope.myPalettes.filter(->it.key == pal.key)
+      if matched.length => matched.0 <<< pal
+      else => $scope.load-list!
     eventBus.listen \paledit.delete, (key) ->
       $scope.myPalettes = $scope.myPalettes.filter(->it.key != key)
       $scope.palettes = $scope.palettes.filter(->it.key != key)
