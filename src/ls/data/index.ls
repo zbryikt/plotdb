@@ -245,9 +245,10 @@ angular.module \plotDB
         else $scope.inited = true
         $scope.$watch 'rawdata', -> $scope.parse.run!
         offset = $('#dataset-editbox textarea').offset!
-        $('#dataset-editbox textarea').css({height: "#{window.innerHeight - offset.top - 140}px"})
+        height = window.innerHeight - ( offset.top - document.body.scrollTop )
+        $('#dataset-editbox textarea').css({height: "#{height - 140}px"})
         #TODO quick hack. think about a better way to do this
-        $('.float-dataedit textarea').css({height: "#{window.innerHeight - offset.top - 240}px"})
+        $('.float-dataedit textarea').css({height: "#{height - 240}px"})
         $('[data-toggle="tooltip"]').tooltip!
         @communicate!
 
@@ -325,7 +326,9 @@ angular.module \plotDB
     eventBus.listen \dataset.edit, (dataset, load = true) ->
       #TODO: support more type ( currently CSV structure only )
       #TODO: refactor window heigh
-      $('.float-dataedit textarea').css({height: "#{window.innerHeight - 100}px"})
+      offset = $('.float-dataedit textarea').offset!
+      height = window.innerHeight - ( offset.top - document.body.scrollTop )
+      $('.float-dataedit textarea').css({height: "#{height - 200}px"})
       $scope.inited = false
       if load and dataset._type.location == \server =>
         $scope.load dataset._type, dataset.key

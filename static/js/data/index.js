@@ -320,7 +320,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       return $scope.dataset = dataset, $scope.rawdata = rawdata, $scope;
     },
     init: function(){
-      var ret1, ret2, that, ret, offset;
+      var ret1, ret2, that, ret, offset, height;
       this.reset("");
       ret1 = /\/dataset\//.exec(window.location.pathname) ? /[?&]k=([sc])([^&?#]+)/.exec(window.location.search || "") : null;
       ret2 = /^\/data(s)et\/([0-9]+)\/?/.exec(window.location.pathname || "");
@@ -338,11 +338,12 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
         return $scope.parse.run();
       });
       offset = $('#dataset-editbox textarea').offset();
+      height = window.innerHeight - (offset.top - document.body.scrollTop);
       $('#dataset-editbox textarea').css({
-        height: (window.innerHeight - offset.top - 140) + "px"
+        height: (height - 140) + "px"
       });
       $('.float-dataedit textarea').css({
-        height: (window.innerHeight - offset.top - 240) + "px"
+        height: (height - 240) + "px"
       });
       $('[data-toggle="tooltip"]').tooltip();
       return this.communicate();
@@ -529,9 +530,12 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     }
   });
   eventBus.listen('dataset.edit', function(dataset, load){
+    var offset, height;
     load == null && (load = true);
+    offset = $('.float-dataedit textarea').offset();
+    height = window.innerHeight - (offset.top - document.body.scrollTop);
     $('.float-dataedit textarea').css({
-      height: (window.innerHeight - 100) + "px"
+      height: (height - 200) + "px"
     });
     $scope.inited = false;
     if (load && dataset._type.location === 'server') {
