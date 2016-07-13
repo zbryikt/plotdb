@@ -229,7 +229,6 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
       if r =>
         theme := if (r.{}permission.[]switch.indexOf(\public) < 0)
         and (!req.user or r.owner != req.user.key) => null else r
-      console.log ">", r
       fieldkeys = [v.[]fields.map(->it.key) for k,v of chart.dimension]
         .reduce(((a,b)->a++b),[])
         .filter(->it)
