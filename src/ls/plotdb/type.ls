@@ -32,7 +32,7 @@ plotdb <<< do
     test: (->/\d+/.exec("#it"))
     parse: ->
       numbers = []
-      num = it.split(/\.?[^0-9.]+/g)
+      num = if it.split => it.split(/\.?[^0-9.]+/g) else [it]
       for j from 0 til num.length => if num[j] => numbers.push parseFloat(num[j])
       return {raw: it, numbers, len: numbers.length, toString: -> @raw}
     order: do

@@ -75,7 +75,9 @@ import$(plotdb, {
     parse: function(it){
       var numbers, num, i$, to$, j;
       numbers = [];
-      num = it.split(/\.?[^0-9.]+/g);
+      num = it.split
+        ? it.split(/\.?[^0-9.]+/g)
+        : [it];
       for (i$ = 0, to$ = num.length; i$ < to$; ++i$) {
         j = i$;
         if (num[j]) {
