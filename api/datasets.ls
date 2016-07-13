@@ -20,7 +20,7 @@ engine.router.api.get "/dataset/", (req, res) ->
     params.push parseInt(req.query.owner or ((req.user or {}).key or 0))
     if userkey != req.user.key => params.push ((req.user or {}).key or 0)
   if keyword =>
-    condition += " and datasets.name ~ $#{count!}"
+    condition += " and datasets.name ~* $#{count!}"
     params.push keyword
   io.query([
     "select datasets.*,users.displayname as ownername from datasets,users"

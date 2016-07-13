@@ -26,6 +26,7 @@ block body
         br
         #dataset-filter.scroll-stick(data-top="60")
           .input-group
+            .loader.alone.xs(style="position:absolute;right:48px;top:10px;z-index:10",ng-class="{'loading': paging.loading}")
             input.form-control(placeholder="search in my dataset...",ng-model="qLazy.keyword")
             .input-group-addon: i.fa.fa-search
           .sep
