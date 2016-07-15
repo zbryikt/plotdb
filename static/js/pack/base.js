@@ -8876,6 +8876,12 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging'
         $scope.q[k] = map[k][0][1];
       }
     }
+    for (k in ref$ = $scope.qLazy) {
+      v = ref$[k];
+      if (map[k]) {
+        $scope.qLazy[k] = map[k][0][1];
+      }
+    }
   }
   Paging.loadOnScroll(function(){
     return $scope.loadList();

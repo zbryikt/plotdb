@@ -10,7 +10,7 @@
         .label.label-success.pull-right(ng-show="chart.searchable && showPub") published
       .desc {{chart.description || 'check it yourself!'}}
     .labels
-      .label(ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
+      a.label(ng-attr-href="/chart/explore/?keyword={{tag}}",ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
       .flexend
     .social
       a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownername}}
