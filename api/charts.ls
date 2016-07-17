@@ -186,7 +186,7 @@ engine.router.api.put \/chart/:id/like, aux.numid false, (req, res) ->
   if !req.user => return aux.r403 res
   liked = false
   chart = {}
-  Promise.all([
+  bluebird.all([
     io.query "select * from likes where owner = $1 and type='chart' and uid=$2", [req.user.key,req.params.id]
       .then (r = {}) -> liked := r.rows.length
     io.query "select likes,key,permission from charts where key = $1", [req.params.id]
@@ -198,7 +198,7 @@ engine.router.api.put \/chart/:id/like, aux.numid false, (req, res) ->
       v = !!!liked
       req.user.{}likes.{}chart[chart.key] = v
       chart.likes = (chart.likes or 0) + (if v => 1 else -1) >? 0
-      Promise.all([
+      bluebird.all([
         (if !v => io.query "delete from likes where owner=$1 and type='chart' and uid=$2", [req.user.key, chart.key]
         else io.query "insert into likes (owner,type,uid) values ($1,'chart',$2)", [req.user.key, chart.key])
         io.query "update charts set likes = $1 where key = $2", [chart.likes, chart.key]
