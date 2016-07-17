@@ -2,7 +2,7 @@
   config = do
     domain: \dev.plotdb.com
     domainIO: \dev.plotdb.io
-    urlschema: "http://"
+    urlschema: "https://"
     name: \plotdb
     debug: true
     facebook:
