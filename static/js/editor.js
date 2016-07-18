@@ -328,10 +328,15 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return;
         }
         this[name].pending = true;
-        return $scope.canvas.window.postMessage({
-          type: "parse-" + name,
-          payload: $scope[name].code.content
-        }, $scope.plotdbDomain);
+        return $scope.library.load(this.chart.library).then(function(libhash){
+          return $scope.canvas.window.postMessage({
+            type: "parse-" + name,
+            payload: {
+              code: $scope[name].code.content,
+              library: libhash
+            }
+          }, $scope.plotdbDomain);
+        });
       },
       chart: function(){
         return this.send('chart');
@@ -1460,22 +1465,32 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               $scope.render.payload = null;
             }
             if ($scope.parse.chart.pending) {
-              if (this$.chart) {
-                this$.canvas.window.postMessage({
-                  type: 'parse-chart',
-                  payload: this$.chart.code.content
-                }, this$.plotdbDomain);
-              }
-              $scope.parse.chart.pending = null;
+              $scope.library.load(this$.chart.library).then(function(libhash){
+                if (this$.chart) {
+                  this$.canvas.window.postMessage({
+                    type: 'parse-chart',
+                    payload: {
+                      code: this$.chart.code.content,
+                      library: libhash
+                    }
+                  }, this$.plotdbDomain);
+                }
+                return $scope.parse.chart.pending = null;
+              });
             }
             if ($scope.parse.theme.pending) {
-              if (this$.theme) {
-                this$.canvas.window.postMessage({
-                  type: 'parse-theme',
-                  payload: this$.theme.code.content
-                }, this$.plotdbDomain);
-              }
-              return $scope.parse.theme.pending = null;
+              return $scope.library.load(this$.chart.library).then(function(libhash){
+                if (this$.theme) {
+                  this$.canvas.window.postMessage({
+                    type: 'parse-theme',
+                    payload: {
+                      code: this$.theme,
+                      library: libhash
+                    }
+                  }, this$.plotdbDomain);
+                }
+                return $scope.parse.theme.pending = null;
+              });
             }
           } else if (data.type === 'click') {
             if (document.dispatchEvent) {

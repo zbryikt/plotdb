@@ -165,10 +165,11 @@ angular.module \plotDB
         send: (name) ->
           if !$scope[name] => return
           @[name]pending = true
-          $scope.canvas.window.postMessage(
-            { type: "parse-#name", payload: $scope[name].code.content }
-            $scope.plotdb-domain
-          )
+          $scope.library.load @chart.library .then (libhash) ->
+            $scope.canvas.window.postMessage(
+              { type: "parse-#name", payload: {code: $scope[name].code.content, library: libhash}}
+              $scope.plotdb-domain
+            )
         chart: -> @send \chart
         theme: -> @send \theme
 
@@ -729,11 +730,13 @@ angular.module \plotDB
             if @chart => @canvas.window.postMessage {type: \render} <<< $scope.render{payload,rebind}, @plotdb-domain
             $scope.render.payload = null
           if $scope.parse.chart.pending =>
-            if @chart => @canvas.window.postMessage {type: \parse-chart, payload: @chart.code.content}, @plotdb-domain
-            $scope.parse.chart.pending = null
+            $scope.library.load @chart.library .then (libhash) ~>
+              if @chart => @canvas.window.postMessage {type: \parse-chart, payload: {code: @chart.code.content, library: libhash}}, @plotdb-domain
+              $scope.parse.chart.pending = null
           if $scope.parse.theme.pending =>
-            if @theme => @canvas.window.postMessage {type: \parse-theme, payload: @theme.code.content}, @plotdb-domain
-            $scope.parse.theme.pending = null
+            $scope.library.load @chart.library .then (libhash) ~>
+              if @theme => @canvas.window.postMessage {type: \parse-theme, payload: {code: @theme, library: libhash}}, @plotdb-domain
+              $scope.parse.theme.pending = null
         else if data.type == \click =>
           if document.dispatchEvent
             event = document.createEvent \MouseEvents

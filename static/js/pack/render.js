@@ -5663,7 +5663,7 @@ window.thread = {
   }
 };
 $(document).ready(function(){
-  var dispatcher, properEval, errorHandling, colorblind, configPreset, parse, snapshot, loadscript, render, resizeHandler;
+  var dispatcher, loadscript, loadlib, properEval, errorHandling, colorblind, configPreset, parse, snapshot, render, resizeHandler;
   dispatcher = function(evt){
     var ref$;
     if ((ref$ = evt.data.type) === 'snapshot' || ref$ === 'getsvg' || ref$ === 'getpng') {
@@ -5701,6 +5701,44 @@ $(document).ready(function(){
     }
     return errorHandling(msg, e.lineno - 1);
   });
+  loadscript = function(lib, url){
+    return new Promise(function(res, rej){
+      var x$, node;
+      x$ = node = document.createElement('script');
+      x$.type = 'text/javascript';
+      x$.src = url;
+      x$.onload = function(){
+        return res(lib);
+      };
+      return document.head.appendChild(node);
+    });
+  };
+  loadlib = function(payload){
+    var head, moduleBackup, k, promise, url;
+    head = document.getElementsByTagName("head")[0];
+    moduleBackup = window.module;
+    delete window.module;
+    if (!(function(){
+      var results$ = [];
+      for (k in payload.library || {}) {
+        results$.push(k);
+      }
+      return results$;
+    }()).length) {
+      payload.library['legacy/0.0.1'] = plotdbDomain + "/js/pack/legacy.js";
+    }
+    promise = Promise.all((function(){
+      var ref$, results$ = [];
+      for (k in ref$ = payload.library) {
+        url = ref$[k];
+        results$.push(loadscript(k, url));
+      }
+      return results$;
+    }())).then(function(){
+      return window.module = moduleBackup;
+    });
+    return promise;
+  };
   properEval = function(code, updateModule){
     updateModule == null && (updateModule = true);
     return new Promise(function(res, rej){
@@ -5794,34 +5832,37 @@ $(document).ready(function(){
     return results$;
   };
   parse = function(payload, type){
-    var e;
-    try {
-      if (type === 'chart') {
-        return properEval(payload, false).then(function(module){
-          var chart, payload, ref$;
-          chart = module.exports;
-          configPreset(chart.config);
-          payload = JSON.stringify((ref$ = {}, ref$.dimension = chart.dimension, ref$.config = chart.config, ref$));
-          return window.parent.postMessage({
-            type: 'parse-chart',
-            payload: payload
-          }, plotdbDomain);
-        });
-      } else if (type === 'theme') {
-        return properEval(payload, false).then(function(module){
-          var theme, payload, ref$;
-          theme = module.exports;
-          payload = JSON.stringify((ref$ = {}, ref$.typedef = theme.typedef, ref$.config = theme.config, ref$));
-          return window.parent.postMessage({
-            type: 'parse-theme',
-            payload: payload
-          }, plotdbDomain);
-        });
+    return loadlib(payload).then(function(){
+      var code, e;
+      try {
+        code = payload.code;
+        if (type === 'chart') {
+          return properEval(code, false).then(function(module){
+            var chart, payload, ref$;
+            chart = module.exports;
+            configPreset(chart.config);
+            payload = JSON.stringify((ref$ = {}, ref$.dimension = chart.dimension, ref$.config = chart.config, ref$));
+            return window.parent.postMessage({
+              type: 'parse-chart',
+              payload: payload
+            }, plotdbDomain);
+          });
+        } else if (type === 'theme') {
+          return properEval(code, false).then(function(module){
+            var theme, payload, ref$;
+            theme = module.exports;
+            payload = JSON.stringify((ref$ = {}, ref$.typedef = theme.typedef, ref$.config = theme.config, ref$));
+            return window.parent.postMessage({
+              type: 'parse-theme',
+              payload: payload
+            }, plotdbDomain);
+          });
+        }
+      } catch (e$) {
+        e = e$;
+        return errorHandling(e);
       }
-    } catch (e$) {
-      e = e$;
-      return errorHandling(e);
-    }
+    });
   };
   snapshot = function(type){
     var svgnode, styles, i$, to$, idx, style, ref$, width, height, svg, img, encoded, e;
@@ -5883,20 +5924,8 @@ $(document).ready(function(){
       }, plotdbDomain);
     }
   };
-  loadscript = function(lib, url){
-    return new Promise(function(res, rej){
-      var x$, node;
-      x$ = node = document.createElement('script');
-      x$.type = 'text/javascript';
-      x$.src = url;
-      x$.onload = function(){
-        return res(lib);
-      };
-      return document.head.appendChild(node);
-    });
-  };
   render = function(payload, rebind){
-    var ref$, code, style, doc, data, assets, dimension, config, theme, reboot, ret, node, head, moduleBackup, k, promise, url, e;
+    var ref$, code, style, doc, data, assets, dimension, config, theme, reboot, ret, node, promise, e;
     rebind == null && (rebind = true);
     ref$ = ['code', 'style', 'doc'].map(function(it){
       return (payload.chart || (payload.chart = {}))[it].content;
@@ -5927,29 +5956,8 @@ $(document).ready(function(){
           node.setAttribute("class", "pdb-root");
           document.body.appendChild(node);
         }
-        head = document.getElementsByTagName("head")[0];
-        moduleBackup = window.module;
-        delete window.module;
-        if (!(function(){
-          var results$ = [];
-          for (k in payload.library || {}) {
-            results$.push(k);
-          }
-          return results$;
-        }()).length) {
-          payload.library['legacy/0.0.1'] = plotdbDomain + "/js/pack/legacy.js";
-        }
-        promise = Promise.all((function(){
-          var ref$, results$ = [];
-          for (k in ref$ = payload.library) {
-            url = ref$[k];
-            results$.push(loadscript(k, url));
-          }
-          return results$;
-        }()));
-        promise = promise.then(function(){
-          $(node).html(["<style type='text/css'>/* <![CDATA[ */" + style + "/* ]]> */</style>", (theme.style || (theme.style = {})).content ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div id='container' style='position:relative;width:100%;height:100%;'>", "<div style='height:0'>&nbsp;</div>", doc, (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8, "</div>"].join(""));
-          window.module = moduleBackup;
+        $(node).html(["<style type='text/css'>/* <![CDATA[ */" + style + "/* ]]> */</style>", (theme.style || (theme.style = {})).content ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div id='container' style='position:relative;width:100%;height:100%;'>", "<div style='height:0'>&nbsp;</div>", doc, (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8, "</div>"].join(""));
+        promise = loadlib(payload).then(function(){
           return properEval(code);
         });
       } else {

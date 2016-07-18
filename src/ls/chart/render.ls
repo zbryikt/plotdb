@@ -33,6 +33,24 @@ window.addEventListener \error, (e) ->
   else msg = "#{e.message} at line #{e.lineno - 1}."
   error-handling msg, e.lineno - 1
 
+loadscript = (lib, url) -> new Promise (res,rej) ->
+  node = document.createElement \script
+    ..type = \text/javascript
+    ..src = url
+    ..onload = -> res lib
+  document.head.appendChild node
+
+loadlib = (payload) ->
+  head = document.getElementsByTagName("head")[0]
+  module-backup = window.module
+  #TODO all chart.json shall not use module.exports pattern in the future!
+  delete window.module
+  if !([k for k of (payload.library or {})].length) =>
+    payload.library['legacy/0.0.1'] = "#{plotdb-domain}/js/pack/legacy.js"
+  promise = Promise.all [loadscript(k,url) for k,url of payload.library]
+    .then -> window.module = module-backup
+  return promise
+
 proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
   empty="{exports:{init:function(){},update:function(){},resize:function(){},bind:function(){},render:function(){}}}"
   window.error-message = ""
@@ -83,21 +101,22 @@ config-preset = (config) ->
         if !(v[field]?) => v[field] = value
 
 parse = (payload, type) ->
-  try
-    if type == \chart =>
-      (module) <- proper-eval payload, false .then
-      chart = module.exports
-      config-preset chart.config
-      payload = JSON.stringify({} <<< chart{dimension, config})
-      window.parent.postMessage {type: \parse-chart, payload}, plotdb-domain
-    else if type == \theme =>
-      (module) <- proper-eval payload, false .then
-      theme = module.exports
-      payload = JSON.stringify({} <<< theme{typedef, config})
-      window.parent.postMessage {type: \parse-theme, payload}, plotdb-domain
-
-  catch e
-    error-handling e
+  loadlib payload .then ->
+    try
+      code = payload.code
+      if type == \chart =>
+        (module) <- proper-eval code, false .then
+        chart = module.exports
+        config-preset chart.config
+        payload = JSON.stringify({} <<< chart{dimension, config})
+        window.parent.postMessage {type: \parse-chart, payload}, plotdb-domain
+      else if type == \theme =>
+        (module) <- proper-eval code, false .then
+        theme = module.exports
+        payload = JSON.stringify({} <<< theme{typedef, config})
+        window.parent.postMessage {type: \parse-theme, payload}, plotdb-domain
+    catch e
+      error-handling e
 
 snapshot = (type='snapshot') ->
   try
@@ -139,12 +158,6 @@ snapshot = (type='snapshot') ->
     console.log e
     window.parent.postMessage {type, payload: null}, plotdb-domain
 
-loadscript = (lib, url) -> new Promise (res,rej) ->
-  node = document.createElement \script
-    ..type = \text/javascript
-    ..src = url
-    ..onload = -> res lib
-  document.head.appendChild node
 
 render = (payload, rebind = true) ->
   [code,style,doc] = <[code style doc]>.map(->payload.{}chart[it].content)
@@ -170,26 +183,17 @@ render = (payload, rebind = true) ->
         node.setAttribute("id", "wrapper")
         node.setAttribute("class", "pdb-root")
         document.body.appendChild(node)
-      head = document.getElementsByTagName("head")[0]
-      module-backup = window.module
-      #TODO all chart.json shall not use module.exports pattern in the future!
-      delete window.module
-      if !([k for k of (payload.library or {})].length) =>
-        payload.library['legacy/0.0.1'] = "#{plotdb-domain}/js/pack/legacy.js"
-      promise = Promise.all [loadscript(k,url) for k,url of payload.library]
-      promise = promise.then ->
-        $(node).html([
-          "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style>"
-          "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme.{}style.content
-          "<div id='container' style='position:relative;width:100%;height:100%;'>"
-          # the first space in container is crucial for elliminating margin collapsing
-          "<div style='height:0'>&nbsp;</div>"
-          doc
-          theme.doc.content if theme.{}doc.content
-          "</div>"
-        ].join(""))
-        window.module = module-backup
-        proper-eval code
+      $(node).html([
+        "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style>"
+        "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme.{}style.content
+        "<div id='container' style='position:relative;width:100%;height:100%;'>"
+        # the first space in container is crucial for elliminating margin collapsing
+        "<div style='height:0'>&nbsp;</div>"
+        doc
+        theme.doc.content if theme.{}doc.content
+        "</div>"
+      ].join(""))
+      promise = loadlib payload .then -> proper-eval code
 
     else promise = Promise.resolve window.module
     promise.then (module) ->
