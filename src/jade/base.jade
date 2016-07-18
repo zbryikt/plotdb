@@ -1,6 +1,6 @@
 doctype html
 //- basic libraries: jquery(1.10.2), d3js(3.3.11), angularjs(1.2.3), bootstrap(3.0)/semantic-ui(0.9.3/0.9.5)
-- var version = "26"
+include version.jade
 - var assets = "/assets"
 - var title = 'PlotDB: Share Visualizations with Everyone'
 - var description = "Create, share and request visualizations online."
@@ -24,7 +24,7 @@ html(lang="en")
     link(rel="stylesheet",type="text/css",href="/assets/ldcolorpicker/0.1.1/ldcp.css")
     link(rel="stylesheet",type="text/css",href="/assets/select2/4.0.1/css/select2.min.css")
     script(type="text/javascript",src="/global")
-    script(type="text/javascript",src="/js/pack/base.js")
+    script(type="text/javascript",src="/js/pack/base.js?" + version)
     script(type="text/javascript",src="/assets/papaparse/4.1.2/papaparse.min.js")
     block head
   body(id=rootid,ng-app="plotDB",ng-controller="plSite")

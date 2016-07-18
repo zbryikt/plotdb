@@ -8,13 +8,13 @@ block vars
 block head
   title #{chart.name} by #{chart.author}
   link(rel="icon",type="image/x-icon",href="/assets/img/favicon-16.png")
-  script(type="text/javascript",src="/js/pack/view.js")
+  script(type="text/javascript",src="/js/pack/view.js?" + version)
   each lib in chart.library || []
     - var path = lib.split('/')
     - var min = ( path[2]?'.' + path[2] : '' )
     script(src= "/lib/" + path[0] + "/" + path[1] + "/index" + min + ".js")
   if !chart.library
-    script(src="/js/pack/legacy.js")
+    script(src="/js/pack/legacy.js?" + version)
 block body
   include /render/pdb-style.jade
   include /render/base-style.jade
