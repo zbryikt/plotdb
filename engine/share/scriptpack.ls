@@ -4,7 +4,6 @@
       <[
         /js/sched.js
         /assets/jquery/1.10.2/jquery.min.js
-        /assets/d3js/3.5.12/d3.v3.min.js
         /assets/bluebird/3.3.4/bluebird.min.js
         /assets/canvg/1.4.0/rgbcolor.js
         /assets/canvg/1.4.0/StackBlur.js
@@ -19,13 +18,11 @@
         /js/plotdb/config.js
         /js/share/config.js
         /js/chart/render.js
-        /js/chart/plotd3.js
       ]>
     view:
       <[
         /js/sched.js
         /assets/jquery/1.10.2/jquery.min.js
-        /assets/d3js/3.5.12/d3.v3.min.js
         /js/plotdb/main.js
         /js/plotdb/type.js
         /js/plotdb/chart.js
@@ -34,7 +31,6 @@
         /js/plotdb/config.js
         /js/share/config.js
         /js/chart/view.js
-        /js/chart/plotd3.js
       ]>
     loader:
       <[
@@ -88,6 +84,8 @@
         /lib/topojson/1.6.24/index.min.js
         /lib/d3.geo.projection/0.2.16/index.min.js
         /lib/voronoijs/0.0.1/index.min.js
+        /assets/d3js/3.5.12/d3.v3.min.js
+        /js/chart/plotd3.js
       ]>
 
   if module? => module.exports = config
