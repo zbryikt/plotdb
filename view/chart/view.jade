@@ -13,7 +13,7 @@ block head
     - var path = lib.split('/')
     - var min = ( path[2]?'.' + path[2] : '' )
     script(src= "/lib/" + path[0] + "/" + path[1] + "/index" + min + ".js")
-  if !chart.library
+  if !chart.library.length
     script(src="/js/pack/legacy.js?" + version)
 block body
   include /render/pdb-style.jade
