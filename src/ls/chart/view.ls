@@ -81,9 +81,10 @@ plotdb.view.chart.prototype <<< do
     @sync!
   sync: (fields = []) ->
     if @_.data => return @_.chart.data = plotdb.chart.data-from-hash @_.chart.dimension, @_.data
-    hash = d3.map fields, -> it.key
+    hash = {}
+    for item in fields => hash[item.key] = item
     for k,v of @_.chart.dimension =>
-      v.fields = (v.fields or []).map(->hash.get(it.key)).filter(->it)
+      v.fields = (v.fields or []).map(->hash[it.key]).filter(->it)
     plotdb.chart.update-data @_.chart
     if @inited and @_.chart.parse => @_.chart.parse!
 

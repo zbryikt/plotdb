@@ -150,14 +150,16 @@ import$(plotdb.view.chart.prototype, {
     return this.sync();
   },
   sync: function(fields){
-    var hash, k, ref$, v;
+    var hash, i$, len$, item, k, ref$, v;
     fields == null && (fields = []);
     if (this._.data) {
       return this._.chart.data = plotdb.chart.dataFromHash(this._.chart.dimension, this._.data);
     }
-    hash = d3.map(fields, function(it){
-      return it.key;
-    });
+    hash = {};
+    for (i$ = 0, len$ = fields.length; i$ < len$; ++i$) {
+      item = fields[i$];
+      hash[item.key] = item;
+    }
     for (k in ref$ = this._.chart.dimension) {
       v = ref$[k];
       v.fields = (v.fields || []).map(fn$).filter(fn1$);
@@ -167,7 +169,7 @@ import$(plotdb.view.chart.prototype, {
       return this._.chart.parse();
     }
     function fn$(it){
-      return hash.get(it.key);
+      return hash[it.key];
     }
     function fn1$(it){
       return it;

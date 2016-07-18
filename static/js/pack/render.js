@@ -5896,7 +5896,7 @@ $(document).ready(function(){
     });
   };
   render = function(payload, rebind){
-    var ref$, code, style, doc, data, assets, dimension, config, theme, reboot, ret, node, head, promise, k, url, e;
+    var ref$, code, style, doc, data, assets, dimension, config, theme, reboot, ret, node, head, moduleBackup, k, promise, url, e;
     rebind == null && (rebind = true);
     ref$ = ['code', 'style', 'doc'].map(function(it){
       return (payload.chart || (payload.chart = {}))[it].content;
@@ -5928,7 +5928,17 @@ $(document).ready(function(){
           document.body.appendChild(node);
         }
         head = document.getElementsByTagName("head")[0];
-        payload.library['legacy/0.0.1'] = plotdbDomain + "/js/pack/legacy.js";
+        moduleBackup = window.module;
+        delete window.module;
+        if (!(function(){
+          var results$ = [];
+          for (k in payload.library || {}) {
+            results$.push(k);
+          }
+          return results$;
+        }()).length) {
+          payload.library['legacy/0.0.1'] = plotdbDomain + "/js/pack/legacy.js";
+        }
         promise = Promise.all((function(){
           var ref$, results$ = [];
           for (k in ref$ = payload.library) {
@@ -5939,6 +5949,7 @@ $(document).ready(function(){
         }()));
         promise = promise.then(function(){
           $(node).html(["<style type='text/css'>/* <![CDATA[ */" + style + "/* ]]> */</style>", (theme.style || (theme.style = {})).content ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div id='container' style='position:relative;width:100%;height:100%;'>", "<div style='height:0'>&nbsp;</div>", doc, (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8, "</div>"].join(""));
+          window.module = moduleBackup;
           return properEval(code);
         });
       } else {

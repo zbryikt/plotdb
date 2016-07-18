@@ -171,7 +171,11 @@ render = (payload, rebind = true) ->
         node.setAttribute("class", "pdb-root")
         document.body.appendChild(node)
       head = document.getElementsByTagName("head")[0]
-      payload.library['legacy/0.0.1'] = "#{plotdb-domain}/js/pack/legacy.js"
+      module-backup = window.module
+      #TODO all chart.json shall not use module.exports pattern in the future!
+      delete window.module
+      if !([k for k of (payload.library or {})].length) =>
+        payload.library['legacy/0.0.1'] = "#{plotdb-domain}/js/pack/legacy.js"
       promise = Promise.all [loadscript(k,url) for k,url of payload.library]
       promise = promise.then ->
         $(node).html([
@@ -184,6 +188,7 @@ render = (payload, rebind = true) ->
           theme.doc.content if theme.{}doc.content
           "</div>"
         ].join(""))
+        window.module = module-backup
         proper-eval code
 
     else promise = Promise.resolve window.module
