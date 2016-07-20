@@ -1,0 +1,85 @@
+extends /base.jade
+block body
+  link(rel="stylesheet",type="text/css",href="/css/test.css")
+  br
+  br
+  br
+  div(style="width:100%;height:100%;padding:20px;max-width:1220px;margin:auto")
+    .row
+    .box(style="width:100%;height:33px;margin-bottom:10px")
+      .tab(style="width:240px")
+        div(style="font-size:1.2em;",contenteditable="true")
+          span Untitled Chart 
+          i.fa.fa-pencil.grayed(style="font-size:12px")
+
+
+      .tab Data
+      .tab Config #[i.fa.fa-cog]
+      .tab.pull-right Publish #[i.fa.fa-users]
+
+    //-.btn-group
+      .btn-group
+        .btn.btn-default.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-desktop] #[span.caret]
+        ul.dropdown-menu
+          li: a(href="#") #[i.fa.fa-mobile] Mobile #[small.grayed (320x480)]
+          li: a(href="#") #[i.fa.fa-tablet] Tablet #[small.grayed (768x1024)]
+          li: a(href="#") #[i.fa.fa-desktop] Desktop #[small.grayed (1280x800)]
+          li: a(href="#") #[i.fa.fa-question-circle] Custom
+      .btn-group
+        .btn.btn-default.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-eye] #[span.caret]
+        ul.dropdown-menu
+          li: a(href="#") #[i.fa.fa-eye] Normal #[small.grayed (90%)]
+          li: a(href="#") #[i.fa.fa-eye(style="color:#b60")] Red-Green #[small.grayed (10%)]
+          li: a(href="#") #[i.fa.fa-eye(style="color:#999")] Monochromasy #[small.grayed (1%)]
+          li: a(href="#") #[i.fa.fa-question-circle] More...
+      .btn-group
+        .btn.btn-default.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-download] #[span.caret]
+        ul.dropdown-menu
+          li: a(href="#") PNG #[small.grayed 125KB]
+          li: a(href="#") SVG #[small.grayed 33KB]
+          li: a(href="#") PlotDB.json #[small.grayed 45KB]
+
+
+    //small preview
+    //.box(style="width:420px;height:240px;position:absolute;opacity: 0.8;top:80px;right:80px")
+      iframe(src="/v/chart/1104",style="width:100%;height:100%;border:none")
+    .box(style="width:100%;height:600px")
+      iframe(src="/v/chart/1104",style="width:100%;height:100%;border:none")
+      //toolbar
+      .box.float
+    //config box
+    .box(style="position:absolute;width:300px;height:600px;left:10%;top:120px;padding:20px;overflow-y: scroll;display:none")
+      label: big config
+      .sep.no-gap
+      each j in [1,2,3,4]
+        div(style="margin-bottom:20px")
+          .row: .col-sm-6: .text-right: label Label
+          each i in [1,2,3,4]
+            .row(style="margin-bottom:5px")
+              .col-sm-6
+                div(style="line-height:30px;text-align:right") X Axis Label #[i.fa.fa-question-circle.grayed]
+              .col-sm-6
+                input.form-control.input-sm(style="border:none")
+
+    //dataset box
+    .box(style="position:absolute;width:80%;height:500px;left:10%;top:120px;padding:20px;display:none")
+      .input-group(style="width: 800px;float:left")
+        input.form-control
+        span.input-group-btn
+          .btn.btn-default blah
+      span &nbsp;
+      .btn.btn-default #[i.fa.fa-plus] new Dataset
+      .sep
+      .sheet
+        .sheet-head
+          div
+            each j in [9,8,7,6,5,4,3,2,1]
+              div(style="width:11.11111%")= j
+        .sheet-body
+          .sheet-cells
+            each i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]
+              div
+                each j in [1,2,3,4,5,6,7,8,9]
+                  div(style="width:11.1111%")= j
+
+  //-.box(style="position:absolute;top:100px;left:40px;width:300px;height:500px;box-shadow:0 3px 6px rgba(0,0,0,0.1)")
