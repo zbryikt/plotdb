@@ -777,7 +777,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       init: function(){
         var this$ = this;
         return ['#edit-sharelink', '#edit-embedcode'].map(function(eventsrc){
-          var clipboard;
+          var clipboard, embedcodeGenerator;
           clipboard = new Clipboard(eventsrc);
           clipboard.on('success', function(){
             $(eventsrc).tooltip({
@@ -797,9 +797,21 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               return $(eventsrc).tooltip('hide');
             }, 1000);
           });
-          $scope.$watch('sharePanel.link', function(it){
+          embedcodeGenerator = function(){
+            var link;
+            link = $scope.sharePanel.link;
+            if ($scope.sharePanel.aspectRatio) {
+              return "<div style=\"width:100%\"><div style=\"position:relative;height:0;overflor:hidden;padding-bottom:75%;\"><iframe src=\"" + link + "\" frameborder=\"0\" style=\"position:absolute;top:0;left:0;width:100%;height:100%\"></iframe></div></div>";
+            } else {
+              return "<iframe src=\"" + link + "\" width=\"100%\" height=\"600px\" frameborder=\"0\"></iframe>";
+            }
+          };
+          $scope.$watch('sharePanel.aspectRatio', function(){
+            return this$.embedcode = embedcodeGenerator();
+          });
+          $scope.$watch('sharePanel.link', function(){
             var fbobj, k, v, pinobj, emailobj, linkedinobj, twitterobj;
-            this$.embedcode = "<iframe src=\"" + it + "\" width=\"100%\" height=\"600px\" frameborder=\"0\"></iframe>";
+            this$.embedcode = embedcodeGenerator();
             this$.thumblink = $scope.service.thumblink($scope.chart, true);
             fbobj = {
               app_id: '1546734828988373',

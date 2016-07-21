@@ -206,6 +206,10 @@ block body
             data-clipboard-target="#edit-sharelink")
             br
             label Embed Code
+            .pull-right
+              .checkbox(style="margin:0"): label
+                input(type="checkbox",ng-model="sharePanel.aspectRatio")
+                span Preserve Aspect Ratio
             textarea.form-control(ng-cloak,disabled,rows="3",
             ng-show="!sharePanel.isPublic()",placeholder="set public to get embed code")
             textarea#edit-embedcode.form-control(ng-cloak,rows="3",ng-show="sharePanel.isPublic()",

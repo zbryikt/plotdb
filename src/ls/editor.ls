@@ -410,8 +410,15 @@ angular.module \plotDB
           clipboard.on \error, ->
             $(eventsrc).tooltip({title: 'Press Ctrl+C to Copy', trigger: 'click'}).tooltip('show')
             setTimeout((->$(eventsrc).tooltip('hide')), 1000)
+          embedcode-generator = ->
+            link = $scope.sharePanel.link
+            if $scope.sharePanel.aspectRatio =>
+              return """<div style="width:100%"><div style="position:relative;height:0;overflor:hidden;padding-bottom:75%;"><iframe src="#link" frameborder="0" style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe></div></div>"""
+            else => return """<iframe src="#link" width="100%" height="600px" frameborder="0"></iframe>"""
+          $scope.$watch 'sharePanel.aspectRatio', ~>
+            @embedcode = embedcode-generator!
           $scope.$watch 'sharePanel.link', ~>
-            @embedcode = "<iframe src=\"#it\" width=\"100%\" height=\"600px\" frameborder=\"0\"></iframe>"
+            @embedcode = embedcode-generator!
             @thumblink = $scope.service.thumblink $scope.chart, true
             fbobj = do
               #TODO verify
@@ -646,7 +653,7 @@ angular.module \plotDB
             $scope.$apply-async -> file <<< {type, content}
             res file
           fr.readAsDataURL fobj
-        handle: (files) -> 
+        handle: (files) ->
           Promise.all [@read(file) for file in files] .then -> $scope.render-async!
         node: null
         init: ->
