@@ -19,7 +19,7 @@ pgsql = new postgresql config
 engine.init config, pgsql.authio
   .then ->
     engine.app.get \/, (req, res) -> res.render 'index.jade'
-    engine.app.get \/test, (req, res) -> res.render 'view/test.jade'
+    engine.app.get \/prototype, (req, res) -> res.render 'view/prototype/index.jade'
     api engine, pgsql
     # 404 fallback
     engine.app.use (req, res, next) ~> aux.r404 res, "", true

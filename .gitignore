@@ -9,3 +9,4 @@ static/s/
 npm-debug.log
 engine/share/config.ls
 static/js/share/config.js
+work/thumbnail

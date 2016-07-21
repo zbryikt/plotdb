@@ -15,16 +15,13 @@
   border-left: 1px solid #bbb;
 }
 .box.float {
-  width: 500px;
+  width: 1200px;
   height: 50px;
   position: fixed;
   box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-  bottom: 50px;
-  left: 100px;
-  opacity: 0.5;
-}
-.box.float:hover {
-  opacity: 1;
+  bottom: 0;
+  border-radius: 10px 10px 0 0;
+  left: 120px;
 }
 .dropdown i.fa {
   width: 20px;
@@ -35,6 +32,25 @@
 }
 .dropdown i.fa.fa-tablet {
   font-size: 1.1em;
+}
+.box.box-config {
+  position: absolute;
+  width: 30%;
+  height: 600px;
+  left: 0;
+  top: 0;
+  padding: 10px;
+  overflow-y: scroll;
+}
+.box.box-config {
+  position: fixed;
+  width: 340px;
+  height: 100%;
+  left: 0;
+  top: 0;
+  padding: 10px;
+  overflow-y: scroll;
+  padding-top: 80px;
 }
 .sheet {
   width: 100%;

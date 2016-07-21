@@ -508,7 +508,7 @@
   position: relative;
   background: #fff;
   padding: 10px;
-  z-index: 19;
+  z-index: 20;
   border-bottom: 1px solid #ccc;
   padding-bottom: 10px;
 }
@@ -569,23 +569,23 @@
   display: block;
 }
 #code-editor.active {
-  z-index: 17;
+  z-index: 18;
 }
 #visualization-canvas2.active {
-  z-index: 17;
+  z-index: 18;
   opacity: 1;
 }
 #code-editor.fullscreen {
-  z-index: 25;
+  z-index: 26;
 }
 #visualization-canvas2.fullscreen {
-  z-index: 25;
+  z-index: 26;
 }
 #code-editor.fullscreen.active {
-  z-index: 26;
+  z-index: 27;
 }
 #visualization-canvas2.fullscreen.active {
-  z-index: 26;
+  z-index: 27;
 }
 #fullscreen-dimmer {
   display: none;
@@ -597,7 +597,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 16;
+  z-index: 17;
   background: rgba(0,0,0,0.5);
 }
 #code-error {
@@ -612,12 +612,12 @@
   border-radius: 3px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   color: #900;
-  z-index: 18;
+  z-index: 19;
   overflow: scroll;
   width: 50%;
 }
 #code-error.fullscreen {
-  z-index: 27;
+  z-index: 28;
   position: fixed;
   bottom: 10px;
   left: 10px;
@@ -696,7 +696,7 @@ small.hint {
   border-radius: 2px;
 }
 .ldColorPicker.bubble {
-  z-index: 24;
+  z-index: 25;
 }
 .file {
   position: relative;
@@ -756,7 +756,7 @@ small.hint {
 }
 #assets-preview {
   position: fixed;
-  z-index: 31;
+  z-index: 32;
   top: 0;
   left: 0;
   width: 100%;
@@ -806,7 +806,7 @@ small.hint {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
-  z-index: 29;
+  z-index: 30;
 }
 #permission-modal .ib,
 #setting-modal .ib,
@@ -851,7 +851,7 @@ small.hint {
 }
 #setting-modal-inner .ib {
   height: auto;
-  z-index: 30;
+  z-index: 31;
   position: absolute;
   left: 50%;
   margin-left: -320px;

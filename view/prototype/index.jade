@@ -1,0 +1,129 @@
+extends /base.jade
+block head
+  script(src="/js/prototype/index.js")
+block body
+  div(ng-controller="prototype")
+    link(rel="stylesheet",type="text/css",href="/css/test.css")
+    br
+    br
+    br
+    div(style="position:absolute;top:0;padding-top:70px;left:350px;width:1080px;height:100%;")
+      .row
+      .box(style="width:100%;height:35px;margin-bottom:10px")
+        .tab(style="width:240px")
+          div(style="font-size:1.2em;",contenteditable="true")
+            span Untitled Chart 
+            i.fa.fa-pencil.grayed(style="font-size:12px")
+
+        include dropdowns.jade
+
+        .tab.pull-right Publish #[i.fa.fa-users]
+
+
+      //small preview
+      //.box(style="width:420px;height:240px;position:absolute;opacity: 0.8;top:80px;right:80px")
+        iframe(src="/v/chart/1104",style="width:100%;height:100%;border:none")
+      div(style="position:relative")
+        //config box
+        .box.box-config
+          ul.nav.nav-tabs
+            li(ng-class="{'active':tab=='config'}"): a(href="#",ng-click="tab='config'") Config
+            li(ng-class="{'active':tab=='dataset'}"): a(href="#",ng-click="tab='dataset'") Dataset
+          br
+          div(ng-show="tab=='config'")
+            each j in [1,2,3,4]
+              div(style="margin-bottom:20px;font-size:12px")
+                .row: .col-sm-5: .text-right: label Label
+                each i in [1,2,3,4]
+                  div(style="margin-bottom:5px")
+                    div(style="display:inline-block;width:150px")
+                      div(style="line-height:30px;text-align:right;")
+                        span Axis Inner Tick length #[i.fa.fa-question-circle.grayed]
+                    div(style="display:inline-block;width:150px;margin-left:10px")
+                      input.form-control.input-sm
+          div(ng-show="tab=='dataset'")
+            .input-group(style="width:175px;float:left")
+              input.form-control.input-sm
+              span.input-group-btn
+                .btn.btn-default.btn-sm blah
+            span &nbsp;
+            .btn.btn-default.btn-sm #[i.fa.fa-plus] new Dataset
+            .sep
+            .sheet
+              .sheet-head
+                div
+                  each j in [9,8,7,6,5,4,3,2,1]
+                    div(style="width:11.11111%")= j
+              .sheet-body
+                .sheet-cells
+                  each i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]
+                    div
+                      each j in [1,2,3,4,5,6,7,8,9]
+                        div(style="width:11.1111%")= j
+
+
+        //dataset box
+        //-.box(style="position:absolute;width:50%;height:600px;left:0;padding:20px;")
+          .input-group(style="width: 400px;float:left")
+            input.form-control
+            span.input-group-btn
+              .btn.btn-default blah
+          span &nbsp;
+          .btn.btn-default #[i.fa.fa-plus] new Dataset
+          .sep
+          .sheet(style="height:500px")
+            .sheet-head
+              div
+                each j in [9,8,7,6,5,4,3,2,1]
+                  div(style="width:11.11111%")= j
+            .sheet-body
+              .sheet-cells
+                each i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]
+                  div
+                    each j in [1,2,3,4,5,6,7,8,9]
+                      div(style="width:11.1111%")= j
+
+
+        .box(style="position:absolute;left:0;width:100%;height:630px;")
+          iframe(src="/v/chart/1104",style="width:100%;height:100%;border:none")
+          //toolbar
+      .box(style="position:absolute;bottom:10px;width:100%;height:40px;left:0;")
+
+
+      //-
+        //config box
+        .box(style="position:absolute;width:300px;height:600px;left:10%;top:120px;padding:20px;overflow-y: scroll;display:none")
+          label: big config
+          .sep.no-gap
+          each j in [1,2,3,4]
+            div(style="margin-bottom:20px")
+              .row: .col-sm-6: .text-right: label Label
+              each i in [1,2,3,4]
+                .row(style="margin-bottom:5px")
+                  .col-sm-6
+                    div(style="line-height:30px;text-align:right") X Axis Label #[i.fa.fa-question-circle.grayed]
+                  .col-sm-6
+                    input.form-control.input-sm(style="border:none")
+        //dataset box
+        .box(style="position:absolute;width:80%;height:500px;left:10%;top:120px;padding:20px;display:none")
+
+          .input-group(style="width: 800px;float:left")
+            input.form-control
+            span.input-group-btn
+              .btn.btn-default blah
+          span &nbsp;
+          .btn.btn-default #[i.fa.fa-plus] new Dataset
+          .sep
+          .sheet
+            .sheet-head
+              div
+                each j in [9,8,7,6,5,4,3,2,1]
+                  div(style="width:11.11111%")= j
+            .sheet-body
+              .sheet-cells
+                each i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]
+                  div
+                    each j in [1,2,3,4,5,6,7,8,9]
+                      div(style="width:11.1111%")= j
+
+    //-.box(style="position:absolute;top:100px;left:40px;width:300px;height:500px;box-shadow:0 3px 6px rgba(0,0,0,0.1)")
