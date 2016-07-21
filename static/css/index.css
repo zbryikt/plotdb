@@ -1712,7 +1712,7 @@ a.dropdown-toggle {
   background: #f9f9f9;
   opacity: 0.01;
 }
-#visualization-canvas2 .btn-group {
+#visualization-canvas2 > .btn-group {
   position: absolute;
   bottom: 5px;
   right: 5px;

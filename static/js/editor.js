@@ -382,6 +382,47 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         return this.plotdb.size = payload.length;
       }
     },
+    rwdtest: {
+      val: 'default',
+      vals: ['default', 'QVGA', 'HVGA', 'Thumb'],
+      map: {
+        'default': [0, 0],
+        QVGA: [240, 320],
+        HVGA: [320, 480],
+        Thumb: [308, 229]
+      },
+      set: function(it){
+        var node, parent, ref$, width, height, w, h;
+        if (!in$(it, this.vals)) {
+          return;
+        }
+        this.val = it;
+        node = document.getElementById('chart-renderer');
+        parent = node.parentNode;
+        ref$ = {
+          width: (ref$ = parent.getBoundingClientRect()).width,
+          height: ref$.height
+        }, width = ref$.width, height = ref$.height;
+        if (this.val === 'default') {
+          ref$ = ['100%', '100%'], w = ref$[0], h = ref$[1];
+          ref$ = node.style;
+          ref$.marginTop = 0;
+          ref$.marginLeft = 0;
+        } else {
+          ref$ = this.map[this.val], w = ref$[0], h = ref$[1];
+          ref$ = node.style;
+          ref$.marginTop = (height - h) / 2 + "px";
+          ref$.marginLeft = (width - w) / 2 + "px";
+          ref$ = [w, h].map(function(it){
+            return it + "px";
+          }), w = ref$[0], h = ref$[1];
+        }
+        ref$ = node.style;
+        ref$.width = w;
+        ref$.height = h;
+        return node.style.boxShadow = '0 0 3px rgba(0,0,0,0.2)';
+      }
+    },
     colorblind: {
       val: 'normal',
       vals: ['normal', 'protanopia', 'protanomaly', 'deuteranopia', 'deuteranomaly', 'tritanopia', 'tritanomaly', 'achromatopsia', 'achromatomaly'],

@@ -186,6 +186,31 @@ angular.module \plotDB
           payload = angular.toJson($scope.target!)
           @plotdb.url = URL.createObjectURL new Blob [payload], {type: \application/json}
           @plotdb.size = payload.length
+      rwdtest: do
+        val: \default
+        vals: <[default QVGA HVGA Thumb]>
+        map: do
+          default: [0,0]
+          QVGA: [240, 320]
+          HVGA: [320, 480]
+          Thumb: [308, 229]
+        set: ->
+          if !(it in @vals) => return
+          @val = it
+          #if !$scope.editor.fullscreen.toggled => $scope.editor.fullscreen.toggle!
+          node = document.getElementById(\chart-renderer)
+          parent = node.parentNode
+          {width,height} = parent.getBoundingClientRect!{width, height}
+          if @val == \default =>
+            [w,h] = <[100% 100%]>
+            node.style <<< marginTop: 0, marginLeft: 0
+          else
+            [w,h] = @map[@val]
+            node.style <<< marginTop: ((height - h)/2) + "px", marginLeft: ((width - w)/2) + "px"
+            [w,h] = [w,h].map(->"#{it}px")
+          node.style <<< width: w, height: h
+          node.style.boxShadow = '0 0 3px rgba(0,0,0,0.2)'
+
       colorblind: do
         val: \normal
         vals: <[
