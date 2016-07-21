@@ -60,6 +60,20 @@ plotdb.config = {
     'default': '#fff',
     category: "Color"
   },
+  geoFill: {
+    name: "Geoblock Fill Color",
+    type: [plotdb.Color],
+    desc: "Default color for filling geographic path",
+    'default': '#eee',
+    category: "Color"
+  },
+  geoStroke: {
+    name: "Geoblock Stroke Color",
+    type: [plotdb.Color],
+    desc: "Default color for outline of geographic path",
+    'default': '#919191',
+    category: "Color"
+  },
   hoverFill: {
     name: "Hovering Fill Color",
     type: [plotdb.Color],
@@ -94,6 +108,12 @@ plotdb.config = {
     'default': 10,
     category: "Layout"
   },
+  bubblePadding: {
+    name: "Bubble Padding",
+    type: [plotdb.Number],
+    'default': 5,
+    category: "Layout"
+  },
   margin: {
     name: "Margin",
     type: [plotdb.Number],
@@ -118,10 +138,10 @@ plotdb.config = {
     'default': 12,
     category: "Text"
   },
-  labelShadowOn: {
-    name: "Show Label Shadow",
-    type: [plotdb.Boolean],
-    'default': true,
+  labelShadowSize: {
+    name: "Label Shadow Size",
+    type: [plotdb.Number],
+    'default': 2,
     category: "Text"
   },
   xAxisLabel: {
@@ -262,6 +282,42 @@ plotdb.config = {
     name: "Show Angular Axis",
     type: [plotdb.Boolean],
     'default': true,
+    category: "Axis"
+  },
+  xAxisTickSizeInner: {
+    name: "X Axis Inner Tick Size",
+    type: [plotdb.Number],
+    'default': 6,
+    category: "Axis"
+  },
+  xAxisTickSizeOuter: {
+    name: "X Axis Outer Tick Size",
+    type: [plotdb.Number],
+    'default': 6,
+    category: "Axis"
+  },
+  xAxisTickPadding: {
+    name: "X Axis Tick Padding",
+    type: [plotdb.Number],
+    'default': 3,
+    category: "Axis"
+  },
+  yAxisTickSizeInner: {
+    name: "Y Axis Inner Tick Size",
+    type: [plotdb.Number],
+    'default': 6,
+    category: "Axis"
+  },
+  yAxisTickSizeOuter: {
+    name: "Y Axis Outer Tick Size",
+    type: [plotdb.Number],
+    'default': 6,
+    category: "Axis"
+  },
+  yAxisTickPadding: {
+    name: "Y Axis Tick Padding",
+    type: [plotdb.Number],
+    'default': 3,
     category: "Axis"
   }
 };

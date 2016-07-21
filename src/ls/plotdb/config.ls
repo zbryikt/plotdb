@@ -84,6 +84,20 @@ plotdb.config = do
     default: \#fff
     category: "Color"
 
+  geoFill: do
+    name: "Geoblock Fill Color"
+    type: [plotdb.Color]
+    desc: "Default color for filling geographic path"
+    default: \#eee
+    category: "Color"
+
+  geoStroke: do
+    name: "Geoblock Stroke Color"
+    type: [plotdb.Color]
+    desc: "Default color for outline of geographic path"
+    default: \#919191
+    category: "Color"
+
   hoverFill: do
     name: "Hovering Fill Color"
     type: [plotdb.Color]
@@ -119,6 +133,12 @@ plotdb.config = do
     default: 10
     category: "Layout"
 
+  bubblePadding: do
+    name: "Bubble Padding"
+    type: [plotdb.Number]
+    default: 5
+    category: "Layout"
+
   margin: do
     name: "Margin"
     type: [plotdb.Number]
@@ -146,10 +166,10 @@ plotdb.config = do
     default: 12
     category: "Text"
 
-  labelShadowOn: do
-    name: "Show Label Shadow"
-    type: [plotdb.Boolean]
-    default: true
+  labelShadowSize: do
+    name: "Label Shadow Size"
+    type: [plotdb.Number]
+    default: 2
     category: "Text"
 
   xAxisLabel: do
@@ -293,4 +313,40 @@ plotdb.config = do
     name: "Show Angular Axis"
     type: [plotdb.Boolean]
     default: true
+    category: "Axis"
+
+  xAxisTickSizeInner: do
+    name: "X Axis Inner Tick Size"
+    type: [plotdb.Number]
+    default: 6
+    category: "Axis"
+
+  xAxisTickSizeOuter: do
+    name: "X Axis Outer Tick Size"
+    type: [plotdb.Number]
+    default: 6
+    category: "Axis"
+
+  xAxisTickPadding: do
+    name: "X Axis Tick Padding"
+    type: [plotdb.Number]
+    default: 3
+    category: "Axis"
+
+  yAxisTickSizeInner: do
+    name: "Y Axis Inner Tick Size"
+    type: [plotdb.Number]
+    default: 6
+    category: "Axis"
+
+  yAxisTickSizeOuter: do
+    name: "Y Axis Outer Tick Size"
+    type: [plotdb.Number]
+    default: 6
+    category: "Axis"
+
+  yAxisTickPadding: do
+    name: "Y Axis Tick Padding"
+    type: [plotdb.Number]
+    default: 3
     category: "Axis"
