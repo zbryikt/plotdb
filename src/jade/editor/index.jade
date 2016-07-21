@@ -457,6 +457,12 @@ block body
             ul.dropdown-menu
               li(ng-class="{'active':colorblind.val=='normal'}")
                 a(href="#",ng-click="colorblind.set('normal')") Normal People
+              li(ng-class="{'active':colorblind.val=='deuteranopia'}")
+                a(href="#",ng-click="colorblind.set('deuteranopia')") Red-Green #[small.grayed (9%)]
+              li(ng-class="{'active':colorblind.val=='achromatopsia'}")
+                a(href="#",ng-click="colorblind.set('achromatopsia')") Monochromasy #[small.grayed (0.003%)]
+              li.divider
+              small.grayed(style="margin-left:20px") Advanced Options
               li(ng-class="{'active':colorblind.val=='protanopia'}")
                 a(href="#",ng-click="colorblind.set('protanopia')") Protanopia
               li(ng-class="{'active':colorblind.val=='protanomaly'}")
