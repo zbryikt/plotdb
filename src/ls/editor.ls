@@ -528,7 +528,7 @@ angular.module \plotDB
       coloredit: do
         config: (v, idx) -> do
           class: "no-palette text-input"
-          context: "context#idx"
+          context: "context-#idx"
           exclusive: true
           palette: [v.value]
       paledit: do #TODO should be moved to standalone controller
@@ -718,7 +718,7 @@ angular.module \plotDB
           ), 500
         @$watch 'chart.config', ((n,o={}) ~>
           hash = {}
-          for k,v of n => hash{}[v.category || \Other][k] = v
+          for k,v of $scope.chart.config => hash{}[v.category or \Other][k] = v
           $scope.configHash = hash
           ret = !!([[k,v] for k,v of n]
             .filter(([k,v]) -> !o[k] or (v.value != o[k].value))

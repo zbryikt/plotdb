@@ -361,10 +361,10 @@ block body
                     ul.dropdown-menu
                       li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice}}
                 //TODO coloredit
-                .btn-group(ng-if="v.type[0].name=='Color'",ng-click="coloredit.edit(v);")
+                .btn-group(ng-if="v.type[0].name=='Color'")
                   span.input-group-addon: div {{v.name || name}}
                   .input-color
-                    div(ng-attr-style="background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v,$index)") &nbsp;
+                    div(ng-attr-style="background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v,category+' '+$index)") &nbsp;
                 //- Range
                 .input-group.chart-config-range(ng-if="v.type[0].name=='Range'")
                   span.input-group-addon: div {{v.name || name}}

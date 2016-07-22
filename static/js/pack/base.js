@@ -4461,7 +4461,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       config: function(v, idx){
         return {
           'class': "no-palette text-input",
-          context: "context" + idx,
+          context: "context-" + idx,
           exclusive: true,
           palette: [v.value]
         };
@@ -4894,11 +4894,11 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }, 500);
       });
       this.$watch('chart.config', function(n, o){
-        var hash, k, v, key$, ret;
+        var hash, k, ref$, v, key$, ret;
         o == null && (o = {});
         hash = {};
-        for (k in n) {
-          v = n[k];
+        for (k in ref$ = $scope.chart.config) {
+          v = ref$[k];
           (hash[key$ = v.category || 'Other'] || (hash[key$] = {}))[k] = v;
         }
         $scope.configHash = hash;

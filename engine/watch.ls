@@ -90,7 +90,8 @@ base = do
       for k,v of @queue =>
         des = "static/js/pack/#k.js"
         ret = [fs.read-file-sync(file).toString! for file in v.1].join("")
-        if !base.config.debug => ret = uglify-js.minify(ret,{fromString:true}).code
+        #ret = uglify-js.minify(ret,{fromString:true}).code
+        #if !base.config.debug => ret = uglify-js.minify(ret,{fromString:true}).code
         fs.write-file-sync des, ret
         console.log "[BUILD] Pack '#k' -> #des by #{v.0}"
       @queue = {}
