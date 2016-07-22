@@ -1694,7 +1694,7 @@ a.dropdown-toggle {
   left: 0;
   width: 100%;
   height: 100%;
-  padding: 186px 10px 0;
+  padding: 145px 2px 0 2px;
   overflow-y: scroll;
   overflow-x: hidden;
   z-index: 2;
@@ -1802,9 +1802,7 @@ a.dropdown-toggle {
 }
 .chart-config .input-group > span,
 .chart-config .btn-group > span {
-  width: 90px;
   display: table-cell;
-  padding: 0 2px;
   font-size: 12px;
 }
 .chart-config .btn-group {
@@ -1836,7 +1834,7 @@ a.dropdown-toggle {
   filter: "progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f4f4f4',GradientType=0 )";
 }
 .chart-config {
-  margin-bottom: 5px;
+  margin-bottom: 2px;
 }
 .chart-config .input-group {
   width: 100%;
@@ -2076,6 +2074,128 @@ small.hint {
 .dropdown-menu > .active > a {
   color: #fff;
   background: #ed1d78;
+}
+.chart-config {
+  background: #fafafa;
+  position: relative;
+}
+.chart-config i.fa.fa-question-circle {
+  color: #888;
+  cursor: pointer;
+  position: absolute;
+  top: 8px;
+  left: 102px;
+  z-index: 10;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+.chart-config i.fa.fa-question-circle .hint-popup {
+  position: absolute;
+  background: #fff;
+  padding: 5px;
+  font-size: 12px;
+  color: #000;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  text-align: center;
+  left: 10px;
+  margin-top: 5px;
+  display: none;
+  min-width: 100px;
+  font-family: calibri, latino, arial;
+  -ms-transform: translate(-50%, 0);
+  -moz-transform: translate(-50%, 0);
+  -webkit-transform: translate(-50%, 0);
+  -o-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+}
+.chart-config i.fa.fa-question-circle:hover > .hint-popup {
+  display: block;
+}
+.chart-config .input-group-addon {
+  border: none;
+  border-radius: 0;
+  border-right: 2px solid #fff;
+  background: #e9e9e9;
+  padding: 3px 3px 3px 0;
+  text-align: center;
+  width: 110px;
+}
+.chart-config .input-group-addon > div {
+  width: 110px;
+  margin: 0;
+  padding: 0;
+  display: inline;
+}
+.chart-config input {
+  border-radius: 0;
+  height: 100%;
+  padding: 5px 0;
+  border: 0;
+  background: #fafafa;
+  box-shadow: none;
+  font-size: 12px;
+  min-height: 30px;
+}
+.chart-config .input-palette {
+  display: flex;
+  float: left;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  cursor: pointer;
+  background: #fff;
+  min-height: 30px;
+}
+.chart-config .input-color {
+  display: table-cell;
+  float: left;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  cursor: pointer;
+  background: #fff;
+  min-height: 30px;
+}
+.chart-config .input-color > div {
+  height: 30px;
+}
+.chart-config .dropdown-toggle {
+  padding: 6px 0 0;
+  min-height: 30px;
+}
+.chart-config-category {
+  margin-bottom: 2px;
+  font-size: 13px;
+  display: block;
+  color: #222;
+  line-height: 14px;
+  background: #ccc;
+  margin-right: 0;
+  width: 100%;
+  padding: 2px 0 2px 5px;
+  font-weight: 500;
+}
+#chart-config-header {
+  position: absolute;
+  top: 116px;
+  left: 0;
+  z-index: 10;
+  background: #fff;
+  width: 100%;
+  padding: 2px 5px;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+}
+#chart-config-header label {
+  margin: 0;
+}
+.chart-config-end {
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  font-size: 12px;
 }
 #landing {
   padding-top: 1px;

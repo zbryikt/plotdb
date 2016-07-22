@@ -717,6 +717,9 @@ angular.module \plotDB
             $scope.parse.theme!
           ), 500
         @$watch 'chart.config', ((n,o={}) ~>
+          hash = {}
+          for k,v of n => hash{}[v.category || \Other][k] = v
+          $scope.configHash = hash
           ret = !!([[k,v] for k,v of n]
             .filter(([k,v]) -> !o[k] or (v.value != o[k].value))
             .map(->(it.1 or {}).rebindOnChange)

@@ -163,7 +163,7 @@ plotdb.config = do
   fontSize: do
     name: "Font Size"
     type: [plotdb.Number]
-    default: 12
+    default: 13
     category: "Text"
 
   labelShadowSize: do

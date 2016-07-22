@@ -4894,8 +4894,14 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }, 500);
       });
       this.$watch('chart.config', function(n, o){
-        var ret, k, v;
+        var hash, k, v, key$, ret;
         o == null && (o = {});
+        hash = {};
+        for (k in n) {
+          v = n[k];
+          (hash[key$ = v.category || 'Other'] || (hash[key$] = {}))[k] = v;
+        }
+        $scope.configHash = hash;
         ret = !!(function(){
           var ref$, results$ = [];
           for (k in ref$ = n) {
@@ -8505,7 +8511,7 @@ plotdb.config = {
   fontSize: {
     name: "Font Size",
     type: [plotdb.Number],
-    'default': 12,
+    'default': 13,
     category: "Text"
   },
   labelShadowSize: {
