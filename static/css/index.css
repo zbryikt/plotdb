@@ -31,7 +31,7 @@ body {
   width: 100%;
   height: 100%;
   background: url("/assets/img/loading-lg-white.svg") rgba(0,0,0,0.5) center center no-repeat;
-  z-index: 30;
+  z-index: 32;
 }
 #loading-dimmer.active {
   display: block;
@@ -49,7 +49,7 @@ body {
   position: fixed;
   bottom: 10px;
   left: 10px;
-  z-index: 34;
+  z-index: 36;
 }
 .notify {
   border-radius: 2px;
@@ -637,7 +637,7 @@ li.disabled a:hover {
   top: 0;
   left: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 33;
+  z-index: 35;
 }
 #alertbox .ib {
   position: relative;
@@ -677,7 +677,7 @@ li.disabled a:hover {
 .loader.floating {
   position: absolute;
   left: 50%;
-  z-index: 35;
+  z-index: 37;
 }
 .loader.floating.lg {
   margin-left: -50px;
@@ -828,10 +828,10 @@ a.dropdown-toggle {
   text-align: center;
 }
 .modal-backdrop {
-  z-index: 29 !important;
+  z-index: 31 !important;
 }
 .high-modal {
-  z-index: 30 !important;
+  z-index: 32 !important;
 }
 .page-title {
   padding-top: 20px;
@@ -890,7 +890,7 @@ a.dropdown-toggle {
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   background: #fff;
   color: #444;
-  z-index: 23;
+  z-index: 25;
 }
 #nav-top nav.navbar-default {
   -ms-transition: all 0.3s ease-out;
@@ -1054,7 +1054,7 @@ a.dropdown-toggle {
   height: 26px;
   position: fixed;
   top: 60px;
-  z-index: 22;
+  z-index: 24;
   -ms-transition: all 0.3s ease-out;
   -moz-transition: all 0.3s ease-out;
   -webkit-transition: all 0.3s ease-out;
@@ -1323,7 +1323,7 @@ a.dropdown-toggle {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 15;
+  z-index: 17;
   background: rgba(0,0,0,0.8);
   padding: 20px 20px 80px 20px;
 }
@@ -1680,7 +1680,7 @@ a.dropdown-toggle {
   position: relative;
   background: #fff;
   padding: 10px;
-  z-index: 20;
+  z-index: 22;
   border-bottom: 1px solid #ccc;
   padding-bottom: 10px;
 }
@@ -1741,23 +1741,23 @@ a.dropdown-toggle {
   display: block;
 }
 #code-editor.active {
-  z-index: 18;
+  z-index: 20;
 }
 #visualization-canvas2.active {
-  z-index: 18;
+  z-index: 20;
   opacity: 1;
 }
 #code-editor.fullscreen {
-  z-index: 26;
+  z-index: 28;
 }
 #visualization-canvas2.fullscreen {
-  z-index: 26;
+  z-index: 28;
 }
 #code-editor.fullscreen.active {
-  z-index: 27;
+  z-index: 29;
 }
 #visualization-canvas2.fullscreen.active {
-  z-index: 27;
+  z-index: 29;
 }
 #fullscreen-dimmer {
   display: none;
@@ -1769,7 +1769,7 @@ a.dropdown-toggle {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 17;
+  z-index: 19;
   background: rgba(0,0,0,0.5);
 }
 #code-error {
@@ -1784,12 +1784,12 @@ a.dropdown-toggle {
   border-radius: 3px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   color: #900;
-  z-index: 19;
+  z-index: 21;
   overflow: scroll;
   width: 50%;
 }
 #code-error.fullscreen {
-  z-index: 28;
+  z-index: 30;
   position: fixed;
   bottom: 10px;
   left: 10px;
@@ -1864,7 +1864,7 @@ small.hint {
   border-radius: 2px;
 }
 .ldColorPicker.bubble {
-  z-index: 25;
+  z-index: 27;
 }
 .file {
   position: relative;
@@ -1924,7 +1924,7 @@ small.hint {
 }
 #assets-preview {
   position: fixed;
-  z-index: 32;
+  z-index: 34;
   top: 0;
   left: 0;
   width: 100%;
@@ -1974,7 +1974,7 @@ small.hint {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
-  z-index: 30;
+  z-index: 32;
 }
 #permission-modal .ib,
 #setting-modal .ib,
@@ -2019,7 +2019,7 @@ small.hint {
 }
 #setting-modal-inner .ib {
   height: auto;
-  z-index: 31;
+  z-index: 33;
   position: absolute;
   left: 50%;
   margin-left: -320px;
@@ -2085,12 +2085,12 @@ small.hint {
   position: absolute;
   top: 8px;
   left: 102px;
-  z-index: 10;
+  z-index: 15;
   background: #fff;
   border-radius: 50%;
   box-shadow: 0 0 2px rgba(0,0,0,0.5);
 }
-.chart-config i.fa.fa-question-circle .hint-popup {
+.chart-config .hint-popup {
   position: absolute;
   background: #fff;
   padding: 5px;
@@ -2099,18 +2099,15 @@ small.hint {
   border-radius: 3px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   text-align: center;
-  left: 10px;
-  margin-top: 5px;
-  display: none;
-  min-width: 100px;
+  left: 110px;
+  top: 25px;
+  width: 120px;
+  margin-left: -60px;
   font-family: calibri, latino, arial;
-  -ms-transform: translate(-50%, 0);
-  -moz-transform: translate(-50%, 0);
-  -webkit-transform: translate(-50%, 0);
-  -o-transform: translate(-50%, 0);
-  transform: translate(-50%, 0);
+  z-index: 16;
+  display: none;
 }
-.chart-config i.fa.fa-question-circle:hover > .hint-popup {
+.chart-config i.fa.fa-question-circle:hover + .hint-popup {
   display: block;
 }
 .chart-config .input-group-addon {
@@ -2606,7 +2603,7 @@ small.hint {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 24;
+  z-index: 26;
   padding: 70px 20px;
   display: none;
   opacity: 0;
@@ -2886,7 +2883,7 @@ small.hint {
   position: absolute;
   left: -24px;
   top: 8px;
-  z-index: 25;
+  z-index: 27;
 }
 .chart-dim.panel .panel-heading {
   padding: 3px 8px;

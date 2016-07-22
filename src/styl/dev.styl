@@ -789,27 +789,28 @@ small.hint
     position: absolute
     top: 8px
     left: 102px
-    z-index: 10
+    z-index: index(order, 'hint-btn')
     background: #fff
     border-radius: 50%
     box-shadow: 0 0 2px rgba(0,0,0,0.5)
-    .hint-popup
-      position: absolute
-      background: #fff
-      padding: 5px
-      font-size: 12px
-      color: #000
-      border-radius: 3px
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2)
-      text-align: center
-      left: 10px
-      margin-top: 5px
-      display: none
-      min-width: 100px
-      font-family: calibri,latino,arial
-      transform translate(-50%,0)
-    &:hover > .hint-popup
-      display: block
+  .hint-popup
+    position: absolute
+    background: #fff
+    padding: 5px
+    font-size: 12px
+    color: #000
+    border-radius: 3px
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2)
+    text-align: center
+    left: 110px
+    top: 25px
+    width: 120px
+    margin-left: -60px
+    font-family: calibri,latino,arial
+    z-index: index(order, 'hint-popup')
+    display: none
+  i.fa.fa-question-circle:hover + .hint-popup
+    display: block
 
 .chart-config .input-group-addon
   border: none

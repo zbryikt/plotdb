@@ -348,7 +348,7 @@ block body
               .chart-config(ng-cloak,ng-repeat="(name,v) in list",ng-show="!v._bytheme")
                 // Otherwise
                 i.fa.fa-question-circle(ng-cloak,ng-show="v.desc")
-                  .hint-popup {{v.desc}}
+                .hint-popup {{v.desc}}
                 .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color' && v.type[0].name!='Range'")
                   span.input-group-addon: div {{v.name || name}}
                   input.form-control(type="text",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value",style="text-align:center")
@@ -382,7 +382,6 @@ block body
                   span.input-group-addon: div {{v.name || name}}
                   .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
             .chart-config.chart-config-end
-              span this is the end :)
 
       .col-sm-9(style="padding-left:0;position:relative"): .ib(style="position:relative")
         #code-error(ng-cloak,ng-show="error.msg",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error.msg}}
