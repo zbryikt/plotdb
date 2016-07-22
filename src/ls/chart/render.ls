@@ -96,9 +96,10 @@ colorblind = (payload) ->
 
 config-preset = (config) ->
   for k,v of (config or {}) =>
-    if plotdb.config[k] =>
-      for field,value of plotdb.config[k] =>
-        if !(v[field]?) => v[field] = value
+    p = if plotdb.config[k] => k else if plotdb.config[v.extend] => v.extend else null
+    if !p => continue
+    for field,value of plotdb.config[p] =>
+      if !(v[field]?) => v[field] = value
 
 parse = (payload, type) ->
   loadlib payload .then ->

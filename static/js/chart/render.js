@@ -177,16 +177,20 @@ $(document).ready(function(){
     });
   };
   configPreset = function(config){
-    var k, ref$, v, lresult$, field, ref1$, value, results$ = [];
+    var k, ref$, v, lresult$, p, field, ref1$, value, results$ = [];
     for (k in ref$ = config || {}) {
       v = ref$[k];
       lresult$ = [];
-      if (plotdb.config[k]) {
-        for (field in ref1$ = plotdb.config[k]) {
-          value = ref1$[field];
-          if (!(v[field] != null)) {
-            lresult$.push(v[field] = value);
-          }
+      p = plotdb.config[k]
+        ? k
+        : plotdb.config[v.extend] ? v.extend : null;
+      if (!p) {
+        continue;
+      }
+      for (field in ref1$ = plotdb.config[p]) {
+        value = ref1$[field];
+        if (!(v[field] != null)) {
+          lresult$.push(v[field] = value);
         }
       }
       results$.push(lresult$);
