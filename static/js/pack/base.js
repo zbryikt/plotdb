@@ -4894,14 +4894,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }, 500);
       });
       this.$watch('chart.config', function(n, o){
-        var hash, k, ref$, v, key$, ret;
+        var ret, k, v;
         o == null && (o = {});
-        hash = {};
-        for (k in ref$ = $scope.chart.config) {
-          v = ref$[k];
-          (hash[key$ = v.category || 'Other'] || (hash[key$] = {}))[k] = v;
-        }
-        $scope.configHash = hash;
         ret = !!(function(){
           var ref$, results$ = [];
           for (k in ref$ = n) {
@@ -4934,7 +4928,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         var data;
         data = arg$.data;
         return $scope.$apply(function(){
-          var ref$, config, dimension, k, v, typedef, ref1$, event, bytes, mime, buf, ints, i$, to$, idx;
+          var ref$, config, dimension, k, v, hash, key$, typedef, ref1$, event, bytes, mime, buf, ints, i$, to$, idx;
           if (!data || typeof data !== 'object') {
             return;
           }
@@ -4976,6 +4970,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             ref$ = this$.chart;
             ref$.config = config;
             ref$.dimension = dimension;
+            hash = {};
+            for (k in ref$ = this$.chart.config) {
+              v = ref$[k];
+              (hash[key$ = v.category || 'Other'] || (hash[key$] = {}))[k] = v;
+            }
+            $scope.configHash = hash;
             this$.inited = true;
             this$.applyTheme();
             return $scope.renderAsync();

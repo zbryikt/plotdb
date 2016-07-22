@@ -717,9 +717,6 @@ angular.module \plotDB
             $scope.parse.theme!
           ), 500
         @$watch 'chart.config', ((n,o={}) ~>
-          hash = {}
-          for k,v of $scope.chart.config => hash{}[v.category or \Other][k] = v
-          $scope.configHash = hash
           ret = !!([[k,v] for k,v of n]
             .filter(([k,v]) -> !o[k] or (v.value != o[k].value))
             .map(->(it.1 or {}).rebindOnChange)
@@ -751,6 +748,9 @@ angular.module \plotDB
           for k,v of @chart.config => if config[k]? => config[k].value = v.value
           for k,v of config => if !(v.value?) => v.value = v.default
           @chart <<< {config, dimension}
+          hash = {}
+          for k,v of @chart.config => hash{}[v.category or \Other][k] = v
+          $scope.configHash = hash
           @inited = true
           @apply-theme!
           $scope.render-async!
