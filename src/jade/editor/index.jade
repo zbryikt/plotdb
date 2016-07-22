@@ -281,11 +281,14 @@ block body
       .col-sm-3
         #config-panel.plpanel
           #chart-settings
-            small.grayed.pull-right.clickable(ng-cloak,ng-click="sharePanel.togglePublic()")
-              | {{(target().permission.switch[0]=='public'?"published":"private")}}
-            label #[span(ng-cloak) {{type}}]&nbsp;
-            div(style="margin-bottom:2px")
-              .input-group
+            //-
+              small.grayed.pull-right.clickable(ng-cloak,ng-click="sharePanel.togglePublic()")
+                | {{(target().permission.switch[0]=='public'?"published":"private")}}
+              label #[span(ng-cloak) {{type}}]&nbsp;
+            #chart-name
+              input.form-control(type="text",ng-model="target().name",placeholder="Project Name")
+              span name
+              //-.input-group
                 span.input-group-addon name
                 input.form-control(type="text",ng-model="target().name",placeholder="Project Name")
             //-.chart-config
