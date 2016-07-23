@@ -218,8 +218,7 @@ render = (payload, rebind = true) ->
             thread.dec reboot
             return error-handling "Exception parsing chart config '#k'"
       for k,v of chart.config =>
-        if !(config[k]?) => config[k] = v.default
-        else if !(config[k].value?) => config[k] = (v or config[k]).default
+        if !(config[k]?) or !(config[k].value?)=> config[k] = (v or config[k] or {}).default or 0
         else config[k] = config[k].value
       chart.assets = assetsmap = {}
       for file in assets =>

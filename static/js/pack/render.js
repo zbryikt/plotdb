@@ -6065,10 +6065,8 @@ $(document).ready(function(){
         }
         for (k in ref$ = chart.config) {
           v = ref$[k];
-          if (!(config[k] != null)) {
-            config[k] = v['default'];
-          } else if (!(config[k].value != null)) {
-            config[k] = (v || config[k])['default'];
+          if (!(config[k] != null) || !(config[k].value != null)) {
+            config[k] = (v || config[k] || {})['default'] || 0;
           } else {
             config[k] = config[k].value;
           }
