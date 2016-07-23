@@ -49,6 +49,7 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
       assets: [],
       config: {},
       dimension: {},
+      library: ["d3/3.5.12/min", "plotd3/0.1.0"],
       _type: {
         location: 'server',
         name: 'chart'

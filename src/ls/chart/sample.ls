@@ -10,6 +10,7 @@ angular.module \plotDB
         config: { padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: false}}
         dimension: {value: {type: [plotdb.Number], require: true, desc: "" }}
         assets: []
+        library: ["d3/3.5.12/min", "plotd3/0.1.0"]
         doc: content: ""
         style: content: ""
         code: content: '''

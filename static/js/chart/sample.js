@@ -30,6 +30,7 @@ x$.service('sampleChart', ['$rootScope'].concat(function($rootScope){
         }
       },
       assets: [],
+      library: ["d3/3.5.12/min", "plotd3/0.1.0"],
       doc: {
         content: ""
       },

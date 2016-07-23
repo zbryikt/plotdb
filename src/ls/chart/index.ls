@@ -27,6 +27,7 @@ angular.module \plotDB
         assets: []
         config: {}
         dimension: {}
+        library: ["d3/3.5.12/min", "plotd3/0.1.0"]
         _type: {location: \server, name: \chart}
       @ <<< src
       for k,v of (@dimension or {}) => v.fields = (v.fields or []).map ->
