@@ -425,6 +425,11 @@ angular.module \plotDB
         is-forkable: ->
           perms = $scope.target!.permission.[]value
           forkable = !!perms.filter(->it.perm == \fork and it.switch == \public).length
+        embed: do
+          width: \100%
+          height: \600px
+          widthRate: 4
+          heightRate: 3
         init: ->
           #TODO must also update jade file ( chartedit -> edit )
           (eventsrc) <~ <[#edit-sharelink #edit-embedcode]>.map
@@ -435,11 +440,20 @@ angular.module \plotDB
           clipboard.on \error, ->
             $(eventsrc).tooltip({title: 'Press Ctrl+C to Copy', trigger: 'click'}).tooltip('show')
             setTimeout((->$(eventsrc).tooltip('hide')), 1000)
-          embedcode-generator = ->
-            link = $scope.sharePanel.link
+          embedcode-generator = ~>
+            link = @link
+            [w,h] = [@embed.width, @embed.height]
+            [wr,hr] = [@embed.widthRate, @embed.heightRate]
+            ratio = (hr / (wr or hr or 1)) * 100
+            if /^\d+$/.exec(w) => w = w + \px
+            if /^\d+$/.exec(h) => h = h + \px
+
             if $scope.sharePanel.aspectRatio =>
-              return """<div style="width:100%"><div style="position:relative;height:0;overflor:hidden;padding-bottom:75%;"><iframe src="#link" frameborder="0" style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe></div></div>"""
-            else => return """<iframe src="#link" width="100%" height="600px" frameborder="0"></iframe>"""
+              return """<div style="width:100%"><div style="position:relative;height:0;overflor:hidden;padding-bottom:#ratio%"><iframe src="#link" frameborder="0" style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe></div></div>"""
+            else => return """<iframe src="#link" width="#w" height="#h" frameborder="0"></iframe>"""
+          $scope.$watch 'sharePanel.embed', (~>
+            @embedcode = embedcode-generator!
+          ), true
           $scope.$watch 'sharePanel.aspectRatio', ~>
             @embedcode = embedcode-generator!
           $scope.$watch 'sharePanel.link', ~>

@@ -206,8 +206,16 @@ block body
             data-clipboard-target="#edit-sharelink")
             br
             label Embed Code
-            .pull-right
-              .checkbox(style="margin:0"): label
+            #chart-edit-iframe-config.pull-right
+              span(ng-show="sharePanel.aspectRatio")
+                input.input-sm.form-control(type="text",placeholder="Width",ng-model="sharePanel.embed.widthRate")
+                span &nbsp;: 
+                input.input-sm.form-control(type="text",placeholder="Height",ng-model="sharePanel.embed.heightRate")
+              span(ng-show="!sharePanel.aspectRatio")
+                input.input-sm.form-control(type="text",placeholder="Width",ng-model="sharePanel.embed.width")
+                span &times;
+                input.input-sm.form-control(type="text",placeholder="Height",ng-model="sharePanel.embed.height")
+              .checkbox: label
                 input(type="checkbox",ng-model="sharePanel.aspectRatio")
                 span Preserve Aspect Ratio
             textarea.form-control(ng-cloak,disabled,rows="3",

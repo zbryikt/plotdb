@@ -5408,7 +5408,7 @@ plotdb.config = {
     name: "Default Stroke Color",
     type: [plotdb.Color],
     desc: "Default color for outline of visual encoding",
-    'default': '#fff',
+    'default': '#999',
     category: "Color"
   },
   geoFill: {

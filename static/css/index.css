@@ -3175,6 +3175,15 @@ small.hint {
   right: 0;
   border-radius: 0 3px 0 3px;
 }
+#chart-edit-iframe-config .checkbox {
+  display: inline-block;
+  margin: 0 0 0 10px;
+}
+#chart-edit-iframe-config input.input-sm {
+  height: 20px;
+  width: 60px;
+  display: inline-block;
+}
 @media (max-width: 800px) {
   .pleditor .row {
     margin: 0;

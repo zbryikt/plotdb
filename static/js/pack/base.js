@@ -4288,6 +4288,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return it.perm === 'fork' && it['switch'] === 'public';
         }).length;
       },
+      embed: {
+        width: '100%',
+        height: '600px',
+        widthRate: 4,
+        heightRate: 3
+      },
       init: function(){
         var this$ = this;
         return ['#edit-sharelink', '#edit-embedcode'].map(function(eventsrc){
@@ -4312,14 +4318,26 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             }, 1000);
           });
           embedcodeGenerator = function(){
-            var link;
-            link = $scope.sharePanel.link;
+            var link, ref$, w, h, wr, hr, ratio;
+            link = this$.link;
+            ref$ = [this$.embed.width, this$.embed.height], w = ref$[0], h = ref$[1];
+            ref$ = [this$.embed.widthRate, this$.embed.heightRate], wr = ref$[0], hr = ref$[1];
+            ratio = (hr / (wr || hr || 1)) * 100;
+            if (/^\d+$/.exec(w)) {
+              w = w + 'px';
+            }
+            if (/^\d+$/.exec(h)) {
+              h = h + 'px';
+            }
             if ($scope.sharePanel.aspectRatio) {
-              return "<div style=\"width:100%\"><div style=\"position:relative;height:0;overflor:hidden;padding-bottom:75%;\"><iframe src=\"" + link + "\" frameborder=\"0\" style=\"position:absolute;top:0;left:0;width:100%;height:100%\"></iframe></div></div>";
+              return "<div style=\"width:100%\"><div style=\"position:relative;height:0;overflor:hidden;padding-bottom:" + ratio + "%\"><iframe src=\"" + link + "\" frameborder=\"0\" style=\"position:absolute;top:0;left:0;width:100%;height:100%\"></iframe></div></div>";
             } else {
-              return "<iframe src=\"" + link + "\" width=\"100%\" height=\"600px\" frameborder=\"0\"></iframe>";
+              return "<iframe src=\"" + link + "\" width=\"" + w + "\" height=\"" + h + "\" frameborder=\"0\"></iframe>";
             }
           };
+          $scope.$watch('sharePanel.embed', function(){
+            return this$.embedcode = embedcodeGenerator();
+          }, true);
           $scope.$watch('sharePanel.aspectRatio', function(){
             return this$.embedcode = embedcodeGenerator();
           });
@@ -8433,7 +8451,7 @@ plotdb.config = {
     name: "Default Stroke Color",
     type: [plotdb.Color],
     desc: "Default color for outline of visual encoding",
-    'default': '#fff',
+    'default': '#999',
     category: "Color"
   },
   geoFill: {
