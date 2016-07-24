@@ -356,3 +356,13 @@ plotdb.config = do
     type: [plotdb.Number]
     default: 3
     category: "Axis"
+
+
+  lineSmoothing: do
+    name: "Line Smoothing"
+    default: "linear"
+    type: [plotdb.Choice(<[
+      linear step step-before step-after basis bundle cardinal monotone
+    ]>)]
+    category: "Style"
+
