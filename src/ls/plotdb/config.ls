@@ -204,6 +204,12 @@ plotdb.config = do
     category: "Text"
 
   #Switch
+  showLegend: do
+    name: "Show Legend"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Switch"
+
   showLabel: do
     name: "Show Data Label"
     type: [plotdb.Boolean]

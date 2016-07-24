@@ -8569,6 +8569,12 @@ plotdb.config = {
     'default': "Other",
     category: "Text"
   },
+  showLegend: {
+    name: "Show Legend",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Switch"
+  },
   showLabel: {
     name: "Show Data Label",
     type: [plotdb.Boolean],

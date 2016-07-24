@@ -1,5 +1,6 @@
 .charts(ng-cloak)
-  .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
+  //-.chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
+  .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1")
     //-.chart-ribon(ng-class="{'private': !chart.searchable, 'public': chart.searchable}")
     a.chart-img(ng-attr-href="{{link(chart)}}",style="display:block")
       .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime|timestamp}})")
