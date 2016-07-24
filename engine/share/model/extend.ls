@@ -72,7 +72,7 @@ base = (model) ->
       owner: {required: true, type: model.type.key({type:model.type.user})}
       theme: {required: false, type: model.type.key({type:base.theme})}
       parent: { required: false, type: model.type.key({type: base.chart})}
-      description: {max: 200, required: false, type: model.type.string}
+      description: {max: 500, required: false, type: model.type.string}
       basetype: {max: 20, required: false, type: model.type.array({max: 20, type: model.type.string})}
       visualencoding: { max: 10, required: false, type: model.type.array({max: 20, type: model.type.string})}
       category: { max: 10, required: false, type: model.type.array({max: 20, type: model.type.string})}
