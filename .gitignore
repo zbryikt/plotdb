@@ -11,3 +11,4 @@ engine/share/config.ls
 static/js/share/config.js
 work/thumbnail/
 work/snapshot/
+work/chart-to-update.json
