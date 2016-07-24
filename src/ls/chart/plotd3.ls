@@ -3,29 +3,32 @@ plotd3.html.tooltip = (root, sel, cb) ->
   store = {handler: {}}
   ret = plotd3.html.popup root, null, null, store
   popup = store.popup
+  setblock = (d,i) ->
+    if typeof(store.active) == \function => if !store.active(d,i) => return
+    else if !store.active => return
+    rbox = root.getBoundingClientRect!
+    box = @getBoundingClientRect! #TODO getBBox fallback?
+    if store.coord =>
+      [left,top,width,height] = store.coord.call @, d, i
+      box = {left,top,width,height}
+    ret.fire(\mousemove, d, i, @)
+    isLeft = if box.left > rbox.width/2 + rbox.left => true else false
+    popup.attr class: "pdb-popup pdb-tooltip #{if isLeft => 'left' else 'right'}"
+    update = ->
+      pbox = popup.0.0.getBoundingClientRect!
+      popup.style top: "#{box.top + box.height / 2 - pbox.height/2 - rbox.top}px", opacity: 1
+      if isLeft => popup.style left: "#{box.left - pbox.width - 10 - rbox.left}px"
+      else popup.style left: "#{box.left + box.width + 10 - rbox.left}px"
+    if popup.style("display") != \block =>
+      popup.style display: \block, opacity: 0.01
+      setTimeout update, 0
+    else update!
+
   ret.nodes = (sel) ->
     sel
       ..on \mouseover, (d,i) -> ret.fire \mouseover, d, i, @
-      ..on \mousemove, (d,i) ->
-        if typeof(store.active) == \function => if !store.active(d,i) => return
-        else if !store.active => return
-        rbox = root.getBoundingClientRect!
-        box = @getBoundingClientRect! #TODO getBBox fallback?
-        if store.coord =>
-          [left,top,width,height] = store.coord.call @, d, i
-          box = {left,top,width,height}
-        ret.fire(\mousemove, d, i, @)
-        isLeft = if box.left > rbox.width/2 + rbox.left => true else false
-        popup.attr class: "pdb-popup pdb-tooltip #{if isLeft => 'left' else 'right'}"
-        update = ->
-          pbox = popup.0.0.getBoundingClientRect!
-          popup.style top: "#{box.top + box.height / 2 - pbox.height/2 - rbox.top}px", opacity: 1
-          if isLeft => popup.style left: "#{box.left - pbox.width - 10 - rbox.left}px"
-          else popup.style left: "#{box.left + box.width + 10 - rbox.left}px"
-        if popup.style("display") != \block =>
-          popup.style display: \block, opacity: 0.01
-          setTimeout update, 0
-        else update!
+      ..on \mousemove, setblock
+
       ..on \mouseout, (d,i) ->
         ret.fire \mouseout, d, i, @
         popup.style display: \none
@@ -33,6 +36,7 @@ plotd3.html.tooltip = (root, sel, cb) ->
   ret.direction = ->
     store.direction = if it == \left => \left else \right
     popup.attr class: "pdb-popup pdb-tooltip #{store.direction}"
+  ret.showByEvent = (d,i) -> setblock d,i
   ret.show = (x,y) ->
     bbox = popup.0.0.getBoundingClientRect!
     if store.direction != \right => x = x - (bbox.right - bbox.left) - 10
@@ -62,30 +66,33 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
     if ret.hide-popup => clearTimeout ret.hide-popup
     ret.hide-popup = setTimeout (-> popup.style {display: \none}), 1000
   ret.getPopupNode = -> popup
+  setblock = (d,i) ->
+    if typeof(store.active) == \function => if !store.active(d,i) => return
+    else if !store.active => return
+    [x,y] = [d3.event.clientX, d3.event.clientY]
+    if store.coord => [x,y,width,height] = store.coord.call @, d, i
+    ret.fire(\mousemove, d, i, @)
+    popup.style display: \block
+    pbox = popup.0.0.getBoundingClientRect!
+    rbox = root.getBoundingClientRect!
+    x = x - pbox.width / 2 - rbox.left
+    y = y + 20 - rbox.top
+    if y > rbox.height - pbox.height - 50 => y = y - pbox.height - 40
+    if x < 10 => x = 10
+    if x > + rbox.width - pbox.width - 10 => x = rbox.width - pbox.width - 10
+    popup.style {top: "#{y}px", left: "#{x}px"}
+
   ret.nodes = (sel) ->
     sel
       ..on \mouseover, (d,i) -> ret.fire \mouseove, d, i, @
       ..on \mouseout, ret.hide
-      ..on \mousemove, (d,i) ->
-        if typeof(store.active) == \function => if !store.active(d,i) => return
-        else if !store.active => return
-        [x,y] = [d3.event.clientX, d3.event.clientY]
-        if store.coord => [x,y,width,height] = store.coord.call @, d, i
-        ret.fire(\mousemove, d, i, @)
-        popup.style display: \block
-        pbox = popup.0.0.getBoundingClientRect!
-        rbox = root.getBoundingClientRect!
-        x = x - pbox.width / 2 - rbox.left
-        y = y + 20 - rbox.top
-        if y > rbox.height - pbox.height - 50 => y = y - pbox.height - 40
-        if x < 10 => x = 10
-        if x > + rbox.width - pbox.width - 10 => x = rbox.width - pbox.width - 10
-        popup.style {top: "#{y}px", left: "#{x}px"}
+      ..on \mousemove, setblock
     ret
   ret.coord = (cb) ->
     if cb? => store.coord = cb else return store.coord
     ret
   ret.call = (cb) -> cb.call popup.0.0
+  ret.showByEvent = (d, i) -> setblock d,i
   ret.show = (x, y) ->
     popup.style display: \block
     popup.style top: "#{y}px", left: "#{x}px"

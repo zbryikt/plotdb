@@ -10,70 +10,71 @@ plotd3 = {
   rwd: {}
 };
 plotd3.html.tooltip = function(root, sel, cb){
-  var store, ret, popup;
+  var store, ret, popup, setblock;
   store = {
     handler: {}
   };
   ret = plotd3.html.popup(root, null, null, store);
   popup = store.popup;
+  setblock = function(d, i){
+    var rbox, box, ref$, left, top, width, height, isLeft, update;
+    if (typeof store.active === 'function') {
+      if (!store.active(d, i)) {
+        return;
+      } else if (!store.active) {
+        return;
+      }
+    }
+    rbox = root.getBoundingClientRect();
+    box = this.getBoundingClientRect();
+    if (store.coord) {
+      ref$ = store.coord.call(this, d, i), left = ref$[0], top = ref$[1], width = ref$[2], height = ref$[3];
+      box = {
+        left: left,
+        top: top,
+        width: width,
+        height: height
+      };
+    }
+    ret.fire('mousemove', d, i, this);
+    isLeft = box.left > rbox.width / 2 + rbox.left ? true : false;
+    popup.attr({
+      'class': "pdb-popup pdb-tooltip " + (isLeft ? 'left' : 'right')
+    });
+    update = function(){
+      var pbox;
+      pbox = popup[0][0].getBoundingClientRect();
+      popup.style({
+        top: (box.top + box.height / 2 - pbox.height / 2 - rbox.top) + "px",
+        opacity: 1
+      });
+      if (isLeft) {
+        return popup.style({
+          left: (box.left - pbox.width - 10 - rbox.left) + "px"
+        });
+      } else {
+        return popup.style({
+          left: (box.left + box.width + 10 - rbox.left) + "px"
+        });
+      }
+    };
+    if (popup.style("display") !== 'block') {
+      popup.style({
+        display: 'block',
+        opacity: 0.01
+      });
+      return setTimeout(update, 0);
+    } else {
+      return update();
+    }
+  };
   ret.nodes = function(sel){
     var x$;
     x$ = sel;
     x$.on('mouseover', function(d, i){
       return ret.fire('mouseover', d, i, this);
     });
-    x$.on('mousemove', function(d, i){
-      var rbox, box, ref$, left, top, width, height, isLeft, update;
-      if (typeof store.active === 'function') {
-        if (!store.active(d, i)) {
-          return;
-        } else if (!store.active) {
-          return;
-        }
-      }
-      rbox = root.getBoundingClientRect();
-      box = this.getBoundingClientRect();
-      if (store.coord) {
-        ref$ = store.coord.call(this, d, i), left = ref$[0], top = ref$[1], width = ref$[2], height = ref$[3];
-        box = {
-          left: left,
-          top: top,
-          width: width,
-          height: height
-        };
-      }
-      ret.fire('mousemove', d, i, this);
-      isLeft = box.left > rbox.width / 2 + rbox.left ? true : false;
-      popup.attr({
-        'class': "pdb-popup pdb-tooltip " + (isLeft ? 'left' : 'right')
-      });
-      update = function(){
-        var pbox;
-        pbox = popup[0][0].getBoundingClientRect();
-        popup.style({
-          top: (box.top + box.height / 2 - pbox.height / 2 - rbox.top) + "px",
-          opacity: 1
-        });
-        if (isLeft) {
-          return popup.style({
-            left: (box.left - pbox.width - 10 - rbox.left) + "px"
-          });
-        } else {
-          return popup.style({
-            left: (box.left + box.width + 10 - rbox.left) + "px"
-          });
-        }
-      };
-      if (popup.style("display") !== 'block') {
-        popup.style({
-          display: 'block',
-          opacity: 0.01
-        });
-        return setTimeout(update, 0);
-      } else {
-        return update();
-      }
-    });
+    x$.on('mousemove', setblock);
     x$.on('mouseout', function(d, i){
       ret.fire('mouseout', d, i, this);
       return popup.style({
@@ -87,6 +88,9 @@ plotd3.html.tooltip = function(root, sel, cb){
     return popup.attr({
       'class': "pdb-popup pdb-tooltip " + store.direction
     });
+  };
+  ret.showByEvent = function(d, i){
+    return setblock(d, i);
   };
   ret.show = function(x, y){
     var bbox;
@@ -115,7 +119,7 @@ plotd3.html.float = function(root, sel, cb){
   return ret;
 };
 plotd3.html.popup = function(root, sel, cb, store){
-  var popup, ret;
+  var popup, ret, setblock;
   store == null && (store = {
     handler: {}
   });
@@ -153,6 +157,41 @@ plotd3.html.popup = function(root, sel, cb, store){
   ret.getPopupNode = function(){
     return popup;
   };
+  setblock = function(d, i){
+    var ref$, x, y, width, height, pbox, rbox;
+    if (typeof store.active === 'function') {
+      if (!store.active(d, i)) {
+        return;
+      } else if (!store.active) {
+        return;
+      }
+    }
+    ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
+    if (store.coord) {
+      ref$ = store.coord.call(this, d, i), x = ref$[0], y = ref$[1], width = ref$[2], height = ref$[3];
+    }
+    ret.fire('mousemove', d, i, this);
+    popup.style({
+      display: 'block'
+    });
+    pbox = popup[0][0].getBoundingClientRect();
+    rbox = root.getBoundingClientRect();
+    x = x - pbox.width / 2 - rbox.left;
+    y = y + 20 - rbox.top;
+    if (y > rbox.height - pbox.height - 50) {
+      y = y - pbox.height - 40;
+    }
+    if (x < 10) {
+      x = 10;
+    }
+    if (x > +rbox.width - pbox.width - 10) {
+      x = rbox.width - pbox.width - 10;
+    }
+    return popup.style({
+      top: y + "px",
+      left: x + "px"
+    });
+  };
   ret.nodes = function(sel){
     var x$;
     x$ = sel;
@@ -160,41 +199,7 @@ plotd3.html.popup = function(root, sel, cb, store){
       return ret.fire('mouseove', d, i, this);
     });
     x$.on('mouseout', ret.hide);
-    x$.on('mousemove', function(d, i){
-      var ref$, x, y, width, height, pbox, rbox;
-      if (typeof store.active === 'function') {
-        if (!store.active(d, i)) {
-          return;
-        } else if (!store.active) {
-          return;
-        }
-      }
-      ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
-      if (store.coord) {
-        ref$ = store.coord.call(this, d, i), x = ref$[0], y = ref$[1], width = ref$[2], height = ref$[3];
-      }
-      ret.fire('mousemove', d, i, this);
-      popup.style({
-        display: 'block'
-      });
-      pbox = popup[0][0].getBoundingClientRect();
-      rbox = root.getBoundingClientRect();
-      x = x - pbox.width / 2 - rbox.left;
-      y = y + 20 - rbox.top;
-      if (y > rbox.height - pbox.height - 50) {
-        y = y - pbox.height - 40;
-      }
-      if (x < 10) {
-        x = 10;
-      }
-      if (x > +rbox.width - pbox.width - 10) {
-        x = rbox.width - pbox.width - 10;
-      }
-      return popup.style({
-        top: y + "px",
-        left: x + "px"
-      });
-    });
+    x$.on('mousemove', setblock);
     return ret;
   };
   ret.coord = function(cb){
@@ -207,6 +212,9 @@ plotd3.html.popup = function(root, sel, cb, store){
   };
   ret.call = function(cb){
     return cb.call(popup[0][0]);
+  };
+  ret.showByEvent = function(d, i){
+    return setblock(d, i);
   };
   ret.show = function(x, y){
     popup.style({

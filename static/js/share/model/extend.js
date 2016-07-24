@@ -241,7 +241,7 @@ base = function(model){
         })
       },
       description: {
-        max: 200,
+        max: 500,
         required: false,
         type: model.type.string
       },
