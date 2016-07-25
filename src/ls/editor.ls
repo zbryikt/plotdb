@@ -195,7 +195,7 @@ angular.module \plotDB
           HVGA: [320, 480]
           Thumb: [308, 229]
         set: ->
-          if !(it in @vals) => return
+          if !(it in @vals) => it = @val
           @val = it
           #if !$scope.editor.fullscreen.toggled => $scope.editor.fullscreen.toggle!
           node = document.getElementById(\chart-renderer)
@@ -382,6 +382,7 @@ angular.module \plotDB
             @toggled = !!!@toggled
             $scope.editor.update!
             $scope.editor.focus!
+            $timeout (-> $scope.rwdtest.set!), 10
           toggled: false
         color: do
           modes: <[normal dark]>

@@ -394,7 +394,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       set: function(it){
         var node, parent, ref$, width, height, w, h;
         if (!in$(it, this.vals)) {
-          return;
+          it = this.val;
         }
         this.val = it;
         node = document.getElementById('chart-renderer');
@@ -727,7 +727,10 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         toggle: function(){
           this.toggled = !this.toggled;
           $scope.editor.update();
-          return $scope.editor.focus();
+          $scope.editor.focus();
+          return $timeout(function(){
+            return $scope.rwdtest.set();
+          }, 10);
         },
         toggled: false
       },
