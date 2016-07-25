@@ -82,6 +82,10 @@ backend = do
         passReqToCallback: true
         profileFields: ['id', 'displayName', 'link', 'emails']
       , (request, access-token, refresh-token, profile, done) ~>
+        if !profile.emails =>
+          done null, false, do
+            message: "We can't get email address from your Google account. Please try signing up with email."
+          return null
         get-user profile.emails.0.value, null, false, profile, done
     )
 
@@ -92,6 +96,10 @@ backend = do
         callbackURL: "/u/auth/facebook/callback"
         profileFields: ['id', 'displayName', 'link', 'emails']
       , (access-token, refresh-token, profile, done) ~>
+        if !profile.emails =>
+          done null, false, do
+            message: "We can't get email address from your Facebook account. Please try signing up with email."
+          return null
         get-user profile.emails.0.value, null, false, profile, done
     )
 
