@@ -975,7 +975,14 @@ plotdb.config = {
     name: "Line Stroke Color",
     type: [plotdb.Color],
     desc: "Stroke color between connection path of data node",
-    'default': '#fff',
+    'default': '#aaa',
+    category: "Color"
+  },
+  gridStroke: {
+    name: "Grid Stroke Color",
+    type: [plotdb.Color],
+    desc: "Stroke color for Grid Lines",
+    'default': '#ccc',
     category: "Color"
   },
   padding: {
