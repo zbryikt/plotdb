@@ -418,6 +418,104 @@ base = function(model){
       }
     }
   });
+  base.team = new model({
+    name: 'team',
+    defaultFields: true,
+    base: {
+      owner: {
+        required: true,
+        type: model.type.key({
+          type: model.type.user
+        })
+      },
+      name: {
+        max: 100,
+        min: 1,
+        required: true,
+        type: model.type.string
+      },
+      description: {
+        max: 512,
+        required: false,
+        type: model.type.string
+      },
+      createdtime: {
+        type: model.type.date
+      },
+      avatar: {
+        max: 100,
+        type: model.type.string
+      }
+    }
+  });
+  base.teamUser = new model({
+    name: 'team-user',
+    base: {
+      user: {
+        required: true,
+        type: model.type.key({
+          type: model.type.user
+        })
+      },
+      team: {
+        required: true,
+        type: model.type.key({
+          type: base.team
+        })
+      }
+    }
+  });
+  base.teamChart = new model({
+    name: 'team-chart',
+    base: {
+      chart: {
+        required: true,
+        type: model.type.key({
+          type: base.chart
+        })
+      },
+      team: {
+        required: true,
+        type: model.type.key({
+          type: base.team
+        })
+      }
+    }
+  });
+  base.teamDataset = new model({
+    name: 'team-dataset',
+    base: {
+      dataset: {
+        required: true,
+        type: model.type.key({
+          type: base.dataset
+        })
+      },
+      team: {
+        required: true,
+        type: model.type.key({
+          type: base.team
+        })
+      }
+    }
+  });
+  base.teamTheme = new model({
+    name: 'team-theme',
+    base: {
+      theme: {
+        required: true,
+        type: model.type.key({
+          type: base.theme
+        })
+      },
+      team: {
+        required: true,
+        type: model.type.key({
+          type: base.team
+        })
+      }
+    }
+  });
   return base;
 };
 module.exports = base;

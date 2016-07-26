@@ -121,6 +121,35 @@ base = (model) ->
       request: {required: false, type: model.type.key({type:model.type.request})}
       main: {required: false, type: model.type.boolean }
 
+  base.team = new model do
+    name: \team
+    default-fields: true
+    base: do
+      owner: {required: true, type: model.type.key({type: model.type.user})}
+      name: {max: 100, min: 1, required: true, type: model.type.string}
+      description: {max: 512, required: false, type: model.type.string}
+      createdtime: {type: model.type.date}
+      avatar: {max: 100, type: model.type.string}
+  base.team-user = new model do
+    name: \team-user
+    base: do
+      user: {required: true, type: model.type.key({type: model.type.user})}
+      team: {required: true, type: model.type.key({type: base.team})}
+  base.team-chart = new model do
+    name: \team-chart
+    base: do
+      chart: {required: true, type: model.type.key({type: base.chart})}
+      team: {required: true, type: model.type.key({type: base.team})}
+  base.team-dataset = new model do
+    name: \team-dataset
+    base: do
+      dataset: {required: true, type: model.type.key({type: base.dataset})}
+      team: {required: true, type: model.type.key({type: base.team})}
+  base.team-theme = new model do
+    name: \team-theme
+    base: do
+      theme: {required: true, type: model.type.key({type: base.theme})}
+      team: {required: true, type: model.type.key({type: base.team})}
 
   base
 

@@ -134,6 +134,27 @@ init-palettes-table = """create table if not exists palettes (
   permission jsonb
 )"""
 
+init-teams-table = """create table if not exists teams (
+  key serial primary key,
+  name text constraint nlen check (char_length(name) <= 100),
+  owner int references users(key),
+  description text constraint dlen check (char_length(name) <= 500),
+  createdtime timestamp,
+  avatar text
+)"""
+
+init-team-user-table = """create table if not exists teamusers (
+  team int references teams(key),
+  member int references users(key),
+  primary key(team, member)
+)"""
+
+init-team-chart-table = """create table if not exists teamcharts (
+  team int references teams(key),
+  chart int references charts(key),
+  primary key(team, chart)
+)"""
+
 alter-themes-table = """alter table themes add column chart int references charts(key)"""
 
 client = new pg.Client secret.io-pg.uri
@@ -157,6 +178,9 @@ query init-users-table
   .then -> query init-comments-table
   .then -> query init-likes-table
   .then -> query init-commentimgs-table
+  .then -> query init-teams-table
+  .then -> query init-team-user-table
+  .then -> query init-team-chart-table
   .then ->
     query alter-themes-table
       .catch ->
