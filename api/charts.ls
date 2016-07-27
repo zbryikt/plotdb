@@ -121,12 +121,12 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
   io.query "select * from charts where key = $1", [id]
     .then (r = {}) ->
       chart := r.rows.0
+      if !chart => return bluebird.reject new Error(404)
       if chart.parent => return io.query("select key from charts where key = $1", [chart.parent])
       else return {rows: []}
     .then (r = {}) ->
       if !r.rows or !r.rows.length => chart.parent = null
       if !chart.parent => delete data.parent
-      if !chart => return aux.r404 res
       if chart.owner != req.user.key => return aux.r403 res
       data <<< do
         owner: req.user.key
@@ -148,6 +148,7 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
           console.error it.stack
           aux.r403 res
     .catch ->
+      if it.message == \404 => return aux.r404 res
       console.error it.stack
       return aux.r403 res
 

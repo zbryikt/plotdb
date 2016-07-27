@@ -140,22 +140,46 @@ init-teams-table = """create table if not exists teams (
   owner int references users(key),
   description text constraint dlen check (char_length(name) <= 500),
   createdtime timestamp,
-  avatar text
+  modifiedtime timestamp,
+  avatar text,
+  permission jsonb
 )"""
 
-init-team-user-table = """create table if not exists teamusers (
+init-team-members-table = """create table if not exists teamMembers (
   team int references teams(key),
   member int references users(key),
   primary key(team, member)
 )"""
 
-init-team-chart-table = """create table if not exists teamcharts (
+init-team-charts-table = """create table if not exists teamcharts (
   team int references teams(key),
   chart int references charts(key),
   primary key(team, chart)
 )"""
 
-alter-themes-table = """alter table themes add column chart int references charts(key)"""
+init-team-datasets-table = """create table if not exists teamdatasets (
+  team int references teams(key),
+  dataset int references datasets(key),
+  primary key(team, dataset)
+)"""
+
+init-team-themes-table = """create table if not exists teamthemes (
+  team int references teams(key),
+  theme int references themes(key),
+  primary key(team, theme)
+)"""
+
+alter-themes-table = """
+do $$
+  begin
+    begin
+      alter table themes add column chart int references charts(key);
+    exception
+      when duplicate_column then raise notice '';
+    end;
+  end;
+$$
+"""
 
 client = new pg.Client secret.io-pg.uri
 (e) <- client.connect
@@ -179,8 +203,10 @@ query init-users-table
   .then -> query init-likes-table
   .then -> query init-commentimgs-table
   .then -> query init-teams-table
-  .then -> query init-team-user-table
-  .then -> query init-team-chart-table
+  .then -> query init-team-members-table
+  .then -> query init-team-charts-table
+  .then -> query init-team-datasets-table
+  .then -> query init-team-themes-table
   .then ->
     query alter-themes-table
       .catch ->

@@ -1,0 +1,20 @@
+extends /base.jade
+block vars
+block head
+  script(src="/js/user/team.js")
+  script(src="/js/user/user.js")
+block body
+  .spc1
+  .page-header: .inner
+    .title Teams '#[span= payload.team.name]'
+    .desc create your own teams
+  #root(ng-controller="team")
+    label users
+    each user in payload.members
+      div
+        img(src="/s/avatar/" + (user.avatar || 0) + ".jpg")
+        span= user.displayname
+        .btn.btn-link(ng-click="removeMember("+payload.team.key+","+user.key+")"): i.fa.fa-close
+    label add user
+    div(ng-controller="userSelection"): select#search-user.form-control(multiple="multiple")
+    .btn.btn-default(ng-click="addMembers("+payload.team.key+")") add

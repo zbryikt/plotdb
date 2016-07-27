@@ -23,6 +23,54 @@ get-user = (req, key) ->
       if !stat => return bluebird.reject "no user stat"
       user <<< {stat}
 
+engine.router.api.get \/user/, (req, res) ->
+  #TODO permission check
+  keyword = (req.query.keyword or "")
+  if !keyword => return aux.r400 res
+  [teams,users] = [[], []]
+  team = (req.query.team or null)
+  offset = req.query.offset or 0
+  limit = (req.query.limit or 20) <? 100
+  params = [offset, limit]
+  params.push keyword if keyword
+  fields = "key,displayname,avatar"
+  bluebird.resolve!
+    .then ->
+      if team =>
+        return io.query([
+          "select count(key) from teams"
+          "where name ~* $1" if keyword
+        ].filter(->it).join(" "), (if keyword => [keyword] else []))
+      else return bluebird.resolve {rows: [0]}
+    .then (r={}) ->
+      teamlen = r.[]rows.0 or 0
+      if offset < teamlen =>
+        return io.query([
+          "select key,name as displayname,avatar from teams"
+          "where name ~* $3" if keyword
+          "offset $1 limit $2"
+        ].filter(->it).join(" "), params)
+      else return bluebird.resolve {}
+    .then (r={}) ->
+      teams := r.[]rows
+      if teams.length < limit =>
+        params := [offset, limit - teams.length]
+        params.push keyword if keyword
+        return io.query([
+          "select key,displayname,avatar from users"
+          "where displayname ~* $3 or username ~* $3" if keyword
+          "offset $1 limit $2"
+        ].filter(->it).join(" "), params)
+      else return bluebird.resolve {}
+    .then (r={}) ->
+      users := r.[]rows
+      teams.map -> it.type = \team
+      users.map -> it.type = \user
+      res.send teams ++ users
+      return null
+
+    .catch aux.error-handler res
+
 engine.app.get \/me/, throttle.limit {lower-delta: 2, upper-delta: 6, penalty: 1, limit: 6}, (req, res) ->
   if !req.user => return aux.r404 res, "", true
   get-user req, req.user.key

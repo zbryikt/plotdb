@@ -1,0 +1,27 @@
+extends /base.jade
+block vars
+  - var rootid = "exploreview"
+  - var url = "https://plotdb.com/chart/explore/"
+block head
+  script(src="/js/user/team.js")
+  script(src="/js/user/user.js")
+block body
+  .spc1
+  .page-header: .inner
+    .title Teams
+    .desc create your own teams
+  #root(ng-controller="userSelection")
+    br
+    div(style="max-width:800px;margin:auto")
+      label Team Name
+      input.form-control(type="text",ng-model="name")
+      label Team Description
+      textarea.form-control(name="description",ng-model="desc")
+      label Team Members
+      div
+        select#search-user.form-control(multiple="multiple")
+      br
+      .btn.btn-default(ng-click="save()") Save
+      img(src="/assets/img/avatar.png")
+      br
+      select#search-user-team.form-control(multiple="multiple")

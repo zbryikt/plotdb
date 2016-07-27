@@ -129,11 +129,13 @@ base = (model) ->
       name: {max: 100, min: 1, required: true, type: model.type.string}
       description: {max: 512, required: false, type: model.type.string}
       createdtime: {type: model.type.date}
+      modifiedtime: {type: model.type.date}
       avatar: {max: 100, type: model.type.string}
-  base.team-user = new model do
-    name: \team-user
+      permission: {type: model.type.permission}
+  base.team-member = new model do
+    name: \team-member
     base: do
-      user: {required: true, type: model.type.key({type: model.type.user})}
+      member: {required: true, type: model.type.key({type: model.type.user})}
       team: {required: true, type: model.type.key({type: base.team})}
   base.team-chart = new model do
     name: \team-chart

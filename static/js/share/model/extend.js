@@ -442,16 +442,22 @@ base = function(model){
       createdtime: {
         type: model.type.date
       },
+      modifiedtime: {
+        type: model.type.date
+      },
       avatar: {
         max: 100,
         type: model.type.string
+      },
+      permission: {
+        type: model.type.permission
       }
     }
   });
-  base.teamUser = new model({
-    name: 'team-user',
+  base.teamMember = new model({
+    name: 'team-member',
     base: {
-      user: {
+      member: {
         required: true,
         type: model.type.key({
           type: model.type.user

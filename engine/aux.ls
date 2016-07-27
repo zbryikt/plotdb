@@ -1,4 +1,29 @@
+require! <[bluebird]>
 base = do
+  pad: (str="", len=2,char=' ') ->
+    [str,char] = ["#str","#char"]
+    "#char" * (len - str.length) + "#str"
+  error: (code=403,msg="")-> bluebird.reject new Error(msg) <<< {code}
+
+  now-tag: ->
+    d = new Date!
+    return "#{d.getYear!}".substring(1,3) +
+    "/#{base.pad(d.getMonth! + 1,2,\0)}" +
+    "/#{base.pad(d.getDate!,2,\0)}" +
+    " #{base.pad(d.getHours!,2,\0)}" +
+    ":#{base.pad(d.getMinutes!,2,\0)}" +
+    ":#{base.pad(d.getSeconds!,2,\0)}"
+  #TODO use error-handler in every promise.catch
+  error-handler: (res,as-page=false) -> (e={}) ->
+    if typeof(e.code) == \number =>
+      if as-page and base["r#{e.code}"] => base["r#{e.code}"] res, e.message, as-page
+      else res.status e.code .send e.message
+    else
+      console.error "[#{base.now-tag!}] #{e.stack or e}"
+      if as-page => base.r403 res, "sorry.", as-page
+      else res.status 403 .send!
+    return null
+
   r500: (res, error) ->
     console.log "[ERROR] #error"
     res.status(500).json({detail:error})
@@ -22,6 +47,10 @@ base = do
 
   numid: (as-page, cb) -> (req, res) ->
     if !/^\d+$/.exec(req.params.id) => return base.r400 res, "incorrect key type", as-page
+    cb req, res
+
+  numids: (as-page, names=[], cb) -> (req, res) ->
+    if names.filter(-> !/^\d+$/.exec(req.params[it])).length => return base.r400 res, "incorrect key type", as-page
     cb req, res
 
   authorized: (cb) -> (req, res) ->
