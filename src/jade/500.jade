@@ -1,0 +1,25 @@
+extends base.jade
+block vars
+  - var rootid = "errorview"
+block head
+block body
+  div &nbsp;
+  #root
+    br
+    br
+    h1.text-center Internal Server Error.
+    .text-center.grayed
+      | " http 500 
+      if msg
+        | : #{msg}
+      else
+        | : Oh Poor PlotDB
+      | "
+    br
+    .text-center: img(src="/assets/img/plotdb-ise.png")
+    br
+    br
+    p.text-center Can't find what you want? #[br]#[br] #[a(href="/") back to home]
+    br
+    script.
+      if(!window.location.search) { window.location.search = "?nexturl=/" }

@@ -4,7 +4,7 @@
     domainIO: \dev.plotdb.io
     urlschema: "https://"
     name: \plotdb
-    debug: true
+    debug: false
     facebook:
       clientID: \1546734828988373
     google:
