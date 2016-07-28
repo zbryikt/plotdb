@@ -8,8 +8,8 @@ var keys = ["name","alpha2","alpha3","gapminder","num","shortname"];
 /* begin of code */
 ret.getIdx = function(val) {
   if(!val) return -1;
-  if(json.zhalpha2[val]) val = json.zhalpha2[val];
-  if(typeof(val)=="string") val = val.toLowerCase();
+  if(typeof(val)=="string") val = val.trim().toLowerCase();
+  if(json.zhalpha2[val]) val = json.zhalpha2[val].toLowerCase().trim();
   var matched = keys.map(function(d,i) {
     return json.codemap[d].indexOf(val);
   }).filter(function(d,i) { return d >= 0; });
@@ -25,6 +25,7 @@ ret.getName = function(val) {
 ret.getFromOECDCode = function(val) {
   var idx, ret = {};
   if(!val) return -1;
+  val = ("" + val).trim();
   idx = json.codemap.oecd.indexOf(val);
   if(idx < 0) return null;
   keys.forEach(function(d,i) { ret[d] = json.codemap[d][idx]; });
