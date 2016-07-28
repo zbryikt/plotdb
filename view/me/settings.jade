@@ -33,10 +33,12 @@ block body
             | Avatar
             small &#62; 200 x 200 pixels
         .col-sm-9
-          img.avatar(ng-attr-src="/s/avatar/{{profile.avatar || 0}}.jpg")
-          | or 
-          .avatar.avatar-change
-            input(type="file",onchange="s=angular.element(this).scope();that=this;s.$apply(function(){s.avatar.update(that);});")
+          .avatar-upload
+            .avatar-current(ng-attr-style="background-image:url(/s/avatar/{{profile.avatar || 0}}.jpg)")
+            | or 
+            .avatar-upload-btn
+              input(type="file",
+              onchange="s=angular.element(this).scope();that=this;s.$apply(function(){s.avatar.update(that);});")
       br
       .row
         .col-sm-3

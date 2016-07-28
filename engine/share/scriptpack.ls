@@ -76,6 +76,8 @@
         /js/palette/index.js
         /js/theme/sample.js
         /js/theme/index.js
+        /js/entity/user.js
+        /js/entity/team.js
         /js/site.js
         /js/service.js
       ]>

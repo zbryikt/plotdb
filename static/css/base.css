@@ -8,7 +8,7 @@
   position: fixed;
   bottom: 10px;
   left: 10px;
-  z-index: 34;
+  z-index: 36;
 }
 .notify {
   border-radius: 2px;
@@ -597,7 +597,7 @@ width: 100%;
   top: 0;
   left: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 33;
+  z-index: 35;
 }
 #alertbox .ib {
   position: relative;
@@ -637,7 +637,7 @@ width: 100%;
 .loader.floating {
   position: absolute;
   left: 50%;
-  z-index: 35;
+  z-index: 37;
 }
 .loader.floating.lg {
   margin-left: -50px;
@@ -788,8 +788,12 @@ a.dropdown-toggle {
   text-align: center;
 }
 .modal-backdrop {
-  z-index: 29 !important;
+  z-index: 31 !important;
 }
 .high-modal {
-  z-index: 30 !important;
+  z-index: 32 !important;
+}
+span.select2-container--default .select2-selection--multiple {
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+  border: 1px solid #ccc;
 }

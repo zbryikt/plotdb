@@ -12,19 +12,28 @@ angular.module \plotDB
     else if it < 1048576 => "#{parseInt(it / 102.4)/10}KB"
     else "#{parseInt(it / 104857.6)/10}MB"
 
-  ..directive \ngselect2, -> do
+  ..directive \ngfile, <[$compile]> ++ ($compile) -> do
+    require: <[]>
+    restrict: \A
+    scope: do
+      model: \=ngData
+    link: (s,e,a,c) -> e.on \change ~> s.$apply -> s.model = e.0.files
+  ..directive \ngselect2, <[$compile teamService]> ++ ($compile, teamService) -> do
+
     require: <[]>
     restrict: \A
     scope: do
       model: \=ngData
       istag: \@istag
+      type: \@type
     link: (s,e,a,c) ->
       changed = ->
         [cval,nval] = [s.model, $(e).val!]
         if !Array.isArray(cval) => return cval != nval
         [cval,nval] = [cval,nval].map -> (it or []).join(",")
         cval != nval
-      config = {}
+      if s.type => config = teamService.config.select2[s.type]
+      else config = {}
       if s.istag => config <<< tags: true, tokenSeparators: [',',' ']
       $(e).select2 config
       $(e).select2 config .on \change, ~>

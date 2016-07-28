@@ -36,6 +36,9 @@ body {
 #loading-dimmer.active {
   display: block;
 }
+select[ngselect2] {
+  height: 34px;
+}
  {
   width: 100%;
 }
@@ -832,6 +835,10 @@ a.dropdown-toggle {
 }
 .high-modal {
   z-index: 32 !important;
+}
+span.select2-container--default .select2-selection--multiple {
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+  border: 1px solid #ccc;
 }
 .page-title {
   padding-top: 20px;
@@ -3341,25 +3348,6 @@ small.hint {
 #user-edit .checkbox {
   margin: 0;
 }
-#user-edit .avatar {
-  width: 64px;
-  height: 64px;
-  display: inline-block;
-  margin-right: 5px;
-  border-radius: 3px;
-  box-shadow: none;
-  vertical-align: middle;
-}
-#user-edit .avatar-change {
-  background: url("/assets/img/faceoff.png") center center no-repeat;
-  background-size: cover;
-}
-#user-edit .avatar-change input {
-  width: 100%;
-  height: 100%;
-  opacity: 0.01;
-  cursor: pointer;
-}
 #request-editor .medium-insert-buttons-addons {
   margin-left: -50px;
 }
@@ -3470,4 +3458,50 @@ small.hint {
   margin-left: 2px;
   border-left: 1px solid #ccc;
   padding-left: 4px;
+}
+.avatar-upload .avatar-current,
+.avatar-upload .avatar-upload-btn {
+  width: 64px;
+  height: 64px;
+  display: inline-block;
+  margin-right: 5px;
+  border-radius: 3px;
+  box-shadow: none;
+  vertical-align: middle;
+  background-color: #aaa;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.avatar-upload .avatar-current {
+  background-image: url("/assets/img/avatar.png");
+}
+.avatar-upload .avatar-upload-btn {
+  position: relative;
+  background-size: cover;
+}
+.avatar-upload .avatar-upload-btn:after {
+  content: " ";
+  display: block;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  background: url("/assets/img/upload.png") center center no-repeat;
+  background-size: cover;
+  z-index: 1;
+}
+.avatar-upload .avatar-upload-btn input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.01;
+  cursor: pointer;
+  z-index: 2;
+}
+.avatar-upload .avatar-upload-btn.active:after {
+  opacity: 0.5;
 }

@@ -53,13 +53,31 @@ x$.filter('size', function(){
     }
   };
 });
-x$.directive('ngselect2', function(){
+x$.directive('ngfile', ['$compile'].concat(function($compile){
+  return {
+    require: [],
+    restrict: 'A',
+    scope: {
+      model: '=ngData'
+    },
+    link: function(s, e, a, c){
+      var this$ = this;
+      return e.on('change', function(){
+        return s.$apply(function(){
+          return s.model = e[0].files;
+        });
+      });
+    }
+  };
+}));
+x$.directive('ngselect2', ['$compile', 'teamService'].concat(function($compile, teamService){
   return {
     require: [],
     restrict: 'A',
     scope: {
       model: '=ngData',
-      istag: '@istag'
+      istag: '@istag',
+      type: '@type'
     },
     link: function(s, e, a, c){
       var changed, config, this$ = this;
@@ -74,7 +92,11 @@ x$.directive('ngselect2', function(){
         }), cval = ref$[0], nval = ref$[1];
         return cval !== nval;
       };
-      config = {};
+      if (s.type) {
+        config = teamService.config.select2[s.type];
+      } else {
+        config = {};
+      }
       if (s.istag) {
         config.tags = true;
         config.tokenSeparators = [',', ' '];
@@ -107,4 +129,4 @@ x$.directive('ngselect2', function(){
       });
     }
   };
-});
+}));

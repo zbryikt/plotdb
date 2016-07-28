@@ -1,0 +1,38 @@
+extends /base.jade
+block vars
+  - var rootid = "teamview"
+  - var title = 'PlotDB: Share Visualizations with Everyone'
+  - var description = "Create, share and request visualizations online."
+  - var thumbnail = "https://plotdb.com/assets/img/thumbnail.png"
+  - var thumbtype = "image/png"
+  - var url = "https://plotdb.com/"
+block head
+block body
+  .spc1
+  br
+  br
+  #root(ng-controller="teamEdit")
+    .panel.panel-default(style="width:600px;margin:auto")
+      .panel-heading #[i.fa.fa-users] create team
+      #user-edit.panel-body
+        div(ng-class="{'has-error':error.name}")
+          label.control-label Team Name
+          input.form-control(type="text",ng-model="team.name",placeholder="give your team a name, e.g.: The Avengers")
+        br
+        label What's your team about?
+        textarea.form-control(ng-model="team.description", placeholder="tell us more about your team.")
+        br
+        label Add some team members
+        div: select.form-control(ngselect2,ng-data="members",type="user",multiple="multiple")
+        br
+        label team avatar
+        .avatar-upload
+          .avatar-current
+          | or 
+          .avatar-upload-btn(ng-attr-style="background-image: url({{avatar.preview}})",
+          ng-class="{'active':avatar.preview}"): input(type="file",ngfile,ng-data="avatar.files")
+
+      .panel-footer.text-right
+        .btn.btn-success.btn-sm(ng-click="save()") OK
+        span &nbsp;
+        .btn.btn-default.btn-sm Cancel
