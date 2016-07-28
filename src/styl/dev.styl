@@ -693,7 +693,7 @@ small.hint
   opacity: 0.2
   cursor: not-allowed
 
-#permission-modal, #setting-modal, #data-edit-modal
+.cover-modal, #permission-modal, #setting-modal, #data-edit-modal
   position: fixed
   top: 0
   left: 0
@@ -701,6 +701,16 @@ small.hint
   height: 100%
   background: rgba(0,0,0,0.5)
   z-index: index(order, 'high-modal')
+
+.cover-modal-inner
+  position: absolute
+  top: 0
+  left: 50%
+  width: 640px
+  margin: 70px 0 0 -320px
+  min-height: 530px
+  z-index: index(order, 'high-modal-inner')
+
 #permission-modal, #setting-modal, #data-edit-modal, #setting-modal-inner
   .ib
     width: 640px

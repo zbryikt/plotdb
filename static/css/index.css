@@ -31,7 +31,7 @@ body {
   width: 100%;
   height: 100%;
   background: url("/assets/img/loading-lg-white.svg") rgba(0,0,0,0.5) center center no-repeat;
-  z-index: 32;
+  z-index: 35;
 }
 #loading-dimmer.active {
   display: block;
@@ -840,14 +840,55 @@ span.select2-container--default .select2-selection--multiple {
   box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
   border: 1px solid #ccc;
 }
+.input-group span.select2-container--default .select2-selection--multiple {
+  border-radius: 3px 0 0 3px;
+  border: 1px solid #ccc;
+  height: 34px;
+}
 .form-control-feedback.with-text {
   width: auto;
   right: 5px;
 }
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 2px;
+  background-color: #ddd;
+  background-image: url("/assets/img/avatar.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+.avatar.xs {
+  width: 16px;
+  height: 16px;
+}
+.avatar.sm {
+  width: 24px;
+  height: 24px;
+}
+.avatar.lg {
+  width: 48px;
+  height: 48px;
+}
+.avatar.xl {
+  width: 64px;
+  height: 64px;
+}
+.avatar.xxl {
+  width: 128px;
+  height: 128px;
+}
+.avatar.empty {
+  background-image: none;
+  background-color: rgba(0,0,0,0.075);
+  border: 1px dashed #999;
+}
 .page-title {
   padding-top: 20px;
 }
-.page-header {
+.page-header,
+.team-header {
   width: 100%;
   height: 144px;
   background: #f9f9f9;
@@ -856,23 +897,34 @@ span.select2-container--default .select2-selection--multiple {
   padding: 24px;
   border-bottom: 1px solid #bbb;
 }
-.page-header .inner {
+.page-header .inner,
+.team-header .inner {
   max-width: 1200px;
   margin: auto;
   font-family: lato;
   padding-left: 10px;
 }
-.page-header .inner .title {
+.page-header .inner .title,
+.team-header .inner .title {
   font-size: 32px;
   font-weight: 900;
   font-family: arial, serif;
 }
-.page-header .inner .desc {
+.page-header .inner .desc,
+.team-header .inner .desc {
   font-size: 16px;
   font-weight: 200;
 }
 .page-header.simple {
   height: 120px;
+}
+.team-header {
+  height: 300px;
+  text-align: center;
+}
+.team-header .avatar {
+  display: inline-block;
+  margin-bottom: 15px;
 }
 @media (max-width: 800px) {
   .page-header {
@@ -1976,6 +2028,7 @@ small.hint {
   opacity: 0.2;
   cursor: not-allowed;
 }
+.cover-modal,
 #permission-modal,
 #setting-modal,
 #data-edit-modal {
@@ -1986,6 +2039,15 @@ small.hint {
   height: 100%;
   background: rgba(0,0,0,0.5);
   z-index: 32;
+}
+.cover-modal-inner {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 640px;
+  margin: 70px 0 0 -320px;
+  min-height: 530px;
+  z-index: 33;
 }
 #permission-modal .ib,
 #setting-modal .ib,
@@ -3508,4 +3570,38 @@ small.hint {
 }
 .avatar-upload .avatar-upload-btn.active:after {
   opacity: 0.5;
+}
+.team-ctrl-panel {
+  max-width: 1200px;
+  margin: -65px auto 0;
+}
+.team-item {
+  background: #fff;
+  margin: 0 0 20px;
+  padding: 10px;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.team-item .avatar {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 10px;
+}
+.team-desc {
+  display: inline-block;
+  vertical-align: top;
+}
+.team-member {
+  width: 128px;
+  height: 100px;
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+}
+.team-member .avatar {
+  margin: 0 auto 5px;
+}
+.team-members.compact .team-member {
+  width: 32px;
+  height: 24px;
 }

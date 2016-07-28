@@ -21,7 +21,8 @@ get-team = (req, res) ->
       promises = []
       promises.push(
         io.query([
-          'select users.key as key,users.username as username,users.displayname as displayname'
+          'select users.key as key,users.username as username,'
+          'users.displayname as displayname,users.avatar as avatar'
           'from teamMembers,users'
           'where teamMembers.team=$1 and teamMembers.member=users.key'
         ].join(" "), [req.params.id])
@@ -58,7 +59,37 @@ get-team = (req, res) ->
     .catch aux.error-handler res, true
 */
 
-engine.router.api.get \/team/, entity.search 2
+engine.router.api.get \/team/, (req, res) ->
+  if !req.query.detail => return entity.search(2) req, res
+  keyword = (req.query.keyword or "")
+  offset = req.query.offset or 0
+  limit = (req.query.limit or 20) <? 100
+  params = [offset, limit]
+  params.push keyword if keyword
+  payload = {}
+  bluebird.resolve!
+    .then ->
+      io.query """
+        select teams.key as key,teams.name as displayname, teams.avatar as avatar,
+        teams.description as description,count(teammembers.member)
+        from teams,teammembers where #{if keyword => "teams.name ~* $3 and " else ""}
+        teams.key=teammembers.team group by teams.key
+        offset $1 limit $2
+      """, params
+    .then (r={})->
+      payload.teams = teams = r.[]rows
+      tids = teams.map(->it.key)
+      io.query """
+        select teamMember.*,users.avatar from users,(
+        select member,team,row_number() over (partition by team order by member) as r
+        from teammembers where team = any($1)
+        ) teamMember where teamMember.r <= 10 and users.key = teamMember.member
+      """, [tids]
+    .then (r={}) ->
+      payload.members = r.[]rows
+      res.send payload
+    .catch aux.error-handler res
+
 
 /*
 engine.router.api.get \/team/, (req, res) ->
@@ -224,3 +255,9 @@ engine.router.api.delete \/team/:tid/chart/:cid, aux.numids false, <[tid cid]>, 
     .then -> res.send!
     .catch aux.error-handler res
 
+engine.app.get \/team/:id, aux.numid true, (req, res) ->
+  get-team req, res
+    .then (payload={}) ->
+      res.render 'view/team/index.jade', payload
+      return null
+    .catch aux.error-handler res, true

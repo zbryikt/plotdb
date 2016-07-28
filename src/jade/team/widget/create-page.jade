@@ -1,0 +1,15 @@
+extends /base.jade
+block vars
+  - var rootid = "teamview"
+  - var title = 'PlotDB: Share Visualizations with Everyone'
+  - var description = "Create, share and request visualizations online."
+  - var thumbnail = "https://plotdb.com/assets/img/thumbnail.png"
+  - var thumbtype = "image/png"
+  - var url = "https://plotdb.com/"
+block head
+block body
+  .spc1
+  br
+  br
+  #root(ng-controller="teamEdit")
+    include create.jade

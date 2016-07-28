@@ -36,10 +36,11 @@ x$.service('Paging', ['$rootScope', '$timeout'].concat(function($rootScope, $tim
         }
       });
     },
-    load: function(load, lazy, reset){
+    load: function(load, lazy, reset, hashkey){
       var this$ = this;
       lazy == null && (lazy = 500);
       reset == null && (reset = false);
+      hashkey == null && (hashkey = '');
       return new Promise(function(res, rej){
         if (this$.loading) {
           return res([]);
@@ -62,11 +63,11 @@ x$.service('Paging', ['$rootScope', '$timeout'].concat(function($rootScope, $tim
               if (session !== this$.session) {
                 res([]);
               }
-              if (!ret || ret.length === 0) {
+              if (!ret || (hashkey ? ret[hashkey] || (ret[hashkey] = []) : ret).length === 0) {
                 this$.end = true;
               }
               this$.loading = false;
-              this$.offset = this$.offset + ret.length;
+              this$.offset = this$.offset + ((hashkey ? ret[hashkey] || (ret[hashkey] = []) : ret).length || 0);
               return res(ret);
             });
           });

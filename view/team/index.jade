@@ -1,20 +1,57 @@
-extends /base.jade
+extends /view/module/base.jade
 block vars
 block head
-  script(src="/js/user/team.js")
-  script(src="/js/user/user.js")
+  if team
+    script.
+      window.team = !{JSON.stringify(team).replace(/<\//g, "<\\/")}
+      window.members = !{JSON.stringify(members).replace(/<\//g, "<\\/")}
 block body
   .spc1
-  .page-header: .inner
-    .title Teams '#[span= payload.team.name]'
-    .desc create your own teams
-  #root(ng-controller="team")
-    label users
-    each user in payload.members
-      div
-        img(src="/s/avatar/" + (user.avatar || 0) + ".jpg")
-        span= user.displayname
-        .btn.btn-link(ng-click="removeMember("+payload.team.key+","+user.key+")"): i.fa.fa-close
-    label add user
-    div(ng-controller="userSelection"): select#search-user.form-control(multiple="multiple")
-    .btn.btn-default(ng-click="addMembers("+payload.team.key+")") add
+  .team-header: .inner
+    .avatar.xxl(style="background-image:url(/s/avatar/" + (team.avatar || 0) + ".jpg")
+    .title #[span= team.name]
+    div: small.grayed the team
+    if team.description
+      .desc= team.description
+    else
+      .desc.grayed ( no descriptiont... )
+  #root.narrow(ng-controller="teamBase"): div(ng-controller="teamEdit")
+    .cover-modal(ng-cloak,ng-show="teamPanel.create.toggled")
+    .cover-modal-inner(ng-cloak,ng-show="teamPanel.create.toggled")
+      include /team/widget/create.jade
+    .text-center(style="margin-top:-55px")
+      .btn.btn-default(ng-click="teamPanel.create.toggle()") #[i.fa.fa-pencil] Edit
+    br
+    br
+    .text-center
+      label members
+      br
+      br
+      each user in members
+        a.team-member(href="/user/" + user.key)
+          .avatar.xl(style="background-image:url(/s/avatar/" + (user.avatar || 0) + ".jpg)")
+          span= user.displayname
+          //-.btn.btn-link(ng-click="removeMember("+team.key+","+user.key+")"): i.fa.fa-close
+      .team-member
+        .avatar.xl.empty
+        small.grayed add more users
+      br
+      br
+      .text-left(style="width:600px;margin:auto")
+        label Add members
+        .input-group
+          div: select.form-control(multiple="multiple",ngselect2,ng-data="newMembers",type="user")
+          .input-group-btn
+            .btn.btn-default(ng-click="addMembers("+team.key+")") #[i.fa.fa-plus] add
+      br
+      br
+      .sep.gap
+      br
+      br
+      label works
+      br
+      br
+      .team-member
+        .avatar.xl.empty
+        small.grayed add more charts
+  include /view/module/footer

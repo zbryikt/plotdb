@@ -5,10 +5,10 @@ require! <[../engine/aux]>
 
 search = (default-type=0) -> (req, res) ->
   #TODO permission check
-  keyword = (req.query.keyword or "")
-  if !keyword => return aux.r400 res
-  [teams,users] = [[], []]
   type = default-type or +req.query.type or 3 # 1 - user, 2 - team, 3 - both
+  keyword = (req.query.keyword or "")
+  if !keyword and (type % 2) => return aux.r400 res
+  [teams,users] = [[], []]
   offset = req.query.offset or 0
   limit = (req.query.limit or 20) <? 100
   params = [offset, limit]
@@ -23,7 +23,7 @@ search = (default-type=0) -> (req, res) ->
         ].filter(->it).join(" "), (if keyword => [keyword] else []))
       else return bluebird.resolve {rows: [0]}
     .then (r={}) ->
-      teamlen = r.[]rows.0 or 0
+      teamlen = (r.[]rows.{}0).count or 0
       if offset < teamlen and (type .>>. 1) == 1 =>
         return io.query([
           "select key,name as displayname,avatar from teams"

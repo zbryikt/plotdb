@@ -1,0 +1,36 @@
+extends /base.jade
+block vars
+  - var rootid = "teamview"
+  - var title = 'Teams / PlotDB'
+  - var url = "https://plotdb.com/dataset/"
+block head
+block body
+  .spc1
+  .page-header: .inner
+    .title Teams
+    .desc Let's check how's others doing.
+  #root.narrow(ng-controller="teamBase"): div(ng-controller="teamList")
+    .team-ctrl-panel.text-right
+      .btn.btn-success(ng-click="teamPanel.create.toggle()") #[i.fa.fa-plus] Create Team
+    .cover-modal(ng-cloak,ng-show="teamPanel.create.toggled")
+    .cover-modal-inner(ng-cloak,ng-show="teamPanel.create.toggled",ng-controller="teamEdit")
+      include widget/create.jade
+    br
+    .team-list
+      .team-item(ng-repeat="team in teams",ng-cloak)
+        a.avatar.xl(ng-attr-style="background-image:url(/s/avatar/{{team.avatar || 0}}.jpg)",ng-attr-href="/team/{{team.key}}")
+        .team-desc
+          h5: a(ng-attr-href="/team/{{team.key}}") {{team.displayname}}
+          div {{team.description}}
+          .grayed(ng-cloak,ng-show="!tem.description") ( no description )
+        .team-members.compact.pull-right.text-right
+          .team-member(ng-repeat="member in team.members")
+            .avatar.sm(ng-attr-style="background-image:url(/s/avatar/{{member.avatar || 0}}.jpg)")
+          .team-member(ng-if="team.count > team.members.length") ...
+          br
+          small.grayed {{team.count}} members
+      .loader.loading.alone.sm(style="margin:auto",ng-show="paging.loading && !paging.end")
+      .text-center.grayed(ng-show="paging.end") that's all. #[i.fa.fa-smile-o]
+      #list-end
+
+  include ../footer.jade

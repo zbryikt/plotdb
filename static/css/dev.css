@@ -793,6 +793,7 @@ small.hint {
   opacity: 0.2;
   cursor: not-allowed;
 }
+.cover-modal,
 #permission-modal,
 #setting-modal,
 #data-edit-modal {
@@ -803,6 +804,15 @@ small.hint {
   height: 100%;
   background: rgba(0,0,0,0.5);
   z-index: 32;
+}
+.cover-modal-inner {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 640px;
+  margin: 70px 0 0 -320px;
+  min-height: 530px;
+  z-index: 33;
 }
 #permission-modal .ib,
 #setting-modal .ib,

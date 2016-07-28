@@ -113,6 +113,7 @@ x$.service('teamService', ['$rootScope', '$http', 'plConfig', 'IOService', 'base
 x$.controller('teamEdit', ['$scope', '$http', 'plNotify', 'teamService', 'eventBus'].concat(function($scope, $http, plNotify, teamService, eventBus){
   $scope.team = new teamService.team();
   $scope.members = [];
+  $scope.newMembers = [];
   $scope.removeMember = function(tid, mid){
     return $http({
       url: "/d/team/" + tid + "/member/" + mid,
@@ -124,12 +125,13 @@ x$.controller('teamEdit', ['$scope', '$http', 'plNotify', 'teamService', 'eventB
     });
   };
   $scope.addMembers = function(tid){
-    var newMembers;
-    newMembers = $('#search-user').val();
+    if (!$scope.newMembers || !$scope.newMembers.length) {
+      return;
+    }
     return $http({
       url: "/d/team/" + tid + "/member/",
       method: 'POST',
-      data: newMembers
+      data: $scope.newMembers
     }).success(function(d){
       return plNotify.send('success', "members added");
     }).error(function(d){
@@ -221,6 +223,17 @@ x$.controller('teamEdit', ['$scope', '$http', 'plNotify', 'teamService', 'eventB
   };
   $scope.avatar.init();
   $scope.error = {};
+  $scope.dismiss = function(){
+    return eventBus.fire('team-panel.create.dismiss');
+  };
+  $scope.redirect = function(delay){
+    delay == null && (delay = 0);
+    if ($scope.team && $scope.team.key) {
+      return setTimeout(function(){
+        return window.location.href = "/team/" + $scope.team.key;
+      }, delay);
+    }
+  };
   return $scope.save = function(){
     var isUpdate;
     isUpdate = !!$scope.team.key;
@@ -240,31 +253,91 @@ x$.controller('teamEdit', ['$scope', '$http', 'plNotify', 'teamService', 'eventB
           members: $scope.members
         }
     }).success(function(d){
+      var promise;
       if (!isUpdate) {
         $scope.team.key = d.key;
       }
       if ($scope.avatar.files[0] && $scope.avatar.raw) {
-        return $scope.avatar.upload($scope.team).then(function(){
-          return $scope.$apply(function(){
-            eventBus.fire('loading.dimmer.off');
-            return plNotify.send('success', "team " + (isUpdate ? 'updated' : 'created') + ".");
-          });
-        })['catch'](function(err){
-          return $scope.$apply(function(){
-            eventBus.fire('loading.dimmer.off');
-            plNotify.send('warning', "team created, but... ");
-            return plNotify.send('danger', err);
-          });
-        });
+        promise = $scope.avatar.upload($scope.team);
       } else {
-        plNotify.send('success', "team created.");
-        return eventBus.fire('loading.dimmer.off');
+        promise = Promise.resolve();
       }
+      return promise.then(function(){
+        return $scope.$apply(function(){
+          plNotify.send('success', "team " + (isUpdate ? 'updated' : 'created') + ".");
+          return $scope.redirect(1000);
+        });
+      })['catch'](function(err){
+        return $scope.$apply(function(){
+          plNotify.send('warning', "team created, but... ");
+          plNotify.send('danger', err);
+          return $scope.redirect(2000);
+        });
+      });
     }).error(function(d){
       eventBus.fire('loading.dimmer.off');
       return plNotify.send('error', "failed creating team. try again later?");
     });
   };
+}));
+x$.controller('teamList', ['$scope', 'IOService', 'teamService', 'Paging', 'plNotify', 'eventBus'].concat(function($scope, IOService, teamService, Paging, plNotify, eventBus){
+  $scope.teams = [];
+  $scope.paging = Paging;
+  $scope.paging.limit = 50;
+  $scope.$watch('qLazy', function(){
+    return $scope.loadList(1000, true);
+  }, true);
+  $scope.loadList = function(delay, reset){
+    delay == null && (delay = 1000);
+    reset == null && (reset = false);
+    return Paging.load(function(){
+      var payload, ref$;
+      payload = import$(import$((ref$ = {}, ref$.offset = Paging.offset, ref$.limit = Paging.limit, ref$), $scope.q), $scope.qLazy);
+      payload.detail = true;
+      return IOService.listRemotely({
+        name: 'team'
+      }, payload);
+    }, delay, reset, 'teams').then(function(ret){
+      var this$ = this;
+      return $scope.$apply(function(){
+        var data;
+        data = (ret.teams || []).map(function(it){
+          return new teamService.team(it);
+        });
+        data.map(function(t){
+          t.members = ret.members.filter(function(m){
+            return m.team === t.key;
+          });
+          return t.count = +t.count;
+        });
+        Paging.flexWidth(data);
+        return $scope.teams = (reset
+          ? []
+          : $scope.teams).concat(data);
+      });
+    });
+  };
+  if ($('#list-end')) {
+    Paging.loadOnScroll(function(){
+      return $scope.loadList();
+    }, $('#list-end'));
+  }
+  return $scope.loadList();
+}));
+x$.controller('teamBase', ['$scope', 'IOService', 'teamService', 'Paging', 'plNotify', 'eventBus'].concat(function($scope, IOService, teamService, Paging, plNotify, eventBus){
+  $scope.teamPanel = {
+    create: {
+      toggle: function(){
+        if (!$scope.user.authed()) {
+          return $scope.auth.toggle(true);
+        }
+        return this.toggled = !this.toggled;
+      }
+    }
+  };
+  return eventBus.listen('team-panel.create.dismiss', function(){
+    return $scope.teamPanel.create.toggled = false;
+  });
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

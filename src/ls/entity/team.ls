@@ -80,6 +80,7 @@ angular.module \plotDB
   ($scope, $http, plNotify, teamService, eventBus) ->
     $scope.team = new teamService.team!
     $scope.members = []
+    $scope.newMembers = []
 
     $scope.remove-member = (tid, mid) ->
       $http do
@@ -91,11 +92,11 @@ angular.module \plotDB
         plNotify.send \error, "failed to remove member, try again later?"
 
     $scope.add-members = (tid) ->
-      new-members = $(\#search-user).val!
+      if !$scope.newMembers or !$scope.newMembers.length => return
       $http do
         url: "/d/team/#tid/member/"
         method: \POST
-        data: new-members
+        data: $scope.newMembers
       .success (d) ->
         plNotify.send \success, "members added"
       .error (d) ->
@@ -142,6 +143,10 @@ angular.module \plotDB
 
     $scope.avatar.init!
     $scope.error = {}
+    $scope.dismiss = -> eventBus.fire 'team-panel.create.dismiss'
+    $scope.redirect = (delay = 0) ->
+      if $scope.team and $scope.team.key =>
+        setTimeout (->window.location.href = "/team/#{$scope.team.key}"), delay
     $scope.save = ->
       is-update = !!$scope.team.key
       $scope.error = {}
@@ -156,19 +161,48 @@ angular.module \plotDB
       .success (d) ->
         if !is-update => $scope.team.key = d.key
         if $scope.avatar.files.0 and $scope.avatar.raw =>
-          $scope.avatar.upload $scope.team
-            .then ->
-              $scope.$apply ->
-                eventBus.fire 'loading.dimmer.off'
-                plNotify.send \success, "team #{if is-update => \updated else \created}."
-            .catch (err) ->
-              $scope.$apply ->
-                eventBus.fire 'loading.dimmer.off'
-                plNotify.send \warning, "team created, but... "
-                plNotify.send \danger, err
-        else
-          plNotify.send \success, "team created."
-          eventBus.fire 'loading.dimmer.off'
+          promise = $scope.avatar.upload $scope.team
+        else promise = Promise.resolve!
+        promise
+          .then ->
+            $scope.$apply ->
+              plNotify.send \success, "team #{if is-update => \updated else \created}."
+              $scope.redirect 1000
+          .catch (err) ->
+            $scope.$apply ->
+              plNotify.send \warning, "team created, but... "
+              plNotify.send \danger, err
+              $scope.redirect 2000
       .error (d) ->
         eventBus.fire 'loading.dimmer.off'
         plNotify.send \error, "failed creating team. try again later?"
+  ..controller \teamList,
+  <[$scope IOService teamService Paging plNotify eventBus]> ++
+  ($scope, IOService, team-service, Paging, plNotify, eventBus) ->
+    $scope.teams = []
+    $scope.paging = Paging
+    $scope.paging.limit = 50
+    $scope.$watch 'qLazy', (-> $scope.load-list 1000, true), true
+    $scope.load-list = (delay = 1000, reset = false) ->
+      Paging.load((->
+        payload = {} <<< Paging{offset,limit} <<< $scope.q <<< $scope.q-lazy
+        payload <<< detail: true
+        IO-service.list-remotely {name: \team}, payload
+      ), delay, reset, 'teams').then (ret) -> $scope.$apply ~>
+        data = (ret.teams or []).map -> new teamService.team it
+        data.map (t) ->
+          t.members = ret.members.filter((m)-> m.team == t.key)
+          t.count = +t.count
+        Paging.flex-width data
+        $scope.teams = (if reset => [] else $scope.teams) ++ data
+    if $(\#list-end) => Paging.load-on-scroll (-> $scope.load-list!), $(\#list-end)
+    $scope.load-list!
+  ..controller \teamBase,
+  <[$scope IOService teamService Paging plNotify eventBus]> ++
+  ($scope, IOService, team-service, Paging, plNotify, eventBus) ->
+    $scope.team-panel = do
+      create: do
+        toggle: ->
+          if !$scope.user.authed! => return $scope.auth.toggle true
+          @toggled = !!!@toggled
+    eventBus.listen 'team-panel.create.dismiss', -> $scope.team-panel.create.toggled = false

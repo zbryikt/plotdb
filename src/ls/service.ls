@@ -16,7 +16,7 @@ angular.module \plotDB
           if height + 50 > (top - ptop)  =>
             if !@loading and !@end => $rootScope.$apply ~> cb!
 
-      load: (load, lazy = 500, reset = false) -> new Promise (res, rej) ~>
+      load: (load, lazy = 500, reset = false, hashkey='') -> new Promise (res, rej) ~>
         if @loading => return res []
         if @handle => $timeout.cancel @handle
         @loading = true
@@ -26,8 +26,8 @@ angular.module \plotDB
           @handle = null
           load @ .then (ret) ~> $rootScope.$apply ~>
             if session != @session => res []
-            if !ret or ret.length == 0 => @end = true
-            @ <<< loading: false, offset: @offset + ret.length
+            if !ret or (if hashkey => ret[][hashkey] else ret).length == 0 => @end = true
+            @ <<< loading: false, offset: @offset + ((if hashkey => ret[][hashkey] else ret).length or 0)
             res ret
         ), lazy
       flex-width: (list) ->
