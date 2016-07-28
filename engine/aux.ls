@@ -3,7 +3,8 @@ base = do
   pad: (str="", len=2,char=' ') ->
     [str,char] = ["#str","#char"]
     "#char" * (len - str.length) + "#str"
-  error: (code=403,msg="")-> bluebird.reject new Error(msg) <<< {code}
+  error: (code=403,msg="") -> new Error(msg) <<< {code}
+  reject: (code=403,msg="") -> bluebird.reject new Error(msg) <<< {code}
 
   now-tag: ->
     d = new Date!

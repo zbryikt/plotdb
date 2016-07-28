@@ -1,17 +1,22 @@
 require! <[bluebird]>
-require! <[../engine/aux ../engine/share/model/ ./thumb]>
+require! <[../engine/aux ../engine/share/model/ ../engine/throttle]>
+require! <[./entity ./avatar]>
 (engine,io) <- (->module.exports = it)  _
 
+entity := entity engine, io
 teamtype = model.type.team
+edit-limit = {strategy: \hard, limit: 30, upper-delta: 120, json: true}
+
+engine.router.api.get \/entity/, entity.search!
 
 get-team = (req, res) ->
   payload = {}
   io.query([ 'select * from teams where key=$1' ].join(" "), [req.params.id])
     .then (r={}) ->
       team = r.[]rows.0
-      if !team => return aux.error 404
+      if !team => return aux.reject 404
       if (team.{}permission.[]switch.indexOf(\public) < 0)
-      and (!req.user or team.owner != req.user.key) => return aux.error 403
+      and (!req.user or team.owner != req.user.key) => return aux.reject 403
       payload.team = team
       promises = []
       promises.push(
@@ -53,6 +58,9 @@ get-team = (req, res) ->
     .catch aux.error-handler res, true
 */
 
+engine.router.api.get \/team/, entity.search 2
+
+/*
 engine.router.api.get \/team/, (req, res) ->
   #TODO permission check
   keyword = (req.query.keyword or "")
@@ -71,6 +79,7 @@ engine.router.api.get \/team/, (req, res) ->
     .then (r={})->
       res.send r.[]rows
     .catch aux.error-handler res
+*/
 
 engine.router.api.get "/team/:id", aux.numid false, (req, res) ->
   get-team req, res
@@ -88,14 +97,14 @@ engine.router.api.post \/team/, (req, res) ->
   [team,members] = [{},[]]
   bluebird.resolve!
     .then ->
-      if !req.user => return aux.error 403
-      if typeof(req.body) != \object => return aux.error 400
+      if !req.user => return aux.reject 403
+      if typeof(req.body) != \object => return aux.reject 400
       team := req.body.team
-      if !team => return aux.error 400
+      if !team => return aux.reject 400
       members := req.body.[]members
       team := team <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
       ret = teamtype.lint team
-      if ret.0 => return aux.error 400, ret
+      if ret.0 => return aux.reject 400, ret
       team := teamtype.clean team
       pairs = io.aux.insert.format teamtype, team
       delete pairs.key
@@ -111,6 +120,16 @@ engine.router.api.post \/team/, (req, res) ->
       return null
     .catch aux.error-handler res
 
+engine.router.api.post(\/team/:id/avatar,
+  engine.multi.parser, throttle.limit edit-limit, aux.numid false,
+  (req, res) ->
+    avatar.upload(\team, +req.params.id)(req, res)
+      .then (avatar-key) ->
+        io.query "update teams set (avatar) = ($1) where key = $2", [avatar-key,req.params.id]
+      .then -> res.send!
+      .catch aux.error-handler res
+)
+
 engine.router.api.put \/team/:id, (req, res) ->
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
@@ -121,17 +140,19 @@ engine.router.api.put \/team/:id, (req, res) ->
   io.query "select * from teams where key = $1", [id]
     .then (r = {}) ->
       team = r.[]rows.0
-      if !team => return aux.error 404
-      if team.owner != req.user.key => return aux.error 403
+      if !team => return aux.reject 404
+      if team.owner != req.user.key => return aux.reject 403
+      <[owner key createdtime]>.map -> delete data[it]
       team = team <<< data
+      team.modifiedtime = new Date!
       ret = teamtype.lint(team)
-      if ret.0 => return aux.error 400
+      if ret.0 => return aux.reject 400, ret
       teamtype.clean(team)
       pairs = io.aux.insert.format teamtype, team
       <[owner key createdtime]>.map -> delete pairs[it]
       pairs = io.aux.insert.assemble pairs
       io.query(
-        "update team set #{pairs.0} = #{paris.1} where key = $#{pairs.2.length + 1}"
+        "update teams set #{pairs.0} = #{pairs.1} where key = $#{pairs.2.length + 1}"
         pairs.2 ++ [req.user.key]
       )
     .then (r={}) ->
@@ -143,8 +164,8 @@ engine.router.api.delete \/team/:id, aux.numid false, (req, res) ->
   if !req.user => return aux.r403 res
   io.query "select key from teams where key = $1", [req.params.id]
     .then (r={}) ->
-      if !r.[]rows.0 => return aux.error 404
-      if r.owner != req.user.key => return aux.error 403
+      if !r.[]rows.0 => return aux.reject 404
+      if r.owner != req.user.key => return aux.reject 403
       bluebird.all [
         "delete from teammembers where team=$1"
         "delete from teamcharts where team=$1"
@@ -159,19 +180,19 @@ engine.router.api.delete \/team/:id, aux.numid false, (req, res) ->
 
 team-ownership = (req, res) ->
   <- Promise.resolve!then 
-  if !req.user => return aux.error 403
+  if !req.user => return aux.reject 403
   io.query "select owner from teams where key=$1", [req.params.tid]
     .then (r={})->
       team = r.[]rows.0
-      if !team => return aux.error 404
-      if !team.owner == req.user.key => return aux.error 403
+      if !team => return aux.reject 404
+      if !team.owner == req.user.key => return aux.reject 403
       bluebird.resolve team
 
 #TODO length limit
 engine.router.api.post \/team/:tid/member/, aux.numids false, <[tid]>, (req, res) ->
   team-ownership req, res
     .then ->
-      if !Array.isArray(req.body) => return aux.error 400
+      if !Array.isArray(req.body) => return aux.reject 400
       members = req.body.map(->+it).filter(->it and !isNaN(it))
       batch-add-members req.params.tid, members
     .then -> res.send!

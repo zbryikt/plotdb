@@ -1,7 +1,9 @@
 require! <[bluebird crypto fs fs-extra lwip read-chunk image-type]>
 require! <[../engine/aux ../engine/share/model/ ../engine/throttle]>
-(engine, io) <- (->module.exports = it)  _
+require! <[./entity ./avatar]>
+(engine,io) <- (->module.exports = it)  _
 
+entity := entity engine, io
 usertype = model.type.user
 auth-limit = {strategy: \hard, limit: 10, upper-delta: 1800, json: true}
 edit-limit = {strategy: \hard, limit: 30, upper-delta: 120, json: true}
@@ -23,53 +25,7 @@ get-user = (req, key) ->
       if !stat => return bluebird.reject "no user stat"
       user <<< {stat}
 
-engine.router.api.get \/user/, (req, res) ->
-  #TODO permission check
-  keyword = (req.query.keyword or "")
-  if !keyword => return aux.r400 res
-  [teams,users] = [[], []]
-  team = (req.query.team or null)
-  offset = req.query.offset or 0
-  limit = (req.query.limit or 20) <? 100
-  params = [offset, limit]
-  params.push keyword if keyword
-  fields = "key,displayname,avatar"
-  bluebird.resolve!
-    .then ->
-      if team =>
-        return io.query([
-          "select count(key) from teams"
-          "where name ~* $1" if keyword
-        ].filter(->it).join(" "), (if keyword => [keyword] else []))
-      else return bluebird.resolve {rows: [0]}
-    .then (r={}) ->
-      teamlen = r.[]rows.0 or 0
-      if offset < teamlen =>
-        return io.query([
-          "select key,name as displayname,avatar from teams"
-          "where name ~* $3" if keyword
-          "offset $1 limit $2"
-        ].filter(->it).join(" "), params)
-      else return bluebird.resolve {}
-    .then (r={}) ->
-      teams := r.[]rows
-      if teams.length < limit =>
-        params := [offset, limit - teams.length]
-        params.push keyword if keyword
-        return io.query([
-          "select key,displayname,avatar from users"
-          "where displayname ~* $3 or username ~* $3" if keyword
-          "offset $1 limit $2"
-        ].filter(->it).join(" "), params)
-      else return bluebird.resolve {}
-    .then (r={}) ->
-      users := r.[]rows
-      teams.map -> it.type = \team
-      users.map -> it.type = \user
-      res.send teams ++ users
-      return null
-
-    .catch aux.error-handler res
+engine.router.api.get \/user/, entity.search 1
 
 engine.app.get \/me/, throttle.limit {lower-delta: 2, upper-delta: 6, penalty: 1, limit: 6}, (req, res) ->
   if !req.user => return aux.r404 res, "", true
@@ -115,7 +71,7 @@ engine.router.api.put \/user/:id, aux.numid false, throttle.limit edit-limit, (r
   if !req.user or req.user.key != parseInt(req.params.id) => return aux.r403 res
   for key in <[username usepasswd password createdtime avatar]> => delete req.body[key]
   user = {} <<< req.user <<< req.body
-  if (e = usertype.lint(user)).0 => return aux.r400 res
+  if (e = usertype.lint(user)).0 => return aux.r400 res, e
   usertype.clean(user)
   pairs = io.aux.insert.format usertype, user
   <[username usepasswd password avatar key createdtime]>.map -> delete pairs[it]
@@ -130,6 +86,15 @@ engine.router.api.put \/user/:id, aux.numid false, throttle.limit edit-limit, (r
     .catch ->
       console.error it.stack
       aux.r403 res
+
+engine.router.api.post(\/user/:id/avatar,
+  engine.multi.parser, throttle.limit edit-limit, aux.numid false,
+  (req, res) ->
+    avatar.upload(\user, +req.params.id)(req, res)
+      .then (avatar-key) ->
+        io.query "update users set (avatar) = ($1) where key = $2", [avatar-key,req.params.id]
+      .then -> res.send!
+      .catch aux.error-handler res
 
 engine.app.post \/me/avatar, engine.multi.parser, throttle.limit edit-limit, (req, res) ->
   if !req.files.image => return aux.r400 res
