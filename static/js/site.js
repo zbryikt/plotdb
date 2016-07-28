@@ -182,6 +182,7 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
       }
     },
     loading: false,
+    error: {},
     logout: function(){
       console.log('logout..');
       return $http({
@@ -195,8 +196,18 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
         return plNotify.send('danger', 'Failed to Logout. ');
       });
     },
+    emailRe: /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.[a-z]{2,}|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i,
     login: function(){
       var this$ = this;
+      this.error = {};
+      if (!this.emailRe.exec(this.email)) {
+        this.error.email = "use email here";
+        return;
+      }
+      if (!this.passwd || this.passwd.length < 4) {
+        this.error.passwd = "password too short";
+        return;
+      }
       this.loading = true;
       $http({
         url: '/u/login',

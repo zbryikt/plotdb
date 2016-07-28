@@ -93,6 +93,7 @@ angular.module \plotDB
       failed: ''
       keyHandler: (e) -> if e.keyCode == 13 => @login!
       loading: false
+      error: {}
       logout: ->
         console.log \logout..
         $http do
@@ -104,7 +105,16 @@ angular.module \plotDB
           window.location.reload!
         .error (d) ->
           plNotify.send \danger, 'Failed to Logout. '
+      email-re: /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.[a-z]{2,}|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i
       login: ->
+        @error = {}
+        if !@email-re.exec(@email) =>
+          @error.email = "use email here"
+          return
+        if !@passwd or @passwd.length < 4 =>
+          @error.passwd = "password too short"
+          return
+
         @loading = true
         $http do
           url: \/u/login

@@ -5,6 +5,8 @@ ret = (config) ->
   @authio = do
     user: do
       get: (username, password, usepasswd, detail) ~>
+        if !/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.[a-z]{2,}|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i.exec(username) =>
+          return aux.reject new Error("not email")
         pw = if usepasswd => crypto.createHash(\md5).update(password).digest(\hex) else ""
         @query "select * from users where username = $1", [username]
           .then (users = {}) ~>

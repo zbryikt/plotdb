@@ -6,12 +6,14 @@
         h4.modal-title.text-center Login to PlotDB
       .moda-body(style="padding:20px")
         form.form
-          .form-group
+          .form-group(ng-class="{'has-error':auth.error.email,'has-feedback':auth.error.email}")
             input.form-control(type="text",placeholder="Email",ng-model="auth.email",
             ng-keypress="auth.keyHandler($event)")
-          .form-group
+            .form-control-feedback.with-text(ng-show="auth.error.email") {{auth.error.email}} #[i.fa.fa-close]
+          .form-group(ng-class="{'has-error':auth.error.passwd,'has-feedback':auth.error.passwd}")
             input.form-control(type="password",placeholder="Password",ng-model="auth.passwd",
             ng-keypress="auth.keyHandler($event)")
+            .form-control-feedback.with-text(ng-show="auth.error.passwd") {{auth.error.passwd}} #[i.fa.fa-close]
           .btn.btn-block.btn-success.btn-lg.loader.loading-success(ng-click="auth.login()",ng-cloak,
           ng-class="{'loading':auth.loading}")
             span(ng-show="!auth.isSignIn") SIGNUP
