@@ -29,7 +29,7 @@ backend = do
           http://fonts.googleapis.com
         ]>
         <[img-src
-          'self' data: https://www.google-analytics.com https://www.facebook.com/
+          'self' data: blob: https://www.google-analytics.com https://www.facebook.com/
         ]>
         <[font-src
           'self' http://fonts.gstatic.com
