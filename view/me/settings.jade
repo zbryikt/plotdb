@@ -67,7 +67,7 @@ block body
           h4 Functionality
       .row
         .col-sm-3
-          label Account Type
+          label Current Plan
         .col-sm-9
           select.form-control.disabled(disabled)
             option Free Account
@@ -76,22 +76,24 @@ block body
       br
       br
       br
-      .row.headline
-        .col-sm-offset-3.col-sm-9
-          h4 Change Password
-      .row
-        .col-sm-3
-          label Old Password
-        .col-sm-9
-          input.form-control(type="password", ng-model="passwd.oldOne")
-      br
-      .row
-        .col-sm-3
-          label New Password
-        .col-sm-9
-          input.form-control(type="password", ng-model="passwd.newOne")
-      br
-      .row
-        .col-sm-offset-3.col-sm-9
-          .btn.btn-default(ng-click="passwd.update()") Change
+      div(ng-cloak,ng-show="profile.usepasswd")
+        .row.headline
+          .col-sm-offset-3.col-sm-9
+            h4 Change Password
+        .row
+          .col-sm-3
+            label Old Password
+          .col-sm-9
+            input.form-control(type="password", ng-model="passwd.oldOne")
+        br
+        .row
+          .col-sm-3
+            label New Password
+          .col-sm-9
+            input.form-control(type="password", ng-model="passwd.newOne")
+        br
+        .row
+          .col-sm-offset-3.col-sm-9
+            .btn.btn-default(ng-click="passwd.update()") Change
+
   include /footer.jade
