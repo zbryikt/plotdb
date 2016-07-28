@@ -123,10 +123,12 @@ engine.router.api.post \/team/, (req, res) ->
 engine.router.api.post(\/team/:id/avatar,
   engine.multi.parser, throttle.limit edit-limit, aux.numid false,
   (req, res) ->
+    avatar-key = null
     avatar.upload(\team, +req.params.id)(req, res)
-      .then (avatar-key) ->
+      .then ->
+        avatar-key := it
         io.query "update teams set (avatar) = ($1) where key = $2", [avatar-key,req.params.id]
-      .then -> res.send!
+      .then -> res.send {avatar: avatar-key}
       .catch aux.error-handler res
 )
 

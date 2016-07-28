@@ -1,4 +1,4 @@
-require! <[lwip fs-extra fs bluebird read-chunk image-type]>
+require! <[lwip fs-extra fs bluebird read-chunk image-type ../engine/aux]>
 
 upload = (type="user", id=0) -> (req, response) ->
   (res, rej) <- new bluebird _

@@ -47,7 +47,7 @@ angular.module \plotDB
           fd = new FormData!
           fd.append \image, new Blob([raw], {type: "application/octet-stream"})
           $http do
-            url: \/me/avatar
+            url: \/d/me/avatar
             method: \POST
             data: fd
             transformRequest: angular.identity

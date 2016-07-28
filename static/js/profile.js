@@ -60,7 +60,7 @@ x$.controller('profile', ['$scope', '$http', 'global', 'plNotify', 'dataService'
           type: "application/octet-stream"
         }));
         return $http({
-          url: '/me/avatar',
+          url: '/d/me/avatar',
           method: 'POST',
           data: fd,
           transformRequest: angular.identity,
