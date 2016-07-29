@@ -814,6 +814,16 @@ small.hint {
   min-height: 530px;
   z-index: 33;
 }
+.cover-modal-inner.narrow {
+  width: 500px;
+  margin-left: -250px;
+}
+.cover-modal-inner.narrow .panel-default {
+  width: 500px;
+}
+.cover-modal-inner .panel-default {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
 #permission-modal .ib,
 #setting-modal .ib,
 #data-edit-modal .ib,

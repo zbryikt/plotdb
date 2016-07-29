@@ -353,3 +353,17 @@ a.disabled, .checkbox.disabled
   color: #999
   text-decoration: none
   cursor: default
+
++keyframes(glowing)
+  0%
+    box-shadow: 0 0 0px 0px rgba(255,192,0,1.0)
+  20%
+    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5)
+  60%
+    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2)
+  100%
+    box-shadow: 0 0 100px 10px rgba(255,192,0,0.0)
+
+.btn-glowing
+  box-shadow: 0 0 10px 3px rgba(255,192,0,0.5)
+  animation(glowing 1s infinite)

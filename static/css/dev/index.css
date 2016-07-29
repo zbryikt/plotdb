@@ -38,159 +38,36 @@
   opacity: 0.2;
   cursor: not-allowed;
 }
- {
-  width: 100%;
-}
-#permission-panel .perm-list {
+.perm-panel .perm-list {
   min-height: 100px;
 }
-#permission-panel .perm-item {
+.perm-panel .perm-item {
   margin-bottom: 7px;
   border-bottom: 1px solid #eee;
   padding-bottom: 7px;
 }
-#permission-panel .perm-item a {
+.perm-panel .perm-item a {
   margin-left: 5px;
 }
-#permission-panel .avatar {
+.perm-panel .avatar {
   display: inline-block;
   margin-right: 7px;
   vertical-align: top;
 }
-#permission-panel .info {
+.perm-panel .info {
   display: inline-block;
   vertical-align: top;
 }
-#permission-panel .name {
+.perm-panel .name {
   line-height: 16px;
 }
-#permission-panel .email {
+.perm-panel .email {
   color: #999;
   font-size: 0.95em;
   line-height: 16px;
 }
-#permission-panel .perm-item .dropdown.pull-right {
+.perm-panel .perm-item .dropdown.pull-right {
   margin-top: 2px;
-}
-@-webkit-keyframes spray {
-  0% {
-    box-shadow: 0 0 0px 0px #ffc000;
-  }
-  20% {
-    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
-  }
-  60% {
-    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
-  }
-  100% {
-    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
-  }
-}
-@-webkit-keyframes spray {
-  0% {
-    box-shadow: 0 0 0px 0px #ffc000;
-  }
-  20% {
-    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
-  }
-  60% {
-    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
-  }
-  100% {
-    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
-  }
-}
-@-moz-keyframes spray {
-  0% {
-    box-shadow: 0 0 0px 0px #ffc000;
-  }
-  20% {
-    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
-  }
-  60% {
-    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
-  }
-  100% {
-    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
-  }
-}
-@-ms-keyframes spray {
-  0% {
-    box-shadow: 0 0 0px 0px #ffc000;
-  }
-  20% {
-    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
-  }
-  60% {
-    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
-  }
-  100% {
-    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
-  }
-}
-@-moz-keyframes spray {
-  0% {
-    box-shadow: 0 0 0px 0px #ffc000;
-  }
-  20% {
-    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
-  }
-  60% {
-    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
-  }
-  100% {
-    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
-  }
-}
-@-webkit-keyframes spray {
-  0% {
-    box-shadow: 0 0 0px 0px #ffc000;
-  }
-  20% {
-    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
-  }
-  60% {
-    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
-  }
-  100% {
-    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
-  }
-}
-@-o-keyframes spray {
-  0% {
-    box-shadow: 0 0 0px 0px #ffc000;
-  }
-  20% {
-    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
-  }
-  60% {
-    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
-  }
-  100% {
-    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
-  }
-}
-@keyframes spray {
-  0% {
-    box-shadow: 0 0 0px 0px #ffc000;
-  }
-  20% {
-    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
-  }
-  60% {
-    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
-  }
-  100% {
-    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
-  }
-}
-.btn-emphasis {
-  box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
-  -ms-animation: spray 1s infinite;
-  -moz-animation: spray 1s infinite;
-  -webkit-animation: spray 1s infinite;
-  -o-animation: spray 1s infinite;
-  animation: spray 1s infinite;
 }
 .nav-tabs > li > a {
   padding-top: 5px;

@@ -1,6 +1,6 @@
 mixin permDropdown(baseObj)
   .btn.btn-default.btn-sm.dropdown-toggle(data-toggle="dropdown")
-    span(ng-show=baseObj + ".perm=='admin'") all privileges
+    span(ng-show=baseObj + ".perm=='admin'") act as owner
     span(ng-show=baseObj + ".perm=='write'") can edit
     span(ng-show=baseObj + ".perm=='comment'") can comment
     span(ng-show=baseObj + ".perm=='fork'") can fork
@@ -8,12 +8,12 @@ mixin permDropdown(baseObj)
     span &nbsp;
     span.caret
   ul.dropdown-menu
-    li(ng-class="{'active':" + baseObj + ".perm=='admin'}",ng-click= baseObj + ".perm='admin'"): a all privileges
+    li(ng-class="{'active':" + baseObj + ".perm=='admin'}",ng-click= baseObj + ".perm='admin'"): a act as owner
     li(ng-class="{'active':" + baseObj + ".perm=='write'}",ng-click= baseObj + ".perm='write'"): a can edit
     li(ng-class="{'active':" + baseObj + ".perm=='comment'}",ng-click= baseObj + ".perm='comment'"): a can comment
     li(ng-class="{'active':" + baseObj + ".perm=='fork'}",ng-click= baseObj + ".perm='fork'"): a can fork
     li(ng-class="{'active':" + baseObj + ".perm=='read'}",ng-click= baseObj + ".perm='read'"): a can read
-#permission-panel
+.perm-panel
   .input-group(ng-class="{'long':permEdit.list.length>0}")
     div: select.form-control.input-sm(ngselect2,ng-data="permEdit.list",ng-detail="permEdit.detail",
     type="entity",multiple="multiple")

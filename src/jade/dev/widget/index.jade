@@ -1,0 +1,17 @@
+extends /base.jade
+block vars
+  - var rootid = "exploreview"
+  - var url = "https://plotdb.com/chart/explore/"
+block head
+  link(rel="stylesheet",type="text/css",href="/css/dev/index.css")
+  script(src="/js/perm/index.js")
+block body
+  include config.jade
+  div(style="width:500px;margin:80px auto")
+    +configPanel("{}",['publish','permission'])
+  div(ng-controller="test3")
+    .btn.btn-default(ng-click="shown=true") shown
+    div(ng-show="shown==true",ng-cloak)
+      .cover-modal(ng-click="shown=false")
+      .cover-modal-inner.narrow
+        +configPanel("{}",['publish','permission'])

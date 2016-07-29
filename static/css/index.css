@@ -41,6 +41,7 @@ select[ngselect2] {
 }
  {
   width: 100%;
+  width: 100%;
 }
 .spc1 {
   height: 0;
@@ -928,6 +929,126 @@ a.disabled,
   color: #999;
   text-decoration: none;
   cursor: default;
+}
+@-webkit-keyframes glowing {
+  0% {
+    box-shadow: 0 0 0px 0px #ffc000;
+  }
+  20% {
+    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
+  }
+  60% {
+    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
+  }
+  100% {
+    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
+  }
+}
+@-webkit-keyframes glowing {
+  0% {
+    box-shadow: 0 0 0px 0px #ffc000;
+  }
+  20% {
+    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
+  }
+  60% {
+    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
+  }
+  100% {
+    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
+  }
+}
+@-moz-keyframes glowing {
+  0% {
+    box-shadow: 0 0 0px 0px #ffc000;
+  }
+  20% {
+    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
+  }
+  60% {
+    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
+  }
+  100% {
+    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
+  }
+}
+@-ms-keyframes glowing {
+  0% {
+    box-shadow: 0 0 0px 0px #ffc000;
+  }
+  20% {
+    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
+  }
+  60% {
+    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
+  }
+  100% {
+    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
+  }
+}
+@-moz-keyframes glowing {
+  0% {
+    box-shadow: 0 0 0px 0px #ffc000;
+  }
+  20% {
+    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
+  }
+  60% {
+    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
+  }
+  100% {
+    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
+  }
+}
+@-webkit-keyframes glowing {
+  0% {
+    box-shadow: 0 0 0px 0px #ffc000;
+  }
+  20% {
+    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
+  }
+  60% {
+    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
+  }
+  100% {
+    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
+  }
+}
+@-o-keyframes glowing {
+  0% {
+    box-shadow: 0 0 0px 0px #ffc000;
+  }
+  20% {
+    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
+  }
+  60% {
+    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
+  }
+  100% {
+    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
+  }
+}
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 0px 0px #ffc000;
+  }
+  20% {
+    box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
+  }
+  60% {
+    box-shadow: 0 0 30px 6px rgba(255,192,0,0.2);
+  }
+  100% {
+    box-shadow: 0 0 100px 10px rgba(255,192,0,0);
+  }
+}
+.btn-glowing {
+  box-shadow: 0 0 10px 3px rgba(255,192,0,0.5);
+  -ms-animation: glowing 1s infinite;
+  -moz-animation: glowing 1s infinite;
+  -webkit-animation: glowing 1s infinite;
+  -o-animation: glowing 1s infinite;
+  animation: glowing 1s infinite;
 }
 .page-title {
   padding-top: 20px;
@@ -2093,6 +2214,16 @@ small.hint {
   margin: 70px 0 0 -320px;
   min-height: 530px;
   z-index: 33;
+}
+.cover-modal-inner.narrow {
+  width: 500px;
+  margin-left: -250px;
+}
+.cover-modal-inner.narrow .panel-default {
+  width: 500px;
+}
+.cover-modal-inner .panel-default {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
 }
 #permission-modal .ib,
 #setting-modal .ib,

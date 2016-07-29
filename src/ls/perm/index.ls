@@ -1,7 +1,14 @@
 angular.module \plotDB
-  .controller \permEdit,
+  ..controller \test3,
   <[$scope]> ++ ($scope) ->
-    #
+    $scope.shown = false
+  ..controller \permEdit,
+  <[$scope $timeout]> ++ ($scope, $timeout) ->
+    $scope.setPerm = ->
+      $scope.perm = it or {list: [], switch: 'draft'}
+      $scope.check!
+      if $scope.perm.[]list.length == 0 => $scope.add-global!
+
     # Referemce spEC
     $scope.spec = do
       permlist: <[list read comment fork write admin]> #default: all for comment
@@ -13,7 +20,7 @@ angular.module \plotDB
         switch: "..."
 
     $scope.entities = []
-    $scope.tab = "permission"
+    $scope.tab = "publish"
     $scope.perm = do
       list: [
         {target: null, type: "global", perm: "fork", displayname: "Everyone", username: "and anonymous user"},
@@ -40,7 +47,9 @@ angular.module \plotDB
       idx = $scope.perm.list.indexOf it
       if idx < 0 => return
       $scope.perm.list.splice idx, 1
-      if $scope.perm.list.length == 0 => $scope.add-everyone!
+      if $scope.perm.list.length == 0 =>
+        $scope.has-global = false
+        $scope.add-global!
       else $scope.check!  
     $scope.add-member = ->
       for node in $scope.perm-edit.list =>
@@ -60,6 +69,6 @@ angular.module \plotDB
     $scope.purify = ->
       $scope.perm.list.map -> {} <<< it{type, target, perm}
     $scope.check = ->
-      $scope.has-global = !!$scope.perm.list.filter(->it.type == \global).length
+      $scope.has-global = !!$scope.perm.[]list.filter(->it.type == \global).length
     $scope.check!
 

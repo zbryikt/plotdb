@@ -21,17 +21,25 @@ label Embed Code
     input(type="checkbox",ng-model="sharePanel.aspectRatio",
     ng-disabled="perm.switch!='publish'")
     small(style="vertical-align:text-top") Preserve Aspect Ratio
-textarea.form-control(rows="3",ng-disabled="perm.switch!='publish'")
+textarea.form-control(rows="2",ng-disabled="perm.switch!='publish'")
 br
-label Share
-#share-buttons(ng-class="{'disabled':perm.switch!='publish'}")
-  a(ng-attr-href="{{sharePanel.social.facebook}}",target="_blank")
-    i.fa.fa-facebook-square(style="color:#3b5998")
-  a(ng-attr-href="{{sharePanel.social.twitter}}", target="_blank")
-    i.fa.fa-twitter-square(style="color:#00a0dc")
-  a(ng-attr-href="{{sharePanel.social.pinterest}}",target="_blank")
-    i.fa.fa-pinterest-square(style="color:#bd081c")
-  a(ng-attr-href="{{sharePanel.social.linkedin}}", target="_blank")
-    i.fa.fa-linkedin-square(style="color:#00a0dc")
-  a(ng-attr-href="{{sharePanel.social.email}}",target="_blank")
-    i.fa.fa-envelope-square(style="color:#444")
+.row
+  .col-sm-6
+    label Title
+    input.form-control.input-sm(placeholder="title shown in social media")
+    br
+    label Share
+    #share-buttons(ng-class="{'disabled':perm.switch!='publish'}")
+      a(ng-attr-href="{{sharePanel.social.facebook}}",target="_blank")
+        i.fa.fa-facebook-square(style="color:#3b5998")
+      a(ng-attr-href="{{sharePanel.social.twitter}}", target="_blank")
+        i.fa.fa-twitter-square(style="color:#00a0dc")
+      a(ng-attr-href="{{sharePanel.social.pinterest}}",target="_blank")
+        i.fa.fa-pinterest-square(style="color:#bd081c")
+      a(ng-attr-href="{{sharePanel.social.linkedin}}", target="_blank")
+        i.fa.fa-linkedin-square(style="color:#00a0dc")
+      a(ng-attr-href="{{sharePanel.social.email}}",target="_blank")
+        i.fa.fa-envelope-square(style="color:#444")
+  .col-sm-6
+    label Description
+    textarea.form-control.input-sm(rows="5",placeholder="summary shown in social media")
