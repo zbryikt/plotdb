@@ -6,6 +6,8 @@ angular.module \plotDB
   <[$scope $timeout]> ++ ($scope, $timeout) ->
     $scope.setPerm = ->
       $scope.perm = it or {list: [], switch: 'draft'}
+      if !$scope.perm.list => $scope.perm.list = []
+      if !$scope.perm.switch => $scope.perm.switch = 'draft'
       $scope.check!
       if $scope.perm.[]list.length == 0 => $scope.add-global!
 

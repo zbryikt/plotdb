@@ -70,7 +70,7 @@ x$.directive('ngfile', ['$compile'].concat(function($compile){
     }
   };
 }));
-x$.directive('ngselect2', ['$compile', 'teamService'].concat(function($compile, teamService){
+x$.directive('ngselect2', ['$compile', 'entityService'].concat(function($compile, entityService){
   return {
     require: [],
     restrict: 'A',
@@ -94,7 +94,7 @@ x$.directive('ngselect2', ['$compile', 'teamService'].concat(function($compile, 
         return cval !== nval;
       };
       if (s.type) {
-        config = teamService.config.select2[s.type];
+        config = entityService.config.select2[s.type];
       } else {
         config = {};
       }

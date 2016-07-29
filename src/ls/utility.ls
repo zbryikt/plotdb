@@ -18,7 +18,7 @@ angular.module \plotDB
     scope: do
       model: \=ngData
     link: (s,e,a,c) -> e.on \change ~> s.$apply -> s.model = e.0.files
-  ..directive \ngselect2, <[$compile teamService]> ++ ($compile, teamService) -> do
+  ..directive \ngselect2, <[$compile entityService]> ++ ($compile, entityService) -> do
 
     require: <[]>
     restrict: \A
@@ -33,7 +33,7 @@ angular.module \plotDB
         if !Array.isArray(cval) => return cval != nval
         [cval,nval] = [cval,nval].map -> (it or []).join(",")
         cval != nval
-      if s.type => config = teamService.config.select2[s.type]
+      if s.type => config = entityService.config.select2[s.type]
       else config = {}
       if s.istag => config <<< tags: true, tokenSeparators: [',',' ']
       $(e).select2 config

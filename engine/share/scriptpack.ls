@@ -78,6 +78,7 @@
         /js/theme/index.js
         /js/entity/user.js
         /js/entity/team.js
+        /js/entity/entity.js
         /js/site.js
         /js/service.js
       ]>

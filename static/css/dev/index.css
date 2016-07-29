@@ -38,6 +38,12 @@
   opacity: 0.2;
   cursor: not-allowed;
 }
+.perm-item .btn i.fa {
+  display: none;
+}
+.perm-item .btn.active i.fa {
+  display: inline;
+}
 .perm-panel .perm-list {
   min-height: 100px;
 }

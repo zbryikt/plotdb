@@ -16,9 +16,10 @@ mixin configPanel(perm,tabs)
         .btn-group
           .btn.btn-default.btn-sm(ng-class="{'active':perm.switch=='publish'}",ng-click="perm.switch='publish'")
             i.fa.fa-check.text-success
-            span Published
+            span  Published
           .btn.btn-default.btn-sm(ng-class="{'active':perm.switch=='draft'}",ng-click="perm.switch='draft'")
-            span &nbsp; Draft
+            i.fa.fa-check.text-success
+            span  Draft
         .pull-right.btn.btn-text.btn-sm(
         ng-show="perm.switch=='publish'") #[b visible] in embed code / share link
         .pull-right.btn.btn-text.btn-sm(

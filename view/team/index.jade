@@ -55,4 +55,13 @@ block body
       .team-member
         .avatar.xl.empty
         small.grayed add more charts
+      br
+      br
+      .text-left(style="width:600px;margin:auto")
+        label Add charts
+        .input-group.long
+          div: select.form-control(multiple="multiple",ngselect2,ng-data="newCharts",type="chart")
+          .input-group-btn
+            .btn.btn-default #[i.fa.fa-plus] add
+
   include /view/module/footer

@@ -11,6 +11,12 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
       list: [],
       'switch': 'draft'
     };
+    if (!$scope.perm.list) {
+      $scope.perm.list = [];
+    }
+    if (!$scope.perm['switch']) {
+      $scope.perm['switch'] = 'draft';
+    }
     $scope.check();
     if (((ref$ = $scope.perm).list || (ref$.list = [])).length === 0) {
       return $scope.addGlobal();
