@@ -1,0 +1,38 @@
+mixin permDropdown(baseObj)
+  .btn.btn-default.btn-sm.dropdown-toggle(data-toggle="dropdown")
+    span(ng-show=baseObj + ".perm=='admin'") all privileges
+    span(ng-show=baseObj + ".perm=='write'") can edit
+    span(ng-show=baseObj + ".perm=='comment'") can comment
+    span(ng-show=baseObj + ".perm=='fork'") can fork
+    span(ng-show=baseObj + ".perm=='read'") can read
+    span &nbsp;
+    span.caret
+  ul.dropdown-menu
+    li(ng-class="{'active':" + baseObj + ".perm=='admin'}",ng-click= baseObj + ".perm='admin'"): a all privileges
+    li(ng-class="{'active':" + baseObj + ".perm=='write'}",ng-click= baseObj + ".perm='write'"): a can edit
+    li(ng-class="{'active':" + baseObj + ".perm=='comment'}",ng-click= baseObj + ".perm='comment'"): a can comment
+    li(ng-class="{'active':" + baseObj + ".perm=='fork'}",ng-click= baseObj + ".perm='fork'"): a can fork
+    li(ng-class="{'active':" + baseObj + ".perm=='read'}",ng-click= baseObj + ".perm='read'"): a can read
+#permission-panel
+  .input-group(ng-class="{'long':permEdit.list.length>0}")
+    div: select.form-control.input-sm(ngselect2,ng-data="permEdit.list",ng-detail="permEdit.detail",
+    type="entity",multiple="multiple")
+    .input-group-btn
+      +permDropdown("permEdit")
+      .btn.btn-default.btn-sm(ng-click="addMember()") Add
+  .btn.btn-link(ng-click="addToken()"): small #[i.fa.fa-link] generate shareable link
+  .btn.btn-link.pull-right(ng-class="{'disabled':hasGlobal}",ng-click="addGlobal()"): small #[i.fa.fa-users] add everyone
+  hr(style="margin:4px auto 6px")
+  .perm-list
+    .perm-item(ng-show="!perm.list.length")
+      .grayed no custom configuration...
+    .perm-item(ng-cloak,ng-repeat="perm in perm.list")
+      .avatar(ng-attr-style="background-image:url(/s/avatar/{{perm.avatar || 0}}.jpg)")
+      .info
+        .name
+          span {{perm.displayname}}
+          small(ng-cloak): a(ng-show="perm.type=='token'",ng-attr-href="/chart/1?token={{perm.target}}",target="_blank") #[i.fa.fa-link] 
+        .email {{perm.username}}
+      .btn.btn-text.pull-right(ng-click="removeMember(perm)") &times;
+      .dropdown.pull-right
+        +permDropdown("perm")
