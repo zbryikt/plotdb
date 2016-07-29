@@ -169,7 +169,6 @@ engine.router.api.put \/team/:id, (req, res) ->
   id = parseInt(req.params.id)
   data = req.body
   if data.key != id => return aux.r400 res, [true, data.key, \key-mismatch]
-
   io.query "select * from teams where key = $1", [id]
     .then (r = {}) ->
       team = r.[]rows.0
@@ -186,7 +185,7 @@ engine.router.api.put \/team/:id, (req, res) ->
       pairs = io.aux.insert.assemble pairs
       io.query(
         "update teams set #{pairs.0} = #{pairs.1} where key = $#{pairs.2.length + 1}"
-        pairs.2 ++ [req.user.key]
+        pairs.2 ++ [id]
       )
     .then (r={}) ->
       res.send {}
