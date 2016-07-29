@@ -17,8 +17,13 @@ plotd3.html.tooltip = (root, sel, cb) ->
     update = ->
       pbox = popup.0.0.getBoundingClientRect!
       popup.style top: "#{box.top + box.height / 2 - pbox.height/2 - rbox.top}px", opacity: 1
-      if isLeft => popup.style left: "#{box.left - pbox.width - 10 - rbox.left}px"
-      else popup.style left: "#{box.left + box.width + 10 - rbox.left}px"
+      left = if isLeft => box.left - pbox.width - 10 - rbox.left
+      else box.left + box.width + 10 - rbox.left
+      if left < 3 => left = 3
+      if left + pbox.width >= rbox.width - 3=> left = rbox.width - pbox.width - 3
+      popup.style left: "#{left}px"
+      #if isLeft => popup.style left: "#{box.left - pbox.width - 10 - rbox.left}px"
+      #else popup.style left: "#{box.left + box.width + 10 - rbox.left}px"
     if popup.style("display") != \block =>
       popup.style display: \block, opacity: 0.01
       setTimeout update, 0
