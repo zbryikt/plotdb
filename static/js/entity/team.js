@@ -30,6 +30,8 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
   $scope.team = new teamService.team(window.team || {});
   $scope.members = [];
   $scope.newMembers = [];
+  $scope.charts = [];
+  $scope.newCharts = [];
   $scope.removeMember = function(tid, mid){
     return $http({
       url: "/d/team/" + tid + "/member/" + mid,
@@ -38,6 +40,21 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
       return plNotify.send('success', "members removed");
     }).error(function(d){
       return plNotify.send('error', "failed to remove member, try again later?");
+    });
+  };
+  $scope.addCharts = function(tid){
+    console.log('123ok');
+    if (!$scope.newCharts || !$scope.newCharts.length) {
+      return;
+    }
+    return $http({
+      url: "/d/team/" + tid + "/chart/",
+      method: 'post',
+      data: $scope.newCharts
+    }).success(function(d){
+      return plNotify.send('success', "charts added");
+    }).error(function(d){
+      return plNotify.send('error', "failed to add charts. try again later?");
     });
   };
   $scope.addMembers = function(tid){

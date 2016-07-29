@@ -52,16 +52,21 @@ block body
       label works
       br
       br
-      .team-member
+      each chart in charts
+        a.team-chart(href="/chart/" + chart.key)
+          .avatar.xl(style="background-image:url(/s/chart/" + (chart.key) + ".png)")
+          span= chart.name
+      .team-chart
         .avatar.xl.empty
         small.grayed add more charts
+      br
       br
       br
       .text-left(style="width:600px;margin:auto")
         label Add charts
         .input-group.long
-          div: select.form-control(multiple="multiple",ngselect2,ng-data="newCharts",type="chart")
+          div: select.form-control.input-sm(multiple="multiple",ngselect2,ng-data="newCharts",type="chart")
           .input-group-btn
-            .btn.btn-default #[i.fa.fa-plus] add
+            .btn.btn-default(ng-click="addCharts("+team.key+")") #[i.fa.fa-plus] add
 
   include /view/module/footer

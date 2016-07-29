@@ -20,6 +20,8 @@ angular.module \plotDB
     $scope.team = new teamService.team(window.team or {})
     $scope.members = []
     $scope.newMembers = []
+    $scope.charts = []
+    $scope.newCharts = []
 
     $scope.remove-member = (tid, mid) ->
       $http do
@@ -30,6 +32,17 @@ angular.module \plotDB
       .error (d) ->
         plNotify.send \error, "failed to remove member, try again later?"
 
+    $scope.add-charts = (tid) ->
+      console.log \123ok
+      if !$scope.newCharts or !$scope.newCharts.length => return
+      $http do
+        url: "/d/team/#tid/chart/"
+        method: \post
+        data: $scope.newCharts
+      .success (d) ->
+        plNotify.send \success, "charts added"
+      .error (d) ->
+        plNotify.send \error, "failed to add charts. try again later?"
     $scope.add-members = (tid) ->
       if !$scope.newMembers or !$scope.newMembers.length => return
       $http do

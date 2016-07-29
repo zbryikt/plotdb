@@ -3709,15 +3709,25 @@ small.hint {
   display: inline-block;
   vertical-align: top;
 }
-.team-member {
+.team-member,
+.team-chart {
   width: 128px;
   height: 100px;
   display: inline-block;
   vertical-align: top;
   text-align: center;
 }
-.team-member .avatar {
+.team-member .avatar,
+.team-chart .avatar {
   margin: 0 auto 5px;
+}
+.team-chart {
+  width: 180px;
+}
+.team-chart .avatar {
+  width: 160px;
+  height: 100px;
+  border: 1px solid #ccc;
 }
 .team-members.compact .team-member {
   width: 32px;
@@ -3739,6 +3749,7 @@ span.select2-container--default .select2-selection--multiple {
 .input-group span.select2-container--default .select2-selection--multiple .select2-selection__rendered {
   padding: 0;
   line-height: initial;
+  vertical-align: top;
 }
 .input-group.long .input-sm + span.select2-container--default .select2-selection--multiple {
   min-height: 60px;
