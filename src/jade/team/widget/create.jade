@@ -14,7 +14,9 @@
     label team avatar
     small.grayed  ( suggest: 200 x 200 px )
     .avatar-upload
-      .avatar-current
+      .avatar-current(ng-cloak,ng-show="team.avatar",
+      ng-attr-style="background-image:url(/s/avatar/{{team.avatar}}.jpg)")
+      .avatar-current(ng-show="!team.avatar")
       | or 
       .avatar-upload-btn(ng-attr-style="background-image: url({{avatar.preview}})",
       ng-class="{'active':avatar.preview}"): input(type="file",ngfile,ng-data="avatar.files")
