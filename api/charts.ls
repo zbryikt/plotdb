@@ -14,9 +14,17 @@ if true =>
     next!
 
 engine.router.api.get "/chart/", (req, res) ->
-  keyword = (req.query.keyword or "").split(/[, ]/).map(->it.trim!).filter(->it)
   offset = req.query.offset or 0
   limit = (req.query.limit or 20) <? 100
+  keyword = (req.query.keyword or "").split(/[, ]/).map(->it.trim!).filter(->it)
+  simple = !!req.query.simple
+  if simple =>
+    return io.query(
+      "select key, name from charts where owner = $1 and name ~ ANY($2) or key::text ~ ANY($2) limit $3 offset $4",
+      [(req.{}user.key or 0), keyword, limit, offset]
+    )
+      .then (r={}) -> res.send(r.[]rows or [])
+      .catch aux.error-handler res
   fav = req.query.fav and req.user
   overlap = do
     basetype: (req.query.type or "").split(\,).filter(->it)
@@ -40,9 +48,9 @@ engine.router.api.get "/chart/", (req, res) ->
 
   #TODO check if we need to optimize this
   io.query([
-    'select users.displayname as ownername,'
-    'charts.key, charts.name, charts.description, charts.basetype, charts.visualencoding, charts.category,'
-    'charts.tags, charts.likes, charts.searchable, charts.dimlen, charts.createdtime, charts.modifiedtime'
+    "select users.displayname as ownername,"
+    "charts.key, charts.name, charts.description, charts.basetype, charts.visualencoding, charts.category,"
+    " charts.tags, charts.likes, charts.searchable, charts.dimlen, charts.createdtime, charts.modifiedtime"
     "from charts,users" + (if fav => ",likes" else "")
     "where users.key = charts.owner and"
     (conditions.map(->it.0) ++ [
