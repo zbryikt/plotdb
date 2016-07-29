@@ -77,7 +77,8 @@ x$.directive('ngselect2', ['$compile', 'teamService'].concat(function($compile, 
     scope: {
       model: '=ngData',
       istag: '@istag',
-      type: '@type'
+      type: '@type',
+      detail: '=ngDetail'
     },
     link: function(s, e, a, c){
       var changed, config, this$ = this;
@@ -106,7 +107,10 @@ x$.directive('ngselect2', ['$compile', 'teamService'].concat(function($compile, 
         if (changed()) {
           return setTimeout(function(){
             return s.$apply(function(){
-              return s.model = $(e).val();
+              s.model = $(e).val();
+              if (a.$attr["ngDetail"]) {
+                return s.detail = $(e).select2('data');
+              }
             });
           }, 0);
         }
