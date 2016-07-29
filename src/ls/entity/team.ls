@@ -50,11 +50,10 @@ angular.module \plotDB
       placeholder: "search by user, team name or email address..."
     select2-config.entity.ajax = {} <<< select2-config.ajax <<< url: "http://localhost/d/entity/"
     select2-config.entity.ajax.processResults = (data,params) ->
-      processResults: (data,params) ->
-        params.page = params.page or 0
-        return do
-          results: data.map(->it <<< {id: "#{it.type}:#{it.key}"})
-          pagination: { more: data and data.length }
+      params.page = params.page or 0
+      return do
+        results: data.map(->it <<< {id: "#{it.type}:#{it.key}"})
+        pagination: { more: data and data.length }
 
     select2-config.team = {} <<< select2-config.base <<< do
       placeholder: "search by team name or email address..."
@@ -64,21 +63,22 @@ angular.module \plotDB
       placeholder: "search by user name or email address..."
     select2-config.user.ajax = {} <<< select2-config.ajax <<< url: "http://localhost/d/user/"
 
-    object = ->
+    object = (config) ->
       @ <<< do
         name: \untitled
         description: null
         owner: null, createdtime: new Date!, modifiedtime: new Date!
         _type: {location: \server, name: \team}
         permission: { switch: [], value: []}
+      @ <<< config
       @
     teamService = baseService.derive \team ,service, object
     teamService.{}config.select2 = select2-config
     teamService
   ..controller \teamEdit,
-  <[$scope $http plNotify teamService eventBus]> ++
-  ($scope, $http, plNotify, teamService, eventBus) ->
-    $scope.team = new teamService.team!
+  <[$scope $http $timeout plNotify teamService eventBus]> ++
+  ($scope, $http, $timeout, plNotify, teamService, eventBus) ->
+    $scope.team = new teamService.team(window.team or {})
     $scope.members = []
     $scope.newMembers = []
 
@@ -167,7 +167,13 @@ angular.module \plotDB
           .then ->
             $scope.$apply ->
               plNotify.send \success, "team #{if is-update => \updated else \created}."
-              $scope.redirect 1000
+              if !is-update => $scope.redirect 1000
+              else
+                $scope.redirect 1000
+                $timeout (->
+                  eventBus.fire 'loading.dimmer.off'
+                  eventBus.fire 'team-panel.create.dismiss'
+                ), 1000
           .catch (err) ->
             $scope.$apply ->
               plNotify.send \warning, "team created, but... "
