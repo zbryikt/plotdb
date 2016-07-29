@@ -3442,7 +3442,8 @@ x$.directive('ngselect2', ['$compile', 'teamService'].concat(function($compile, 
     scope: {
       model: '=ngData',
       istag: '@istag',
-      type: '@type'
+      type: '@type',
+      detail: '=ngDetail'
     },
     link: function(s, e, a, c){
       var changed, config, this$ = this;
@@ -3471,7 +3472,10 @@ x$.directive('ngselect2', ['$compile', 'teamService'].concat(function($compile, 
         if (changed()) {
           return setTimeout(function(){
             return s.$apply(function(){
-              return s.model = $(e).val();
+              s.model = $(e).val();
+              if (a.$attr["ngDetail"]) {
+                return s.detail = $(e).select2('data');
+              }
             });
           }, 0);
         }
@@ -9648,17 +9652,13 @@ x$.service('teamService', ['$rootScope', '$http', 'plConfig', 'IOService', 'base
   });
   select2Config.entity.ajax = (ref$ = import$({}, select2Config.ajax), ref$.url = "http://localhost/d/entity/", ref$);
   select2Config.entity.ajax.processResults = function(data, params){
+    params.page = params.page || 0;
     return {
-      processResults: function(data, params){
-        params.page = params.page || 0;
-        return {
-          results: data.map(function(it){
-            return it.id = it.type + ":" + it.key, it;
-          }),
-          pagination: {
-            more: data && data.length
-          }
-        };
+      results: data.map(function(it){
+        return it.id = it.type + ":" + it.key, it;
+      }),
+      pagination: {
+        more: data && data.length
       }
     };
   };
@@ -9670,7 +9670,7 @@ x$.service('teamService', ['$rootScope', '$http', 'plConfig', 'IOService', 'base
     placeholder: "search by user name or email address..."
   });
   select2Config.user.ajax = (ref$ = import$({}, select2Config.ajax), ref$.url = "http://localhost/d/user/", ref$);
-  object = function(){
+  object = function(config){
     import$(this, {
       name: 'untitled',
       description: null,
@@ -9686,14 +9686,15 @@ x$.service('teamService', ['$rootScope', '$http', 'plConfig', 'IOService', 'base
         value: []
       }
     });
+    import$(this, config);
     return this;
   };
   teamService = baseService.derive('team', service, object);
   (teamService.config || (teamService.config = {})).select2 = select2Config;
   return teamService;
 }));
-x$.controller('teamEdit', ['$scope', '$http', 'plNotify', 'teamService', 'eventBus'].concat(function($scope, $http, plNotify, teamService, eventBus){
-  $scope.team = new teamService.team();
+x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamService', 'eventBus'].concat(function($scope, $http, $timeout, plNotify, teamService, eventBus){
+  $scope.team = new teamService.team(window.team || {});
   $scope.members = [];
   $scope.newMembers = [];
   $scope.removeMember = function(tid, mid){
@@ -9847,7 +9848,15 @@ x$.controller('teamEdit', ['$scope', '$http', 'plNotify', 'teamService', 'eventB
       return promise.then(function(){
         return $scope.$apply(function(){
           plNotify.send('success', "team " + (isUpdate ? 'updated' : 'created') + ".");
-          return $scope.redirect(1000);
+          if (!isUpdate) {
+            return $scope.redirect(1000);
+          } else {
+            $scope.redirect(1000);
+            return $timeout(function(){
+              eventBus.fire('loading.dimmer.off');
+              return eventBus.fire('team-panel.create.dismiss');
+            }, 1000);
+          }
         });
       })['catch'](function(err){
         return $scope.$apply(function(){
