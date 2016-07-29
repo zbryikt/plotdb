@@ -20,7 +20,7 @@ engine.router.api.get "/chart/", (req, res) ->
   simple = !!req.query.simple
   if simple =>
     return io.query(
-      "select key, name from charts where owner = $1 and name ~ ANY($2) or key::text ~ ANY($2) limit $3 offset $4",
+      "select key, name from charts where owner = $1 and (name ~ ANY($2) or key::text ~ ANY($2)) limit $3 offset $4",
       [(req.{}user.key or 0), keyword, limit, offset]
     )
       .then (r={}) -> res.send(r.[]rows or [])

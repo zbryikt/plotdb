@@ -130,6 +130,13 @@ batch-add-members = (tid,uids) ->
     "on conflict do nothing"
   ].join(" "), [tid] ++ uids)
 
+batch-add-charts = (tid,cids) ->
+  io.query([
+    "insert into teamcharts (team,chart) values"
+    ["($1,$#i)" for i from 2 to cids.length + 1].join(",")
+    "on conflict do nothing"
+  ].join(" "), [tid] ++ cids)
+
 engine.router.api.post \/team/, (req, res) ->
   [team,members] = [{},[]]
   bluebird.resolve!
@@ -233,6 +240,15 @@ engine.router.api.post \/team/:tid/member/, aux.numids false, <[tid]>, (req, res
       if !Array.isArray(req.body) => return aux.reject 400
       members = req.body.map(->+it).filter(->it and !isNaN(it))
       batch-add-members req.params.tid, members
+    .then -> res.send!
+    .catch aux.error-handler res
+#TODO length limit
+engine.router.api.post \/team/:tid/chart/, aux.numids false, <[tid]>, (req, res) ->
+  team-ownership req, res
+    .then ->
+      if !Array.isArray(req.body) => return aux.reject 400
+      charts = req.body.map(->+it).filter(->it and !isNaN(it))
+      batch-add-charts req.params.tid, charts
     .then -> res.send!
     .catch aux.error-handler res
 
