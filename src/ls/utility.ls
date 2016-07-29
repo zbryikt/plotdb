@@ -26,6 +26,7 @@ angular.module \plotDB
       model: \=ngData
       istag: \@istag
       type: \@type
+      detail: \=ngDetail
     link: (s,e,a,c) ->
       changed = ->
         [cval,nval] = [s.model, $(e).val!]
@@ -39,7 +40,11 @@ angular.module \plotDB
       $(e).select2 config .on \change, ~>
         # angularjs create object for chart if s.model = chart.blah and chart = undefined.
         # be aware of this behavior
-        if changed! => setTimeout (-> s.$apply -> s.model = $(e)val!),0
+        if changed! => setTimeout (->
+          s.$apply ->
+            s.model = $(e)val!
+            if a.$attr["ngDetail"] => s.detail = $(e).select2('data')
+        ),0
       s.$watch 'model', (vals) ~>
         # escaped html from jquery.
         # jquery.val won't help select2 build option tags so we have to do this by ourselves
