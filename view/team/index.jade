@@ -20,7 +20,8 @@ block body
     .cover-modal-inner(ng-cloak,ng-show="teamPanel.create.toggled")
       include /team/widget/create.jade
     .text-center(style="margin-top:-55px")
-      .btn.btn-default(ng-click="teamPanel.create.toggle()") #[i.fa.fa-pencil] Edit
+      .btn.btn-default(ng-click="teamPanel.create.toggle()",
+      ng-cloak,ng-show=team.owner+"==user.data.key") #[i.fa.fa-pencil] Edit
     br
     br
     .text-center
