@@ -9,14 +9,28 @@ edit-limit = {strategy: \hard, limit: 30, upper-delta: 120, json: true}
 
 engine.router.api.get \/entity/, entity.search!
 
+get-perm-value = (user, perm) ->
+  if !perm or !perm.[]list.length => return 3
+  permlist = (
+    perm.list.filter(->it.type==\user and it.target == req.user.key) ++
+    user.[]teams.map((t)->perm.list.filter(->it.type==\team and it.target==t)) ++
+    perm.list.filter(->it.type==\global)
+  )
+  permtype = <[list read fork comment write admin]>
+  value = Math.max.apply null, permlist.map(->permtype.indexOf(it.perm))
+  return value
+
 get-team = (req, res) ->
   payload = {}
   io.query([ 'select * from teams where key=$1' ].join(" "), [req.params.id])
     .then (r={}) ->
       team = r.[]rows.0
       if !team => return aux.reject 404
-      if (team.{}permission.[]switch.indexOf(\public) < 0)
-      and (!req.user or team.owner != req.user.key) => return aux.reject 403
+      perm = team.{}permission
+      permval = get-perm-value req.user, perm
+      if permval < 1 => return aux.reject 403
+      #if (team.{}permission.[]switch.indexOf(\public) < 0)
+      #and (!req.user or team.owner != req.user.key) => return aux.reject 403
       payload.team = team
       promises = []
       promises.push(
@@ -50,14 +64,6 @@ get-team = (req, res) ->
       bluebird.all promises
     .then -> 
       bluebird.resolve payload
-
-/*engine.app.get \/team/:id, aux.numid false, (req, res) ->
-  get-team req, res
-    .then (payload) -> 
-      res.render 'view/team/index.jade', {payload}
-      return null
-    .catch aux.error-handler res, true
-*/
 
 engine.router.api.get \/team/, (req, res) ->
   if !req.query.detail => return entity.search(2) req, res
