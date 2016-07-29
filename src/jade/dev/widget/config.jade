@@ -16,17 +16,17 @@ block body
           a(href="#") #[i.fa.fa-lock] Permission
         li(ng-class="{'active':tab=='settings'}",ng-click="tab='settings'")
           a(href="#") #[i.fa.fa-cog] Settings
-      .perm-item
-        .btn.btn-group
+      .perm-item(style="padding: 10px 0")
+        .btn-group
           .btn.btn-default.btn-sm(ng-class="{'active':perm.switch=='publish'}",ng-click="perm.switch='publish'")
             i.fa.fa-check.text-success
             span Published
           .btn.btn-default.btn-sm(ng-class="{'active':perm.switch=='draft'}",ng-click="perm.switch='draft'")
             span &nbsp; Draft
-        .pull-right.btn.btn-text.btn-sm(style="margin-top:8px",
-        ng-show="perm.switch=='publish'",ng-cloak) #[b visible] in embed code / share link
-        .pull-right.btn.btn-text.btn-sm(style="margin-top:8px",
-        ng-show="perm.switch=='draft'",ng-cloak) #[b invisible] in embed code / share link
+        .pull-right.btn.btn-text.btn-sm(ng-cloak,
+        ng-show="perm.switch=='publish'") #[b visible] in embed code / share link
+        .pull-right.btn.btn-text.btn-sm(ng-cloak,
+        ng-show="perm.switch=='draft'") #[b invisible] in embed code / share link
       .sep
       div(ng-show="tab=='permission'")
         include permission.jade
