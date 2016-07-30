@@ -1,0 +1,56 @@
+extends /base.jade
+block vars
+  - var rootid = "exploreview"
+  - var url = "https://plotdb.com/chart/explore/"
+block head
+  link(rel="stylesheet",type="text/css",href="/css/select-new.css")
+  style(type="text/css").
+    .input-group.long .form-control {
+      height: 60px;
+    }
+    .input-group.long .btn {
+      height: 60px;
+    }
+    .input-group.long .select-box-dropdown {
+      top: 60px
+    }
+mixin selectbox(data,type)
+  div(ng-controller="plSelectController",ng-init="init("+data+","+type+")")
+    .select-box(plselect,ng-portal="portal",ng-cloak)
+      .select-input.form-control
+        .select-option(ng-repeat="item in portal.data")
+          i.fa.fa-close(ng-click="remove(item,$event)")
+          span
+            .avatar.xs(ng-attr-style="background-image:url(/s/avatar/{{item.avatar || 0}}.jpg)")
+            .name {{item.displayname}}
+        input
+      .select-dropdown
+        div &nbsp;
+        .select-option(ng-repeat="opt in portal.options",ng-click="add(opt,$event)")
+          .avatar(ng-attr-style="background-image:url(/s/avatar/{{opt.avatar || 0}}.jpg)")
+          span {{opt.displayname}}
+        .select-hint.grayed(ng-show="portal.loading")
+          img(src="/assets/img/loading.gif")
+          span loading...
+        .select-hint.grayed(ng-show="portal.needchar>0") type {{portal.needchar}} more chars... 
+        .select-hint.grayed(ng-show="!portal.options.length && portal.needchar<=0 && !portal.loading") no result
+
+block body
+  .spc1
+  .page-header: .inner
+    .title Teams
+    .desc create your own teams
+  #root(ng-controller="selecttest")
+    br
+    div(style="max-width:800px;margin:auto")
+
+      +selectbox("blah")
+      br
+      br
+      .input-group
+        +selectbox("blah")
+        .input-group-btn
+          .btn.btn-default click #[span.caret]
+          .btn.btn-default click
+  script.
+    $('.select-box').on('click', function() { $('.select-box-dropdown').show(); });

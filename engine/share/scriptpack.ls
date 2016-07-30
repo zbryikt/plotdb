@@ -81,6 +81,7 @@
         /js/entity/entity.js
         /js/site.js
         /js/service.js
+        /js/select.js
       ]>
     legacy: <[
         /lib/topojson/1.6.24/index.min.js
