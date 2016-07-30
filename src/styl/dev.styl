@@ -693,65 +693,6 @@ small.hint
   opacity: 0.2
   cursor: not-allowed
 
-.cover-modal, #permission-modal, #setting-modal, #data-edit-modal
-  position: fixed
-  top: 0
-  left: 0
-  width: 100%
-  height: 100%
-  background: rgba(0,0,0,0.5)
-  z-index: index(order, 'high-modal')
-
-.cover-modal-inner
-  position: absolute
-  top: 0
-  left: 50%
-  width: 640px
-  margin: 70px 0 0 -320px
-  min-height: 530px
-  z-index: index(order, 'high-modal-inner')
-
-.cover-modal-inner.narrow
-  width: 500px
-  margin-left: -250px
-  .panel-default
-    width: 500px
-.cover-modal-inner .panel-default
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4)
-
-#permission-modal, #setting-modal, #data-edit-modal, #setting-modal-inner
-  .ib
-    width: 640px
-    height: 530px
-    background: #fff
-    border-radius: 3px
-    box-shadow: 0 4px 4px rgba(0,0,0,0.5)
-    padding: 10px
-    margin: 70px auto 0
-    position: relative
-  h3
-    margin: 0
-    padding: 8px 0 8px 10px
-    border-bottom: 1px solid #eee
-
-  .save-hint-btn
-    margin-right: 5px
-    &.btn-warning
-      animation(jump 1s infinite linear)
-
-#data-edit-modal .ib
-  width: 90%
-  // TODO redesign data edit modal to fit into different screen
-  height: 580px
-
-#setting-modal-inner .ib
-  height: auto
-  z-index: index(order, 'high-modal-inner')
-  position: absolute
-  left: 50%
-  margin-left: -320px
-
-
 #field-agent
   position: absolute
   z-index: 99999

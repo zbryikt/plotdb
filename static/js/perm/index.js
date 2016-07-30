@@ -148,7 +148,10 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
       return it.type === 'global';
     }).length;
   };
-  return $scope.check();
+  $scope.check();
+  return $scope.save = function(){
+    return console.log($scope.perm);
+  };
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

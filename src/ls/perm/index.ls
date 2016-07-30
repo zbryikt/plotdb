@@ -73,4 +73,5 @@ angular.module \plotDB
     $scope.check = ->
       $scope.has-global = !!$scope.perm.[]list.filter(->it.type == \global).length
     $scope.check!
-
+    $scope.save = ->
+      console.log $scope.perm

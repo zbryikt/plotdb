@@ -16,12 +16,11 @@ block body
     else
       .desc.grayed ( no descriptiont... )
   #root.narrow(ng-controller="teamBase"): div(ng-controller="teamEdit")
-    .cover-modal(ng-cloak,ng-show="teamPanel.create.toggled")
-    .cover-modal-inner(ng-cloak,ng-show="teamPanel.create.toggled")
+    +cover-modal("teamPanel.create.toggled","teamPanel.create.toggle()")
       include /team/widget/create.jade
     .text-center(style="margin-top:-55px")
-      .btn.btn-default(ng-click="teamPanel.create.toggle()",
-      ng-cloak,ng-show=team.owner+"==user.data.key") #[i.fa.fa-pencil] Edit
+      if userPermission[1] == "admin"
+        .btn.btn-default(ng-click="teamPanel.create.toggle()") #[i.fa.fa-pencil] Edit
     br
     br
     .text-center
@@ -62,11 +61,12 @@ block body
       br
       br
       br
-      .text-left(style="width:600px;margin:auto")
-        label Add charts
-        .input-group.long
-          div: select.form-control.input-sm(multiple="multiple",ngselect2,ng-data="newCharts",type="chart")
-          .input-group-btn
-            .btn.btn-default(ng-click="addCharts("+team.key+")") #[i.fa.fa-plus] add
+      if userPermission[0] >= 5
+        .text-left(style="width:600px;margin:auto")
+          label Add charts
+          .input-group.long
+            div: select.form-control.input-sm(multiple="multiple",ngselect2,ng-data="newCharts",type="chart")
+            .input-group-btn
+              .btn.btn-default(ng-click="addCharts("+team.key+")") #[i.fa.fa-plus] add
 
   include /view/module/footer

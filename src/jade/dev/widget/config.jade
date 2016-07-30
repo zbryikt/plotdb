@@ -33,6 +33,6 @@ mixin configPanel(perm,tabs)
           include publish.jade
 
     .panel-footer.text-right
-      .btn.btn-success.btn-sm(ng-class="{'btn-glowing': needSave}") SAVE
+      .btn.btn-success.btn-sm(ng-class="{'btn-glowing': needSave}",ng-click="save()") SAVE
       span &nbsp;
       .btn.btn-default.btn-sm Cancel
