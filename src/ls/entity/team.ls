@@ -18,7 +18,7 @@ angular.module \plotDB
   <[$scope $http $timeout plNotify teamService eventBus]> ++
   ($scope, $http, $timeout, plNotify, teamService, eventBus) ->
     $scope.team = new teamService.team(window.team or {})
-    $scope.members = []
+    $scope.members = window.members or []
     $scope.newMembers = []
     $scope.charts = []
     $scope.newCharts = []
@@ -33,7 +33,6 @@ angular.module \plotDB
         plNotify.send \error, "failed to remove member, try again later?"
 
     $scope.add-charts = (tid) ->
-      console.log \123ok
       if !$scope.newCharts or !$scope.newCharts.length => return
       $http do
         url: "/d/team/#tid/chart/"
@@ -109,7 +108,7 @@ angular.module \plotDB
       $http do
         url: "/d/team/#{if is-update => $scope.team.key else ''}"
         method: (if is-update => \PUT else \POST)
-        data: if is-update => $scope.team else {team: $scope.team, members: $scope.members}
+        data: if is-update => $scope.team else {team: $scope.team, members: $scope.newMembers}
       .success (d) ->
         if !is-update => $scope.team.key = d.key
         if $scope.avatar.files.0 and $scope.avatar.raw =>

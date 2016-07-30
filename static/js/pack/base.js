@@ -9614,7 +9614,7 @@ x$.service('teamService', ['$rootScope', '$http', 'plConfig', 'IOService', 'base
 }));
 x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamService', 'eventBus'].concat(function($scope, $http, $timeout, plNotify, teamService, eventBus){
   $scope.team = new teamService.team(window.team || {});
-  $scope.members = [];
+  $scope.members = window.members || [];
   $scope.newMembers = [];
   $scope.charts = [];
   $scope.newCharts = [];
@@ -9629,7 +9629,6 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
     });
   };
   $scope.addCharts = function(tid){
-    console.log('123ok');
     if (!$scope.newCharts || !$scope.newCharts.length) {
       return;
     }
@@ -9769,7 +9768,7 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
         ? $scope.team
         : {
           team: $scope.team,
-          members: $scope.members
+          members: $scope.newMembers
         }
     }).success(function(d){
       var promise;

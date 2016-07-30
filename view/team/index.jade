@@ -27,9 +27,17 @@ block body
       label members
       br
       br
-      each user in members
+      a.team-member(ng-repeat="member in members",ng-attr-href="/user/{{member.key}}",ng-cloak)
+        .avatar.xl(ng-attr-style="background-image:url(/s/avatar/{{user.avatar || 0}}.jpg)")
+          if userPermission[1] == "admin"
+            .closebtn(ng-click="removeMember(" + team.key + ",member.key);$event.preventDefault()")
+        span {{member.displayname}}
+
+      //-each user in members
         a.team-member(href="/user/" + user.key)
           .avatar.xl(style="background-image:url(/s/avatar/" + (user.avatar || 0) + ".jpg)")
+            if userPermission[1] == "admin"
+              .closebtn(ng-click="removeMember(" + team.key + "," + user.key + ");$event.stopPropataion=true;$event.preventDefault()")
           span= user.displayname
           //-.btn.btn-link(ng-click="removeMember("+team.key+","+user.key+")"): i.fa.fa-close
       .team-member
