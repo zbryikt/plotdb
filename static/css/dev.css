@@ -986,7 +986,8 @@ small.hint {
   width: 180px;
   height: 32px;
   overflow: hidden;
-  white-space: nowarp;
+  white-space: nowrap;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
   text-align: left;
   background: #fff;
   border: 1px solid #ccc;

@@ -1,5 +1,5 @@
 .panel.panel-default(style="width:500px;margin:auto")
-  .panel-heading #[i.fa.fa-users] create team
+  .panel-heading #[i.fa.fa-users] update team
   .panel-body
     div(ng-class="{'has-error':error.name}")
       label.control-label Team Name
@@ -7,10 +7,6 @@
     br
     label What's your team about?
     textarea.form-control(ng-model="team.description", placeholder="tell us more about your team.")
-    br
-    label Add some team members
-    //-div: select.form-control(ngselect2,ng-data="newMembers",type="user",multiple="multiple")
-    div: +selectbox("newMembers", "user")
     br
     label team avatar
     small.grayed  ( suggest: 200 x 200 px )
@@ -25,3 +21,4 @@
     .btn.btn-success.btn-sm(ng-click="save()") OK
     span &nbsp;
     .btn.btn-default.btn-sm(ng-click="dismiss()") Cancel
+

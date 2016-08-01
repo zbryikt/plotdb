@@ -30,14 +30,40 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
   $scope.team = new teamService.team(window.team || {});
   $scope.members = window.members || [];
   $scope.newMembers = [];
-  $scope.charts = [];
+  $scope.charts = window.charts || [];
   $scope.newCharts = [];
+  $scope.removeChart = function(tid, cid){
+    return $http({
+      url: "/d/team/" + tid + "/chart/" + cid,
+      method: 'DELETE'
+    }).success(function(d){
+      var idx;
+      idx = $scope.charts.map(function(it){
+        return it.key;
+      }).indexOf(cid);
+      if (idx < 0) {
+        return;
+      }
+      $scope.charts.splice(idx, 1);
+      return plNotify.send('success', "chart removed");
+    }).error(function(d){
+      return plNotify.send('error', "failed to remove chart, try again later?");
+    });
+  };
   $scope.removeMember = function(tid, mid){
     return $http({
       url: "/d/team/" + tid + "/member/" + mid,
       method: 'DELETE'
     }).success(function(d){
-      return plNotify.send('success', "members removed");
+      var idx;
+      idx = $scope.members.map(function(it){
+        return it.key;
+      }).indexOf(mid);
+      if (idx < 0) {
+        return;
+      }
+      $scope.members.splice(idx, 1);
+      return plNotify.send('success', "member removed");
     }).error(function(d){
       return plNotify.send('error', "failed to remove member, try again later?");
     });
@@ -63,8 +89,13 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
     return $http({
       url: "/d/team/" + tid + "/member/",
       method: 'POST',
-      data: $scope.newMembers
+      data: $scope.newMembers.map(function(it){
+        return it.key;
+      })
     }).success(function(d){
+      $scope.members = $scope.members.concat($scope.newMembers.filter(function(it){
+        return $scope.members.indexOf(it.key) < 0;
+      }));
       return plNotify.send('success', "members added");
     }).error(function(d){
       return plNotify.send('error', "failed to add members. try again later?");

@@ -20,15 +20,30 @@ angular.module \plotDB
     $scope.team = new teamService.team(window.team or {})
     $scope.members = window.members or []
     $scope.newMembers = []
-    $scope.charts = []
+    $scope.charts = window.charts or []
     $scope.newCharts = []
+
+    $scope.remove-chart = (tid, cid) ->
+      $http do
+        url: "/d/team/#tid/chart/#cid"
+        method: \DELETE
+      .success (d) ->
+        idx = $scope.charts.map(->it.key).indexOf(cid)
+        if idx < 0 => return
+        $scope.charts.splice idx, 1
+        plNotify.send \success, "chart removed"
+      .error (d) ->
+        plNotify.send \error, "failed to remove chart, try again later?"
 
     $scope.remove-member = (tid, mid) ->
       $http do
         url: "/d/team/#tid/member/#mid"
         method: \DELETE
       .success (d) ->
-        plNotify.send \success, "members removed"
+        idx = $scope.members.map(->it.key).indexOf(mid)
+        if idx < 0 => return
+        $scope.members.splice idx, 1
+        plNotify.send \success, "member removed"
       .error (d) ->
         plNotify.send \error, "failed to remove member, try again later?"
 
@@ -47,8 +62,9 @@ angular.module \plotDB
       $http do
         url: "/d/team/#tid/member/"
         method: \POST
-        data: $scope.newMembers
+        data: $scope.newMembers.map -> it.key
       .success (d) ->
+        $scope.members ++= $scope.newMembers.filter(->$scope.members.indexOf(it.key)<0)
         plNotify.send \success, "members added"
       .error (d) ->
         plNotify.send \error, "failed to add members. try again later?"
