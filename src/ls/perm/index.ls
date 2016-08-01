@@ -34,7 +34,6 @@ angular.module \plotDB
     ]
     $scope.perm-edit = do
       list: []
-      detail: []
       perm: "read"
     $scope.add-token = ->
       token = Math.round(1000000000000000 * Math.random!).toString(36)
@@ -55,16 +54,15 @@ angular.module \plotDB
       else $scope.check!  
     $scope.add-member = ->
       for node in $scope.perm-edit.list =>
-        [type,target] = node.split \:
+        [type,target] = [node.type, node.key]
         matched = $scope.perm.list.filter(-> it.type == type and it.target == +target ).0
         if matched => matched.perm = $scope.perm-edit.perm
         else =>
-          detail = $scope.perm-edit.detail.filter(->it.id == node).0
-          ret = {target: target, type: type, perm: $scope.perm-edit.perm}
-          if detail => ret <<< do
-            displayname: detail.displayname, username: detail.type, avatar: detail.avatar
+          ret = do
+            target: target, type: type, perm: $scope.perm-edit.perm
+            displayname: node.displayname, username: node.type, avatar: node.avatar
           $scope.perm.list.push ret
-      $scope.perm-edit <<< detail: [], list: []
+      $scope.perm-edit.list.splice 0
       obj = {list: $scope.purify!, switch: $scope.perm.switch}
       if JSON.stringify(obj) != $scope.original => $scope.need-save = true
       else $scope.need-save = false

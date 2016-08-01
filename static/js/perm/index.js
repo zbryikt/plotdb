@@ -57,7 +57,6 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
   }];
   $scope.permEdit = {
     list: [],
-    detail: [],
     perm: "read"
   };
   $scope.addToken = function(){
@@ -93,33 +92,26 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
     }
   };
   $scope.addMember = function(){
-    var i$, ref$, len$, node, ref1$, type, target, matched, detail, ret, obj;
+    var i$, ref$, len$, node, ref1$, type, target, matched, ret, obj;
     for (i$ = 0, len$ = (ref$ = $scope.permEdit.list).length; i$ < len$; ++i$) {
       node = ref$[i$];
-      ref1$ = node.split(':'), type = ref1$[0], target = ref1$[1];
+      ref1$ = [node.type, node.key], type = ref1$[0], target = ref1$[1];
       matched = $scope.perm.list.filter(fn$)[0];
       if (matched) {
         matched.perm = $scope.permEdit.perm;
       } else {
-        detail = $scope.permEdit.detail.filter(fn1$)[0];
         ret = {
           target: target,
           type: type,
-          perm: $scope.permEdit.perm
+          perm: $scope.permEdit.perm,
+          displayname: node.displayname,
+          username: node.type,
+          avatar: node.avatar
         };
-        if (detail) {
-          import$(ret, {
-            displayname: detail.displayname,
-            username: detail.type,
-            avatar: detail.avatar
-          });
-        }
         $scope.perm.list.push(ret);
       }
     }
-    ref$ = $scope.permEdit;
-    ref$.detail = [];
-    ref$.list = [];
+    $scope.permEdit.list.splice(0);
     obj = {
       list: $scope.purify(),
       'switch': $scope.perm['switch']
@@ -131,9 +123,6 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
     }
     function fn$(it){
       return it.type === type && it.target === +target;
-    }
-    function fn1$(it){
-      return it.id === node;
     }
   };
   $scope.purify = function(){
@@ -153,8 +142,3 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
     return console.log($scope.perm);
   };
 }));
-function import$(obj, src){
-  var own = {}.hasOwnProperty;
-  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
-  return obj;
-}

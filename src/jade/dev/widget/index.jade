@@ -11,7 +11,5 @@ block body
     +configPanel("{}",['publish','permission'])
   div(ng-controller="test3")
     .btn.btn-default(ng-click="shown=true") shown
-    div(ng-show="shown==true",ng-cloak)
-      .cover-modal(ng-click="shown=false")
-      .cover-modal-inner.narrow
-        +configPanel("{}",['publish','permission'])
+    +cover-modal("shown==true","shown=false","narrow")
+      +configPanel("{}",['publish','permission'])

@@ -14,9 +14,11 @@ mixin permDropdown(baseObj)
     li(ng-class="{'active':" + baseObj + ".perm=='fork'}",ng-click= baseObj + ".perm='fork'"): a can fork
     li(ng-class="{'active':" + baseObj + ".perm=='read'}",ng-click= baseObj + ".perm='read'"): a can read
 .perm-panel
-  .input-group(ng-class="{'long':permEdit.list.length>0}")
-    div: select.form-control.input-sm(ngselect2,ng-data="permEdit.list",ng-detail="permEdit.detail",
-    type="entity",multiple="multiple")
+  .input-group.long
+    //-(ng-class="{'long':permEdit.list.length>0,'sm':permEdit.list.length==0}")
+    +selectbox("permEdit.list","entity")
+    //-div: select.form-control.input-sm(ngselect2,ng-data="permEdit.list",ng-detail="permEdit.detail",
+       type="entity",multiple="multiple")
     .input-group-btn
       +permDropdown("permEdit")
       .btn.btn-default.btn-sm(ng-click="addMember()") Add

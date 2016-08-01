@@ -56,7 +56,9 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
       type: '@ngType'
     },
     link: function(s, e, a, c){
-      var config, dropdown, input, paging, idmap, sync, fetch, repos, close;
+      var dropdownCloseOnClick, autoHideInput, config, dropdown, input, paging, idmap, sync, fetch, repos, close;
+      dropdownCloseOnClick = true;
+      autoHideInput = false;
       config = entityService.config.plselect[s.type || 'entity'];
       dropdown = e.find('.select-dropdown');
       input = e.find('input');
@@ -76,7 +78,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
           v.selected = false;
         }
         return s.portal.data.forEach(function(it){
-          if (idmap[it.key]) {
+          if (idmap[it.key] && it.type === idmap[it.key].type) {
             return idmap[it.key].selected = true;
           }
         });
@@ -87,20 +89,31 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
       s.$watch('portal.options', function(){
         return sync();
       }, true);
-      fetch = function(keyword){
-        s.portal.loading = true;
+      fetch = function(keyword, reset){
+        reset == null && (reset = false);
+        s.portal.loading = (s.portal.loading || 0) + 1 || 1;
         return $timeout(function(){
+          if (reset) {
+            paging.offset = 0;
+            s.portal.end = false;
+          }
           return $http({
             url: config.ajax.url,
             method: 'GET',
             params: config.ajax.param(keyword, paging.limit, paging.offset)
           }).success(function(d){
+            if (!d || d.length === 0) {
+              s.portal.end = true;
+            }
             if (paging.offset === 0) {
               s.portal.options = d;
             } else {
               s.portal.options = (s.portal.options || []).concat(d);
             }
-            s.portal.loading = false;
+            s.portal.loading--;
+            if (s.portal.loading < 0) {
+              s.portal.loading = 0;
+            }
             return paging.offset += paging.limit;
           });
         }, 1000);
@@ -135,7 +148,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
         }
         input.css('left', x + "px");
         input.css('top', y + "px");
-        input.css('width', w + "px");
+        input.css('width', w > 10 ? w + "px" : "100%");
         return input.css('position', 'absolute');
       };
       close = function(delay){
@@ -146,7 +159,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
           close.closing = 0;
           dropdown.hide();
           e.removeClass('open');
-          if (repos.newline) {
+          if (autoHideInput && repos.newline) {
             return input.hide();
           }
         }, delay);
@@ -164,6 +177,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
         }, 10);
       }, true);
       e.find('.select-input').on('click', function(it){
+        repos();
         if (it.target.tagName === 'I' && it.target.className === "fa fa-close") {
           return;
         }
@@ -176,6 +190,9 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
         }
       });
       dropdown.on('click', function(){
+        if (dropdownCloseOnClick) {
+          return;
+        }
         close.cancel();
         input.show();
         input.focus();
@@ -194,17 +211,18 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
         if (keycode === 27) {
           return input.blur();
         }
+        e.addClass('open');
         dropdown.show();
-        paging = {
-          limit: 20,
-          offset: 0
-        };
         s.portal.options = [];
         lastValue = input.val();
         return $timeout(function(){
+          paging = {
+            limit: 20,
+            offset: 0
+          };
           s.portal.needchar = 3 - input.val().length;
           if (input.val().length >= 3) {
-            fetch(input.val());
+            fetch(input.val(), true);
           }
           if (ev.keyCode === 8 && !input.val() && !lastValue) {
             return s.$apply(function(){
@@ -223,7 +241,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
         }
         last = last[last.length - 1].getBoundingClientRect();
         y = last.top + last.height - base.top - base.height;
-        if (y < 5 && !s.portal.loading) {
+        if (y < 5 && !s.portal.loading && !s.portal.end) {
           return s.$apply(function(){
             return fetch(input.val());
           });

@@ -3837,3 +3837,128 @@ span.select2-container--default .select2-selection--multiple {
   border-left: 1px solid #ccc;
   padding-left: 4px;
 }
+.select-box {
+  vertical-align: middle;
+  display: inline-block;
+  width: 100%;
+  position: relative;
+}
+.select-box input:focus {
+  outline: none;
+  background: rgba(255,255,255,0.2);
+}
+.select-box .select-input.form-control {
+  position: relative;
+  width: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 5px 3px 1px;
+  border-radius: 4px;
+}
+.select-box .select-input.form-control .select-option {
+  display: inline-block;
+  border: 1px solid #ccc;
+  background: #eee;
+  border-radius: 4px;
+  padding: 0 4px 0 2px;
+  margin: 0 5px 3px 0;
+  cursor: pointer;
+}
+.select-box .select-input.form-control .select-option > .fa-close {
+  color: #999;
+  font-size: 0.8em;
+}
+.select-box .select-input.form-control .select-option > span {
+  margin-left: 3px;
+  padding-left: 4px;
+  border-left: 1px solid #ccc;
+  display: inline-block;
+}
+.select-box .select-input.form-control .select-option .avatar {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: -2px;
+  width: 16px;
+  height: 16px;
+}
+.select-box .select-input.form-control .select-option .avatar + .name {
+  display: inline-block;
+  margin-left: 4px;
+  padding-left: 3px;
+  border-left: 1px solid #ccc;
+}
+.select-box .select-input.form-control input {
+  width: 100%;
+  border: none;
+  -webkit-appearance: textfield;
+}
+.select-box .select-dropdown {
+  z-index: 10;
+  display: none;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 0 0 4px 4px;
+  background: #fff;
+  border-top: 0;
+  max-height: 200px;
+  overflow-y: scroll;
+  position: absolute;
+  top: 34px;
+}
+.select-box .select-dropdown > div:first-child {
+  height: 0;
+  overflow: hidden;
+}
+.select-box .select-dropdown .select-hint {
+  margin: 3px;
+}
+.select-box .select-dropdown .select-option {
+  padding: 5px;
+}
+.select-box .select-dropdown .select-option:hover,
+.select-box .select-dropdown .select-option.active:hover {
+  background: #f29;
+  color: #fff;
+}
+.select-box .select-dropdown .select-option i.fa {
+  display: none;
+}
+.select-box .select-dropdown .select-option .avatar {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+  width: 32px;
+  height: 32px;
+}
+.select-box .select-dropdown .select-option .avatar + .name {
+  display: inline-block;
+}
+.select-box .select-dropdown .select-option.active {
+  background: #8cc63f;
+  color: #fff;
+}
+.select-box .select-dropdown .select-option.active i.fa {
+  display: block;
+}
+.input-group .select-box:first-child .select-input.form-control {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.select-box.open .select-input.form-control {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.input-group.long .select-input,
+.input-group.long .btn {
+  height: 60px;
+}
+.input-group.long .select-dropdown {
+  top: 60px;
+}
+.input-group.sm .select-input,
+.input-group.sm .btn {
+  height: 30px;
+}
+.input-group.sm .select-dropdown {
+  top: 30px;
+}
