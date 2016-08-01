@@ -1,19 +1,27 @@
 angular.module \plotDB
   ..controller \plSelectController, <[$scope]> ++ ($scope) ->
-    $scope.portal = {data: [], options: [], type: ""}
+    $scope.portal = {data: [], options: []}
     $scope.init = (data, type) ->
       $scope.portal.data = data
       $scope.type = type
-    $scope.remove = (item,$event) ->
+    $scope.get-idx = (item)->
       idx = $scope.portal.data.indexOf(item)
+      return if idx < 0 =>
+        ret = $scope.portal.data.map((d,i)-> [d.key == item.key,i]).filter(->it.0).0
+        if ret => ret.1 else -1
+      else idx
+    $scope.remove = (item,$event) ->
+      idx = $scope.get-idx item
       if idx < 0 => return
       $scope.portal.data.splice idx, 1
-      $event.stop-propagation!
-      $event.prevent-default!
     $scope.add = (item,$event) ->
-      if $scope.portal.data.indexOf(item)>=0 or
-      $scope.portal.data.filter(->it.key == item.key).length => return
+      idx = $scope.get-idx item
+      if idx < 0 => return
       $scope.portal.data.push item
+    $scope.toggle = (item,$event) ->
+      idx = $scope.get-idx item
+      if idx < 0 => $scope.portal.data.push item
+      else $scope.portal.data.splice idx, 1
 
   ..directive \plselect,
   <[$compile $timeout entityService $http]> ++
@@ -22,16 +30,27 @@ angular.module \plotDB
     restrict: \A
     scope: do
       portal: \=ngPortal
+      type: \@ngType
     link: (s,e,a,c) ->
+      config = entityService.config.plselect[s.type or 'entity']
       dropdown = e.find \.select-dropdown
       input = e.find \input
+      input.attr \placeholder, config.placeholder or 'search...'
       paging = limit: 20, offset: 0
+      idmap = {}
+      sync = ->
+        s.portal.options.map -> idmap[it.key] = it
+        for k,v of idmap => v.selected = false
+        s.portal.data.forEach -> if idmap[it.key] => idmap[it.key].selected = true
+      s.$watch 'portal.data', (-> sync!), true
+      s.$watch 'portal.options', (-> sync!), true
       fetch = (keyword) ->
         s.portal.loading = true
         $timeout (->
           $http do
-            url: "/d/entity/?keyword=#keyword&limit=#{paging.limit}&offset=#{paging.offset}"
+            url: config.ajax.url
             method: \GET
+            params: config.ajax.param keyword, paging.limit, paging.offset
           .success (d) ->
             if paging.offset == 0 => s.portal.options = d
             else s.portal.options = (s.portal.options or []) ++ d
@@ -121,6 +140,5 @@ angular.module \plotDB
       {key: 4, displayname: "twstat", avatar: "team-33"},
       {key: 5, displayname: "CWB", avatar: "team-29"}
     ]
-    $scope.$watch 'blah', (-> console.log "watch changed: ", it), true
+    $scope.test = []
     $scope.gogo = -> $scope.blah = [{key: 123, displayname: '123', id: 123}]
-

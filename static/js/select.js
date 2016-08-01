@@ -4,30 +4,47 @@ x$ = angular.module('plotDB');
 x$.controller('plSelectController', ['$scope'].concat(function($scope){
   $scope.portal = {
     data: [],
-    options: [],
-    type: ""
+    options: []
   };
   $scope.init = function(data, type){
     $scope.portal.data = data;
     return $scope.type = type;
   };
+  $scope.getIdx = function(item){
+    var idx, ret;
+    idx = $scope.portal.data.indexOf(item);
+    return idx < 0 ? (ret = $scope.portal.data.map(function(d, i){
+      return [d.key === item.key, i];
+    }).filter(function(it){
+      return it[0];
+    })[0], ret
+      ? ret[1]
+      : -1) : idx;
+  };
   $scope.remove = function(item, $event){
     var idx;
-    idx = $scope.portal.data.indexOf(item);
+    idx = $scope.getIdx(item);
     if (idx < 0) {
       return;
     }
-    $scope.portal.data.splice(idx, 1);
-    $event.stopPropagation();
-    return $event.preventDefault();
+    return $scope.portal.data.splice(idx, 1);
   };
-  return $scope.add = function(item, $event){
-    if ($scope.portal.data.indexOf(item) >= 0 || $scope.portal.data.filter(function(it){
-      return it.key === item.key;
-    }).length) {
+  $scope.add = function(item, $event){
+    var idx;
+    idx = $scope.getIdx(item);
+    if (idx < 0) {
       return;
     }
     return $scope.portal.data.push(item);
+  };
+  return $scope.toggle = function(item, $event){
+    var idx;
+    idx = $scope.getIdx(item);
+    if (idx < 0) {
+      return $scope.portal.data.push(item);
+    } else {
+      return $scope.portal.data.splice(idx, 1);
+    }
   };
 }));
 x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].concat(function($compile, $timeout, entityService, $http){
@@ -35,22 +52,48 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
     require: [],
     restrict: 'A',
     scope: {
-      portal: '=ngPortal'
+      portal: '=ngPortal',
+      type: '@ngType'
     },
     link: function(s, e, a, c){
-      var dropdown, input, paging, fetch, repos, close;
+      var config, dropdown, input, paging, idmap, sync, fetch, repos, close;
+      config = entityService.config.plselect[s.type || 'entity'];
       dropdown = e.find('.select-dropdown');
       input = e.find('input');
+      input.attr('placeholder', config.placeholder) || 'search...';
       paging = {
         limit: 20,
         offset: 0
       };
+      idmap = {};
+      sync = function(){
+        var k, ref$, v;
+        s.portal.options.map(function(it){
+          return idmap[it.key] = it;
+        });
+        for (k in ref$ = idmap) {
+          v = ref$[k];
+          v.selected = false;
+        }
+        return s.portal.data.forEach(function(it){
+          if (idmap[it.key]) {
+            return idmap[it.key].selected = true;
+          }
+        });
+      };
+      s.$watch('portal.data', function(){
+        return sync();
+      }, true);
+      s.$watch('portal.options', function(){
+        return sync();
+      }, true);
       fetch = function(keyword){
         s.portal.loading = true;
         return $timeout(function(){
           return $http({
-            url: "/d/entity/?keyword=" + keyword + "&limit=" + paging.limit + "&offset=" + paging.offset,
-            method: 'GET'
+            url: config.ajax.url,
+            method: 'GET',
+            params: config.ajax.param(keyword, paging.limit, paging.offset)
           }).success(function(d){
             if (paging.offset === 0) {
               s.portal.options = d;
@@ -209,9 +252,7 @@ x$.controller('selecttest', ['$scope'].concat(function($scope){
       avatar: "team-29"
     }
   ];
-  $scope.$watch('blah', function(it){
-    return console.log("watch changed: ", it);
-  }, true);
+  $scope.test = [];
   return $scope.gogo = function(){
     return $scope.blah = [{
       key: 123,

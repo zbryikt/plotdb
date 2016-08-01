@@ -35,10 +35,12 @@
   border-left: 1px solid #ccc;
   display: inline-block;
 }
-.select-box .select-input.form-control .select-option .avatar.xs {
+.select-box .select-input.form-control .select-option .avatar {
   display: inline-block;
   vertical-align: middle;
   margin-top: -2px;
+  width: 16px;
+  height: 16px;
 }
 .select-box .select-input.form-control .select-option .avatar + .name {
   display: inline-block;
@@ -74,14 +76,30 @@
 .select-box .select-dropdown .select-option {
   padding: 5px;
 }
-.select-box .select-dropdown .select-option:hover {
+.select-box .select-dropdown .select-option:hover,
+.select-box .select-dropdown .select-option.active:hover {
   background: #f29;
   color: #fff;
+}
+.select-box .select-dropdown .select-option i.fa {
+  display: none;
 }
 .select-box .select-dropdown .select-option .avatar {
   display: inline-block;
   vertical-align: middle;
   margin-right: 5px;
+  width: 32px;
+  height: 32px;
+}
+.select-box .select-dropdown .select-option .avatar + .name {
+  display: inline-block;
+}
+.select-box .select-dropdown .select-option.active {
+  background: #8cc63f;
+  color: #fff;
+}
+.select-box .select-dropdown .select-option.active i.fa {
+  display: block;
 }
 .input-group .select-box:first-child .select-input.form-control {
   border-top-right-radius: 0;
@@ -90,4 +108,13 @@
 .select-box.open .select-input.form-control {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+}
+.input-group.long .form-control {
+  height: 60px;
+}
+.input-group.long .btn {
+  height: 60px;
+}
+.input-group.long .select-dropdown {
+  top: 60px;
 }

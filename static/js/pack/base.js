@@ -9873,109 +9873,68 @@ function import$(obj, src){
 var x$;
 x$ = angular.module('plotDB');
 x$.service('entityService', ['$rootScope', '$http', 'plConfig', 'IOService', 'baseService'].concat(function($rootScope, $http, plConfig, IOService, baseService){
-  var service, select2Config, ref$;
-  service = {};
-  select2Config = {
-    base: {
-      escapeMarkup: function(it){
-        return it;
-      },
-      language: {
-        inputTooShort: function(it){
-          return "<span class='grayed'>type " + (it.minimum - (it.input || '').length) + " more chars to search</span>";
-        },
-        errorLoading: function(){
-          return "<span class='grayed'>something is wrong... try again later.</span>";
-        },
-        loadingMore: function(){
-          return "<img src='/assets/img/loading.gif'>";
-        },
-        noResults: function(){
-          return "<span class='grayed'>no result.</span>";
-        },
-        searching: function(){
-          return "<img src='/assets/img/loading.gif'><span class='grayed'>searching...</span>";
-        }
-      },
-      minimumInputLength: 3,
-      templateResult: function(it){
-        if (!it || !it.displayname) {
-          return "<img src='/assets/img/loading.gif'>";
-        }
-        return "<div class=\"select2-user\">\n<img src=\"/s/avatar/" + (it.avatar || 0) + ".jpg\">\n<span>" + it.displayname + "</span>\n<small class=\"grayed\">" + (it.type === "team" ? "(team)" : "") + "</small>\n</div>";
-      },
-      templateSelection: function(it){
-        return "<div class=\"select2-user selected\">\n<img src=\"/s/avatar/" + (it.avatar || 0) + ".jpg\">\n<span>" + it.displayname + "</span>\n<small class=\"grayed\">" + (it.type === "team" ? "(team)" : "") + "</small>\n</div>";
-      }
-    },
-    ajax: {
-      dataType: "json",
-      delay: 250,
-      data: function(params){
-        return {
-          keyword: params.term,
-          offset: (params.page || 0) * 20,
-          limit: 20
-        };
-      },
-      processResults: function(data, params){
-        params.page = params.page || 0;
-        return {
-          results: data.map(function(it){
-            return it.id = it.key, it;
-          }),
-          pagination: {
-            more: data && data.length
+  var service;
+  service = {
+    config: {
+      plselect: {
+        chart: {
+          placeholder: "search by chart name or id ...",
+          ajax: {
+            url: '/d/chart/',
+            param: function(keyword, limit, offset){
+              return {
+                simple: true,
+                keyword: keyword,
+                limit: limit,
+                offset: offset
+              };
+            }
           }
-        };
-      },
-      cache: true
+        },
+        entity: {
+          placeholder: "search by user, team name or email address...",
+          ajax: {
+            url: '/d/entity/',
+            param: function(keyword, limit, offset){
+              return {
+                keyword: keyword,
+                limit: limit,
+                offset: offset
+              };
+            }
+          }
+        },
+        team: {
+          placeholder: "search by team name or email address...",
+          ajax: {
+            url: '/d/team/',
+            param: function(keyword, limit, offset){
+              return {
+                keyword: keyword,
+                limit: limit,
+                offset: offset
+              };
+            }
+          }
+        },
+        user: {
+          placeholder: "search by user name or email address...",
+          ajax: {
+            url: '/d/user/',
+            param: function(keyword, limit, offset){
+              return {
+                keyword: keyword,
+                limit: limit,
+                offset: offset
+              };
+            }
+          }
+        }
+      }
     }
   };
-  select2Config.chart = import$(import$({}, select2Config.base), {
-    placeholder: "search by chart name or id ...",
-    templateResult: function(it){
-      if (!it || !it.key) {
-        return "<img src='/assets/img/loading.gif'>";
-      }
-      return "<div class=\"select2-chart\">\n<div class=\"avatar\" style=\"background-image:url(/s/chart/" + it.key + ".png)\"></div>\n<span>" + it.name + "</span>\n<small class=\"grayed\">(chart)</small>\n</div>";
-    },
-    templateSelection: function(it){
-      return "<div class=\"select2-chart selected\">\n<div class=\"avatar xs\" style=\"background-image:url(/s/chart/" + it.key + ".png)\"></div>\n<span>" + it.name + "</span>\n<small class=\"grayed\">(chart)</small>\n</div>";
-    }
-  });
-  select2Config.chart.ajax = (ref$ = import$({}, select2Config.ajax), ref$.url = "http://localhost/d/chart/?simple=true", ref$);
-  select2Config.entity = import$(import$({}, select2Config.base), {
-    placeholder: "search by user, team name or email address..."
-  });
-  select2Config.entity.ajax = (ref$ = import$({}, select2Config.ajax), ref$.url = "http://localhost/d/entity/", ref$);
-  select2Config.entity.ajax.processResults = function(data, params){
-    params.page = params.page || 0;
-    return {
-      results: data.map(function(it){
-        return it.id = it.type + ":" + it.key, it;
-      }),
-      pagination: {
-        more: data && data.length
-      }
-    };
-  };
-  select2Config.team = import$(import$({}, select2Config.base), {
-    placeholder: "search by team name or email address..."
-  });
-  select2Config.team.ajax = (ref$ = import$({}, select2Config.ajax), ref$.url = "http://localhost/d/team/", ref$);
-  select2Config.user = import$(import$({}, select2Config.base), {
-    placeholder: "search by user name or email address..."
-  });
-  select2Config.user.ajax = (ref$ = import$({}, select2Config.ajax), ref$.url = "http://localhost/d/user/", ref$);
-  (service.config || (service.config = {})).select2 = select2Config;
   return service;
-}));
-function import$(obj, src){
-  var own = {}.hasOwnProperty;
-  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
-  return obj;
-}// Generated by LiveScript 1.3.1
+}));// Generated by LiveScript 1.3.1
 var x$, onSignIn, slice$ = [].slice;
 x$ = angular.module('plotDB');
 x$.config(['$compileProvider'].concat(function($compileProvider){
@@ -10570,30 +10529,47 @@ x$ = angular.module('plotDB');
 x$.controller('plSelectController', ['$scope'].concat(function($scope){
   $scope.portal = {
     data: [],
-    options: [],
-    type: ""
+    options: []
   };
   $scope.init = function(data, type){
     $scope.portal.data = data;
     return $scope.type = type;
   };
+  $scope.getIdx = function(item){
+    var idx, ret;
+    idx = $scope.portal.data.indexOf(item);
+    return idx < 0 ? (ret = $scope.portal.data.map(function(d, i){
+      return [d.key === item.key, i];
+    }).filter(function(it){
+      return it[0];
+    })[0], ret
+      ? ret[1]
+      : -1) : idx;
+  };
   $scope.remove = function(item, $event){
     var idx;
-    idx = $scope.portal.data.indexOf(item);
+    idx = $scope.getIdx(item);
     if (idx < 0) {
       return;
     }
-    $scope.portal.data.splice(idx, 1);
-    $event.stopPropagation();
-    return $event.preventDefault();
+    return $scope.portal.data.splice(idx, 1);
   };
-  return $scope.add = function(item, $event){
-    if ($scope.portal.data.indexOf(item) >= 0 || $scope.portal.data.filter(function(it){
-      return it.key === item.key;
-    }).length) {
+  $scope.add = function(item, $event){
+    var idx;
+    idx = $scope.getIdx(item);
+    if (idx < 0) {
       return;
     }
     return $scope.portal.data.push(item);
+  };
+  return $scope.toggle = function(item, $event){
+    var idx;
+    idx = $scope.getIdx(item);
+    if (idx < 0) {
+      return $scope.portal.data.push(item);
+    } else {
+      return $scope.portal.data.splice(idx, 1);
+    }
   };
 }));
 x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].concat(function($compile, $timeout, entityService, $http){
@@ -10601,22 +10577,48 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
     require: [],
     restrict: 'A',
     scope: {
-      portal: '=ngPortal'
+      portal: '=ngPortal',
+      type: '@ngType'
     },
     link: function(s, e, a, c){
-      var dropdown, input, paging, fetch, repos, close;
+      var config, dropdown, input, paging, idmap, sync, fetch, repos, close;
+      config = entityService.config.plselect[s.type || 'entity'];
       dropdown = e.find('.select-dropdown');
       input = e.find('input');
+      input.attr('placeholder', config.placeholder) || 'search...';
       paging = {
         limit: 20,
         offset: 0
       };
+      idmap = {};
+      sync = function(){
+        var k, ref$, v;
+        s.portal.options.map(function(it){
+          return idmap[it.key] = it;
+        });
+        for (k in ref$ = idmap) {
+          v = ref$[k];
+          v.selected = false;
+        }
+        return s.portal.data.forEach(function(it){
+          if (idmap[it.key]) {
+            return idmap[it.key].selected = true;
+          }
+        });
+      };
+      s.$watch('portal.data', function(){
+        return sync();
+      }, true);
+      s.$watch('portal.options', function(){
+        return sync();
+      }, true);
       fetch = function(keyword){
         s.portal.loading = true;
         return $timeout(function(){
           return $http({
-            url: "/d/entity/?keyword=" + keyword + "&limit=" + paging.limit + "&offset=" + paging.offset,
-            method: 'GET'
+            url: config.ajax.url,
+            method: 'GET',
+            params: config.ajax.param(keyword, paging.limit, paging.offset)
           }).success(function(d){
             if (paging.offset === 0) {
               s.portal.options = d;
@@ -10775,9 +10777,7 @@ x$.controller('selecttest', ['$scope'].concat(function($scope){
       avatar: "team-29"
     }
   ];
-  $scope.$watch('blah', function(it){
-    return console.log("watch changed: ", it);
-  }, true);
+  $scope.test = [];
   return $scope.gogo = function(){
     return $scope.blah = [{
       key: 123,
