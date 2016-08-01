@@ -41,6 +41,7 @@ html(lang="en")
       .footer
         .btn.btn-default.btn-sm(ng-click="alert.toggled=false") OK
     block body
+    include /feedback.jade
     include /ga.jade
     include /fb.jade
     //-script.
@@ -56,5 +57,3 @@ html(lang="en")
         t.ready = function(f) { t._e.push(f); };
         return t;
       }(document, "script", "twitter-wjs"));
-
-

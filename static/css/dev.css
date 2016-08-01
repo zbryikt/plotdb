@@ -978,3 +978,36 @@ small.hint {
   padding: 0 2px;
   font-family: calibri;
 }
+#user-feedback {
+  position: fixed;
+  z-index: 33;
+  bottom: 0;
+  right: 20px;
+  width: 180px;
+  height: 32px;
+  overflow: hidden;
+  white-space: nowarp;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  font-size: 14px;
+  color: #444;
+  cursor: pointer;
+}
+#user-feedback i.fa {
+  background: #f9f9f9;
+  padding: 8px 6px;
+  vertical-align: top;
+}
+#user-feedback span {
+  display: inline-block;
+  border-left: 1px solid #ccc;
+  height: 100%;
+  vertical-align: top;
+  padding: 6px 12px;
+  text-align: center;
+  width: 152px;
+  background: #fff;
+}

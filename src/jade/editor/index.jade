@@ -532,4 +532,25 @@ block body
                 p.text-center(ng-cloak) Permanently delete this {{type}}. Are you sure?
                 .text-center
                   .btn.btn-danger.loader(ng-click="delete()",ng-class="{'loading':delete.handle}") Yes, Delete it
+    .sep.gap
+    div(style="display:block;text-align:center;width:390px;margin:auto;margin-top:-25px;background:#e9e9e9;margin-bottom:20px;color:#999") suggestion or request about this vis? leave comment below!
+    .row
+      .col-sm-12
+        .panel.panel-default
+          .panel-body(style="background:url(/assets/img/loading.gif) center center no-repeat")
+            #fbcomment
+            script.
+              function loadComment() {
+                var node = document.getElementById('fbcomment');
+                node.innerHTML = [
+                  '<div style="min-height:500px;"class="fb-comments"',
+                  'data-href="'+window.location.href+'"',
+                  'data-num-posts="30" data-width="100%"></div>'
+                ].join(" ");
+                FB.XFBML.parse(node);
+              };
+
+              if(!window.FB) window.fbQueue = [loadComment];
+              else loadComment();
+
   include /footer.jade

@@ -6,6 +6,8 @@ script.
       xfbml      : true,
       version    : 'v2.5'
     });
+    var i,list = (window.fbQueue || []);
+    for(i=0;i<list.length;i++) window.fbQueue[i]();
   };
   (function(d, s, id){
      var js, fjs = d.getElementsByTagName(s)[0];
