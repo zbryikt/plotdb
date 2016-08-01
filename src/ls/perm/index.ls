@@ -11,7 +11,7 @@ angular.module \plotDB
       $scope.check!
       if $scope.perm.[]list.length == 0 => $scope.add-global!
 
-    # Referemce spEC
+    # Referemce spec
     $scope.spec = do
       permlist: <[list read comment fork write admin]> #default: all for comment
       switch: <[publish protected draft]>
