@@ -1,17 +1,14 @@
-mixin configPanel(perm,tabs)
++cover-modal("settingPanel.toggled","settingPanel.toggle()","narrow")
   .panel.panel-default(ng-controller="permEdit",ng-init="setPerm("+perm+")")
     .panel-heading &nbsp;
     .panel-body: div(ng-cloak)
-      ul.nav.nav-tabs(style="margin-top:-47px;margin-bottom:13px")
-        if tabs.indexOf('publish')>=0
-          li(ng-class="{'active':tab=='publish'}",ng-click="tab='publish'")
-            a(href="#") #[i.fa.fa-bullhorn] Publish
-        if tabs.indexOf('permission')>=0
-          li(ng-class="{'active':tab=='permission'}",ng-click="tab='permission'")
-            a(href="#") #[i.fa.fa-lock] Permission
-        if tabs.indexOf('setting')>=0
-          li(ng-class="{'active':tab=='setting'}",ng-click="tab='setting'")
-            a(href="#") #[i.fa.fa-cog] Settings
+      ul.nav.nav-tabs
+        li(ng-class="{'active':tab=='publish'}",ng-click="tab='publish'")
+          a(href="#") #[i.fa.fa-bullhorn] Publish
+        li(ng-class="{'active':tab=='permission'}",ng-click="tab='permission'")
+          a(href="#") #[i.fa.fa-lock] Permission
+        li(ng-class="{'active':tab=='chartinfo'}",ng-click="tab='chartinfo'")
+          a(href="#") #[i.fa.fa-info-circle] Chart Info
       .perm-item(style="padding: 10px 0")
         .btn-group
           .btn.btn-default.btn-sm(ng-class="{'active':perm.switch=='publish'}",ng-click="perm.switch='publish'")
@@ -24,15 +21,17 @@ mixin configPanel(perm,tabs)
         ng-show="perm.switch=='publish'") #[b visible] in embed code / share link
         .pull-right.btn.btn-text.btn-sm(
         ng-show="perm.switch=='draft'") #[b invisible] in embed code / share link
-      .sep
-      if tabs.indexOf('permission')>=0
+
+        .sep
         div(ng-show="tab=='permission'")
-          include permission.jade
-      if tabs.indexOf('publish')>=0
+          include /widget/permission.jade
         div(ng-show="tab=='publish'")
-          include publish.jade
+          include /widget/publish.jade
+        div(ng-show="tab=='chartinfo'")
+          include /widget/chartinfo.jade
 
     .panel-footer.text-right
       .btn.btn-success.btn-sm(ng-class="{'btn-glowing': needSave}",ng-click="save()") SAVE
       span &nbsp;
-      .btn.btn-default.btn-sm Cancel
+      .btn.btn-default.btn-sm(ng-click="settingPanel.toggle()") Cancel
+

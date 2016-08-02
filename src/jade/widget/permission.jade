@@ -14,6 +14,7 @@ mixin permDropdown(baseObj)
     li(ng-class="{'active':" + baseObj + ".perm=='fork'}",ng-click= baseObj + ".perm='fork'"): a can fork
     li(ng-class="{'active':" + baseObj + ".perm=='read'}",ng-click= baseObj + ".perm='read'"): a can read
 .perm-panel
+  label Add new permission
   .input-group.long
     //-(ng-class="{'long':permEdit.list.length>0,'sm':permEdit.list.length==0}")
     +selectbox("permEdit.list","entity")
@@ -24,7 +25,11 @@ mixin permDropdown(baseObj)
       .btn.btn-default.btn-sm(ng-click="addMember()") Add
   .btn.btn-link(ng-click="addToken()"): small #[i.fa.fa-link] generate shareable link
   .btn.btn-link.pull-right(ng-class="{'disabled':hasGlobal}",ng-click="addGlobal()"): small #[i.fa.fa-users] add everyone
-  hr(style="margin:4px auto 6px")
+  //-hr(style="margin:4px auto 6px")
+  .sep.light
+  br
+  label(style="margin-bottom:0") permissions are given to:
+  .sep.light
   .perm-list
     .perm-item(ng-show="!perm.list.length")
       .grayed no custom configuration...

@@ -1,0 +1,24 @@
+#share-buttons i.fa {
+  margin: 0 5px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 24px;
+}
+#share-buttons i.fa:hover {
+  position: relative;
+  top: -1px;
+  text-shadow: 0 2px 2px rgba(0,0,0,0.2);
+}
+#share-buttons.disabled i.fa {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+#chart-edit-iframe-config .checkbox {
+  display: inline-block;
+  margin: 0 0 0 10px;
+}
+#chart-edit-iframe-config input.input-sm {
+  height: 20px;
+  width: 60px;
+  display: inline-block;
+}

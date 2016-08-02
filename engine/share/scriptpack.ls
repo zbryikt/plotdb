@@ -82,6 +82,7 @@
         /js/site.js
         /js/service.js
         /js/select.js
+        /js/perm/index.js
       ]>
     legacy: <[
         /lib/topojson/1.6.24/index.min.js
