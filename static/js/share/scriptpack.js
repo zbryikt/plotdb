@@ -17,6 +17,6 @@
     }));
     return x$;
   } else {
-    return window.plConfig = config;
+    return window.plScriptPack = config;
   }
 })();

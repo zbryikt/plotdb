@@ -96,6 +96,6 @@
   else if angular? =>
     angular.module \plotDB
       ..service \plScriptPack <[]> ++ -> config
-  else window.plConfig = config
+  else window.plScriptPack = config
 )!
 
