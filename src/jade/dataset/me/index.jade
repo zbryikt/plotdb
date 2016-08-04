@@ -6,31 +6,32 @@ block vars
 block head
 block body
   .spc1
-  .page-header: .inner
-    include ../widget/usage.jade
-    .title My Dataset
-    .desc
-      .entries
-        .entry
-          i.fa.fa-database
-          span(ng-cloak) 15 datasets
-        .entry
-          i.fa.fa-tag
-          span(ng-cloak) 37 fields
-  #root.narrow.with-header(ng-controller="userDatasetList")
-    .row(ng-controller="datasetList")
-      .col-sm-8
-        include list.jade
-      .col-sm-4
-        br
-        br
-        #dataset-filter.scroll-stick(data-top="60")
-          .input-group
-            .loader.alone.xs(style="position:absolute;right:48px;top:10px;z-index:10",ng-class="{'loading': paging.loading}")
-            input.form-control(placeholder="search in my dataset...",ng-model="qLazy.keyword")
-            .input-group-addon: i.fa.fa-search
-          .sep
-          .items
-            .item(ng-repeat="dataset in datasets",ng-click="jumpTo(dataset)") {{dataset.name}}
+  div(ng-controller="userDatasetList")
+    .page-header: .inner
+      include ../widget/usage.jade
+      .title My Dataset
+      .desc
+        .entries
+          .entry
+            i.fa.fa-database
+            span(ng-cloak) {{datasetCount}} datasets
+          //-.entry
+            i.fa.fa-tag
+            span(ng-cloak) 37 fields
+    #root.narrow.with-header
+      .row(ng-controller="datasetList")
+        .col-sm-8
+          include list.jade
+        .col-sm-4
+          br
+          br
+          #dataset-filter.scroll-stick(data-top="60")
+            .input-group
+              .loader.alone.xs(style="position:absolute;right:48px;top:10px;z-index:10",ng-class="{'loading': paging.loading}")
+              input.form-control(placeholder="search in my dataset...",ng-model="qLazy.keyword")
+              .input-group-addon: i.fa.fa-search
+            .sep
+            .items
+              .item(ng-repeat="dataset in datasets",ng-click="jumpTo(dataset)") {{dataset.name}}
 
-  include ../../footer.jade
+    include ../../footer.jade

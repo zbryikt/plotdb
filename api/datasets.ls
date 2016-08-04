@@ -4,6 +4,12 @@ require! <[../engine/aux ../engine/share/model/ bluebird ./perm]>
 datasettype = model.type.dataset
 datafieldtype = model.type.datafield
 
+engine.router.api.get "/dataset/me/count", (req, res) ->
+  if !req.user or !req.user.key => return aux.r404 res
+  io.query "select count(key) from datasets where owner = $1", [req.user.key]
+    .then (r={})-> res.send (r.[]rows.0 or {count:0}).count
+    .catch aux.error-handler res
+
 engine.router.api.get "/dataset/", (req, res) ->
   user = (req.user or {})
   keyword = (req.query.keyword or "")

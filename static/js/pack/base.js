@@ -7022,6 +7022,7 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
     });
   };
   $scope['delete'] = function(dataset){
+    eventBus.fire('loading.dimmer.on');
     return dataset['delete']().then(function(){
       plNotify.send('success', "dataset deleted");
       return $timeout(function(){
@@ -7340,8 +7341,16 @@ x$.controller('userDatasetList', ['$scope', '$http', 'dataService'].concat(funct
     owner: owner
   };
   if ($scope.user.data && owner === $scope.user.data.key) {
-    return $scope.showPub = true;
+    $scope.showPub = true;
   }
+  return $http({
+    url: '/d/dataset/me/count',
+    method: 'GET'
+  }).success(function(d){
+    return $scope.datasetCount = d;
+  }).error(function(d){
+    return $scope.datasetCount = 0;
+  });
 }));
 x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'plNotify', 'eventBus'].concat(function($scope, IOService, dataService, Paging, plNotify, eventBus){
   var that, dsfilter, box;
@@ -7382,7 +7391,7 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
         $scope.mydatasets = (reset
           ? []
           : $scope.mydatasets).concat(data);
-        $scope.datasets = $scope.samplesets.concat($scope.mydatasets);
+        $scope.datasets = $scope.mydatasets;
         if (!$scope.cur) {
           return $scope.setcur($scope.datasets[0]);
         }
