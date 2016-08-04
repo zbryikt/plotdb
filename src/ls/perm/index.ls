@@ -2,6 +2,35 @@ angular.module \plotDB
   ..controller \test3,
   <[$scope]> ++ ($scope) ->
     $scope.shown = false
+  ..service \permService, <[$rootScope]> ++ ($rootScope) ->
+    perm-handler = do
+      type: <[none list read comment fork write admin]>
+      fork-idx: 4 # fork
+      is-fullfilled: ->
+      caltype: (req, perm, owner, type) ->
+       val = @calc req, perm, owner
+       val = if val < @type.indexOf(type) => 0 else val
+       return [val,@type[val]]
+      test: (req, perm, owner, type) -> @calc(req, perm, owner) >= @type.indexOf(type)
+      calc: (req, perm, owner) ->
+        maxlv = -> Math.max.apply null, it.map(->it._idx)
+        [user,token,teams] = [(req.user or null), (req.{}query.token or null),(req.{}user.teams or null)]
+        if user and +owner and user.key == +owner => return @type.indexOf(\admin)
+        if !perm or !perm.[]list.length => return @fork-idx
+        max = 0
+        perm.list.map(~>
+          it._idx = @type.indexOf(it.perm)
+          val = if it.type == \global => it._idx
+          else if it.type == \user and user and user.key == +it.target => it._idx
+          else if it.type == \token and token == it.target => it._idx
+          else if it.type == \team and teams and teams.indexOf(+it.target)>=0 => it._idx
+          else 0
+          if max < val => max := val
+        )
+        return max
+    return perm-handler
+
+
   ..controller \permEdit,
   <[$scope $timeout]> ++ ($scope, $timeout) ->
     $scope.setPerm = ->
@@ -71,5 +100,3 @@ angular.module \plotDB
     $scope.check = ->
       $scope.has-global = !!$scope.perm.[]list.filter(->it.type == \global).length
     $scope.check!
-    $scope.save = ->
-      console.log $scope.perm

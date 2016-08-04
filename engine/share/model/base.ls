@@ -147,18 +147,25 @@ model.type <<< do
   permission: new model do
     name: \permission
     switches: <[private public list token]>
-    permtype: <[read fork write admin]>
+    permtype: <[none list read comment fork write admin]>
+    itemtype: <[user team global]>
     lint: ->
       if !it => return [true, null, \ISNULL]
       if typeof(it) != \object => return [true, null, \NOTOBJ]
-      if !(it.switch?) or !Array.isArray(it.switch) => return [true, null, \switch]
-      if !(it.value?) or !Array.isArray(it.value) => return [true, null, \value]
-      for item in it.switch =>
-        if !(item in model.type.permission.config.switches) => return [true, item.switch, \switch]
-      for item in it.value =>
+      #if !(it.switch?) => return [true, null, \switch]
+      #if !(it.value?) or !Array.isArray(it.value) => return [true, null, \value]
+      if (it.list?) and !Array.isArray(it.list) => return [true, null, \value]
+      #for item in it.switch =>
+      #  if !(item in model.type.permission.config.switches) => return [true, item.switch, \switch]
+      for item in it.[]list =>
+        if typeof(item) != \object => return [true, item, \value]
+        if !(item.perm in model.type.permission.config.permtype) => return [true, item.perm, \permtype]
+        if !(item.type in model.type.permission.config.itemtype) => return [true, item.type, \itemtype]
+      /*for item in it.value =>
         if typeof(item) != \object => return [true, item, \value]
         if !(item.switch in model.type.permission.config.switches) => return [true, item.switch, \switch]
         if !(item.perm in model.type.permission.config.permtype) => return [true, item.perm, \permtype]
+      */
       return [false]
   user: new model do
     name: \user

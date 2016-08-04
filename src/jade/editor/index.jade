@@ -17,8 +17,10 @@ block vars
     - var rootpath = "/module"
     - var url = "https://plotdb.com/chart/" + chart.key
 mixin SaveFork
-  span(ng-cloak,ng-show="target().owner==user.data.key") Save
-  span(ng-cloak,ng-show="target().owner!=user.data.key") Fork
+  //-span(ng-cloak,ng-show="target().owner==user.data.key") Save
+  //-span(ng-cloak,ng-show="target().owner!=user.data.key") Fork
+  span(ng-cloak,ng-show="writable") Save
+  span(ng-cloak,ng-show="!writable") Fork
 block head
   if chart
     script.
