@@ -47,7 +47,7 @@ loadlib = (payload) ->
   delete window.module
   if !([k for k of (payload.library or {})].length) =>
     payload.library['legacy/0.0.1'] = "#{plotdb-domain}/js/pack/legacy.js"
-  promise = Promise.all [loadscript(k,url) for k,url of payload.library]
+  promise = Promise.each [{lib,url} for lib,url of payload.library], (d) -> loadscript(d.lib, d.url)
     .then -> window.module = module-backup
   return promise
 
