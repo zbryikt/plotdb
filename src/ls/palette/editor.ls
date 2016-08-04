@@ -106,7 +106,12 @@ angular.module \plotDB
         list.map (d,i) ->
           v = d3.rgb(hclint(i / ((list.length - 1) or 1)))
           d.hex = $scope.rgb2hex(v)
-          d.idx = i
+      else if $scope.type == 4 =>
+        [v1,v2] = [d3.hcl(list.0.hex), d3.hcl(list[* - 1].hex)]
+        list.map (d,i) ->
+          c = d3.hcl(d.hex)
+          c.l = v1.l + (v2.l - v1.l) * i / ((list.length - 1) or 1)
+          d.hex =$scope.rgb2hex(d3.rgb(c))
       else if $scope.type == 3 =>
         len = list.length
         len2 = parseInt(len/2)
@@ -130,7 +135,6 @@ angular.module \plotDB
             i -= (len2 - (len%2))
             v = d3.rgb(hclint2(i / ((len2 - 1) or 1)))
           d.hex = "#" + (<[r g b]>.map(->v[it].toString(16)).map(-> "0" * (2 - it.length) + it).join(""))
-          d.idx = j
       $scope.json-output = "[#{list.map((d) -> "\"#{d.hex}\"").join(',')}]"
       $scope.palette.colors = list
       $scope.palette.width = 100 / (list.length or 1)
@@ -212,7 +216,7 @@ angular.module \plotDB
       config: do
         oncolorchange: (c) -> $scope.$apply ->
           $scope.palette.colors[$scope.picker.idx].hex = c
-          if (
+          if $scope.type == 4 or (
             ($scope.type==3 or $scope.type==2) and
             ($scope.picker.idx==0 or $scope.picker.idx == $scope.palette.colors.length - 1)
           ) => $scope.generate!

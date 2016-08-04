@@ -34,16 +34,21 @@ block body
           div
             div.text-left: b Qualitative
             div: small use to categorize data
-        .btn.btn-default.pal-typebtn(ng-click="type=2",ng-class="{'active':type==2}")
+        .btn.btn-default.pal-typebtn(ng-click="type=2",ng-class="{'active':type==2}",style="width:185px")
           .pal-typeimg(style="background-image:url(/assets/img/palette/sequential.png)")
           div
             div.text-left: b Sequential
             div: small use in sequential data
-        .btn.btn-default.pal-typebtn(ng-click="type=3",ng-class="{'active':type==3}")
+        .btn.btn-default.pal-typebtn(ng-click="type=3",ng-class="{'active':type==3}",style="width:175px")
           .pal-typeimg(style="background-image:url(/assets/img/palette/diverging.png)")
           div
             div.text-left: b Diverging
             div: small emphasise direction
+        .btn.btn-default.pal-typebtn(ng-click="type=4",ng-class="{'active':type==4}",style="width:150px")
+          .pal-typeimg(style="background-image:url(/assets/img/palette/qual-sequential.png)")
+          div
+            div.text-left: b Q &times; S
+            div: small qual-sequential
       .pal-typebtn(style="text-align:left;margin-left: 10px")
         label count
         br

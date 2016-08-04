@@ -162,8 +162,15 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout', 'paletteService', 'ev
       list.map(function(d, i){
         var v;
         v = d3.rgb(hclint(i / (list.length - 1 || 1)));
-        d.hex = $scope.rgb2hex(v);
-        return d.idx = i;
+        return d.hex = $scope.rgb2hex(v);
+      });
+    } else if ($scope.type === 4) {
+      ref$ = [d3.hcl(list[0].hex), d3.hcl(list[list.length - 1].hex)], v1 = ref$[0], v2 = ref$[1];
+      list.map(function(d, i){
+        var c;
+        c = d3.hcl(d.hex);
+        c.l = v1.l + (v2.l - v1.l) * i / (list.length - 1 || 1);
+        return d.hex = $scope.rgb2hex(d3.rgb(c));
       });
     } else if ($scope.type === 3) {
       len = list.length;
@@ -190,12 +197,11 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout', 'paletteService', 'ev
           i -= len2 - len % 2;
           v = d3.rgb(hclint2(i / (len2 - 1 || 1)));
         }
-        d.hex = "#" + ['r', 'g', 'b'].map(function(it){
+        return d.hex = "#" + ['r', 'g', 'b'].map(function(it){
           return v[it].toString(16);
         }).map(function(it){
           return repeatString$("0", 2 - it.length) + it;
         }).join("");
-        return d.idx = j;
       });
     }
     $scope.jsonOutput = "[" + list.map(function(d){
@@ -336,7 +342,7 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout', 'paletteService', 'ev
       oncolorchange: function(c){
         return $scope.$apply(function(){
           $scope.palette.colors[$scope.picker.idx].hex = c;
-          if (($scope.type === 3 || $scope.type === 2) && ($scope.picker.idx === 0 || $scope.picker.idx === $scope.palette.colors.length - 1)) {
+          if ($scope.type === 4 || (($scope.type === 3 || $scope.type === 2) && ($scope.picker.idx === 0 || $scope.picker.idx === $scope.palette.colors.length - 1))) {
             $scope.generate();
           }
           return $scope.render();
