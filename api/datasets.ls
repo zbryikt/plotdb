@@ -5,20 +5,21 @@ datasettype = model.type.dataset
 datafieldtype = model.type.datafield
 
 engine.router.api.get "/dataset/", (req, res) ->
+  user = (req.user or {})
   keyword = (req.query.keyword or "")
   offset = req.query.offset or 0
   userkey = parseInt(req.query.owner)
   limit = (req.query.limit or 20) <? 100
-  params = [offset, limit, (req.user or {}).key]
+  params = [offset, limit, user.key]
   count = -> params.length + 1
   if !req.query.owner =>
     condition = "(datasets.searchable=true or datasets.owner=$#{count!})"
-    params.push ((req.user or {}).key or 0)
+    params.push user.key or 0)
   else
-    if userkey == req.user.key => condition = "datasets.owner=$#{count!}"
+    if userkey == user.key => condition = "datasets.owner=$#{count!}"
     else condition = "(datasets.owner=$#{count!} and (datasets.searchable=true or datasets.owner=$#{count!})"
-    params.push parseInt(req.query.owner or ((req.user or {}).key or 0))
-    if userkey != req.user.key => params.push ((req.user or {}).key or 0)
+    params.push parseInt(req.query.owner or (user.key or 0))
+    if userkey != req.user.key => params.push (user.key or 0)
   if keyword =>
     condition += " and datasets.name ~* $#{count!}"
     params.push keyword
@@ -72,7 +73,8 @@ engine.router.api.get "/dataset/:id", aux.numid false, (req, res) ->
       aux.r403 res
 
 update-size = (req, delta) -> new bluebird (res, rej) ->
-  io.query "select datasize from users where users.key = $1", [req.user.key]
+  if !req.user => bluebird.reject!
+  io.query "select datasize from users where users.key = $1", [req.user.key or -1]
     .then (r) ->
       user = r.[]rows.0
       if !user =>
@@ -202,11 +204,11 @@ engine.router.api.put "/dataset/:id", aux.numid false, (req, res) ->
   save-dataset req, res, req.params.id
 
 engine.router.api.delete "/dataset/:id", aux.numid false, (req, res) ->
-  if !req.user => aux.r403 res
+  if !req.user => return aux.r403 res
   io.query "select key,owner from datasets where key = $1", [req.params.id]
     .then (r) ->
       dataset = r.[]rows.0
-      if !dataset or dataset.owner != req.user.key => return aux.r403 res
+      if !dataset or dataset.owner != req.{}user.key => return aux.r403 res
       update-size req, -dataset.size
       bluebird.all [
         io.query "delete from datafields where dataset = $1", [req.params.id]
