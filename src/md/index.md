@@ -1,4 +1,4 @@
-Hello World!
+PlotDB - Share Your Visualization with Everyone
 ============
 
-so <span style="color:red">this</span> is red.
+PlotDB is designed toward a core concept - 'reusable chart'.

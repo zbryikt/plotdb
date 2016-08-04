@@ -1,7 +1,9 @@
 
+#TODO refactor / merge server / client code ( permService in src/ls/perm/index.ls )
 perm-handler = do
   type: <[none list read comment fork write admin]>
   fork-idx: 4 # fork
+  none-idx: 0 # none
   is-fullfilled: ->
   caltype: (req, perm, owner, type) -> 
    val = @calc req, perm, owner
@@ -12,7 +14,7 @@ perm-handler = do
     maxlv = -> Math.max.apply null, it.map(->it._idx)
     [user,token,teams] = [(req.user or null), (req.{}query.token or null),(req.{}user.teams or null)]
     if user and +owner and user.key == +owner => return @type.indexOf(\admin)
-    if !perm or !perm.[]list.length => return @fork-idx
+    if !perm or !perm.[]list.length => return @none-idx
     max = 0
     perm.list.map(~>
       it._idx = @type.indexOf(it.perm)

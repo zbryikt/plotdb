@@ -4,6 +4,55 @@ x$ = angular.module('plotDB');
 x$.controller('test3', ['$scope'].concat(function($scope){
   return $scope.shown = false;
 }));
+x$.service('permService', ['$rootScope'].concat(function($rootScope){
+  var permHandler;
+  permHandler = {
+    type: ['none', 'list', 'read', 'comment', 'fork', 'write', 'admin'],
+    forkIdx: 4,
+    isFullfilled: function(){},
+    caltype: function(req, perm, owner, type){
+      var val;
+      val = this.calc(req, perm, owner);
+      val = val < this.type.indexOf(type) ? 0 : val;
+      return [val, this.type[val]];
+    },
+    test: function(req, perm, owner, type){
+      return this.calc(req, perm, owner) >= this.type.indexOf(type);
+    },
+    calc: function(req, perm, owner){
+      var maxlv, ref$, user, token, teams, max, this$ = this;
+      maxlv = function(it){
+        return Math.max.apply(null, it.map(function(it){
+          return it._idx;
+        }));
+      };
+      ref$ = [req.user || null, (req.query || (req.query = {})).token || null, (req.user || (req.user = {})).teams || null], user = ref$[0], token = ref$[1], teams = ref$[2];
+      if (user && +owner && user.key === +owner) {
+        return this.type.indexOf('admin');
+      }
+      if (!perm || !(perm.list || (perm.list = [])).length) {
+        return this.forkIdx;
+      }
+      max = 0;
+      perm.list.map(function(it){
+        var val;
+        it._idx = this$.type.indexOf(it.perm);
+        val = it.type === 'global'
+          ? it._idx
+          : it.type === 'user' && user && user.key === +it.target
+            ? it._idx
+            : it.type === 'token' && token === it.target
+              ? it._idx
+              : it.type === 'team' && teams && teams.indexOf(+it.target) >= 0 ? it._idx : 0;
+        if (max < val) {
+          return max = val;
+        }
+      });
+      return max;
+    }
+  };
+  return permHandler;
+}));
 x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeout){
   $scope.setPerm = function(it){
     var ref$;
@@ -137,8 +186,5 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
       return it.type === 'global';
     }).length;
   };
-  $scope.check();
-  return $scope.save = function(){
-    return console.log($scope.perm);
-  };
+  return $scope.check();
 }));

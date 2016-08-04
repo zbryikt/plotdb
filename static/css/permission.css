@@ -1,0 +1,37 @@
+.perm-item .btn i.fa {
+  display: none;
+}
+.perm-item .btn.active i.fa {
+  display: inline;
+}
+.perm-panel .perm-list {
+  min-height: 100px;
+}
+.perm-panel .perm-item {
+  margin-bottom: 7px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 7px;
+}
+.perm-panel .perm-item a {
+  margin-left: 5px;
+}
+.perm-panel .avatar {
+  display: inline-block;
+  margin-right: 7px;
+  vertical-align: top;
+}
+.perm-panel .info {
+  display: inline-block;
+  vertical-align: top;
+}
+.perm-panel .name {
+  line-height: 16px;
+}
+.perm-panel .email {
+  color: #999;
+  font-size: 0.95em;
+  line-height: 16px;
+}
+.perm-panel .perm-item .dropdown.pull-right {
+  margin-top: 2px;
+}

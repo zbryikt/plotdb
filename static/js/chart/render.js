@@ -76,7 +76,7 @@ $(document).ready(function(){
     });
   };
   loadlib = function(payload){
-    var head, moduleBackup, k, promise, url;
+    var head, moduleBackup, k, promise, lib, url;
     head = document.getElementsByTagName("head")[0];
     moduleBackup = window.module;
     delete window.module;
@@ -89,14 +89,19 @@ $(document).ready(function(){
     }()).length) {
       payload.library['legacy/0.0.1'] = plotdbDomain + "/js/pack/legacy.js";
     }
-    promise = Promise.all((function(){
+    promise = Promise.each((function(){
       var ref$, results$ = [];
-      for (k in ref$ = payload.library) {
-        url = ref$[k];
-        results$.push(loadscript(k, url));
+      for (lib in ref$ = payload.library) {
+        url = ref$[lib];
+        results$.push({
+          lib: lib,
+          url: url
+        });
       }
       return results$;
-    }())).then(function(){
+    }()), function(d){
+      return loadscript(d.lib, d.url);
+    }).then(function(){
       return window.module = moduleBackup;
     });
     return promise;

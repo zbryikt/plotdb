@@ -29,7 +29,7 @@ engine.router.api.get "/theme/:id", aux.numid false, (req, res) ->
     .then (it={}) ->
       theme = it.[]rows.0
       if !theme => return aux.r404 res
-      if (theme.{}permission.[]switch.indexOf(\public) < 0)
+      if (theme.{}permission.switch != 'publish')
       and (!req.user or theme.owner != req.user.key) => return aux.r403 res, "forbidden"
       return res.json theme
     .catch -> return aux.r403 res
@@ -128,7 +128,7 @@ engine.app.get \/theme/:id, aux.numid true, (req, res) ->
     .then (r = {}) ->
       theme = r.[]rows.0
       if !theme => return aux.r404 res, "", true
-      if (theme.{}permission.[]switch.indexOf(\public) < 0)
+      if (theme.{}permission.switch != 'publish')
       and (!req.user or theme.owner != req.user.key) => return aux.r403 res, "forbidden", true
       res.render 'view/theme/index.jade', {theme}
       return null

@@ -262,7 +262,8 @@ import$(model.type, {
   permission: new model({
     name: 'permission',
     switches: ['private', 'public', 'list', 'token'],
-    permtype: ['read', 'fork', 'write', 'admin'],
+    permtype: ['none', 'list', 'read', 'comment', 'fork', 'write', 'admin'],
+    itemtype: ['user', 'team', 'global'],
     lint: function(it){
       var i$, ref$, len$, item;
       if (!it) {
@@ -271,30 +272,26 @@ import$(model.type, {
       if (typeof it !== 'object') {
         return [true, null, 'NOTOBJ'];
       }
-      if (!(it['switch'] != null) || !Array.isArray(it['switch'])) {
-        return [true, null, 'switch'];
-      }
-      if (!(it.value != null) || !Array.isArray(it.value)) {
+      if (it.list != null && !Array.isArray(it.list)) {
         return [true, null, 'value'];
       }
-      for (i$ = 0, len$ = (ref$ = it['switch']).length; i$ < len$; ++i$) {
-        item = ref$[i$];
-        if (!in$(item, model.type.permission.config.switches)) {
-          return [true, item['switch'], 'switch'];
-        }
-      }
-      for (i$ = 0, len$ = (ref$ = it.value).length; i$ < len$; ++i$) {
+      for (i$ = 0, len$ = (ref$ = it.list || (it.list = [])).length; i$ < len$; ++i$) {
         item = ref$[i$];
         if (typeof item !== 'object') {
           return [true, item, 'value'];
         }
-        if (!in$(item['switch'], model.type.permission.config.switches)) {
-          return [true, item['switch'], 'switch'];
-        }
         if (!in$(item.perm, model.type.permission.config.permtype)) {
           return [true, item.perm, 'permtype'];
         }
+        if (!in$(item.type, model.type.permission.config.itemtype)) {
+          return [true, item.type, 'itemtype'];
+        }
       }
+      /*for item in it.value =>
+        if typeof(item) != \object => return [true, item, \value]
+        if !(item.switch in model.type.permission.config.switches) => return [true, item.switch, \switch]
+        if !(item.perm in model.type.permission.config.permtype) => return [true, item.perm, \permtype]
+      */
       return [false];
     }
   }),

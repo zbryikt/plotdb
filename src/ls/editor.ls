@@ -1,6 +1,6 @@
 angular.module \plotDB
   ..controller \plEditor,
-  <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify eventBus]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify,eventBus) ->
+  <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify eventBus permService]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify,eventBus,permService) ->
     #########  Variables  ################################################################
     $scope <<< do
       plConfig: plConfig
@@ -53,7 +53,7 @@ angular.module \plotDB
         | \chart => {value, type: \chart, service: chart-service}
         | \theme => {value, type: \theme, service: theme-service}
       _save: (nothumb = false)->
-        if @target!.owner != @user.data.key =>
+        if !$scope.writable and @target!.owner != @user.data.key =>
           key = (if @target!._type.location == \server => @target!.key else null)
           @target! <<< {key: null, owner: null, permission: {switch: <[public]>, value: []}}
           # clone will set parent beforehand. so we only set it if necessary.
@@ -391,7 +391,16 @@ angular.module \plotDB
             @idx = (@idx + 1) % (@modes.length)
             $scope.editor.update!
       setting-panel: do
+        permcheck: ->
+          $scope.writable = permService.test(
+            {user: $scope.user.data}
+            $scope.target!{}permission
+            $scope.target!owner
+            \write
+          )
         init: ->
+          $scope.$watch 'chart.permission', $scope.setting-panel.permcheck, true
+          $scope.$watch 'theme.permission', $scope.setting-panel.permcheck, true
           $scope.$watch 'settingPanel.chart', ((cur, old) ~>
             for k,v of cur =>
               if !v and !old[k] => continue
