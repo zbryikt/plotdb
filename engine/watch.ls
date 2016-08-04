@@ -117,12 +117,14 @@ base = do
     if type == \md =>
       try
         des = src.replace(/src\/md/, "static/doc").replace(/.md/, ".html")
-        result = markdown.toHTML(fs.read-file-sync src .toString!)
-        result = [
-          "<meta charset='utf-8'/>"
-          "<link rel='stylesheet' type='text/css' href='/assets/markdown-air/0.0.1/air.css'/>"
-          result
-        ].join("\n")
+        markdown = fs.read-file-sync src .toString!
+        content = ([
+          """extends /doc.jade
+          block markdown
+            :markdown
+          """,
+        ] ++ markdown.split \\n .map -> "   #it").join(\\n)
+        result = jade.render content, {filename: src, basedir: path.join(cwd,\src/jade/)} <<< {config: data}
         <- fs-extra.mkdirs path.dirname(des), _
         fs.write-file-sync des, result
         console.log "[BUILD]   #src --> #des"
