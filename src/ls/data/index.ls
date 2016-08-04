@@ -397,7 +397,7 @@ angular.module \plotDB
         data = (ret or []).map -> new dataService.dataset it, true
         Paging.flex-width data
         $scope.mydatasets = (if reset => [] else $scope.mydatasets) ++ data
-        $scope.datasets = $scope.mydatasets #$scope.samplesets ++ $scope.mydatasets
+        $scope.datasets = (if $scope.useSample => $scope.samplesets else []) ++ $scope.mydatasets
         if !$scope.cur => $scope.setcur $scope.datasets[0]
 
     # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large

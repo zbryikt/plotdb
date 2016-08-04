@@ -26,7 +26,7 @@ include /mixin.jade
         .avatar-upload-btn(ng-attr-style="background-image: url({{avatar.preview}})",
         ng-class="{'active':avatar.preview}"): input(type="file",ngfile,ng-data="avatar.files")
     div(ng-show="tab=='permission'"): div(ng-controller="permEdit",ng-init="setPerm(team.permission)")
-      include /dev/widget/permission.jade
+      include /widget/permission.jade
   .panel-footer.text-right
     .btn.btn-success.btn-sm(ng-click="save()") OK
     span &nbsp;

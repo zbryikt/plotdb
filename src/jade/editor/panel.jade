@@ -53,7 +53,12 @@ mixin searchable
         include /widget/publish.jade
       div(ng-show="settingPanel.tab=='chartinfo'")
         .well
-          h3(style="margin:0") Chart Info
+          h3(style="margin:0")
+            | Chart Info
+            if chart
+              small.grayed
+                | &nbsp; by&nbsp;
+                a(href="/user/" + chart.owner)= chart.ownername
           small.grayed increase visibility by providing more information for your chart.
         include /widget/chartinfo.jade
       div(ng-show="settingPanel.tab=='library'")

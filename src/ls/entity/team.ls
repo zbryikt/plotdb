@@ -52,8 +52,9 @@ angular.module \plotDB
       $http do
         url: "/d/team/#tid/chart/"
         method: \post
-        data: $scope.newCharts
+        data: $scope.newCharts.map -> it.key
       .success (d) ->
+        $scope.charts ++= $scope.newCharts.filter(->$scope.charts.indexOf(it.key)<0)
         plNotify.send \success, "charts added"
       .error (d) ->
         plNotify.send \error, "failed to add charts. try again later?"

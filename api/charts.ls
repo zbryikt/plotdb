@@ -178,7 +178,13 @@ engine.app.get \/chart/, (req, res) ->
   return res.render 'view/chart/index.jade'
 
 engine.app.get \/chart/:id, aux.numid true, (req, res) ->
-  io.query "select * from charts where key = $1", [req.params.id]
+  io.query(
+    [
+      "select charts.*,users.displayname as ownername"
+      "from charts,users where charts.key = $1 and charts.owner=users.key"
+    ].join(" "),
+    [req.params.id]
+  )
     .then (r = {}) ->
       chart = r.[]rows.0
       if !chart => return aux.r404 res, "", true

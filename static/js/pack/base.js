@@ -7394,7 +7394,9 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
         $scope.mydatasets = (reset
           ? []
           : $scope.mydatasets).concat(data);
-        $scope.datasets = $scope.mydatasets;
+        $scope.datasets = ($scope.useSample
+          ? $scope.samplesets
+          : []).concat($scope.mydatasets);
         if (!$scope.cur) {
           return $scope.setcur($scope.datasets[0]);
         }
@@ -9681,8 +9683,13 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
     return $http({
       url: "/d/team/" + tid + "/chart/",
       method: 'post',
-      data: $scope.newCharts
+      data: $scope.newCharts.map(function(it){
+        return it.key;
+      })
     }).success(function(d){
+      $scope.charts = $scope.charts.concat($scope.newCharts.filter(function(it){
+        return $scope.charts.indexOf(it.key) < 0;
+      }));
       return plNotify.send('success', "charts added");
     }).error(function(d){
       return plNotify.send('error', "failed to add charts. try again later?");

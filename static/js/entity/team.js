@@ -75,8 +75,13 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
     return $http({
       url: "/d/team/" + tid + "/chart/",
       method: 'post',
-      data: $scope.newCharts
+      data: $scope.newCharts.map(function(it){
+        return it.key;
+      })
     }).success(function(d){
+      $scope.charts = $scope.charts.concat($scope.newCharts.filter(function(it){
+        return $scope.charts.indexOf(it.key) < 0;
+      }));
       return plNotify.send('success', "charts added");
     }).error(function(d){
       return plNotify.send('error', "failed to add charts. try again later?");
