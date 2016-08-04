@@ -13,6 +13,7 @@ angular.module \plotDB
       type: \map
       init: -> $scope.$watch 'preview.type', -> $scope.render!
     $scope.preview.init!
+    $scope.locked = true
     $scope.type = 1
     $scope.loading = true
     $scope.count = 6
@@ -88,6 +89,7 @@ angular.module \plotDB
           v = parseInt(Math.random! * 16777216).toString(16)
           v = "\##{\0 * (6 - v.length)}#v"
         ).map((d,i)-> {hex: d, idx: i})
+        list.map (d,i) -> d <<< idx: i
       else if list.length > $scope.count =>
         list.splice($scope.count, list.length - $scope.count)
       if $scope.type == 1 and rand =>
@@ -97,12 +99,14 @@ angular.module \plotDB
           c = Math.round(Math.random!*40 + 40)
           l = Math.round(50 + 25* order[i] / list.length)
           list[i].hex = $scope.rgb2hex(d3.rgb(d3.hcl(h,c,l)))
+          list[i].idx = i
       else if $scope.type == 2 =>
         [v1,v2] = [list.0.hex, list[* - 1].hex]
         hclint = d3.interpolateHcl v1, v2
         list.map (d,i) ->
           v = d3.rgb(hclint(i / ((list.length - 1) or 1)))
           d.hex = $scope.rgb2hex(v)
+          d.idx = i
       else if $scope.type == 3 =>
         len = list.length
         len2 = parseInt(len/2)
@@ -120,11 +124,13 @@ angular.module \plotDB
         hclint2 = d3.interpolateHcl v3, v4
         len2 += (len%2)
         list.map (d,i) ->
+          j = i
           if i < len2 => v = d3.rgb(hclint1(i / ((len2 - 1) or 1)))
           else
             i -= (len2 - (len%2))
             v = d3.rgb(hclint2(i / ((len2 - 1) or 1)))
           d.hex = "#" + (<[r g b]>.map(->v[it].toString(16)).map(-> "0" * (2 - it.length) + it).join(""))
+          d.idx = j
       $scope.json-output = "[#{list.map((d) -> "\"#{d.hex}\"").join(',')}]"
       $scope.palette.colors = list
       $scope.palette.width = 100 / (list.length or 1)
@@ -190,7 +196,7 @@ angular.module \plotDB
         if (type == 2 or type == 3) and (idx > 0 and idx < len - 1) => return true
         return false
       toggle: (e, c) ->
-        if $scope.type==2 and c.idx>0 and c.idx < $scope.palette.colors.length - 1 => return
+        if $scope.locked and $scope.type==2 and c.idx>0 and c.idx < $scope.palette.colors.length - 1 => return
         if c.idx==@idx => @isOn = !!!@isOn
         else @isOn = true
         @idx = c.idx
@@ -206,7 +212,10 @@ angular.module \plotDB
       config: do
         oncolorchange: (c) -> $scope.$apply ->
           $scope.palette.colors[$scope.picker.idx].hex = c
-          $scope.generate!
+          if (
+            ($scope.type==3 or $scope.type==2) and
+            ($scope.picker.idx==0 or $scope.picker.idx == $scope.palette.colors.length - 1)
+          ) => $scope.generate!
           $scope.render!
       init: ->
         @node = document.querySelector '#pal-editor-ldcp .ldColorPicker'

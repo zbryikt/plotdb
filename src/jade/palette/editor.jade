@@ -92,12 +92,14 @@ block body
       #pal-editor-config.col-sm-4
         .pal-colorblocks
           .pal-colorblock(ng-repeat="c in palette.colors")
-            .pal-pickhint(ng-class="{'show':picker.disabled($index)}"): i.fa.fa-ban
+            .pal-pickhint(ng-class="{'show':locked && picker.disabled($index)}"): i.fa.fa-ban
             .pal-color.picked(ng-attr-style="background:{{c.hex}}",ng-click="picker.toggle($event,c)",
-            ng-class="{'disabled':picker.disabled($index)}")
+            ng-class="{'disabled':locked && picker.disabled($index)}")
             .pal-color.colorblind(ng-attr-style="background:{{c.hex}}")
             span(ng-cloak) {{c.hex}}
-        br
+        .text-right(ng-click="locked=!!!locked",style="width:160px;cursor:pointer")
+          i.fa.fa-lock(ng-if="locked")
+          i.fa.fa-unlock-alt(ng-if="!locked")
         label load palette...
         br
         .btn-group(style="width:165px")
