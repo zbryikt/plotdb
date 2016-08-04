@@ -39,6 +39,8 @@ angular.module \plotDB
       if !$scope.perm.switch => $scope.perm.switch = 'draft'
       $scope.check!
       if $scope.perm.[]list.length == 0 => $scope.add-global!
+      $scope.perm.list.forEach -> if it.type == \global =>
+        it <<< displayname: "Everyone", username: "and anonymous user"
 
     # Referemce spec
     $scope.spec = do

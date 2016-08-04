@@ -42,9 +42,8 @@ block body
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
       #code-tabs
         .pull-right
-          .tab.action(ng-click="settingPanel.toggle()") #[i.fa.fa-cog] #[span settings]
-          .tab.action(ng-show="target().owner==user.data.key",
-          ng-click="sharePanel.toggle()") #[i.fa.fa-user] #[span share]
+          .tab.action(ng-click="settingPanel.toggle('permission')") #[i.fa.fa-cog] #[span settings]
+          .tab.action(ng-click="settingPanel.toggle('publish')") #[i.fa.fa-user] #[span share]
         .tab.cat.shown(ng-click="showsrc=!!!showsrc")
           div.text-right #[span src]
           .desc.text-right

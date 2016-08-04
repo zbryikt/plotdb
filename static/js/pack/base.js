@@ -4244,6 +4244,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     },
     settingPanel: {
+      tab: 'publish',
       permcheck: function(){
         var ref$;
         return $scope.writable = permService.test({
@@ -4281,7 +4282,10 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return this$.chart.library = it;
         });
       },
-      toggle: function(){
+      toggle: function(tab){
+        if (tab) {
+          this.tab = tab;
+        }
         return this.toggled = !this.toggled;
       },
       toggled: false,
@@ -4291,8 +4295,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         category: null,
         tags: null,
         library: null
-      },
-      tab: 0
+      }
     },
     dataPanel: {
       init: function(){
@@ -10921,8 +10924,13 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
     }
     $scope.check();
     if (((ref$ = $scope.perm).list || (ref$.list = [])).length === 0) {
-      return $scope.addGlobal();
+      $scope.addGlobal();
     }
+    return $scope.perm.list.forEach(function(it){
+      if (it.type === 'global') {
+        return it.displayname = "Everyone", it.username = "and anonymous user", it;
+      }
+    });
   };
   $scope.spec = {
     permlist: ['list', 'read', 'comment', 'fork', 'write', 'admin'],

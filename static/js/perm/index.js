@@ -68,8 +68,13 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
     }
     $scope.check();
     if (((ref$ = $scope.perm).list || (ref$.list = [])).length === 0) {
-      return $scope.addGlobal();
+      $scope.addGlobal();
     }
+    return $scope.perm.list.forEach(function(it){
+      if (it.type === 'global') {
+        return it.displayname = "Everyone", it.username = "and anonymous user", it;
+      }
+    });
   };
   $scope.spec = {
     permlist: ['list', 'read', 'comment', 'fork', 'write', 'admin'],

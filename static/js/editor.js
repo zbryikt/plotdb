@@ -744,6 +744,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     },
     settingPanel: {
+      tab: 'publish',
       permcheck: function(){
         var ref$;
         return $scope.writable = permService.test({
@@ -781,7 +782,10 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return this$.chart.library = it;
         });
       },
-      toggle: function(){
+      toggle: function(tab){
+        if (tab) {
+          this.tab = tab;
+        }
         return this.toggled = !this.toggled;
       },
       toggled: false,
@@ -791,8 +795,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         category: null,
         tags: null,
         library: null
-      },
-      tab: 0
+      }
     },
     dataPanel: {
       init: function(){

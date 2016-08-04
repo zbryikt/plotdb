@@ -391,6 +391,7 @@ angular.module \plotDB
             @idx = (@idx + 1) % (@modes.length)
             $scope.editor.update!
       setting-panel: do
+        tab: \publish
         permcheck: ->
           $scope.writable = permService.test(
             {user: $scope.user.data}
@@ -411,7 +412,9 @@ angular.module \plotDB
           $scope.$watch 'chart.category', ~> @chart.category = it
           $scope.$watch 'chart.tags', ~> @chart.tags = it
           $scope.$watch 'chart.library', ~> @chart.library = it
-        toggle: -> @toggled = !!!@toggled
+        toggle: (tab) ->
+          if tab => @tab = tab
+          @toggled = !!!@toggled
         toggled: false
         chart: do
           basetype: null
@@ -419,7 +422,6 @@ angular.module \plotDB
           category: null
           tags: null
           library: null
-        tab: 0
       data-panel: do
         init: -> eventBus.listen \dataset.saved, ~> $timeout (~> @toggled = false), 1000
         toggle: -> @toggled = !!!@toggled
