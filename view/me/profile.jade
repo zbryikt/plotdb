@@ -1,4 +1,8 @@
 extends /base.jade
+block vars
+  - var title = user.displayname + ' @ PlotDB: Share Visualizations with Everyone'
+  - var description = "Check out the visualizations " + user.displayname + " has made on PlotDB!"
+  - var url = "https://plotdb.com/user/" + user.key
 block head
   script(type="text/javascript",src="/js/profile.js")
 block body
@@ -10,7 +14,8 @@ block body
         img(src="/s/avatar/#{user.avatar || 0}.jpg",style="width:100%;")
       div(ng-cloak,style="position:absolute;bottom:52px;left:140px;font-size:24px;letter-spacing:0.5px") #{user.displayname}
       div(style="position:absolute;bottom:32px;left:140px;font-size:14px;letter-spacing:0.5px")
-        span #[i.fa.fa-map-marker] Taipei, Taiwan
+        //-span #[i.fa.fa-map-marker] Taipei, Taiwan
+        span.grayed a PlotDB user
         span &nbsp; &nbsp;
       div.text-center(style="position:absolute;bottom:32px;right:20px;font-family:lato;font-size:20px;letter-spacing:0.3px") {{user.data.desc}}
   div(style="max-width:1200px;margin:auto",ng-controller="profile")
@@ -33,7 +38,7 @@ block body
     br
     hr
     h2.text-center My Charts
-    .text-center You underestimate my power
+    //-.text-center You underestimate my power
     br
     div(ng-controller="userChartList"): div(ng-controller="chartList")
       include /chart/widget/charts.jade

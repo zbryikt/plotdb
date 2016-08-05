@@ -10,10 +10,10 @@
             a.dropdown-toggle(href="#",data-toggle="dropdown") CHARTS#[span.caret]
             ul.dropdown-menu
               li: a(href="/chart/explore/") Explore
-              li: a(ng-cloak,href="/chart/me/",ng-show="user.data") My Charts
+              li(ng-show="user.data",ng-cloak): a(href="/chart/me") My Charts
               li.divider
-              li: a(href="/chart/") New Chart
-              li: a(href="/chart/?demo") Demo Chart
+              li: a(href="/chart/") from scratch
+              //-li: a(href="/chart/?demo") Demo Chart
 
           li#nav-dataset.dropdown
             a.dropdown-toggle(href="#",data-toggle="dropdown") DATASET#[span.caret]
@@ -50,7 +50,7 @@
               .avatar(ng-attr-style="background-image:url(/s/avatar/{{user.data.avatar || '0'}}.jpg)")
               span.caret
             ul.dropdown-menu
-              li: a(href="/me/") Profile
+              li(ng-show="user.data",ng-cloak): a(href="/user/{{user.data.key}}") Profile
               li: a(href="/me/edit/") Settings
               li.divider
               li: a(href="#",ng-click="auth.logout()") Logout

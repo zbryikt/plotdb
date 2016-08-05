@@ -22,6 +22,7 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout', 'paletteService', 'ev
     }
   };
   $scope.preview.init();
+  $scope.locked = true;
   $scope.type = 1;
   $scope.loading = true;
   $scope.count = 6;
@@ -139,6 +140,9 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout', 'paletteService', 'ev
           idx: i
         };
       }));
+      list.map(function(d, i){
+        return d.idx = i, d;
+      });
     } else if (list.length > $scope.count) {
       list.splice($scope.count, list.length - $scope.count);
     }
@@ -150,6 +154,7 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout', 'paletteService', 'ev
         c = Math.round(Math.random() * 40 + 40);
         l = Math.round(50 + 25 * order[i] / list.length);
         list[i].hex = $scope.rgb2hex(d3.rgb(d3.hcl(h, c, l)));
+        list[i].idx = i;
       }
     } else if ($scope.type === 2) {
       ref$ = [list[0].hex, list[list.length - 1].hex], v1 = ref$[0], v2 = ref$[1];
@@ -158,6 +163,14 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout', 'paletteService', 'ev
         var v;
         v = d3.rgb(hclint(i / (list.length - 1 || 1)));
         return d.hex = $scope.rgb2hex(v);
+      });
+    } else if ($scope.type === 4) {
+      ref$ = [d3.hcl(list[0].hex), d3.hcl(list[list.length - 1].hex)], v1 = ref$[0], v2 = ref$[1];
+      list.map(function(d, i){
+        var c;
+        c = d3.hcl(d.hex);
+        c.l = v1.l + (v2.l - v1.l) * i / (list.length - 1 || 1);
+        return d.hex = $scope.rgb2hex(d3.rgb(c));
       });
     } else if ($scope.type === 3) {
       len = list.length;
@@ -176,7 +189,8 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout', 'paletteService', 'ev
       hclint2 = d3.interpolateHcl(v3, v4);
       len2 += len % 2;
       list.map(function(d, i){
-        var v;
+        var j, v;
+        j = i;
         if (i < len2) {
           v = d3.rgb(hclint1(i / (len2 - 1 || 1)));
         } else {
@@ -300,7 +314,7 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout', 'paletteService', 'ev
     },
     toggle: function(e, c){
       var ref$, this$ = this;
-      if ($scope.type === 2 && c.idx > 0 && c.idx < $scope.palette.colors.length - 1) {
+      if ($scope.locked && $scope.type === 2 && c.idx > 0 && c.idx < $scope.palette.colors.length - 1) {
         return;
       }
       if (c.idx === this.idx) {
@@ -328,7 +342,9 @@ x$.controller('palEditor', ['$scope', '$http', '$timeout', 'paletteService', 'ev
       oncolorchange: function(c){
         return $scope.$apply(function(){
           $scope.palette.colors[$scope.picker.idx].hex = c;
-          $scope.generate();
+          if ($scope.type === 4 || (($scope.type === 3 || $scope.type === 2) && ($scope.picker.idx === 0 || $scope.picker.idx === $scope.palette.colors.length - 1))) {
+            $scope.generate();
+          }
           return $scope.render();
         });
       }

@@ -1,0 +1,91 @@
+#permission-modal(ng-cloak,ng-show="sharePanel.toggled"): .ib
+  .closebtn(ng-click="sharePanel.toggle()")
+  h3 Share
+  div(ng-cloak,ng-show="!target().key",
+  style="position:absolute;top:0;left:0;width:100%;height:100%;")
+    div(style="display:table;width:100%;height:100%;"): div(style="display:table-row;width:100%;height:100%")
+      div(ng-cloak,
+      style="display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center;color:#888")
+        | This {{type}} is not saved. #[br] Save it to share it. #[br]#[br]#[br]
+        div(style="width:70%;margin:auto;max-width:500px")
+          .text-left: label(style="color:initial",ng-cloak) Give your {{type}} a name
+          input.form-control(type="text",ng-model="target().name",
+          placeholder="Project Name",style="margin-bottom:5px")
+          .btn.btn-default.btn-block.loader(ng-disabled="!target().name",ng-click="save()",
+          ng-class="{'loading':save.handle}")
+            +SaveFork
+  div(ng-cloak,ng-show="target()._type.location=='local' && target().key",
+  style="position:absolute;top:0;left:0;width:100%;height:100%;")
+    div(style="display:table;width:100%;height:100%;"): div(style="display:table-row;width:100%;height:100%")
+      div(style="display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center;color:#888")
+        | This {{type}} is locally saved. #[br] You need to save it in plotdb.com to share it. #[br]#[br]
+        .btn.btn-default(ng-click="migrate()") OK, move it to the server
+    div(style="position:absolute;bottom:5px;width:100%")
+      hr(style="margin-bottom:10px")
+      .pull-right(style="padding:0px 10px 5px"): .btn.btn-default(ng-click="sharePanel.toggle()") Close
+  div(ng-cloak,ng-show="target()._type.location=='server' && target().key")
+    br
+    .text-center(style="margin-bottom: 8px"): .btn-group
+      .btn.btn-default(ng-click="sharePanel.setPrivate()",ng-class="{'active':!sharePanel.isPublic()}") Private
+      .btn.btn-default(ng-click="sharePanel.setPublic()",ng-class="{'active':sharePanel.isPublic()}") Public
+    .text-center(ng-show="!sharePanel.isPublic()") Only users with permission can see this.
+    .text-center(ng-show="sharePanel.isPublic()") Every one can see this.
+    .text-center.text-danger(ng-cloak,ng-show="sharePanel.saveHint") Save to apply this change
+    .text-center: .checkbox: label #[input(type="checkbox",ng-model="sharePanel.forkable")] Allow others to fork this work
+    br(ng-show="!sharePanel.saveHint")
+    #share-buttons.text-center(style="font-size:2em",ng-class="{'disabled':!sharePanel.isPublic()}")
+      div(ng-show="!sharePanel.isPublic()")
+        i.fa.fa-facebook
+        i.fa.fa-twitter
+        i.fa.fa-pinterest
+        i.fa.fa-linkedin
+        i.fa.fa-envelope
+      div(ng-show="sharePanel.isPublic()")
+        a(ng-attr-href="{{sharePanel.social.facebook}}",target="_blank")
+          i.fa.fa-facebook-square(style="color:#3b5998")
+        a(ng-attr-href="{{sharePanel.social.twitter}}", target="_blank")
+          i.fa.fa-twitter-square(style="color:#00a0dc")
+        a(ng-attr-href="{{sharePanel.social.pinterest}}",target="_blank")
+          i.fa.fa-pinterest-square(style="color:#bd081c")
+        a(ng-attr-href="{{sharePanel.social.linkedin}}", target="_blank")
+          i.fa.fa-linkedin-square(style="color:#00a0dc")
+        a(ng-attr-href="{{sharePanel.social.email}}",target="_blank")
+          i.fa.fa-envelope-square(style="color:#444")
+    hr
+    .row
+      .col-sm-10.col-sm-offset-1
+        label Link
+        .pull-right(ng-cloak,ng-show="sharePanel.isPublic()")
+          a(ng-attr-href="{{sharePanel.link || '#'}}",target="_blank")
+            i.fa.fa-external-link(style="vertical-align:middle")
+            span(style="font-size:12px;margin-left:5px;") Open in New Window
+        input.form-control(ng-cloak,disabled,
+        ng-show="!sharePanel.isPublic()",placeholder="set public to get share link")
+        input#edit-sharelink.form-control(ng-cloak,type="text",ng-model="sharePanel.link",
+        placeholder="share link for this",ng-show="sharePanel.isPublic()",
+        data-clipboard-target="#edit-sharelink")
+        br
+        label Embed Code
+        #chart-edit-iframe-config.pull-right
+          span(ng-show="sharePanel.aspectRatio")
+            input.input-sm.form-control(type="text",placeholder="Width",ng-model="sharePanel.embed.widthRate")
+            span &nbsp;: 
+            input.input-sm.form-control(type="text",placeholder="Height",ng-model="sharePanel.embed.heightRate")
+          span(ng-show="!sharePanel.aspectRatio")
+            input.input-sm.form-control(type="text",placeholder="Width",ng-model="sharePanel.embed.width")
+            span &times;
+            input.input-sm.form-control(type="text",placeholder="Height",ng-model="sharePanel.embed.height")
+          .checkbox: label
+            input(type="checkbox",ng-model="sharePanel.aspectRatio")
+            span Preserve Aspect Ratio
+        textarea.form-control(ng-cloak,disabled,rows="3",
+        ng-show="!sharePanel.isPublic()",placeholder="set public to get embed code")
+        textarea#edit-embedcode.form-control(ng-cloak,rows="3",ng-show="sharePanel.isPublic()",
+        data-clipboard-target="#edit-embedcode",ng-model="sharePanel.embedcode")
+    hr(style="margin-bottom:10px")
+    .pull-right
+      .save-hint-btn.btn.btn-default.loader(ng-disabled="!target().name",ng-click="save();sharePanel.saveHint=false",
+      ng-class="{'btn-warning':sharePanel.saveHint,'btn-default':!sharepanel.saveHint,'loading':save.handle}")
+        +SaveFork
+      .btn.btn-default(ng-click="sharePanel.toggle()") Close
+

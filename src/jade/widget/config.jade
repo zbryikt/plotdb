@@ -2,7 +2,7 @@ mixin configPanel(perm,tabs)
   .panel.panel-default(ng-controller="permEdit",ng-init="setPerm("+perm+")")
     .panel-heading &nbsp;
     .panel-body: div(ng-cloak)
-      ul.nav.nav-tabs(style="margin-top:-47px;margin-bottom:13px")
+      ul.nav.nav-tabs
         if tabs.indexOf('publish')>=0
           li(ng-class="{'active':tab=='publish'}",ng-click="tab='publish'")
             a(href="#") #[i.fa.fa-bullhorn] Publish
@@ -33,6 +33,6 @@ mixin configPanel(perm,tabs)
           include publish.jade
 
     .panel-footer.text-right
-      .btn.btn-success.btn-sm(ng-class="{'btn-glowing': needSave}") SAVE
+      .btn.btn-success.btn-sm(ng-class="{'btn-glowing': needSave}",ng-click="save()") SAVE
       span &nbsp;
       .btn.btn-default.btn-sm Cancel

@@ -200,6 +200,7 @@ angular.module \plotDB
           $scope.inited = true
           eventBus.fire 'loading.dimmer.off'
     $scope.delete = (dataset) ->
+      eventBus.fire \loading.dimmer.on
       dataset.delete!
         .then ->
           plNotify.send \success, "dataset deleted"
@@ -366,6 +367,11 @@ angular.module \plotDB
     else => (if $scope.user.data => $scope.user.data.key else null)
     $scope.q = {owner}
     if $scope.user.data and owner == $scope.user.data.key => $scope.showPub = true
+    $http do
+      url: \/d/dataset/me/count
+      method: \GET
+    .success (d) -> $scope.datasetCount = d
+    .error (d) -> $scope.datasetCount = 0
 
   ..controller \datasetList,
   <[$scope IOService dataService Paging plNotify eventBus]> ++
@@ -391,7 +397,7 @@ angular.module \plotDB
         data = (ret or []).map -> new dataService.dataset it, true
         Paging.flex-width data
         $scope.mydatasets = (if reset => [] else $scope.mydatasets) ++ data
-        $scope.datasets = $scope.samplesets ++ $scope.mydatasets
+        $scope.datasets = (if $scope.useSample => $scope.samplesets else []) ++ $scope.mydatasets
         if !$scope.cur => $scope.setcur $scope.datasets[0]
 
     # separate dataset and key otherwise ng-show and euqality comparison will be slow when dataset is large

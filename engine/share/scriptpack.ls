@@ -81,6 +81,8 @@
         /js/entity/entity.js
         /js/site.js
         /js/service.js
+        /js/select.js
+        /js/perm/index.js
       ]>
     legacy: <[
         /lib/topojson/1.6.24/index.min.js
@@ -95,6 +97,6 @@
   else if angular? =>
     angular.module \plotDB
       ..service \plScriptPack <[]> ++ -> config
-  else window.plConfig = config
+  else window.plScriptPack = config
 )!
 

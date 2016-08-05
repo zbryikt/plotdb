@@ -1,0 +1,52 @@
+label Link
+small.pull-right(style="margin-top:5px")
+  a(href="#",ng-class="{'disabled':target().permission.switch!='publish'}") #[i.fa.fa-external-link] Open in New Window
+input.form-control.input-sm(value="https:/plotdb.io/v/chart/1068",ng-disabled="target().permission.switch!='publish'")
+br
+label Embed Code
+#chart-edit-iframe-config.pull-right
+  span(ng-show="sharePanel.aspectRatio")
+    input.input-sm.form-control(type="text",placeholder="Width",
+    ng-model="sharePanel.embed.widthRate",ng-disabled="target().permission.switch!='publish'")
+    span &nbsp;: 
+    input.input-sm.form-control(type="text",placeholder="Height",
+    ng-model="sharePanel.embed.heightRate",ng-disabled="target().permission.switch!='publish'")
+  span(ng-show="!sharePanel.aspectRatio")
+    input.input-sm.form-control(type="text",placeholder="Width",
+    ng-model="sharePanel.embed.width",ng-disabled="target().permission.switch!='publish'")
+    span &nbsp;&times;&nbsp;
+    input.input-sm.form-control(type="text",placeholder="Height",
+    ng-model="sharePanel.embed.height",ng-disabled="target().permission.switch!='publish'")
+  .checkbox(ng-class="{'disabled':target().permission.switch!='publish'}"): label
+    input(type="checkbox",ng-model="sharePanel.aspectRatio",
+    ng-disabled="target().permission.switch!='publish'")
+    small(style="vertical-align:text-top") Preserve Aspect Ratio
+textarea.form-control(ng-cloak,disabled,rows="2",
+ng-show="target().permission.switch!='publish'",placeholder="set public to get embed code")
+textarea#edit-embedcode.form-control(ng-cloak,rows="2",ng-show="target().permission.switch=='publish'",
+data-clipboard-target="#edit-embedcode",ng-model="sharePanel.embedcode")
+
+br
+label Open Graph #[small.grayed summary shown in SNS like facebook, twitter, etc ]
+.sep.nogap
+br
+.row
+  .col-sm-6
+    label Title
+    input.form-control.input-sm(placeholder="title shown in social media",ng-model="target().name")
+    br
+    label Share
+    #share-buttons(ng-class="{'disabled':target().permission.switch!='publish'}")
+      a(ng-attr-href="{{sharePanel.social.facebook}}",target="_blank")
+        i.fa.fa-facebook-square(style="color:#3b5998")
+      a(ng-attr-href="{{sharePanel.social.twitter}}", target="_blank")
+        i.fa.fa-twitter-square(style="color:#00a0dc")
+      a(ng-attr-href="{{sharePanel.social.pinterest}}",target="_blank")
+        i.fa.fa-pinterest-square(style="color:#bd081c")
+      a(ng-attr-href="{{sharePanel.social.linkedin}}", target="_blank")
+        i.fa.fa-linkedin-square(style="color:#00a0dc")
+      a(ng-attr-href="{{sharePanel.social.email}}",target="_blank")
+        i.fa.fa-envelope-square(style="color:#444")
+  .col-sm-6
+    label Description
+    textarea.form-control.input-sm(rows="5",placeholder="summary shown in social media",ng-model="target().description")

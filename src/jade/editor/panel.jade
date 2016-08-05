@@ -1,0 +1,77 @@
+mixin publish
+  .perm-item(style="padding: 10px 0")
+    .btn-group
+      .btn.btn-default.btn-sm(ng-class="{'active':target().permission.switch=='publish'}",ng-click="target().permission.switch='publish'")
+        i.fa.fa-check.text-success
+        span  Published
+      .btn.btn-default.btn-sm(ng-class="{'active':target().permission.switch!='publish'}",ng-click="target().permission.switch='draft'")
+        i.fa.fa-check.text-success
+        span  Draft
+    .pull-right.btn.btn-text.btn-sm(
+    ng-show="target().permission.switch=='publish'") #[b visible] in embed code / share link
+    .pull-right.btn.btn-text.btn-sm(
+    ng-show="target().permission.switch!='publish'") #[b invisible] in embed code / share link
+mixin searchable
+  .perm-item(style="padding: 10px 0")
+    label Searchable?
+    br
+    .btn-group
+      .btn.btn-default.btn-sm(ng-class="{'active':target().searchable}",ng-click="target().searchable=true")
+        i.fa.fa-check.text-success
+        span  On
+      .btn.btn-default.btn-sm(ng-class="{'active':!target().searchable}",ng-click="target().searchable=false")
+        i.fa.fa-check.text-success
+        span  Off
+    .pull-right.btn.btn-text.btn-sm(
+    ng-show="target().searchable") #[b shown] in search result
+    .pull-right.btn.btn-text.btn-sm(
+    ng-show="!target().searchable") #[b hidden] from search result
+
++cover-modal("settingPanel.toggled","settingPanel.toggle()","narrow")
+  .panel.panel-default(ng-init="settingPanel.tab='publish'")
+    .panel-heading &nbsp;
+    .panel-body: div(ng-cloak)
+      .closebtn.inner.lg.inverse(ng-click="settingPanel.toggle()")
+      ul.nav.nav-tabs
+        li(ng-class="{'active':settingPanel.tab=='publish'}",ng-click="settingPanel.tab='publish'")
+          a(href="#") #[i.fa.fa-bullhorn] Publish
+        li(ng-class="{'active':settingPanel.tab=='permission'}",ng-click="settingPanel.tab='permission'")
+          a(href="#") #[i.fa.fa-lock] Permission
+        li(ng-class="{'active':settingPanel.tab=='chartinfo'}",ng-click="settingPanel.tab='chartinfo'")
+          a(href="#") #[i.fa.fa-info-circle] Chart Info
+        li(ng-class="{'active':settingPanel.tab=='library'}",ng-click="settingPanel.tab='library'")
+          a(href="#") #[i.fa.fa-book] Libraries
+
+      div(ng-show="settingPanel.tab=='permission'")
+        +searchable()
+        .sep
+        div(ng-controller="permEdit",ng-init="setPerm(target().permission)")
+          include /widget/permission.jade
+      div(ng-show="settingPanel.tab=='publish'")
+        +publish()
+        .sep
+        include /widget/publish.jade
+      div(ng-show="settingPanel.tab=='chartinfo'")
+        .well
+          h3(style="margin:0")
+            | Chart Info
+            if chart
+              small.grayed
+                | &nbsp; by&nbsp;
+                a(href="/user/" + chart.owner)= chart.ownername
+          small.grayed increase visibility by providing more information for your chart.
+        include /widget/chartinfo.jade
+      div(ng-show="settingPanel.tab=='library'")
+        .well
+          h3(style="margin:0") Library
+          small.grayed pick libraries you want to use from this dropdown box.
+        include /widget/library.jade
+
+    .panel-footer.text-right(style="padding-left: 5px")
+      .btn.btn-default.btn-sm.pull-left.loader(ng-click="clone()",
+      ng-class="{'loading':save.handle}") Make a Copy
+      .btn.btn-success.btn-sm.loader(ng-class="{'btn-glowing': needSave,'loading':save.handle}",
+      ng-click="save()") SAVE
+      span &nbsp;
+      .btn.btn-default.btn-sm(ng-click="settingPanel.toggle()") Cancel
+

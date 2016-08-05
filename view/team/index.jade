@@ -1,10 +1,13 @@
 extends /view/module/base.jade
 block vars
 block head
+  script(src="/js/perm/index.js")
   if team
     script.
       window.team = !{JSON.stringify(team).replace(/<\//g, "<\\/")}
       window.members = !{JSON.stringify(members).replace(/<\//g, "<\\/")}
+      window.charts = !{JSON.stringify(charts).replace(/<\//g, "<\\/")}
+  link(rel="stylesheet",type='text/css',href='/css/dev/index.css')
 block body
   .spc1
   .team-header: .inner
@@ -16,34 +19,35 @@ block body
     else
       .desc.grayed ( no descriptiont... )
   #root.narrow(ng-controller="teamBase"): div(ng-controller="teamEdit")
-    .cover-modal(ng-cloak,ng-show="teamPanel.create.toggled")
-    .cover-modal-inner(ng-cloak,ng-show="teamPanel.create.toggled")
-      include /team/widget/create.jade
+    +cover-modal("teamPanel.create.toggled","teamPanel.create.toggle()")
+      include /team/widget/update.jade
     .text-center(style="margin-top:-55px")
-      .btn.btn-default(ng-click="teamPanel.create.toggle()",
-      ng-cloak,ng-show=team.owner+"==user.data.key") #[i.fa.fa-pencil] Edit
+      if userPermission[1] == "admin"
+        .btn.btn-default(ng-click="teamPanel.create.toggle()") #[i.fa.fa-pencil] Edit
     br
     br
     .text-center
       label members
       br
       br
-      each user in members
-        a.team-member(href="/user/" + user.key)
-          .avatar.xl(style="background-image:url(/s/avatar/" + (user.avatar || 0) + ".jpg)")
-          span= user.displayname
-          //-.btn.btn-link(ng-click="removeMember("+team.key+","+user.key+")"): i.fa.fa-close
-      .team-member
+      a.team-member(ng-repeat="member in members",ng-attr-href="/user/{{member.key}}",ng-cloak)
+        .avatar.xl(ng-attr-style="background-image:url(/s/avatar/{{user.avatar || 0}}.jpg)")
+          if userPermission[1] == "admin"
+            .closebtn(ng-click="removeMember(" + team.key + ",member.key);$event.preventDefault()")
+        span {{member.displayname}}
+      .team-member(ng-cloak,ng-show="members.length == 0")
         .avatar.xl.empty
         small.grayed add more users
       br
       br
-      .text-left(style="width:600px;margin:auto")
-        label Add members
-        .input-group
-          div: select.form-control(multiple="multiple",ngselect2,ng-data="newMembers",type="user")
-          .input-group-btn
-            .btn.btn-default(ng-click="addMembers("+team.key+")") #[i.fa.fa-plus] add
+      if userPermission[0] >= 5
+        .text-left(style="width:600px;margin:auto")
+          label Add members
+          .input-group.long
+            +selectbox("newMembers","user")
+            //-div: select.form-control(multiple="multiple",ngselect4,ng-data="newMembers",type="user")
+            .input-group-btn
+              .btn.btn-default(ng-click="addMembers("+team.key+")") #[i.fa.fa-plus] add
       br
       br
       .sep.gap
@@ -52,21 +56,27 @@ block body
       label works
       br
       br
-      each chart in charts
-        a.team-chart(href="/chart/" + chart.key)
-          .avatar.xl(style="background-image:url(/s/chart/" + (chart.key) + ".png)")
-          span= chart.name
-      .team-chart
+
+      a.team-chart(ng-repeat="chart in charts",ng-attr-href="/chart/{{chart.key}}",ng-cloak)
+        if userPermission[1] == "admin"
+          .closebtn(ng-click="removeChart(" + team.key + ",chart.key);$event.preventDefault()",
+          style="margin:-2px 4px 0 0")
+        .avatar.xl(ng-attr-style="background-image:url(/s/chart/{{chart.key}}.png)")
+        span {{chart.name}}
+
+      .team-chart(ng-cloak,ng-show="charts.length==0")
         .avatar.xl.empty
-        small.grayed add more charts
+        small.grayed no charts...
       br
       br
       br
-      .text-left(style="width:600px;margin:auto")
-        label Add charts
-        .input-group.long
-          div: select.form-control.input-sm(multiple="multiple",ngselect2,ng-data="newCharts",type="chart")
-          .input-group-btn
-            .btn.btn-default(ng-click="addCharts("+team.key+")") #[i.fa.fa-plus] add
+      if userPermission[0] >= 5
+        .text-left(style="width:600px;margin:auto")
+          label Add charts
+          .input-group.long
+            +selectbox("newCharts",type="chart")
+            //-div: select.form-control.input-sm(multiple="multiple",ngselect4,ng-data="newCharts",type="chart")
+            .input-group-btn
+              .btn.btn-default(ng-click="addCharts("+team.key+")") #[i.fa.fa-plus] add
 
   include /view/module/footer

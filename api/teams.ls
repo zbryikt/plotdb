@@ -1,6 +1,6 @@
 require! <[bluebird]>
 require! <[../engine/aux ../engine/share/model/ ../engine/throttle]>
-require! <[./entity ./avatar]>
+require! <[./entity ./avatar ./perm]>
 (engine,io) <- (->module.exports = it)  _
 
 entity := entity engine, io
@@ -9,29 +9,16 @@ edit-limit = {strategy: \hard, limit: 30, upper-delta: 120, json: true}
 
 engine.router.api.get \/entity/, entity.search!
 
-get-perm-value = (user, perm) ->
-  if !perm or !perm.[]list.length => return 3
-  permlist = (
-    perm.list.filter(->it.type==\user and it.target == req.user.key) ++
-    user.[]teams.map((t)->perm.list.filter(->it.type==\team and it.target==t)) ++
-    perm.list.filter(->it.type==\global)
-  )
-  permtype = <[list read fork comment write admin]>
-  value = Math.max.apply null, permlist.map(->permtype.indexOf(it.perm))
-  return value
-
 get-team = (req, res) ->
   payload = {}
   io.query([ 'select * from teams where key=$1' ].join(" "), [req.params.id])
     .then (r={}) ->
       team = r.[]rows.0
       if !team => return aux.reject 404
-      perm = team.{}permission
-      permval = get-perm-value req.user, perm
-      if permval < 1 => return aux.reject 403
-      #if (team.{}permission.[]switch.indexOf(\public) < 0)
-      #and (!req.user or team.owner != req.user.key) => return aux.reject 403
+      permtype = perm.caltype(req, team.{}permission, team.owner, \read)
+      if !permtype.0 => return aux.reject 403
       payload.team = team
+      payload.user-permission = permtype
       promises = []
       promises.push(
         io.query([
@@ -62,7 +49,7 @@ get-team = (req, res) ->
       )
       #TODO show theme and datasets
       bluebird.all promises
-    .then -> 
+    .then ->
       bluebird.resolve payload
 
 engine.router.api.get \/team/, (req, res) ->
@@ -124,6 +111,7 @@ engine.router.api.get "/team/:id", aux.numid false, (req, res) ->
     .catch aux.error-handler res
 
 batch-add-members = (tid,uids) ->
+  if !Array.isArray(uids) or uids.length == 0 => return bluebird.resolve!
   io.query([
     "insert into teammembers (team,member) values"
     ["($1,$#i)" for i from 2 to uids.length + 1].join(",")
@@ -131,6 +119,7 @@ batch-add-members = (tid,uids) ->
   ].join(" "), [tid] ++ uids)
 
 batch-add-charts = (tid,cids) ->
+  if !Array.isArray(cids) or cids.length == 0 => return bluebird.resolve!
   io.query([
     "insert into teamcharts (team,chart) values"
     ["($1,$#i)" for i from 2 to cids.length + 1].join(",")
@@ -158,35 +147,51 @@ engine.router.api.post \/team/, (req, res) ->
       team.key = (r.[]rows.0 or {}).key
       batch-add-members team.key, members
         .then -> res.send team
-        .catch -> 
+        .catch ->
           console.error aux.now-tag!, it.stack
           res.send team #TODO: hint user that some members were failed to be added
       return null
     .catch aux.error-handler res
 
+team-permission = (req, res, level = \admin) ->
+  <- Promise.resolve!then
+  if !req.user => return aux.reject 403
+  io.query "select owner,permission from teams where key=$1", [req.params.tid]
+    .then (r={})->
+      team = r.[]rows.0
+      if !team => return aux.reject 404
+      if !perm.test(req, team.{}permission, team.owner, \admin) => return aux.reject 403
+      bluebird.resolve team
+
 engine.router.api.post(\/team/:id/avatar,
   engine.multi.parser, throttle.limit edit-limit, aux.numid false,
   (req, res) ->
     avatar-key = null
-    avatar.upload(\team, +req.params.id)(req, res)
+    team-permission req, res, \admin
+      .then (team) ->
+        if !perm.test(req, team.{}permission, team.owner, \admin) => return aux.reject 403
+        avatar.upload(\team, +req.params.id)(req, res)
       .then ->
         avatar-key := it
-        io.query "update teams set (avatar) = ($1) where key = $2", [avatar-key,req.params.id]
+        io.query(
+          "update teams set (avatar,modifiedtime) = ($2,$3) where key = $1",
+          [req.params.id, avatar-key, new Date!]
+        )
       .then -> res.send {avatar: avatar-key}
       .catch aux.error-handler res
 )
 
 engine.router.api.put \/team/:id, (req, res) ->
-  if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
-  id = parseInt(req.params.id)
   data = req.body
+  id = parseInt(req.params.id)
   if data.key != id => return aux.r400 res, [true, data.key, \key-mismatch]
+  if !req.user => return aux.r403 res
   io.query "select * from teams where key = $1", [id]
     .then (r = {}) ->
       team = r.[]rows.0
       if !team => return aux.reject 404
-      if team.owner != req.user.key => return aux.reject 403
+      if !perm.test(req, team.{}permission, team.owner, \admin) => return aux.reject 403
       <[owner key createdtime]>.map -> delete data[it]
       team = team <<< data
       team.modifiedtime = new Date!
@@ -206,11 +211,9 @@ engine.router.api.put \/team/:id, (req, res) ->
     .catch aux.error-handler res
 
 engine.router.api.delete \/team/:id, aux.numid false, (req, res) ->
-  if !req.user => return aux.r403 res
-  io.query "select key from teams where key = $1", [req.params.id]
-    .then (r={}) ->
-      if !r.[]rows.0 => return aux.reject 404
-      if r.owner != req.user.key => return aux.reject 403
+  team-permission req, res, \admin
+    .then (team) ->
+      if !perm.test(req, team.{}permission, team.owner, \admin) => return aux.reject 403
       bluebird.all [
         "delete from teammembers where team=$1"
         "delete from teamcharts where team=$1"
@@ -223,19 +226,9 @@ engine.router.api.delete \/team/:id, aux.numid false, (req, res) ->
       return null
     .catch aux.error-handler res
 
-team-ownership = (req, res) ->
-  <- Promise.resolve!then 
-  if !req.user => return aux.reject 403
-  io.query "select owner from teams where key=$1", [req.params.tid]
-    .then (r={})->
-      team = r.[]rows.0
-      if !team => return aux.reject 404
-      if !team.owner == req.user.key => return aux.reject 403
-      bluebird.resolve team
-
 #TODO length limit
 engine.router.api.post \/team/:tid/member/, aux.numids false, <[tid]>, (req, res) ->
-  team-ownership req, res
+  team-permission req, res, \write
     .then ->
       if !Array.isArray(req.body) => return aux.reject 400
       members = req.body.map(->+it).filter(->it and !isNaN(it))
@@ -244,7 +237,7 @@ engine.router.api.post \/team/:tid/member/, aux.numids false, <[tid]>, (req, res
     .catch aux.error-handler res
 #TODO length limit
 engine.router.api.post \/team/:tid/chart/, aux.numids false, <[tid]>, (req, res) ->
-  team-ownership req, res
+  team-permission req, res, \write
     .then ->
       if !Array.isArray(req.body) => return aux.reject 400
       charts = req.body.map(->+it).filter(->it and !isNaN(it))
@@ -253,25 +246,25 @@ engine.router.api.post \/team/:tid/chart/, aux.numids false, <[tid]>, (req, res)
     .catch aux.error-handler res
 
 engine.router.api.post \/team/:tid/member/:mid, aux.numids false, <[tid mid]>, (req, res) ->
-  team-ownership req, res
+  team-permission req, res, \write
     .then -> io.query "insert into teammembers values ($1,$2)", [req.params.tid, req.params.mid]
     .then -> res.send!
     .catch aux.error-handler res
 
 engine.router.api.delete \/team/:tid/member/:mid, aux.numids false, <[tid mid]>, (req, res) ->
-  team-ownership req, res
+  team-permission req, res
     .then -> io.query "delete from teammembers where team=$1 and member=$2", [req.params.tid, req.params.mid]
     .then -> res.send!
     .catch aux.error-handler res
 
 engine.router.api.post \/team/:tid/chart/:cid, aux.numids false, <[tid cid]>, (req, res) ->
-  team-ownership req, res
+  team-permission req, res, \write
     .then -> io.query "insert into teamcharts values ($1,$2)", [req.params.tid, req.params.cid]
     .then -> res.send!
     .catch aux.error-handler res
 
 engine.router.api.delete \/team/:tid/chart/:cid, aux.numids false, <[tid cid]>, (req, res) ->
-  team-ownership req, res
+  team-permission req, res
     .then -> io.query "delete from teamcharts where team=$1 and chart=$2", [req.params.tid, req.params.cid]
     .then -> res.send!
     .catch aux.error-handler res

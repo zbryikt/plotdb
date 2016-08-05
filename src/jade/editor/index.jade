@@ -17,8 +17,10 @@ block vars
     - var rootpath = "/module"
     - var url = "https://plotdb.com/chart/" + chart.key
 mixin SaveFork
-  span(ng-cloak,ng-show="target().owner==user.data.key") Save
-  span(ng-cloak,ng-show="target().owner!=user.data.key") Fork
+  //-span(ng-cloak,ng-show="target().owner==user.data.key") Save
+  //-span(ng-cloak,ng-show="target().owner!=user.data.key") Fork
+  span(ng-cloak,ng-show="writable") Save
+  span(ng-cloak,ng-show="!writable") Fork
 block head
   if chart
     script.
@@ -29,227 +31,7 @@ block head
 block body
   .spc1
   #root.pleditor(ng-controller="plEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
-    #setting-modal(ng-cloak,ng-show="settingPanel.toggled",ng-click="settingPanel.toggle()")
-    #setting-modal-inner(ng-cloak,ng-show="settingPanel.toggled"): .ib
-      .closebtn(ng-click="settingPanel.toggle()")
-      h3 Settings
-      br
-      ul.nav.nav-tabs
-        li.clickable(ng-class="{'active': settingPanel.tab == 0}",ng-click="settingPanel.tab=0"): a General
-        li.clickable(ng-class="{'active': settingPanel.tab == 1}",ng-show="type=='chart'",
-        ng-click="settingPanel.tab=1"): a Library
-
-      div(ng-show="settingPanel.tab == 0",style="width: 80%;margin:auto")
-        br
-        .pull-right(ng-cloak,ng-show="target().parent")
-          span derived from 
-          //TODO fetch parent name
-          a(ng-attr-href="/{{type}}/{{target().parent}}",target="_blank") {{target().parent}}
-        label Name
-        input.form-control(placeholder="Name", ng-model="target().name")
-        br
-        label Descriptiont
-        textarea.form-control(placeholder="Description", ng-model="target().description",rows="3")
-        br
-        label Base Chart Type
-        div: select#chart-setting-type.form-control(multiple="multiple",
-        ngselect2,ng-data="settingPanel.chart.basetype")
-          option(value="1") Bar Chart
-          option(value="2") Line Chart
-          option(value="3") Pie Chart
-          option(value="4") Area Chart
-          option(value="5") Bubble Chart
-          option(value="6") Radial Chart
-          option(value="7") Calendar
-          option(value="8") Treemap
-          option(value="9") Map
-          option(value="10") Cartogram
-          option(value="11") Heatmap
-          option(value="12") Sankey
-          option(value="13") Venn Diagram
-          option(value="14") Word Cloud
-          option(value="15") Timeline
-          option(value="16") Mixed
-          option(value="17") Pictogram
-          option(value="18") Scatter Plot
-          option(value="99") Other
-        br
-        label Visual Encoding
-        div: select#chart-setting-encoding.form-control(multiple="multiple",
-        ngselect2,ng-data="settingPanel.chart.visualencoding")
-          option(value="1") Position
-          option(value="2") Position ( Non-aligned )
-          option(value="3") Length
-          option(value="4") Direction
-          option(value="5") Angle
-          option(value="6") Area
-          option(value="7") Volume
-          option(value="8") Curvature
-          option(value="9") Shade
-          option(value="10") Saturation
-          option(value="99") Other
-        br
-        label Chart Category
-        div: select#chart-setting-category.form-control(multiple="multiple",
-        ngselect2,ng-data="settingPanel.chart.category")
-          option(value="1") Infographics
-          option(value="2") Geographics
-          option(value="4") Journalism
-          option(value="5") Statistics
-          option(value="6") Business
-          option(value="99") Other
-        br
-        label Tags
-        div: select#editor-setting-tags.form-control(multiple="multiple",
-        ngselect2,ng-data="settingPanel.chart.tags",istag="true",
-        placeholder="comma separated values, like 'population,economics'")
-        br
-        label Backups
-        div(ng-cloak,ng-show="backup.list.length")
-          | backuped at {{backup.last.timestamp|date}}.&nbsp;
-          a(href="#",ng-click="backup.recover()") Recover
-        p.grayed(ng-cloak,ng-show="!backup.list.length") No backup found.
-      div(ng-show="settingPanel.tab == 1",style="width: 80%;margin:auto")
-        br
-        //- Dependency can be maintained by order for now.
-        select.form-control(multiple="multiple",ngselect2,ng-data="settingPanel.chart.library")
-          option(value='d3/3.5.12/min') d3js 3.5.12
-          option(value='d3/4.1.1/min') d3js 4.1.1
-          option(value='plotd3/0.1.0') plotd3 0.1.0
-          option(value="worldmap/0.1.0") worldmap 0.1.0
-          option(value="taiwan-mrt/0.0.1") Taiwan MRT Map 0.0.1
-          option(value="topojson/1.6.24/min") topojson 1.6.24
-          option(value="voronoijs/0.0.1/min") voronoijs 0.0.1
-          option(value="d3.geo.projection/0.2.16/min") d3.geo.projection 0.2.16
-          include d3module.jade
-
-      div
-        hr(style="margin-bottom:10px")
-        .btn.btn-default(ng-click="clone()") Make a copy
-        .pull-right
-          .save-hint-btn.btn.btn-default.loader(ng-disabled="!target().name",ng-click="save()",
-          ng-class="{'loading':save.handle}")
-            +SaveFork
-          .btn.btn-default(ng-click="settingPanel.toggle()") Close
-
-    #permission-modal(ng-cloak,ng-show="sharePanel.toggled"): .ib
-      .closebtn(ng-click="sharePanel.toggle()")
-      h3 Share
-      div(ng-cloak,ng-show="!target().key",
-      style="position:absolute;top:0;left:0;width:100%;height:100%;")
-        div(style="display:table;width:100%;height:100%;"): div(style="display:table-row;width:100%;height:100%")
-          div(ng-cloak,
-          style="display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center;color:#888")
-            | This {{type}} is not saved. #[br] Save it to share it. #[br]#[br]#[br]
-            div(style="width:70%;margin:auto;max-width:500px")
-              .text-left: label(style="color:initial",ng-cloak) Give your {{type}} a name
-              input.form-control(type="text",ng-model="target().name",
-              placeholder="Project Name",style="margin-bottom:5px")
-              .btn.btn-default.btn-block.loader(ng-disabled="!target().name",ng-click="save()",
-              ng-class="{'loading':save.handle}")
-                +SaveFork
-
-      div(ng-cloak,ng-show="target()._type.location=='local' && target().key",
-      style="position:absolute;top:0;left:0;width:100%;height:100%;")
-        div(style="display:table;width:100%;height:100%;"): div(style="display:table-row;width:100%;height:100%")
-          div(style="display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center;color:#888")
-            | This {{type}} is locally saved. #[br] You need to save it in plotdb.com to share it. #[br]#[br]
-            .btn.btn-default(ng-click="migrate()") OK, move it to the server
-        div(style="position:absolute;bottom:5px;width:100%")
-          hr(style="margin-bottom:10px")
-          .pull-right(style="padding:0px 10px 5px"): .btn.btn-default(ng-click="sharePanel.toggle()") Close
-      div(ng-cloak,ng-show="target()._type.location=='server' && target().key")
-        br
-        .text-center(style="margin-bottom: 8px"): .btn-group
-          .btn.btn-default(ng-click="sharePanel.setPrivate()",ng-class="{'active':!sharePanel.isPublic()}") Private
-          .btn.btn-default(ng-click="sharePanel.setPublic()",ng-class="{'active':sharePanel.isPublic()}") Public
-        .text-center(ng-show="!sharePanel.isPublic()") Only users with permission can see this.
-        .text-center(ng-show="sharePanel.isPublic()") Every one can see this.
-
-        .text-center.text-danger(ng-cloak,ng-show="sharePanel.saveHint") Save to apply this change
-        .text-center: .checkbox: label #[input(type="checkbox",ng-model="sharePanel.forkable")] Allow others to fork this work
-        br(ng-show="!sharePanel.saveHint")
-
-        #share-buttons.text-center(style="font-size:2em",ng-class="{'disabled':!sharePanel.isPublic()}")
-          div(ng-show="!sharePanel.isPublic()")
-            i.fa.fa-facebook
-            i.fa.fa-twitter
-            i.fa.fa-pinterest
-            i.fa.fa-linkedin
-            i.fa.fa-envelope
-          div(ng-show="sharePanel.isPublic()")
-            a(ng-attr-href="{{sharePanel.social.facebook}}",target="_blank")
-              i.fa.fa-facebook-square(style="color:#3b5998")
-            a(ng-attr-href="{{sharePanel.social.twitter}}", target="_blank")
-              i.fa.fa-twitter-square(style="color:#00a0dc")
-            a(ng-attr-href="{{sharePanel.social.pinterest}}",target="_blank")
-              i.fa.fa-pinterest-square(style="color:#bd081c")
-            a(ng-attr-href="{{sharePanel.social.linkedin}}", target="_blank")
-              i.fa.fa-linkedin-square(style="color:#00a0dc")
-            a(ng-attr-href="{{sharePanel.social.email}}",target="_blank")
-              i.fa.fa-envelope-square(style="color:#444")
-
-        hr
-
-        .row
-          .col-sm-10.col-sm-offset-1
-
-            label Link
-            .pull-right(ng-cloak,ng-show="sharePanel.isPublic()")
-              a(ng-attr-href="{{sharePanel.link || '#'}}",target="_blank")
-                i.fa.fa-external-link(style="vertical-align:middle")
-                span(style="font-size:12px;margin-left:5px;") Open in New Window
-            input.form-control(ng-cloak,disabled,
-            ng-show="!sharePanel.isPublic()",placeholder="set public to get share link")
-            input#edit-sharelink.form-control(ng-cloak,type="text",ng-model="sharePanel.link",
-            placeholder="share link for this",ng-show="sharePanel.isPublic()",
-            data-clipboard-target="#edit-sharelink")
-            br
-            label Embed Code
-            #chart-edit-iframe-config.pull-right
-              span(ng-show="sharePanel.aspectRatio")
-                input.input-sm.form-control(type="text",placeholder="Width",ng-model="sharePanel.embed.widthRate")
-                span &nbsp;: 
-                input.input-sm.form-control(type="text",placeholder="Height",ng-model="sharePanel.embed.heightRate")
-              span(ng-show="!sharePanel.aspectRatio")
-                input.input-sm.form-control(type="text",placeholder="Width",ng-model="sharePanel.embed.width")
-                span &times;
-                input.input-sm.form-control(type="text",placeholder="Height",ng-model="sharePanel.embed.height")
-              .checkbox: label
-                input(type="checkbox",ng-model="sharePanel.aspectRatio")
-                span Preserve Aspect Ratio
-            textarea.form-control(ng-cloak,disabled,rows="3",
-            ng-show="!sharePanel.isPublic()",placeholder="set public to get embed code")
-            textarea#edit-embedcode.form-control(ng-cloak,rows="3",ng-show="sharePanel.isPublic()",
-            data-clipboard-target="#edit-embedcode",ng-model="sharePanel.embedcode")
-        hr(style="margin-bottom:10px")
-        .pull-right
-          .save-hint-btn.btn.btn-default.loader(ng-disabled="!target().name",ng-click="save();sharePanel.saveHint=false",
-          ng-class="{'btn-warning':sharePanel.saveHint,'btn-default':!sharepanel.saveHint,'loading':save.handle}")
-            +SaveFork
-          .btn.btn-default(ng-click="sharePanel.toggle()") Close
-        //- Simplify this for now
-        //-
-          .row
-            .col-sm-8.col-sm-offset-2
-              label(style="margin-bottom:10px") Granted List
-              each i in [1,2,3,4,5]
-                .perm(style="line-height:20px;margin-bottom:10px;border-bottom:1px dashed #f9f9f9")
-                  div(style="display:inline-block;vertical-align:middle;line-height:12px;padding:1px;font-size:12px;width:15px;height:15px;border-radius:50%;background:#f00;color:#fff;text-align:center;margin-right:10px") &times;
-                  div(style="width:20px;height:20px;border-radius:50%;background:#999;border:2px solid #444;display:inline-block;vertical-align:middle;margin-right:7px;")
-                  span(style="line-height:20px;") tkirby@gmail.com
-                  .pull-right
-                    each v in [['eye','View','#444'],['edit','Edit','#ddd'],['cogs','Admin','#ddd']]
-                      div(style="display:inline-block;vertical-align:middle;line-height:20px;margin:0 10px;text-align:center;color:#444")
-                        //-i.fa(class="fa-"+v[0],style="font-size:20px;line-height:0")
-                        div(style="font-size:12px;font-family:open sans condensed;line-height:0;font-weight:bold;color:"+v[2])= v[1]
-          hr
-          .input-group(style="width:250px;float:left;margin-right:10px")
-            input.form-control.input-sm
-            span.input-group-btn
-              .btn.btn-default.btn-sm #[i.fa.fa-plus] User
-          .btn.btn-default.btn-sm #[i.fa.fa-plus] Link
-
+    include panel.jade
     #assets-preview(ng-cloak,ng-show="assets.preview.toggled"): .ib
       .closebtn.inner(ng-click="assets.preview.toggled=false")
       a(ng-attr-download="{{assets.download.name}}", ng-attr-href="{{assets.download.url}}")
@@ -260,9 +42,8 @@ block body
     #code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
       #code-tabs
         .pull-right
-          .tab.action(ng-click="settingPanel.toggle()") #[i.fa.fa-cog] #[span settings]
-          .tab.action(ng-show="target().owner==user.data.key",
-          ng-click="sharePanel.toggle()") #[i.fa.fa-user] #[span share]
+          .tab.action(ng-click="settingPanel.toggle('permission')") #[i.fa.fa-cog] #[span settings]
+          .tab.action(ng-click="settingPanel.toggle('publish')") #[i.fa.fa-user] #[span share]
         .tab.cat.shown(ng-click="showsrc=!!!showsrc")
           div.text-right #[span src]
           .desc.text-right
@@ -532,4 +313,25 @@ block body
                 p.text-center(ng-cloak) Permanently delete this {{type}}. Are you sure?
                 .text-center
                   .btn.btn-danger.loader(ng-click="delete()",ng-class="{'loading':delete.handle}") Yes, Delete it
+    .sep.gap
+    div(style="display:block;text-align:center;width:390px;margin:auto;margin-top:-25px;background:#e9e9e9;margin-bottom:20px;color:#999") suggestion or request about this vis? leave comment below!
+    .row
+      .col-sm-12
+        .panel.panel-default
+          .panel-body(style="background:url(/assets/img/loading.gif) center center no-repeat")
+            #fbcomment
+            script.
+              function loadComment() {
+                var node = document.getElementById('fbcomment');
+                node.innerHTML = [
+                  '<div style="min-height:500px;"class="fb-comments"',
+                  'data-href="'+window.location.href+'"',
+                  'data-num-posts="30" data-width="100%"></div>'
+                ].join(" ");
+                FB.XFBML.parse(node);
+              };
+
+              if(!window.FB) window.fbQueue = [loadComment];
+              else loadComment();
+
   include /footer.jade

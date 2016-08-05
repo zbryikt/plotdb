@@ -1,5 +1,5 @@
 require! <[fs bluebird]>
-require! <[../engine/aux ../engine/share/model/ ./thumb]>
+require! <[../engine/aux ../engine/share/model/ ./thumb ./perm]>
 (engine,io) <- (->module.exports = it)  _
 
 charttype = model.type.chart
@@ -92,8 +92,7 @@ engine.router.api.get "/chart/:id", aux.numid false, (req, res) ->
     .then (it={}) ->
       chart = it.[]rows.0
       if !chart => return aux.r404 res
-      if (chart.{}permission.[]switch.indexOf(\public) < 0)
-      and (!req.user or chart.owner != req.user.key) => return aux.r403 res, "forbidden"
+      if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.r403 res, "forbidden"
       return res.json chart
     .catch ->
       console.error it.stack
@@ -135,9 +134,9 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
     .then (r = {}) ->
       if !r.rows or !r.rows.length => chart.parent = null
       if !chart.parent => delete data.parent
-      if chart.owner != req.user.key => return aux.r403 res
+      if !perm.test(req, chart.{}permission, chart.owner, \write) => return aux.r403 res
       data <<< do
-        owner: req.user.key
+        owner: chart.owner
         key: id
         modifiedtime: new Date!toUTCString!
       ret = charttype.lint(data)
@@ -168,7 +167,7 @@ engine.router.api.delete "/chart/:id", aux.numid false, (req, res) ~>
     .then (r = {}) ->
       chart = r.[]rows.0
       if !chart => return aux.r404 res
-      if chart.owner != req.user.key => return aux.r403 res
+      if !perm.test(req, chart.{}permission, chart.owner, \admin) => return aux.r403 res
       io.query "delete from charts where key = $1", [req.params.id]
         .then -> res.send []
     .catch ->
@@ -179,12 +178,17 @@ engine.app.get \/chart/, (req, res) ->
   return res.render 'view/chart/index.jade'
 
 engine.app.get \/chart/:id, aux.numid true, (req, res) ->
-  io.query "select * from charts where key = $1", [req.params.id]
+  io.query(
+    [
+      "select charts.*,users.displayname as ownername"
+      "from charts,users where charts.key = $1 and charts.owner=users.key"
+    ].join(" "),
+    [req.params.id]
+  )
     .then (r = {}) ->
       chart = r.[]rows.0
       if !chart => return aux.r404 res, "", true
-      if (chart.{}permission.[]switch.indexOf(\public) < 0)
-      and (!req.user or chart.owner != req.user.key) => return aux.r403 res, "forbidden", true
+      if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.r403 res, "forbidden", true
       res.render 'view/chart/index.jade', {chart}
       return null
     .catch ->
@@ -203,7 +207,7 @@ engine.router.api.put \/chart/:id/like, aux.numid false, (req, res) ->
   ]).then ->
     .then (r = {}) ->
       if !chart => return aux.r404 res
-      if !("public" in chart.{}permission.[]switch) => return aux.r403 res
+      if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.r403 res
       v = !!!liked
       req.user.{}likes.{}chart[chart.key] = v
       chart.likes = (chart.likes or 0) + (if v => 1 else -1) >? 0
@@ -229,14 +233,14 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
     .then (it={}) ->
       chart := it.[]rows.0
       if !chart => return bluebird.reject new Error(404)
-      if (chart.{}permission.[]switch.indexOf(\public) < 0)
+      if (chart.{}permission.switch != \publish)
       and (!req.user or chart.owner != req.user.key) => return bluebird.reject new Error(403)
       if !chart.theme => return bluebird.resolve!
       io.query "select * from themes where key = chart.theme"
     .then (r={}) ->
       r = r.[]rows.0
       if r =>
-        theme := if (r.{}permission.[]switch.indexOf(\public) < 0)
+        theme := if (r.{}permission.switch != \publish)
         and (!req.user or r.owner != req.user.key) => null else r
       fieldkeys = [v.[]fields.map(->it.key) for k,v of chart.dimension]
         .reduce(((a,b)->a++b),[])
@@ -251,7 +255,7 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
     .then (r={}) ->
       fields = r.[]rows
       fields = fields.filter((f)->
-        (f.{}permission.[]switch.indexOf(\public) >= 0) or (req.user and f.owner == req.user.key)
+        (f.{}permission.switch == 'publish') or (req.user and f.owner == req.user.key)
       )
       fields ++= [v.[]fields.filter(->!it.key) for k,v of chart.dimension].reduce(((a,b)->a++b),[])
       res.render 'view/chart/view.jade', {chart, theme, fields}

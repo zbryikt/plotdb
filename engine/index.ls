@@ -35,7 +35,7 @@ backend = do
           'self' http://fonts.gstatic.com
         ]>
         <[frame-src
-          'self' data: blob: http://staticxx.facebook.com/
+          'self' data: blob: http://staticxx.facebook.com/ https://www.facebook.com/
         ]>
         <[connect-src
           'self' data: blob:

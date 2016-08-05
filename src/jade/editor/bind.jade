@@ -1,4 +1,4 @@
-div#binding-panel(ng-controller="datasetList",ng-cloak)
+div#binding-panel(ng-controller="datasetList",ng-cloak,ng-init="useSample=true")
   include ../dataset/widget/float-edit.jade
   h1 Data Binding #[small.grayed: small connect your data with this chart]
   .sep.dark
@@ -83,10 +83,19 @@ div#binding-panel(ng-controller="datasetList",ng-cloak)
               i(ng-show="!dim.type || !dim.type.length") Any
             .ds-fields
               .ds-field.placeholder(ng-show="!dim.fields || !dim.fields.length")
-              .ds-field(ng-repeat="field in dim.fields")
+              //-TODO - scan all dataset field data type then turn on mismatch
+              .ds-field(ng-repeat="field in dim.fields", ng-class="{'mismatch': false && dim.type.length>0 && dim.type.indexOf(fields.datatype)<0}")
                 .delete(ng-click="dimension.unbind($event, dim, field)"): span &times;
-                .name {{field.name}}&nbsp;
-                small.grayed in {{field.datasetname}}
+                .name {{field.name}}&nbsp; 
+                small.grayed
+                  span(ng-if="fields.datatype"): i {{fields.datatype}}
+                  span(ng-if="!fields.datatype"): i Any
+                  br
+                  | in {{field.datasetname}}(
+                  span(ng-if="fields.dataset") {{field.dataset}}
+                  span(ng-if="!fields.dataset") sample
+                  | )
+
         .chart-dim.flexend
         div
           i.fa.fa-asterisk(style="color:#f00;font-size: 0.8em")

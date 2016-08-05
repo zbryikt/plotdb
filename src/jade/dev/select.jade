@@ -1,0 +1,27 @@
+extends /base.jade
+block vars
+  - var rootid = "exploreview"
+  - var url = "https://plotdb.com/chart/explore/"
+block head
+block body
+  .spc1
+  .page-header: .inner
+    .title Teams
+    .desc create your own teams
+  #root(ng-controller="selecttest")
+    br
+    div(style="max-width:800px;margin:auto")
+
+      +selectbox("blah","entity")
+      br
+      br
+      .input-group
+        +selectbox("blah","entity")
+        .input-group-btn
+          .btn.btn-default click #[span.caret]
+          .btn.btn-default click
+      br
+      br
+      +selectbox("test", "chart")
+  script.
+    $('.select-box').on('click', function() { $('.select-box-dropdown').show(); });

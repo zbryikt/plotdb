@@ -1,6 +1,7 @@
 doctype html
 //- basic libraries: jquery(1.10.2), d3js(3.3.11), angularjs(1.2.3), bootstrap(3.0)/semantic-ui(0.9.3/0.9.5)
 include version.jade
+include mixin.jade
 - var assets = "/assets"
 - var title = 'PlotDB: Share Visualizations with Everyone'
 - var description = "Create, share and request visualizations online."
@@ -40,6 +41,7 @@ html(lang="en")
       .footer
         .btn.btn-default.btn-sm(ng-click="alert.toggled=false") OK
     block body
+    include /feedback.jade
     include /ga.jade
     include /fb.jade
     //-script.
@@ -55,5 +57,3 @@ html(lang="en")
         t.ready = function(f) { t._e.push(f); };
         return t;
       }(document, "script", "twitter-wjs"));
-
-

@@ -18,28 +18,43 @@ angular.module \plotDB
   <[$scope $http $timeout plNotify teamService eventBus]> ++
   ($scope, $http, $timeout, plNotify, teamService, eventBus) ->
     $scope.team = new teamService.team(window.team or {})
-    $scope.members = []
+    $scope.members = window.members or []
     $scope.newMembers = []
-    $scope.charts = []
+    $scope.charts = window.charts or []
     $scope.newCharts = []
+
+    $scope.remove-chart = (tid, cid) ->
+      $http do
+        url: "/d/team/#tid/chart/#cid"
+        method: \DELETE
+      .success (d) ->
+        idx = $scope.charts.map(->it.key).indexOf(cid)
+        if idx < 0 => return
+        $scope.charts.splice idx, 1
+        plNotify.send \success, "chart removed"
+      .error (d) ->
+        plNotify.send \error, "failed to remove chart, try again later?"
 
     $scope.remove-member = (tid, mid) ->
       $http do
         url: "/d/team/#tid/member/#mid"
         method: \DELETE
       .success (d) ->
-        plNotify.send \success, "members removed"
+        idx = $scope.members.map(->it.key).indexOf(mid)
+        if idx < 0 => return
+        $scope.members.splice idx, 1
+        plNotify.send \success, "member removed"
       .error (d) ->
         plNotify.send \error, "failed to remove member, try again later?"
 
     $scope.add-charts = (tid) ->
-      console.log \123ok
       if !$scope.newCharts or !$scope.newCharts.length => return
       $http do
         url: "/d/team/#tid/chart/"
         method: \post
-        data: $scope.newCharts
+        data: $scope.newCharts.map -> it.key
       .success (d) ->
+        $scope.charts ++= $scope.newCharts.filter(->$scope.charts.indexOf(it.key)<0)
         plNotify.send \success, "charts added"
       .error (d) ->
         plNotify.send \error, "failed to add charts. try again later?"
@@ -48,8 +63,9 @@ angular.module \plotDB
       $http do
         url: "/d/team/#tid/member/"
         method: \POST
-        data: $scope.newMembers
+        data: $scope.newMembers.map -> it.key
       .success (d) ->
+        $scope.members ++= $scope.newMembers.filter(->$scope.members.indexOf(it.key)<0)
         plNotify.send \success, "members added"
       .error (d) ->
         plNotify.send \error, "failed to add members. try again later?"
@@ -109,7 +125,7 @@ angular.module \plotDB
       $http do
         url: "/d/team/#{if is-update => $scope.team.key else ''}"
         method: (if is-update => \PUT else \POST)
-        data: if is-update => $scope.team else {team: $scope.team, members: $scope.members}
+        data: if is-update => $scope.team else {team: $scope.team, members: $scope.newMembers}
       .success (d) ->
         if !is-update => $scope.team.key = d.key
         if $scope.avatar.files.0 and $scope.avatar.raw =>

@@ -9,7 +9,8 @@
     textarea.form-control(ng-model="team.description", placeholder="tell us more about your team.")
     br
     label Add some team members
-    div: select.form-control(ngselect2,ng-data="members",type="user",multiple="multiple")
+    //-div: select.form-control(ngselect2,ng-data="newMembers",type="user",multiple="multiple")
+    div: +selectbox("newMembers", "user")
     br
     label team avatar
     small.grayed  ( suggest: 200 x 200 px )
@@ -20,7 +21,6 @@
       | or 
       .avatar-upload-btn(ng-attr-style="background-image: url({{avatar.preview}})",
       ng-class="{'active':avatar.preview}"): input(type="file",ngfile,ng-data="avatar.files")
-
   .panel-footer.text-right
     .btn.btn-success.btn-sm(ng-click="save()") OK
     span &nbsp;

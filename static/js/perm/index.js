@@ -4,6 +4,55 @@ x$ = angular.module('plotDB');
 x$.controller('test3', ['$scope'].concat(function($scope){
   return $scope.shown = false;
 }));
+x$.service('permService', ['$rootScope'].concat(function($rootScope){
+  var permHandler;
+  permHandler = {
+    type: ['none', 'list', 'read', 'comment', 'fork', 'write', 'admin'],
+    forkIdx: 4,
+    isFullfilled: function(){},
+    caltype: function(req, perm, owner, type){
+      var val;
+      val = this.calc(req, perm, owner);
+      val = val < this.type.indexOf(type) ? 0 : val;
+      return [val, this.type[val]];
+    },
+    test: function(req, perm, owner, type){
+      return this.calc(req, perm, owner) >= this.type.indexOf(type);
+    },
+    calc: function(req, perm, owner){
+      var maxlv, ref$, user, token, teams, max, this$ = this;
+      maxlv = function(it){
+        return Math.max.apply(null, it.map(function(it){
+          return it._idx;
+        }));
+      };
+      ref$ = [req.user || null, (req.query || (req.query = {})).token || null, (req.user || (req.user = {})).teams || null], user = ref$[0], token = ref$[1], teams = ref$[2];
+      if (user && +owner && user.key === +owner) {
+        return this.type.indexOf('admin');
+      }
+      if (!perm || !(perm.list || (perm.list = [])).length) {
+        return this.forkIdx;
+      }
+      max = 0;
+      perm.list.map(function(it){
+        var val;
+        it._idx = this$.type.indexOf(it.perm);
+        val = it.type === 'global'
+          ? it._idx
+          : it.type === 'user' && user && user.key === +it.target
+            ? it._idx
+            : it.type === 'token' && token === it.target
+              ? it._idx
+              : it.type === 'team' && teams && teams.indexOf(+it.target) >= 0 ? it._idx : 0;
+        if (max < val) {
+          return max = val;
+        }
+      });
+      return max;
+    }
+  };
+  return permHandler;
+}));
 x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeout){
   $scope.setPerm = function(it){
     var ref$;
@@ -19,8 +68,13 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
     }
     $scope.check();
     if (((ref$ = $scope.perm).list || (ref$.list = [])).length === 0) {
-      return $scope.addGlobal();
+      $scope.addGlobal();
     }
+    return $scope.perm.list.forEach(function(it){
+      if (it.type === 'global') {
+        return it.displayname = "Everyone", it.username = "and anonymous user", it;
+      }
+    });
   };
   $scope.spec = {
     permlist: ['list', 'read', 'comment', 'fork', 'write', 'admin'],
@@ -57,7 +111,6 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
   }];
   $scope.permEdit = {
     list: [],
-    detail: [],
     perm: "read"
   };
   $scope.addToken = function(){
@@ -93,33 +146,26 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
     }
   };
   $scope.addMember = function(){
-    var i$, ref$, len$, node, ref1$, type, target, matched, detail, ret, obj;
+    var i$, ref$, len$, node, ref1$, type, target, matched, ret, obj;
     for (i$ = 0, len$ = (ref$ = $scope.permEdit.list).length; i$ < len$; ++i$) {
       node = ref$[i$];
-      ref1$ = node.split(':'), type = ref1$[0], target = ref1$[1];
+      ref1$ = [node.type, node.key], type = ref1$[0], target = ref1$[1];
       matched = $scope.perm.list.filter(fn$)[0];
       if (matched) {
         matched.perm = $scope.permEdit.perm;
       } else {
-        detail = $scope.permEdit.detail.filter(fn1$)[0];
         ret = {
           target: target,
           type: type,
-          perm: $scope.permEdit.perm
+          perm: $scope.permEdit.perm,
+          displayname: node.displayname,
+          username: node.type,
+          avatar: node.avatar
         };
-        if (detail) {
-          import$(ret, {
-            displayname: detail.displayname,
-            username: detail.type,
-            avatar: detail.avatar
-          });
-        }
         $scope.perm.list.push(ret);
       }
     }
-    ref$ = $scope.permEdit;
-    ref$.detail = [];
-    ref$.list = [];
+    $scope.permEdit.list.splice(0);
     obj = {
       list: $scope.purify(),
       'switch': $scope.perm['switch']
@@ -131,9 +177,6 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
     }
     function fn$(it){
       return it.type === type && it.target === +target;
-    }
-    function fn1$(it){
-      return it.id === node;
     }
   };
   $scope.purify = function(){
@@ -150,8 +193,3 @@ x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeou
   };
   return $scope.check();
 }));
-function import$(obj, src){
-  var own = {}.hasOwnProperty;
-  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
-  return obj;
-}
