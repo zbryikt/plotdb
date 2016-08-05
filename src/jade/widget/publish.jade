@@ -1,7 +1,7 @@
 label Link
 small.pull-right(style="margin-top:5px")
-  a(href="#",ng-class="{'disabled':target().permission.switch!='publish'}") #[i.fa.fa-external-link] Open in New Window
-input.form-control.input-sm(value="https:/plotdb.io/v/chart/1068",ng-disabled="target().permission.switch!='publish'")
+  a(ng-attr-href="{{sharePanel.link}}",ng-class="{'disabled':target().permission.switch!='publish'}",target="_blank") #[i.fa.fa-external-link] Open in New Window
+input.form-control.input-sm(ng-model="sharePanel.link",ng-disabled="target().permission.switch!='publish'")
 br
 label Embed Code
 #chart-edit-iframe-config.pull-right
