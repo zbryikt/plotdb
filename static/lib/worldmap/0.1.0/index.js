@@ -43,6 +43,7 @@ ret.randName = function() {
   return codemap.shortname[ parseInt(Math.random() * codemap.shortname.length) ];
 };
 ret.features = json.country;
+ret.json = json;
 
 /* end of code */
 return ret;
