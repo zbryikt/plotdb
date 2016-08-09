@@ -119,8 +119,8 @@ backend = do
     app.use passport.initialize!
     app.use passport.session!
 
-    passport.serializeUser (u,done) -> done null, JSON.stringify(u)
-    passport.deserializeUser (v,done) -> done null, JSON.parse(v)
+    passport.serializeUser (u,done) -> authio.user.serialize u .then (v) -> done null, v
+    passport.deserializeUser (v,done) -> authio.user.deserialize v .then (u) -> done null, u or {}
 
     router = do
       user: express.Router!

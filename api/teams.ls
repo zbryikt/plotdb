@@ -9,6 +9,25 @@ edit-limit = {strategy: \hard, limit: 30, upper-delta: 120, json: true}
 
 engine.router.api.get \/entity/, entity.search!
 
+update-user-teams = (req, res, uid) ->
+  teams = []
+  io.query "select team from teammembers where member = $1", [uid]
+    .then (r={})->
+      teams := r.[]rows.map(-> it.team)
+      io.query "select key,detail from sessions where (detail #>> '{passport,user,key}')::numeric = $1", [uid]
+    .then (r={})->
+      ret = r.[]rows.0
+      if !ret => return null
+      ret.{}detail.{}passport.{}user.teams = teams
+      io.query "update sessions set (detail) = ($2) where key = $1", [ret.key, ret.detail]
+    .then ->
+      new bluebird (res, rej) ->
+        if !req.user => return res!
+        if req.{}user.key == uid =>
+          req.user.teams = teams
+          req.logIn req.user, -> res!
+        else => return res!
+
 get-team = (req, res) ->
   payload = {}
   io.query([ 'select * from teams where key=$1' ].join(" "), [req.params.id])
@@ -110,13 +129,15 @@ engine.router.api.get "/team/:id", aux.numid false, (req, res) ->
     .then (payload={}) -> res.json payload
     .catch aux.error-handler res
 
-batch-add-members = (tid,uids) ->
+batch-add-members = (req, res, tid, uids) ->
   if !Array.isArray(uids) or uids.length == 0 => return bluebird.resolve!
   io.query([
     "insert into teammembers (team,member) values"
     ["($1,$#i)" for i from 2 to uids.length + 1].join(",")
     "on conflict do nothing"
   ].join(" "), [tid] ++ uids)
+    .then -> bluebird.all [update-user-teams req, res, uid for uid in uids]
+
 
 batch-add-charts = (tid,cids) ->
   if !Array.isArray(cids) or cids.length == 0 => return bluebird.resolve!
@@ -145,7 +166,7 @@ engine.router.api.post \/team/, (req, res) ->
       io.query "insert into teams #{pairs.0} values #{pairs.1} returning key", pairs.2
     .then (r={}) ->
       team.key = (r.[]rows.0 or {}).key
-      batch-add-members team.key, members
+      batch-add-members req, res, team.key, members
         .then -> res.send team
         .catch ->
           console.error aux.now-tag!, it.stack
@@ -232,7 +253,7 @@ engine.router.api.post \/team/:tid/member/, aux.numids false, <[tid]>, (req, res
     .then ->
       if !Array.isArray(req.body) => return aux.reject 400
       members = req.body.map(->+it).filter(->it and !isNaN(it))
-      batch-add-members req.params.tid, members
+      batch-add-members req, res, req.params.tid, members
     .then -> res.send!
     .catch aux.error-handler res
 #TODO length limit
@@ -248,6 +269,7 @@ engine.router.api.post \/team/:tid/chart/, aux.numids false, <[tid]>, (req, res)
 engine.router.api.post \/team/:tid/member/:mid, aux.numids false, <[tid mid]>, (req, res) ->
   team-permission req, res, \write
     .then -> io.query "insert into teammembers values ($1,$2)", [req.params.tid, req.params.mid]
+    .then -> update-user-teams req, res, req.params.mid
     .then -> res.send!
     .catch aux.error-handler res
 

@@ -4,10 +4,21 @@ ret = (config) ->
   @config = config
   @authio = do
     user: do
+      # store whole object ( no serialization )
+      serialize: (user={}) -> bluebird.resolve( user or {} )
+      deserialize: (v) ~> bluebird.resolve( v or {})
+
+      # store only key
+      #serialize: (user={}) -> bluebird.resolve( user.key or 0 )
+      #deserialize: (v) ~>
+      #  @query "select * from users where key = $1", [v]
+      #    .then (r={}) -> r.[]rows.0
+
       get: (username, password, usepasswd, detail) ~>
         if !/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.[a-z]{2,}|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i.exec(username) =>
           return aux.reject new Error("not email")
         pw = if usepasswd => crypto.createHash(\md5).update(password).digest(\hex) else ""
+        user = {}
         @query "select * from users where username = $1", [username]
           .then (users = {}) ~>
             user = (users.[]rows.0)
@@ -15,7 +26,11 @@ ret = (config) ->
             if user and (usepasswd or user.usepasswd) and user.password != pw =>
               return bluebird.reject new Error('failed')
             return user
-          .then (user) ~>
+          .then (r = {}) ~>
+            user := r
+            @query "select team from teammembers where member = $1", [user.key]
+          .then (r = {}) ~>
+            user.teams = r.[]rows
             delete user.password
             return user
       create: (username, password, usepasswd, detail = {}) ~>
