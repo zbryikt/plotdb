@@ -84,16 +84,16 @@ div#binding-panel(ng-controller="datasetList",ng-cloak,ng-init="useSample=true")
             .ds-fields
               .ds-field.placeholder(ng-show="!dim.fields || !dim.fields.length")
               //-TODO - scan all dataset field data type then turn on mismatch
-              .ds-field(ng-repeat="field in dim.fields", ng-class="{'mismatch': false && dim.type.length>0 && dim.type.indexOf(fields.datatype)<0}")
+              .ds-field(ng-repeat="field in dim.fields", ng-class="{'mismatch': false && dim.type.length>0 && dim.type.indexOf(field.datatype)<0}")
                 .delete(ng-click="dimension.unbind($event, dim, field)"): span &times;
                 .name {{field.name}}&nbsp; 
                 small.grayed
-                  span(ng-if="fields.datatype"): i {{fields.datatype}}
-                  span(ng-if="!fields.datatype"): i Any
+                  span(ng-if="field.datatype"): i {{field.datatype}}
+                  span(ng-if="!field.datatype"): i Any
                   br
                   | in {{field.datasetname}}(
-                  span(ng-if="fields.dataset") {{field.dataset}}
-                  span(ng-if="!fields.dataset") sample
+                  span(ng-if="field.dataset") {{field.dataset}}
+                  span(ng-if="!field.dataset") {{field}}sample
                   | )
 
         .chart-dim.flexend

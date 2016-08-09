@@ -45,7 +45,8 @@ get-dataset = (req,simple=false) ->
     .then (r = {}) ->
       dataset = r.[]rows.0
       if !dataset => return aux.reject 404
-      if !perm.test(req, dataset.{}permission, dataset.owner, \read) => return aux.reject 403
+      if dataset.{}permission.switch != \publish and
+      !perm.test(req, dataset.{}permission, dataset.owner, \read) => return aux.reject 403
       if simple => return resolve dataset
       io.query "select * from datafields where datafields.dataset = $1", [dataset.key]
         .then (r = {}) ->
