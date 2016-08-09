@@ -74,7 +74,9 @@ update-size = (req, delta) -> new bluebird (res, rej) ->
       if !user => return rej aux.error 400
       datasize = ((user.datasize or 0) + delta) >? 0
       io.query "update users set datasize = $1 where users.key=$2", [datasize, req.user.key]
-        .then -> req.login req.user, -> res!
+        .then ->
+          req.login req.user, -> res!
+          return null
     .catch ->
       console.error it.stack
       rej it
@@ -85,6 +87,7 @@ save-dataset = (req, res, okey = null) ->
   if !req.user => return aux.reject 403
   if typeof(req.body) != \object => return aux.r400 res
   data = req.body <<< {owner: req.user.key, modifiedtime: new Date!}
+  if Array.isArray(data.{}permission.switch) => data.{}permission.switch = \publish
   if !okey => data <<< {createdtime: new Date!}
   cur = null
   fields = null

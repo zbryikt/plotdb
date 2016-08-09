@@ -55,6 +55,7 @@ ret = (config) ->
             cb null, (it.[]rows.0 or {}).detail
             return null
           .catch -> [console.error("session.get", it), cb it]
+        return null
       set: (sid, session, cb) ~>
         @query([
           "insert into sessions (key,detail) values"
@@ -63,10 +64,14 @@ ret = (config) ->
             cb!
             return null
           .catch -> [console.error("session.set", it), cb!]
+        return null
       destroy: (sid, cb) ~>
         @query "delete from sessions where key = $1", [sid]
-          .then -> cb!
+          .then ->
+            cb!
+            return null
           .catch -> [console.error("session.destroy",it),cb!]
+        return null
   @
 
 ret.prototype = do
