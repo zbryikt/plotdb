@@ -232,15 +232,20 @@ engine.router.api.put \/team/:id, (req, res) ->
     .catch aux.error-handler res
 
 engine.router.api.delete \/team/:id, aux.numid false, (req, res) ->
+  users = []
   team-permission req, res, \admin
+    .then ->
+      io.query "select member from teammembers where team=$1", [req.params.id]
+    .then (r={}) ->
+      uids = r.[]rows.map(->it.member)
     .then (team) ->
-      if !perm.test(req, team.{}permission, team.owner, \admin) => return aux.reject 403
       bluebird.all [
         "delete from teammembers where team=$1"
         "delete from teamcharts where team=$1"
         "delete from teamthemes where team=$1"
         "delete from teamdatasets where team=$1"
       ].map(-> io.query(it, [req.params.id]))
+    .then -> bluebird.all [update-user-teams(req, res, uid) for uid in users]
     .then (r={}) -> io.query "delete from teams where key=$1", [req.params.id]
     .then (r={}) ->
       res.send {}
@@ -276,6 +281,7 @@ engine.router.api.post \/team/:tid/member/:mid, aux.numids false, <[tid mid]>, (
 engine.router.api.delete \/team/:tid/member/:mid, aux.numids false, <[tid mid]>, (req, res) ->
   team-permission req, res
     .then -> io.query "delete from teammembers where team=$1 and member=$2", [req.params.tid, req.params.mid]
+    .then -> update-user-teams req, res, req.params.mid
     .then -> res.send!
     .catch aux.error-handler res
 
