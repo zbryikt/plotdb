@@ -6872,8 +6872,8 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
       createdtime: new Date(),
       modifiedtime: new Date(),
       permission: {
-        'switch': [],
-        value: []
+        'switch': 'publish',
+        list: []
       },
       fields: [],
       _type: {
@@ -6970,8 +6970,8 @@ x$.controller('dataEditCtrl', ['$scope', '$timeout', '$http', 'dataService', 'ev
       var isCreate;
       $scope.dataset._type.location = locally ? 'local' : 'server';
       $scope.dataset.permission = {
-        "value": [],
-        "switch": ["public"]
+        "list": [],
+        "switch": "publish"
       };
       $scope.dataset.setFields($scope.parse.result);
       isCreate = !$scope.dataset.key ? true : false;
