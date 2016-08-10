@@ -1,0 +1,33 @@
+@import '../basic'
+@import '../vars'
+
+.dataset-toolbar
+  background: #fff
+  border-radius: 2px
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1)
+  border: 1px solid #ccc
+  border-bottom: 1px solid #999
+  min-height: auto
+  margin-bottom: 0
+  .container-fluid
+    padding-left: 0
+.dataset-toolbar.navbar-default .navbar-nav > li > a
+  color: #444
+  padding-top: 7px
+  padding-bottom: 7px
+  border-right: 1px solid #eee
+  cursor: pointer
+  i.fa
+    color: #666
+  &:hover, &:hover i.fa
+    color: color.primary
+  i.fa.fa-users, i.fa.fa-file-o
+    font-size: 0.8em
+    position: relative
+    top: -1px
+.dataset-toolbar.navbar-default .navbar-nav > li.dropdown.open
+  & > a, & > a > i.fa
+    color: #fff
+    background: color.primary
+.dataset-toolbar .dropdown-menu > li > a
+  padding-left: 7px

@@ -1,7 +1,48 @@
+include panel.jade
 div
   #dataset-create-methods
-    .btn.btn-default.toggle #[img(src="/assets/img/dataset/edit.png")] Type &amp; Paste
-    .btn.btn-default(ng-click="parser.csv.toggle()") #[img(src="/assets/img/dataset/csv.png")] Upload CSV
+    .navbar.navbar-default.dataset-toolbar
+      .container-fluid
+        .navbar-collapse.collapse
+          ul.nav.navbar-nav
+            li.dropdown
+              a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-file-o] File #[span.caret]
+              ul.dropdown-menu
+                li: a(href="#") #[i.fa.align16] New
+                li.divider
+                li: a(href="#") #[i.fa.fa-floppy-o.align16] Save
+                li: a(href="#") #[i.fa.fa-clone.align16] Make a Copy
+                li.divider
+                li: a(href="#") #[i.fa.align16] Encoding
+                li.divider
+                li: a(href="#") #[i.fa.fa-trash-o.align16] Delete
+            li.dropdown
+              a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-cloud-upload] import... #[span.caret]
+              ul.dropdown-menu
+                li: a(href="#") #[i.fa.fa-file-text-o.align16] upload CSV file
+                li: a(href="#") #[i.fa.fa-file-excel-o.align16] upload Excel (.xls, .xlsx)
+                li.divider
+                li: a(href="#") #[i.fa.fa-table.align16] from Google Sheet
+            li.dropdown
+              a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-edit] transform... #[span.caret]
+              ul.dropdown-menu
+                li: a(href="#") #[i.fa.align16] Columnize
+                li: a(href="#") #[i.fa.align16] Transpose
+                li: a(href="#") #[i.fa.fa-long-arrow-down.align16] Fill Down
+          ul.nav.navbar-nav
+            li: a(ng-click="panel.toggle()") #[i.fa.fa-users] Share
+
+    //-
+      .btn.btn-link upload csv or xls
+      .btn.btn-link from Google Sheet
+    //-
+      .btn.btn-default.toggle #[img(src="/assets/img/dataset/edit.png")] Type &amp; Paste
+      .dropdown(style="display:inline-block")
+        .btn.btn-default.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-upload(style="font-size:12px")] Upload #[span.caret]
+      .btn.btn-default(ng-click="parser.csv.toggle()") #[img(src="/assets/img/dataset/csv.png")] Upload CSV
+      .btn.btn-default(ng-click="parser.csv.toggle()") #[img(src="/assets/img/dataset/csv.png")] Upload MS Excel
+      .btn.btn-default(ng-click="parser.csv.toggle()") #[img(src="/assets/img/dataset/csv.png")] from Google Sheet
+
     //-.btn.btn-default(ng-click="parser.gsheet.toggle()")
       img(src="/assets/img/dataset/spreadsheet.png")
       span Google Spreadsheet
@@ -29,7 +70,16 @@ div
                 li(ng-class="{'active':parser.encoding=='GB2312'}"): a(ng-click="parser.encoding='GB2312'") GB2312
                 li(ng-class="{'active':parser.encoding=='UTF-8'}"): a(ng-click="parser.encoding='UTF-8'") UTF-8
               button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="readLink()") Read
-  #dataset-editbox
+  //dev
+  script(src="/assets/clusterize/0.16.1/clusterize.min.js")
+  link(rel="stylesheet",type="text/css",href="/assets/clusterize/0.16.1/clusterize.css")
+  #dataset-editbox(style="position:relative")
+    .sheet-outter(style="background:#fff;position:absolute;top:0;left:0;width:100%;")
+      .sheet.clusterize
+        .sheet-head
+        .sheet-body.clusterize-scroll
+          .sheet-cells.clusterize-content
+
     textarea.form-control(rows="6",ng-model="rawdata",
     placeholder="paste or drag your data here...",
     ng-disabled="dataset.type.location=='sample'"

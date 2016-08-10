@@ -1017,6 +1017,10 @@ a.disabled,
   -o-animation: glowing 1s infinite;
   animation: glowing 1s infinite;
 }
+i.fa.align16 {
+  width: 16px;
+  text-align: center;
+}
 .cover-modal,
 #permission-modal,
 #setting-modal,
@@ -3194,6 +3198,46 @@ small.hint {
   background: #ed1d78;
   color: #fff;
 }
+.dataset-toolbar {
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+  border: 1px solid #ccc;
+  border-bottom: 1px solid #999;
+  min-height: auto;
+  margin-bottom: 0;
+}
+.dataset-toolbar .container-fluid {
+  padding-left: 0;
+}
+.dataset-toolbar.navbar-default .navbar-nav > li > a {
+  color: #444;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  border-right: 1px solid #eee;
+  cursor: pointer;
+}
+.dataset-toolbar.navbar-default .navbar-nav > li > a i.fa {
+  color: #666;
+}
+.dataset-toolbar.navbar-default .navbar-nav > li > a:hover,
+.dataset-toolbar.navbar-default .navbar-nav > li > a:hover i.fa {
+  color: #ed1d78;
+}
+.dataset-toolbar.navbar-default .navbar-nav > li > a i.fa.fa-users,
+.dataset-toolbar.navbar-default .navbar-nav > li > a i.fa.fa-file-o {
+  font-size: 0.8em;
+  position: relative;
+  top: -1px;
+}
+.dataset-toolbar.navbar-default .navbar-nav > li.dropdown.open > a,
+.dataset-toolbar.navbar-default .navbar-nav > li.dropdown.open > a > i.fa {
+  color: #fff;
+  background: #ed1d78;
+}
+.dataset-toolbar .dropdown-menu > li > a {
+  padding-left: 7px;
+}
 #request-editor {
   background: #fff;
   padding: 0 15px;
@@ -3883,6 +3927,37 @@ small.hint {
   height: 20px;
   width: 60px;
   display: inline-block;
+}
+.sheet-body {
+  border: 1px solid #ccc;
+  min-height: 401px;
+}
+.sheet-head {
+  border: 1px solid #ccc;
+  overflow: hidden;
+}
+.sheet-head > div,
+.sheet-cells > div {
+  white-space: nowrap;
+  width: 100%;
+  height: 20px;
+}
+.sheet-head > div:last-child > div,
+.sheet-cells > div:last-child > div {
+  border-bottom: none;
+}
+.sheet-head > div > div,
+.sheet-cells > div > div {
+  display: inline-block;
+  overflow: hidden;
+  text-align: right;
+  padding-right: 5px;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+.sheet-head > div > div:last-child,
+.sheet-cells > div > div:last-child {
+  border-right: none;
 }
 span.select2-container--default .select2-selection--multiple {
   box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);

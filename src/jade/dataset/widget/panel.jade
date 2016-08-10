@@ -1,58 +1,58 @@
 mixin publish
   .perm-item(style="padding: 10px 0")
     .btn-group
-      .btn.btn-default.btn-sm(ng-class="{'active':target().permission.switch=='publish'}",ng-click="target().permission.switch='publish'")
+      .btn.btn-default.btn-sm(ng-class="{'active':dataset.permission.switch=='publish'}",ng-click="dataset.permission.switch='publish'")
         i.fa.fa-check.text-success
         span  Published
-      .btn.btn-default.btn-sm(ng-class="{'active':target().permission.switch!='publish'}",ng-click="target().permission.switch='draft'")
+      .btn.btn-default.btn-sm(ng-class="{'active':dataset.permission.switch!='publish'}",ng-click="dataset.permission.switch='draft'")
         i.fa.fa-check.text-success
         span  Draft
     .pull-right.btn.btn-text.btn-sm(
-    ng-show="target().permission.switch=='publish'") #[b visible] in embed code / share link
+    ng-show="dataset.permission.switch=='publish'") #[b visible] in embed code / share link
     .pull-right.btn.btn-text.btn-sm(
-    ng-show="target().permission.switch!='publish'") #[b invisible] in embed code / share link
+    ng-show="dataset.permission.switch!='publish'") #[b invisible] in embed code / share link
 
 mixin searchable
   .perm-item(style="padding: 10px 0")
     label Searchable?
     br
     .btn-group
-      .btn.btn-default.btn-sm(ng-class="{'active':target().searchable}",ng-click="target().searchable=true")
+      .btn.btn-default.btn-sm(ng-class="{'active':dataset.searchable}",ng-click="dataset.searchable=true")
         i.fa.fa-check.text-success
         span  On
-      .btn.btn-default.btn-sm(ng-class="{'active':!target().searchable}",ng-click="target().searchable=false")
+      .btn.btn-default.btn-sm(ng-class="{'active':!dataset.searchable}",ng-click="dataset.searchable=false")
         i.fa.fa-check.text-success
         span  Off
     .pull-right.btn.btn-text.btn-sm(
-    ng-show="target().searchable") #[b shown] in search result
+    ng-show="dataset.searchable") #[b shown] in search result
     .pull-right.btn.btn-text.btn-sm(
-    ng-show="!target().searchable") #[b hidden] from search result
+    ng-show="!dataset.searchable") #[b hidden] from search result
 
-+cover-modal("settingPanel.toggled","settingPanel.toggle()","narrow")
-  .panel.panel-default(ng-init="settingPanel.tab='publish'")
++cover-modal("panel.toggled","panel.toggle()","narrow")
+  .panel.panel-default(ng-init="panel.tab='publish'")
     .panel-heading &nbsp;
     .panel-body: div(ng-cloak)
-      .closebtn.inner.lg.inverse(ng-click="settingPanel.toggle()")
+      .closebtn.inner.lg.inverse(ng-click="panel.toggle()")
       ul.nav.nav-tabs
-        li(ng-class="{'active':settingPanel.tab=='publish'}",ng-click="settingPanel.tab='publish'")
+        li(ng-class="{'active':panel.tab=='publish'}",ng-click="panel.tab='publish'")
           a(href="#") #[i.fa.fa-bullhorn] Publish
-        li(ng-class="{'active':settingPanel.tab=='permission'}",ng-click="settingPanel.tab='permission'")
+        li(ng-class="{'active':panel.tab=='permission'}",ng-click="panel.tab='permission'")
           a(href="#") #[i.fa.fa-lock] Permission
-        li(ng-class="{'active':settingPanel.tab=='chartinfo'}",ng-click="settingPanel.tab='chartinfo'")
+        //-li(ng-class="{'active':panel.tab=='chartinfo'}",ng-click="panel.tab='chartinfo'")
           a(href="#") #[i.fa.fa-info-circle] Chart Info
-        li(ng-class="{'active':settingPanel.tab=='library'}",ng-click="settingPanel.tab='library'")
+        //-li(ng-class="{'active':panel.tab=='library'}",ng-click="panel.tab='library'")
           a(href="#") #[i.fa.fa-book] Libraries
 
-      div(ng-show="settingPanel.tab=='permission'")
+      div(ng-show="panel.tab=='permission'")
         +searchable()
         .sep
-        div(ng-controller="permEdit",ng-init="setPerm(target().permission)")
+        div(ng-controller="permEdit",ng-init="setPerm(dataset.permission)")
           include /widget/permission.jade
-      div(ng-show="settingPanel.tab=='publish'")
+      div(ng-show="panel.tab=='publish'")
         +publish()
         .sep
         include /widget/publish.jade
-      div(ng-show="settingPanel.tab=='chartinfo'")
+      //-div(ng-show="panel.tab=='chartinfo'")
         .well
           h3(style="margin:0")
             | Chart Info
@@ -62,7 +62,7 @@ mixin searchable
                 a(href="/user/" + chart.owner)= chart.ownername
           small.grayed increase visibility by providing more information for your chart.
         include /widget/chartinfo.jade
-      div(ng-show="settingPanel.tab=='library'")
+      //-div(ng-show="panel.tab=='library'")
         .well
           h3(style="margin:0") Library
           small.grayed pick libraries you want to use from this dropdown box.
@@ -74,5 +74,6 @@ mixin searchable
       .btn.btn-success.btn-sm.loader(ng-class="{'btn-glowing': needSave,'loading':save.handle}",
       ng-click="save()") SAVE
       span &nbsp;
-      .btn.btn-default.btn-sm(ng-click="settingPanel.toggle()") Cancel
+      .btn.btn-default.btn-sm(ng-click="panel.toggle()") Cancel
+
 

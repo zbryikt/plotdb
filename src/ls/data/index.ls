@@ -143,6 +143,7 @@ angular.module \plotDB
   ..controller \dataEditCtrl,
   <[$scope $timeout $http dataService eventBus plNotify]> ++
   ($scope, $timeout, $http, data-service, eventBus, plNotify) ->
+    empty!
     eventBus.fire \loading.dimmer.on
     $scope <<< do
       rawdata: ""
@@ -323,6 +324,8 @@ angular.module \plotDB
             $scope.$apply -> $scope.reset d.trim!
             $(\#dataset-edit-link-modal).modal \hide
           #TODO error handling
+    $scope.panel = do
+      toggle: -> @toggled = !!! @toggled
     eventBus.listen \dataset.delete, (key) -> if $scope.dataset.key == key => $scope.dataset = null
     eventBus.listen \dataset.edit, (dataset, load = true) ->
       #TODO: support more type ( currently CSV structure only )
@@ -483,4 +486,81 @@ angular.module \plotDB
             $scope.$apply ->
               dataset.fields = fields
           ), 0
+
+
+# dev
+data = do
+  rows: []
+  headers: []
+  trs: []
+  clusterizer: null
+
+render = ->
+  head = document.querySelector '#dataset-editbox .sheet .sheet-head'
+  scroll = document.querySelector '#dataset-editbox .sheet .clusterize-scroll'
+  content = document.querySelector '#dataset-editbox .sheet .clusterize-content'
+  content.innerHTML = ""
+  h = data.headers
+  w = "#{100/h.length}%"
+  if  h.length > 10 => w = "10%"
+  trs = data.rows.map (row,i) -> (
+    "<div>" + h.map((d,j)-> 
+      "<div contenteditable='true' row='#i' col='#j' style='width:#w'>#{row[d] or ''}</div>"
+    ).join("") + "</div>"
+  )
+  head.innerHTML = "<div>" + data.headers.map(-> "<div style='width:#w'>#it</div>").join("") + "</div>" 
+  if data.clusterizer => that.destroy true
+  data.clusterizer = new Clusterize do
+    rows: trs
+    scrollElem: scroll
+    contentElem: content
+  #is-loading false
+  scroll.addEventListener \scroll, (e) -> head.scrollLeft = scroll.scrollLeft
+
+  content.addEventListener \click, (e) ->
+    setTimeout (->
+      n = e.target
+      row = +n.getAttribute(\row)
+      col = +n.getAttribute(\col)
+      d = data.rows[row][data.headers[col]]
+      document.getElementById(\input).value = d
+    ), 0
+
+  content.addEventListener \keydown, (e) ->
+    setTimeout (->
+      n = e.target
+      val = n.textContent
+      row = +n.getAttribute(\row)
+      col = +n.getAttribute(\col)
+      data.rows[row][data.headers[col]] = d = val
+      document.getElementById(\input).value = d
+      re = /([A-Z]+[0-9]*)/g
+      if /^=/.exec(d) =>
+        grid = {}
+        while true
+          ret = re.exec(d)
+          if !ret => break
+          val = ret.1
+          str = /([A-Z]+)/.exec(val).1
+          num = /([0-9]+)/.exec(val).1
+          VR = +num - 1
+          VC = 0
+          for i from 0 til str.length
+            VC = VC * 26 + (str.charCodeAt(i) - 65)
+          grid[val] = data.rows[VR][data.headers[VC]]
+          if !isNaN(+grid[val]) => grid[val] = +grid[val]
+        d = d.replace(/([A-Z]+)/g, 'grid.$1')
+        d = d.replace(/^=/, '')
+        try
+          ret = eval(d)
+        catch err
+        data.rows[row][data.headers[col]] = d = ret
+        document.getElementById(\input).value = ret
+    ), 0
+
+empty = ->
+  data.headers = [i for i from 0 til 10]
+  data.rows = [JSON.parse("{#{[('"' + i + '": ""') for i from 0 til 10].join(\,)}}") for j from 0 til 100]
+  console.log data.rows
+  render!
 
