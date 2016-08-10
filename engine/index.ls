@@ -21,7 +21,7 @@ backend = do
           'self' blob:
         ]>
         <[script-src
-          'self' http://connect.facebook.net/en_US/sdk.js
+          'self' http://connect.facebook.net/en_US/sdk.js blob:
           https://www.google-analytics.com 'unsafe-inline' 'unsafe-eval'
         ]>
         <[style-src
