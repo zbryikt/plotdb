@@ -392,16 +392,20 @@ angular.module \plotDB
             $scope.editor.update!
       setting-panel: do
         tab: \publish
-        permcheck: ->
+        /*permcheck: ->
           $scope.writable = permService.test(
             {user: $scope.user.data}
             $scope.target!{}permission
             $scope.target!owner
             \write
           )
+        */
         init: ->
-          $scope.$watch 'chart.permission', $scope.setting-panel.permcheck, true
-          $scope.$watch 'theme.permission', $scope.setting-panel.permcheck, true
+          $scope.permtype = window.[]permtype.1 or 'none'
+          $scope.writable = permService.is-enough($scope.permtype, 'write')
+          $scope.is-admin = permService.is-enough($scope.permtype, 'admin')
+          #$scope.$watch 'chart.permission', $scope.setting-panel.permcheck, true
+          #$scope.$watch 'theme.permission', $scope.setting-panel.permcheck, true
           $scope.$watch 'settingPanel.chart', ((cur, old) ~>
             for k,v of cur =>
               if !v and !old[k] => continue

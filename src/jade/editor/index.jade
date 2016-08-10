@@ -25,6 +25,9 @@ block head
   if chart
     script.
       window.chart = !{JSON.stringify(chart).replace(/<\//g, "<\\/")}
+  if permtype
+    script.
+      window.permtype = !{JSON.stringify(permtype).replace(/<\//g, "<\\/")}
   if theme
     script.
       window.theme = !{JSON.stringify(theme).replace(/<\//g, "<\\/")}}
