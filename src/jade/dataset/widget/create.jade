@@ -82,7 +82,7 @@ include panel.jade
                 li: a(href="#") #[i.fa.align16] Transpose
                 li: a(href="#") #[i.fa.fa-long-arrow-down.align16] Fill Down
           ul.nav.navbar-nav
-            li.disabled(ng-class="{'disabled':!dataset.key}"): a(ng-click="panel.toggle()") #[i.fa.fa-users] Share
+            li(ng-class="{'disabled':!dataset.key}"): a(ng-click="panel.toggle()") #[i.fa.fa-users] Share
 
     //-
       .btn.btn-link upload csv or xls
