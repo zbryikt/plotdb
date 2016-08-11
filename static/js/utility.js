@@ -134,3 +134,30 @@ x$.directive('ngselect2', ['$compile', 'entityService'].concat(function($compile
     }
   };
 }));
+x$.directive('readby', ['$compile'].concat(function($compile){
+  return {
+    scope: {
+      readby: '&readby',
+      encoding: '@encoding'
+    },
+    link: function(s, e, a, c){
+      var handler;
+      handler = s.readby();
+      return e.bind('change', function(event){
+        var fr;
+        fr = new FileReader();
+        fr.onload = function(event){
+          s.$apply(function(){
+            return handler(fr.result);
+          });
+          return e.val("");
+        };
+        if (s.encoding) {
+          return fr.readAsText(event.target.files[0], s.encoding);
+        } else {
+          return fr.readAsBinaryString(event.target.files[0]);
+        }
+      });
+    }
+  };
+}));

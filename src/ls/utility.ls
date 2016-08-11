@@ -53,3 +53,17 @@ angular.module \plotDB
           for val in (vals or []) => html += $("<option></option>").val(val).text(val).0.outerHTML
           $(e).html(html)
         if changed! => setTimeout (-> $(e).val(vals).trigger(\change) ),0
+  ..directive \readby, <[$compile]> ++ ($compile) ->
+    do
+      scope: do
+        readby: \&readby
+        encoding: \@encoding
+      link: (s,e,a,c) ->
+        handler = s.readby!
+        e.bind \change, (event) ->
+          fr = new FileReader!
+          fr.onload = (event) ->
+            s.$apply -> handler fr.result
+            e.val("")
+          if s.encoding => fr.readAsText event.target.files.0, s.encoding
+          else fr.readAsBinaryString event.target.files.0

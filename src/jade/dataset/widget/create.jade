@@ -1,5 +1,52 @@
 include panel.jade
-div
++cover-modal("parser.csv.toggled", "parser.csv.toggle()")
+  .panel.panel-default
+    .panel-body(style="min-height:100px")
+      h3 Encoding
+      p If you have no idea what this is, just click OK.
+      select.form-control(ng-model="parser.csv.encoding",ng-options="option for option in parser.csv.encodings")
+    .panel-footer.text-right
+      .btn.btn-primary(ng-click="parser.csv.read()") OK
+      span &nbsp;
+      .btn.btn-default(ng-click="parser.csv.toggle()") Cancel
+
++cover-modal("parser.gsheet.toggled", "parser.gsheet.toggle()")
+  .panel.panel-default
+    .panel-body
+      h3 Import from Google sheets
+      .sep
+      br
+      #gsheet-files.gsheet-files
+        .gsheet-file(ng-repeat="file in parser.gsheet.files",ng-click="parser.gsheet.load(file)")
+          a.pull-right(target="_blank",
+          ng-attr-href="https://docs.google.com/spreadsheets/d/{{file.id}}") 
+            span open in new window 
+            i.fa.fa-external-link
+          span {{file.name}}
+        .gsheet-file.empty(ng-show="!parser.gsheet.files.length") no file
+        .text-center(ng-show="parser.gsheet.loading"): .loader.loading.alone.sm(style="display:inline-block")
+        #gsheet-list-end
+    .panel-footer.text-right
+      .btn.btn-default(ng-click="parser.gsheet.toggle()") Cancel
+
++cover-modal("panel.name.toggled","panel.toggle('name')")
+  .panel.panel-default
+    .panel-body(style="min-height:110px")
+      h3 Dataset Name
+      //-h3 Dataset Rename
+      .sep
+      br
+      div(style="width:94%;margin:auto")
+        p Looks like your dataset doesn't have a name yet. Let's give it a name:
+        //-p Give your dataset a new name:
+        input.form-control(placeholder="e.g., US 2015 Population")
+      br
+    .panel-footer.text-right
+      .btn.btn-primary #[i.fa.fa-check] OK
+      span &nbsp
+      .btn.btn-default(ng-click="panel.toggle('name')") Cancel
+
+#dataset-editor
   #dataset-create-methods
     .navbar.navbar-default.dataset-toolbar
       .container-fluid
@@ -8,21 +55,26 @@ div
             li.dropdown
               a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-file-o] File #[span.caret]
               ul.dropdown-menu
-                li: a(href="#") #[i.fa.align16] New
+                li: a(href="/dataset/") #[i.fa.align16] New
                 li.divider
                 li: a(href="#") #[i.fa.fa-floppy-o.align16] Save
-                li: a(href="#") #[i.fa.fa-clone.align16] Make a Copy
+                li(ng-class="{'disabled':!dataset.key}"): a(href="#") #[i.fa.fa-clone.align16] Make a Copy
                 li.divider
-                li: a(href="#") #[i.fa.align16] Encoding
-                li.divider
-                li: a(href="#") #[i.fa.fa-trash-o.align16] Delete
-            li.dropdown
-              a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-cloud-upload] import... #[span.caret]
+                li(ng-class="{'disabled':!dataset.key}",ng-click="delete(dataset)")
+                  a(href="#") #[i.fa.fa-trash-o.align16] Delete
+            li#dataset-import-dropdown.dropdown
+              a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-cloud-upload] Import... #[span.caret]
               ul.dropdown-menu
-                li: a(href="#") #[i.fa.fa-file-text-o.align16] upload CSV file
-                li: a(href="#") #[i.fa.fa-file-excel-o.align16] upload Excel (.xls, .xlsx)
+                li.dropdown
+                  a.toggle-filepick(href="#")
+                    input#dataset-edit-csv-file(type="file",
+                    readby="parser.csv.import",encoding="{{parser.csv.encoding}}")
+                    span #[i.fa.fa-file-text-o.align16] upload CSV file ...
+                li: a.toggle-filepick(href="#")
+                  input#dataset-edit-xls-file(type="file",readby="parser.xls.read")
+                  span #[i.fa.fa-file-excel-o.align16] upload Excel (.xls, .xlsx)
                 li.divider
-                li: a(href="#") #[i.fa.fa-table.align16] from Google Sheet
+                li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] from Google Sheet
             li.dropdown
               a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-edit] transform... #[span.caret]
               ul.dropdown-menu
@@ -30,7 +82,7 @@ div
                 li: a(href="#") #[i.fa.align16] Transpose
                 li: a(href="#") #[i.fa.fa-long-arrow-down.align16] Fill Down
           ul.nav.navbar-nav
-            li: a(ng-click="panel.toggle()") #[i.fa.fa-users] Share
+            li.disabled(ng-class="{'disabled':!dataset.key}"): a(ng-click="panel.toggle()") #[i.fa.fa-users] Share
 
     //-
       .btn.btn-link upload csv or xls
@@ -50,7 +102,7 @@ div
       i.fa.fa-flash(style="font-size:24px;vertical-align:middle")
       span &nbsp; use Dynamic API as Dataset
   //-.loader.alone.lg(style="position:fixed;top:50%;left:50%;margin:-50px 0 0 -50px",ng-class="{'loading':!inited}")
-  #dataset-edit-modal.modal.fade
+  //-#dataset-edit-modal.modal.fade
     .modal-dialog
       .modal-content
         .modal-body
@@ -73,32 +125,42 @@ div
   //dev
   script(src="/assets/clusterize/0.16.1/clusterize.min.js")
   link(rel="stylesheet",type="text/css",href="/assets/clusterize/0.16.1/clusterize.css")
-  #dataset-editbox(style="position:relative")
-    .sheet-outter(style="background:#fff;position:absolute;top:0;left:0;width:100%;")
-      .sheet.clusterize
-        .sheet-head
-        .sheet-body.clusterize-scroll
-          .sheet-cells.clusterize-content
+  #dataset-editbox
+    .inner
+      #dataset-edit-grid.sheet-outer(ng-show="grid.toggled")
+        .sheet.clusterize
+          .sheet-head
+          .sheet-body-outer
+            .sheet-body.clusterize-scroll
+              .sheet-cells.clusterize-content
+      textarea#dataset-edit-text.form-control(
+      ng-cloak,ng-show="!grid.toggled",
+      rows="6",ng-model="rawdata",
+      placeholder="paste or drag your data here...",
+      ng-disabled="dataset.type.location=='sample'"
+      )
 
-    textarea.form-control(rows="6",ng-model="rawdata",
-    placeholder="paste or drag your data here...",
-    ng-disabled="dataset.type.location=='sample'"
-    )
     #dataset-editbox-meta
-      .input-group.pull-left(style="width:260px")
-        input.form-control.input-sm(type="input",ng-model="dataset.name",placeholder="Dataset Name",
+      .btn-group
+        .btn.btn-default(ng-class="{'active':grid.toggled}",ng-click="grid.toggle(true)") #[i.fa.fa-table] Grid
+        .btn.btn-default(ng-class="{'active':!grid.toggled}",
+        ng-click="grid.toggle(false)") #[i.fa.fa-pencil] Text
+
+      //-.input-group.pull-left(style="width:260px")
+        input.form-control(type="input",ng-model="dataset.name",placeholder="Dataset Name",
         ng-disabled="dataset.type.location=='sample'",
         data-toggle="tooltip" data-placement="bottom" title="give it a name")
         span.input-group-btn(data-toggle="tooltip")
-          .btn.btn-default.btn-sm(
+          .btn.btn-default(
           ng-disabled="!dataset.name || !parse.result || (dataset.type.location && dataset.type.location!='server')"
           ,ng-click="save()") Save
-      span &nbsp;
+      //-span &nbsp;
       //-.btn.btn-sm.btn-default(
          ng-disabled="!dataset.name || !parse.result || (dataset.type.location && dataset.type.location!='local')",
          ng-click="save(true)") Save Locally
       span(ng-cloak,ng-class="{'grayed':parse.rows==0}",
-      style="display:inline-block;padding:5px 10px;border:1px solid transparent;font-size:12px")
-        | {{parse.rows || 0}} rows, {{parse.fields || 0}} fields, size: {{(parse.size || 0)|size}} #[small (estimated)]
+      style="display:inline-block;padding:8px 10px;border:1px solid transparent;font-size:12px")
+        | {{grid.data.rows.length || 0}} rows, {{grid.data.headers.length || 0}} fields, size: {{(grid.data.size || 0)|size}} #[small (estimated)]
       .btn.btn-sm.loader(ng-class="{'loading':loading}",style="padding-left:0") &nbsp;
+      .pull-right: .btn.btn-primary(style="min-width:140px",ng-click="panel.toggle('name')") Save
 

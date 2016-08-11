@@ -978,3 +978,18 @@ i.fa.align16 {
   width: 16px;
   text-align: center;
 }
+ul.dropdown-menu li a.toggle-filepick {
+  position: relative;
+}
+ul.dropdown-menu li a.toggle-filepick input {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.01;
+}
+.dropdown-menu li.header a {
+  border-bottom: 1px solid #ddd;
+}

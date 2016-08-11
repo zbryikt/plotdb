@@ -1,0 +1,21 @@
+#dataset-edit-page {
+  height: 100%;
+  padding-top: 60px;
+}
+#dataset-edit-page .page-header {
+  height: 100px;
+  padding: 12px;
+  margin-top: 0;
+}
+#dataset-edit-page .narrow.with-header {
+  padding-bottom: 0;
+  height: 100%;
+}
+#dataset-editor {
+  height: 100%;
+  padding-bottom: 46px;
+}
+#dataset-editbox {
+  height: 100%;
+  position: relative;
+}

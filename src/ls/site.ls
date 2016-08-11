@@ -1,6 +1,6 @@
 angular.module \plotDB
   ..config <[$compileProvider]> ++ ($compileProvider) ->
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob:|https?:\/\/([a-z0-9]+.)?plotdb\.com\/|https?:\/\/([a-z0-9]+.)?plotdb\.io\/|http:\/\/localhost\/|http:\/\/localhost.io\/|https:\/\/www\.facebook\.com\/|https:\/\/www\.pinterest\.com\/|mailto:\?|http:\/\/www\.linkedin\.com\/|http:\/\/twitter\.com\/)|#/)
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob:|https?:\/\/([a-z0-9]+.)?plotdb\.com\/|https?:\/\/([a-z0-9]+.)?plotdb\.io\/|http:\/\/localhost\/|http:\/\/localhost.io\/|https:\/\/www\.facebook\.com\/|https:\/\/www\.pinterest\.com\/|mailto:\?|http:\/\/www\.linkedin\.com\/|http:\/\/twitter\.com\/)|#|https:\/\/docs.google.com\/spreadsheets\//)
   ..service 'eventBus', <[$rootScope]> ++ ($rootScope) ->
     ret = @ <<< do
       queues: {}
@@ -76,9 +76,25 @@ angular.module \plotDB
           do-prevent = true
         return if do-prevent => prevent e else undefined
 
+    $scope.confirmbox = do
+      config: do
+        message: ""
+        options: []
+        callback: ->
+      toggled: false
+      handle: (id) ->
+        @toggled = false
+        @config.callback id
+    eventBus.listen 'confirmbox.on', (config) ->
+      $scope.confirmbox.config = config
+      $scope.confirmbox.toggled = true
+
     $scope.loading = dimmer: false
-    eventBus.listen 'loading.dimmer.on', -> $scope.loading.dimmer = true
+    eventBus.listen 'loading.dimmer.on', (it) ->
+      $scope.loading.dimmer = true
+      $scope.loading.progress = if it? => it else 0
     eventBus.listen 'loading.dimmer.off', -> $scope.loading.dimmer = false
+    eventBus.listen 'loading.dimmer.progress', -> $scope.loading.progress = it
     $scope.scrollto = (sel = null) ->
       <- setTimeout _, 0
       top = if sel => ( $(sel).offset!top - 60 ) else 0

@@ -57,6 +57,7 @@
         /assets/utf8js/2.0.0/utf8.js
         /assets/base64/0.1.0/base64.js
         /assets/select2/4.0.3/js/select2.full.min.js
+        /assets/js-xls/0.7.5/xlsx.full.min.js
         /js/plotdb.js
         /js/share/config.js
         /js/io.js
@@ -64,6 +65,7 @@
         /js/editor.js
         /js/data/sample.js
         /js/data/index.js
+        /js/data/edit.js
         /js/plotdb/main.js
         /js/plotdb/type.js
         /js/plotdb/chart.js

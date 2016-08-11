@@ -18,19 +18,32 @@
     vertical-align: middle
     font-size: 24px
 
+#dataset-editbox
+  width: 100%
+  min-height: 200px
+
+#dataset-editbox .inner
+  width: 100%
+  height: 100%
+  padding-bottom: 56px
+
 #dataset-editbox textarea
   border-bottom-right-radius: 0
   border-bottom-left-radius: 0
   font-family: monospace
-  max-width: 100%
-  min-height: 220px
+  width: 100%
+  height: 100%
 
 #dataset-editbox-meta
+  position: absolute
+  bottom: 0
   padding: 10px
+  width: 100%
+  height: 56px
   border-radius: 0 0 3px 3px
   border: 1px solid color["border"]
-  border-top: 0
   background: #f9f9f9
+  box-shadow: 0 -2px 1px rgba(0,0,0,0.1)
 
 .float-dataedit
   position: fixed
