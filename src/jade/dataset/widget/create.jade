@@ -32,19 +32,20 @@ include panel.jade
 +cover-modal("panel.name.toggled","panel.toggle('name')")
   .panel.panel-default
     .panel-body(style="min-height:110px")
-      h3 Dataset Name
-      //-h3 Dataset Rename
+      h3(ng-if="!dataset.name") Dataset Name
+      h3(ng-if="dataset.name") Rename Dataset
       .sep
       br
       div(style="width:94%;margin:auto")
-        p Looks like your dataset doesn't have a name yet. Let's give it a name:
-        //-p Give your dataset a new name:
-        input.form-control(placeholder="e.g., US 2015 Population")
+        p(ng-if="!dataset.name") Looks like your dataset doesn't have a name yet. Let's give it a name:
+        p(ng-if="dataset.name") Give your dataset a new name:
+        input.form-control(placeholder="e.g., US 2015 Population",ng-model="panel.name.value")
       br
     .panel-footer.text-right
-      .btn.btn-primary #[i.fa.fa-check] OK
+      .btn.btn-primary(ng-class="{'disabled':!panel.name.value}",ng-click="panel.name.action(0)")
+        span &nbsp; OK &nbsp;
       span &nbsp
-      .btn.btn-default(ng-click="panel.toggle('name')") Cancel
+      .btn.btn-default(ng-click="panel.name.action(1)") Cancel
 
 #dataset-editor
   #dataset-create-methods
@@ -57,8 +58,10 @@ include panel.jade
               ul.dropdown-menu
                 li: a(href="/dataset/") #[i.fa.align16] New
                 li.divider
-                li: a(href="#") #[i.fa.fa-floppy-o.align16] Save
-                li(ng-class="{'disabled':!dataset.key}"): a(href="#") #[i.fa.fa-clone.align16] Make a Copy
+                li: a(href="#",ng-click="save()") #[i.fa.fa-floppy-o.align16] Save
+                li(ng-class="{'disabled':!dataset.key}",ng-click="clone()")
+                  a(href="#") #[i.fa.fa-clone.align16] Make a Copy
+                li(ng-class="{'disabled':!dataset.key}"): a(href="#") #[i.fa.align16] Rename
                 li.divider
                 li(ng-class="{'disabled':!dataset.key}",ng-click="delete(dataset)")
                   a(href="#") #[i.fa.fa-trash-o.align16] Delete
@@ -162,5 +165,5 @@ include panel.jade
       style="display:inline-block;padding:8px 10px;border:1px solid transparent;font-size:12px")
         | {{grid.data.rows.length || 0}} rows, {{grid.data.headers.length || 0}} fields, size: {{(grid.data.size || 0)|size}} #[small (estimated)]
       .btn.btn-sm.loader(ng-class="{'loading':loading}",style="padding-left:0") &nbsp;
-      .pull-right: .btn.btn-primary(style="min-width:140px",ng-click="panel.toggle('name')") Save
+      .pull-right: .btn.btn-primary(style="min-width:140px",ng-click="save()") Save
 

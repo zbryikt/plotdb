@@ -1,8 +1,8 @@
-importScripts \/assets/papaparse/4.1.2/papaparse.min.js
+importScripts \/assets/papaparse/4.1.2/papaparse.min.js, \/assets/utf8js/2.0.0/utf8.js
 
 onmessage = (e) ->
   result = []
-  Papa.parse (e.data.trim! or ""), do
+  Papa.parse (e.data.buf.trim! or ""), do
     worker: false#, header: true
     step: ({data: rows}) ~>
       len = result.length
@@ -19,4 +19,4 @@ onmessage = (e) ->
       #len = result[][data.headers.0].length
       #data.rows = [{} for i from 0 til len]
       #data.rows.map (row,i) ~> data.headers.map ~> row[it] = result[it][i]
-      postMessage data
+      postMessage {data}

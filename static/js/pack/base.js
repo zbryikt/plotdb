@@ -7252,7 +7252,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
     rawdata: "",
     dataset: null,
     worker: new Worker("/js/data/worker.js"),
-    loading: true,
+    loading: false,
     inited: false,
     showGrid: true
   });
@@ -7260,70 +7260,106 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
     return eventBus.fire("loading.dimmer." + (it ? 'off' : 'on'));
   });
   $scope.name = null;
+  $scope.clone = function(){
+    if (!$scope.dataset || !$scope.dataset.key) {
+      return;
+    }
+    $scope.dataset.key = null;
+    $scope.dataset.name = $scope.dataset.name + " - Copy";
+    return $scope.save();
+  };
   $scope.save = function(locally){
-    var columnLength, k;
+    var promise;
     locally == null && (locally = false);
-    if (!$scope.dataset || !$scope.dataset.name) {
+    if (!$scope.dataset) {
       return;
     }
     if (!$scope.user.authed()) {
       return $scope.auth.toggle(true);
     }
-    columnLength = (function(){
-      var ref$, results$ = [];
-      for (k in (ref$ = $scope.parse).result || (ref$.result = {})) {
-        results$.push(k);
-      }
-      return results$;
-    }()).length;
-    if (columnLength >= 40) {
-      return plNotify.send('danger', "maximal 40 columns is allowed. you have " + columnLength);
-    }
-    return $scope.parse.run(true).then(function(){
-      var isCreate;
-      $scope.dataset._type.location = locally ? 'local' : 'server';
-      $scope.dataset.permission = {
-        "list": [],
-        "switch": "publish"
-      };
-      $scope.dataset.setFields($scope.parse.result);
-      isCreate = !$scope.dataset.key ? true : false;
-      $scope.loading = true;
-      return $scope.dataset.save().then(function(r){
-        $scope.loading = false;
+    promise = !$scope.dataset.name
+      ? $scope.panel.name.prompt()
+      : Promise.resolve();
+    return promise.then(function(){
+      var promise;
+      $scope.$apply(function(){
+        return eventBus.fire('loading.dimmer.on');
+      });
+      promise = null;
+      if ($scope.grid.toggled) {
+        promise = Promise.resolve();
+      } else {
         $scope.$apply(function(){
-          return plNotify.send('success', "dataset saved");
+          return promise = $scope.parser.csv.read($scope.rawdata, false);
         });
-        if (isCreate) {
-          if ($scope.$parent && $scope.$parent.inlineCreate) {
-            $scope.$parent.inlineCreate($scope.dataset);
+      }
+      return promise.then(function(){
+        var data, payload, isCreate;
+        data = $scope.grid.data;
+        if (data.headers.length >= 40) {
+          eventBus.fire('loading.dimmer.off');
+          return plNotify.send('danger', "maximal 40 columns is allowed. you have " + data.headers.length);
+        }
+        payload = $scope.grid.data.fieldize();
+        $scope.dataset.setFields(payload);
+        isCreate = !$scope.dataset.key ? true : false;
+        console.log($scope.dataset);
+        return $scope.dataset.save().then(function(r){
+          $scope.$apply(function(){
+            return plNotify.send('success', "dataset saved");
+          });
+          if (isCreate) {
+            if ($scope.$parent && $scope.$parent.inlineCreate) {
+              $scope.$parent.inlineCreate($scope.dataset);
+            } else {
+              setTimeout(function(){
+                return window.location.href = dataService.link($scope.dataset);
+              }, 1000);
+            }
           } else {
             $scope.$apply(function(){
-              return eventBus.fire('loading.dimmer.on');
+              return eventBus.fire('loading.dimmer.off');
             });
-            setTimeout(function(){
-              return window.location.href = dataService.link($scope.dataset);
-            }, 1000);
           }
-        }
-        return eventBus.fire('dataset.saved', $scope.dataset);
-      })['catch'](function(e){
-        console.log(e.stack);
-        $scope.loading = false;
-        return $scope.$apply(function(){
-          return plNotify.aux.error.io('save', 'data', e);
+          return eventBus.fire('dataset.saved', $scope.dataset);
+        })['catch'](function(e){
+          console.log(e.stack);
+          return $scope.$apply(function(){
+            plNotify.aux.error.io('save', 'data', e);
+            return eventBus.fire('loading.dimmer.off');
+          });
         });
       });
     });
   };
   $scope.load = function(_type, key){
-    var this$ = this;
+    var worker, this$ = this;
+    eventBus.fire('loading.dimmer.on');
     $scope.rawdata = "";
+    worker = new Worker('/js/data/worker/parse-dataset.js');
+    worker.onmessage = function(e){
+      var data;
+      data = e.data;
+      $scope.$apply(function(){
+        $scope.grid.data.headers = data.data.headers;
+        return $scope.grid.data.rows = data.data.rows;
+      });
+      return $scope.grid.render().then(function(){
+        return $scope.$apply(function(){
+          $scope.inited = true;
+          $scope.loading = false;
+          return eventBus.fire('loading.dimmer.off');
+        });
+      });
+    };
     return dataService.load(_type, key).then(function(ret){
       return $scope.$apply(function(){
-        $scope.dataset = new dataService.dataset(ret);
-        $scope.parse.revert($scope.dataset);
-        return $scope.inited = true;
+        var dataset;
+        $scope.dataset = dataset = new dataService.dataset(ret);
+        $scope.grid.data.size = JSON.stringify(dataset).length;
+        return worker.postMessage({
+          dataset: dataset
+        });
       });
     })['catch'](function(ret){
       return $scope.$apply(function(){
@@ -7333,6 +7369,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
           window.location.href = '/403.html';
         }
         $scope.inited = true;
+        $scope.loading = false;
         return eventBus.fire('loading.dimmer.off');
       });
     });
@@ -7396,12 +7433,11 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
     reset: function(rawdata){
       var dataset;
       dataset = new dataService.dataset(window.dataset || {});
+      dataset.name = "";
       if ($scope.dataset && $scope.dataset.name) {
         dataset.name = $scope.dataset.name;
       }
-      $scope.dataset = dataset;
-      $scope.rawdata = rawdata;
-      return $scope.parse.run();
+      return $scope.dataset = dataset, $scope.rawdata = rawdata, $scope;
     },
     init: function(){
       var ret1, ret2, that, ret;
@@ -7416,6 +7452,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
           name: 'dataset'
         }, ret[2]);
       } else {
+        eventBus.fire('loading.dimmer.off');
         $scope.inited = true;
       }
       $('#dataset-edit-text').on('keydown', function(){
@@ -7499,34 +7536,46 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
       return $scope.parser.csv.toggle(true);
     },
     read: function(buf, verbose){
-      var sec, this$ = this;
+      var this$ = this;
       verbose == null && (verbose = true);
-      if (!(buf != null)) {
-        buf = this.buf;
-      }
-      if (verbose) {
-        eventBus.fire('loading.dimmer.on', 1);
-      }
-      sec = buf.length * 1.3 / 1000;
-      $scope.parser.progress(sec);
-      $scope.dimming = true;
-      if (!this.worker) {
-        this.worker = new Worker('/js/data/worker/csv.js');
-      }
-      this.worker.onmessage = function(e){
-        $scope.$apply(function(){
-          $scope.grid.data.rows = e.data.rows;
-          $scope.grid.data.headers = e.data.headers;
-          return $scope.grid.data.size = buf.length;
+      return new Promise(function(res, rej){
+        var buf, sec;
+        if (!(buf != null)) {
+          buf = this$.buf;
+        }
+        if (!buf) {
+          buf = "";
+        }
+        if (verbose) {
+          eventBus.fire('loading.dimmer.on', 1);
+        }
+        sec = buf.length * 1.3 / 1000;
+        $scope.parser.progress(sec);
+        if (!this$.worker) {
+          this$.worker = new Worker('/js/data/worker/csv.js');
+        }
+        this$.worker.onmessage = function(e){
+          var data;
+          data = e.data.data;
+          $scope.$apply(function(){
+            $scope.grid.data.rows = data.rows;
+            $scope.grid.data.headers = data.headers;
+            return $scope.grid.data.size = buf.length;
+          });
+          return $scope.grid.render().then(function(){
+            this$.toggle(false);
+            this$.buf = null;
+            if (verbose) {
+              eventBus.fire('loading.dimmer.off');
+            }
+            $scope.loading = false;
+            return res();
+          });
+        };
+        return this$.worker.postMessage({
+          buf: buf
         });
-        return $scope.grid.render().then(function(){
-          this$.toggle(false);
-          this$.buf = null;
-          eventBus.fire('loading.dimmer.off');
-          return $scope.loading = false;
-        });
-      };
-      return this.worker.postMessage(buf);
+      });
     }
   };
   $scope.parser.xls = {
@@ -7540,8 +7589,8 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
         this.worker = new Worker('/js/data/worker/excel.js');
         this.worker.onmessage = function(e){
           return $scope.$apply(function(){
-            $scope.grid.data.headers = e.data.headers;
-            $scope.grid.data.rows = e.data.rows;
+            $scope.grid.data.headers = e.data.data.headers;
+            $scope.grid.data.rows = e.data.data.rows;
             $scope.grid.data.size = buf.length;
             return $scope.grid.render().then(function(){
               return $scope.$apply(function(){
@@ -7554,7 +7603,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
       node = document.getElementById('dataset-import-dropdown');
       node.className = node.className.replace(/open/, '');
       return $timeout(function(){
-        return this$.worker.postMessage(buf);
+        return this$.worker.postMessage({
+          buf: buf
+        });
       }, 100);
     }
   };
@@ -7659,6 +7710,36 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
     }
   };
   $scope.panel = {
+    name: {
+      promise: null,
+      prompt: function(){
+        var this$ = this;
+        return new Promise(function(res, rej){
+          this$.promise = {
+            res: res,
+            rej: rej
+          };
+          return this$.toggled = true;
+        });
+      },
+      value: "",
+      action: function(idx){
+        if (idx === 0) {
+          if (!this.value) {
+            return;
+          }
+          ($scope.dataset || ($scope.dataset = {})).name = this.value;
+        }
+        this.toggled = false;
+        if (this.promise) {
+          if (idx) {
+            return this.promise.rej();
+          } else if (!idx) {
+            return this.promise.res(this.value);
+          }
+        }
+      }
+    },
     toggle: function(name){
       if (!($scope.dataset || ($scope.dataset = {})).key) {
         if (!name) {
@@ -7731,7 +7812,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
       }
       list.splice(lastidx + 1);
       ret = [this.data.headers.join(','), list.join('\n')].join('\n');
-      return $scope.rawdata = ret;
+      return $scope.rawdata = ret.trim();
       function fn$(d, i){
         var it;
         it = row[i];
@@ -7750,7 +7831,22 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
       rows: [],
       headers: [],
       trs: [],
-      clusterizer: null
+      clusterizer: null,
+      fieldize: function(){
+        var ret, i$, to$, i, j$, to1$, j;
+        ret = {};
+        this.headers.forEach(function(it){
+          return ret[it] = [];
+        });
+        for (i$ = 0, to$ = this.rows.length; i$ < to$; ++i$) {
+          i = i$;
+          for (j$ = 0, to1$ = this.headers.length; j$ < to1$; ++j$) {
+            j = j$;
+            ret[this.headers[j]].push(this.rows[i][j]);
+          }
+        }
+        return ret;
+      }
     },
     render: function(){
       var this$ = this;

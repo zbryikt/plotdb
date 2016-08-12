@@ -4,7 +4,7 @@ importScripts('/assets/js-xls/0.7.5/xlsx.full.min.js');
 onmessage = function(e){
   var data, buf, workbook, sheet, list, h, k;
   data = {};
-  buf = e.data;
+  buf = (e.data || (e.data = {})).buf;
   workbook = XLSX.read(buf, {
     type: 'binary'
   });
@@ -25,6 +25,7 @@ onmessage = function(e){
     }
     return results$;
   });
-  console.log(data.rows);
-  return postMessage(data);
+  return postMessage({
+    data: data
+  });
 };

@@ -7,50 +7,78 @@ angular.module \plotDB
       rawdata: ""
       dataset: null
       worker: new Worker("/js/data/worker.js")
-      loading: true
+      loading: false
       inited: false
       show-grid: true
     $scope.$watch 'inited', ->
       eventBus.fire "loading.dimmer.#{if it => \off else \on}"
     $scope.name = null
+    $scope.clone = ->
+      if !$scope.dataset or !$scope.dataset.key => return
+      $scope.dataset.key = null
+      $scope.dataset.name = $scope.dataset.name + " - Copy"
+      $scope.save!
     $scope.save = (locally = false) ->
-      if !$scope.dataset or !$scope.dataset.name => return
+      if !$scope.dataset => return
       if !$scope.user.authed! => return $scope.auth.toggle true
-      column-length = [k for k of $scope.parse.{}result].length
-      if column-length >= 40 =>
-        return plNotify.send \danger, "maximal 40 columns is allowed. you have #{column-length}"
-      <- $scope.parse.run true .then
-      $scope.dataset._type.location = (if locally => \local else \server)
-      #TODO permission interface. data are now default publish
-      $scope.dataset.permission = {"list": [], "switch": "publish"}
-      $scope.dataset.set-fields $scope.parse.result
+      promise = if !$scope.dataset.name =>
+        $scope.panel.name.prompt!
+      else Promise.resolve!
+      <- promise.then _
+      $scope.$apply -> eventBus.fire \loading.dimmer.on
+      promise = null
+      if $scope.grid.toggled => promise = Promise.resolve!
+      else $scope.$apply -> promise := $scope.parser.csv.read($scope.rawdata, false)
+      <- promise.then _
+      data = $scope.grid.data
+      if data.headers.length >= 40 =>
+        eventBus.fire \loading.dimmer.off
+        return plNotify.send \danger, "maximal 40 columns is allowed. you have #{data.headers.length}"
+      #$scope.dataset._type.location = (if locally => \local else \server) # future feature
+      #$scope.dataset.permission = {"list": [], "switch": "publish"}
+      payload = $scope.grid.data.fieldize!
+      $scope.dataset.set-fields payload #$scope.parse.result
       is-create = if !$scope.dataset.key => true else false
-      $scope.loading = true
+      console.log $scope.dataset
       $scope.dataset.save!
         .then (r) ->
-          $scope.loading = false
           $scope.$apply -> plNotify.send \success, "dataset saved"
           if is-create =>
             if $scope.$parent and $scope.$parent.inline-create =>
               $scope.$parent.inline-create $scope.dataset
             else
-              $scope.$apply -> eventBus.fire 'loading.dimmer.on'
               setTimeout (->
                 window.location.href = data-service.link $scope.dataset
               ), 1000
+          else
+            $scope.$apply -> eventBus.fire 'loading.dimmer.off'
           eventBus.fire \dataset.saved, $scope.dataset
         .catch (e) ->
           console.log e.stack
-          $scope.loading = false
-          $scope.$apply -> plNotify.aux.error.io \save, \data, e
+          $scope.$apply ->
+            plNotify.aux.error.io \save, \data, e
+            eventBus.fire 'loading.dimmer.off'
     $scope.load = (_type, key) ->
+      eventBus.fire \loading.dimmer.on
       $scope.rawdata = ""
+      worker = new Worker \/js/data/worker/parse-dataset.js
+      worker.onmessage = (e) ->
+        data = e.data
+        $scope.$apply ->
+          $scope.grid.data.headers = data.data.headers
+          $scope.grid.data.rows = data.data.rows
+        $scope.grid.render!then -> $scope.$apply ->
+          $scope.inited = true
+          $scope.loading = false
+          eventBus.fire \loading.dimmer.off
       data-service.load _type, key
         .then (ret) ~>
           <- $scope.$apply
-          $scope.dataset = new data-service.dataset ret
-          $scope.parse.revert $scope.dataset
-          $scope.inited = true
+          $scope.dataset = dataset = new data-service.dataset ret
+          $scope.grid.data.size = JSON.stringify(dataset).length
+          worker.postMessage {dataset}
+          #$scope.parse.revert $scope.dataset
+          #$scope.inited = true
         .catch (ret) ~>
           <- $scope.$apply
           console.error ret
@@ -58,6 +86,7 @@ angular.module \plotDB
           #TODO check at server time?
           if ret.1 == \forbidden => window.location.href = \/403.html #window.location.pathname
           $scope.inited = true
+          $scope.loading = false
           eventBus.fire 'loading.dimmer.off'
     $scope.delete = (dataset) ->
       if !dataset or !dataset.key => return
@@ -94,10 +123,11 @@ angular.module \plotDB
             eventBus.fire 'loading.dimmer.off'
       reset: (rawdata) ->
         dataset = new dataService.dataset(window.dataset or {})
+        dataset.name = ""
         if $scope.dataset and $scope.dataset.name => dataset.name = $scope.dataset.name
         $scope <<< {dataset, rawdata}
         #if $scope.rawdata == rawdata => $scope.parse.run!
-        $scope.parse.run!
+        #$scope.parse.run!
       init: ->
         @reset ""
         # e.g.: /dataset/?k=s123 )
@@ -112,7 +142,9 @@ angular.module \plotDB
           ret = that
           $scope.dataset.key = ret.2
           $scope.load {location: (if ret.1 == \s => \server else \local), name: \dataset}, ret.2
-        else $scope.inited = true
+        else
+          eventBus.fire \loading.dimmer.off
+          $scope.inited = true
         #$scope.$watch 'rawdata', -> $scope.parse.run!
         $(\#dataset-edit-text).on \keydown, -> $scope.$apply -> $scope.parse.run!
         $('[data-toggle="tooltip"]').tooltip!
@@ -180,24 +212,26 @@ angular.module \plotDB
         node.className = node.className.replace /open/, ''
         $scope.parser.csv.buf = buf
         $scope.parser.csv.toggle true
-      read: (buf,verbose = true) ->
+      read: (buf,verbose = true) -> new Promise (res, rej) ~>
         if !(buf?) => buf = @buf
+        if !buf => buf = ""
         if verbose => eventBus.fire \loading.dimmer.on, 1
         sec = buf.length * 1.3 / 1000
         $scope.parser.progress sec
-        $scope.dimming = true
         if !@worker => @worker = new Worker \/js/data/worker/csv.js
         @worker.onmessage = (e) ~>
+          data = e.data.data
           $scope.$apply ~>
-            $scope.grid.data.rows = e.data.rows
-            $scope.grid.data.headers = e.data.headers
+            $scope.grid.data.rows = data.rows
+            $scope.grid.data.headers = data.headers
             $scope.grid.data.size = buf.length
           $scope.grid.render!then ~>
             @toggle false
             @buf = null
-            eventBus.fire \loading.dimmer.off
+            if verbose => eventBus.fire \loading.dimmer.off
             $scope.loading = false
-        @worker.postMessage buf  
+            res!
+        @worker.postMessage {buf}
         #$scope.reset buf.trim! #utf8.decode(buf).trim!
 
     $scope.parser.xls = do
@@ -209,14 +243,14 @@ angular.module \plotDB
         if !@worker =>
           @worker = new Worker \/js/data/worker/excel.js
           @worker.onmessage = (e) -> $scope.$apply ->
-            $scope.grid.data.headers = e.data.headers
-            $scope.grid.data.rows = e.data.rows
+            $scope.grid.data.headers = e.data.data.headers
+            $scope.grid.data.rows = e.data.data.rows
             $scope.grid.data.size = buf.length
             $scope.grid.render!then -> # 1.3
               $scope.$apply -> eventBus.fire \loading.dimmer.off
         node = document.getElementById(\dataset-import-dropdown)
         node.className = node.className.replace /open/, ''
-        $timeout (~> @worker.postMessage buf ), 100
+        $timeout (~> @worker.postMessage {buf}), 100
 
     $scope.parser.gsheet = do
       url: null
@@ -295,6 +329,21 @@ angular.module \plotDB
           )
 
     $scope.panel = do
+      name: do
+        promise: null
+        prompt: -> new Promise (res, rej) ~>
+          @promise = {res, rej}
+          @toggled = true
+        value: ""
+        action: (idx) ->
+          if idx == 0 => 
+            if !@value => return
+            $scope.{}dataset.name = @value
+          @toggled = false
+          if @promise =>
+            if idx => @promise.rej!
+            else if !idx => @promise.res @value
+
       toggle: (name) ->
         if !$scope.{}dataset.key =>
           if !name => return
@@ -348,13 +397,19 @@ angular.module \plotDB
           @data.headers.join(\,)
           list.join(\\n)
         ].join(\\n)
-        $scope.rawdata = ret
+        $scope.rawdata = ret.trim!
       worker: null
       data: do
         rows: []
         headers: []
         trs: []
         clusterizer: null
+        fieldize: ->
+          ret = {}
+          @headers.forEach -> ret[it] = []
+          for i from 0 til @rows.length =>
+            for j from 0 til @headers.length => ret[@headers[j]].push @rows[i][j]
+          ret
       render: ->
         return new Promise (res, rej) ~>
           head = document.querySelector '#dataset-editbox .sheet .sheet-head'
