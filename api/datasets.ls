@@ -48,7 +48,7 @@ get-dataset = (req,simple=false) ->
       if dataset.{}permission.switch != \publish and
       !perm.test(req, dataset.{}permission, dataset.owner, \read) => return aux.reject 403
       if simple => return resolve dataset
-      io.query "select * from datafields where datafields.dataset = $1", [dataset.key]
+      io.query "select * from datafields where datafields.dataset = $1 order by key", [dataset.key]
         .then (r = {}) ->
           dataset.fields = r.[]rows
           resolve dataset
