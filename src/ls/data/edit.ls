@@ -351,29 +351,8 @@ angular.module \plotDB
         if !@convert-worker => @convert-worker = new Worker \/js/data/worker/data-to-raw-wrap.js
         @convert-worker.onmessage = (e)->
           $scope.$apply -> $scope.rawdata = e.data.raw
-
         @convert-worker.postMessage @data{headers, rows, types}
-        /*
-        h = @data.headers
-        list = []
-        lastidx = 0
-        for i from 0 til @data.rows.length =>
-          row = @data.rows[i]
-          if row.join('') => lastidx = i
-          list.push h.map((d,i)->
-            it = row[i]
-            if !it => return it
-            it = it.replace(/"/g,'""')
-            if /[ ,\n\t]/.exec(it) => it = "\"#it\""
-            return it
-          ).join(\,)
-        list.splice lastidx + 1
-        ret = [
-          @data.headers.join(\,)
-          list.join(\\n)
-        ].join(\\n)
-        $scope.rawdata = ret.trim!
-        */
+
       worker: null
       data: do
         rows: []
@@ -381,17 +360,11 @@ angular.module \plotDB
         trs: []
         clusterizer: null
         fieldize: ->
-          ret = @headers.map (d,i) -> { data: [], datatype: @types[i], name: d }
+          ret = @headers.map (d,i) ~> { data: [], datatype: @types[i], name: d }
           for i from 0 til @rows.length =>
-            for j from 0 til @headers.length => ret[j].data.push @rows[i][j]
+            for j from 0 til @headers.length => ret[j].data.push @rows[][i][j]
           return ret
-          /*
-          ret = {}
-          @headers.forEach -> ret[it] = []
-          for i from 0 til @rows.length =>
-            for j from 0 til @headers.length => ret[@headers[j]].push @rows[i][j]
-          ret
-          */
+
       render: (obj = {}) ->
         {head-only,ths,trs} = obj
         return new Promise (res, rej) ~>

@@ -589,11 +589,11 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
       trs: [],
       clusterizer: null,
       fieldize: function(){
-        var ret, i$, to$, i, j$, to1$, j;
+        var ret, i$, to$, i, j$, to1$, j, ref$, this$ = this;
         ret = this.headers.map(function(d, i){
           return {
             data: [],
-            datatype: this.types[i],
+            datatype: this$.types[i],
             name: d
           };
         });
@@ -601,7 +601,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
           i = i$;
           for (j$ = 0, to1$ = this.headers.length; j$ < to1$; ++j$) {
             j = j$;
-            ret[j].data.push(this.rows[i][j]);
+            ret[j].data.push(((ref$ = this.rows)[i] || (ref$[i] = []))[j]);
           }
         }
         return ret;
