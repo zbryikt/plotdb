@@ -4929,7 +4929,7 @@ import$(plotdb, {
     name: 'Boolean',
     level: 12,
     test: function(it){
-      return !!/^(true|false|1|0|yes|no)$/.exec(it);
+      return !!/^(true|false|yes|no|[yntf01])$/.exec(it);
     },
     parse: function(it){
       if (it && typeof it === typeof "") {

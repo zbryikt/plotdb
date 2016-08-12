@@ -217,7 +217,7 @@ plotdb <<< do
   Boolean:
     default: true
     name: \Boolean, level: 12
-    test: -> !!/^(true|false|1|0|yes|no)$/.exec(it)
+    test: -> !!/^(true|false|yes|no|[yntf01])$/.exec(it)
     parse: ->
       if it and typeof(it) == typeof("") =>
         if /^(yes|true)$/.exec(it.trim!) => return true

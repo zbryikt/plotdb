@@ -72,6 +72,7 @@
 }
 .float-dataedit .ib {
   position: relative;
+  height: 100%;
 }
 .float-dataedit #dataset-create-methods {
   padding: 10px;
