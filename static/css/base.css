@@ -993,3 +993,19 @@ ul.dropdown-menu li a.toggle-filepick input {
 .dropdown-menu li.header a {
   border-bottom: 1px solid #ddd;
 }
+#confirmbox .cover-modal-inner {
+  width: 480px;
+  margin-left: -240px;
+}
+#confirmbox .cover-modal-inner .panel-body {
+  min-height: 100px;
+  padding: 40px 20px;
+  text-align: center;
+}
+#confirmbox .cover-modal-inner .panel-body p {
+  margin-bottom: 30px;
+}
+#confirmbox .cover-modal-inner .panel-body .btn {
+  margin-right: 10px;
+  min-width: 80px;
+}

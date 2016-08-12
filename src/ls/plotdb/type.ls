@@ -1,8 +1,23 @@
+if !(plotdb?) => plotdb = {}
 plotdb <<< do
+  # level tree
+  #  2 String
+  #  4 Order
+  #  6 Numstring
+  #  8 Number 
+  # 10 Color      
+  # 10 Date
+  # 12 Weekday
+  # 12 Month
+  # 12 Boolean
+  # 20 Range
+  # 20 Choice
+  # 30 Palette      
+
   Number: do
+    name: \Number, test: -> !isNaN(+it)
     default: 0
-    name: \Number, test: (-> !isNaN(+it))
-    level: 3
+    level: 8
     parse: ->
       if typeof(it) == \string => it = parseFloat(it.replace(/,/g,'')) else it
     order: do
@@ -10,8 +25,9 @@ plotdb <<< do
       Descending: ((a,b) -> b - a)
       index: -> it
   Range: do
-    default: [0,1]
     name: \Range
+    default: [0,1]
+    level: 20
     test: -> !!plotdb.Range.parse(it)
     parse: ->
       if typeof(it) == \string => 
@@ -25,10 +41,10 @@ plotdb <<< do
         if isNaN(it.0) or isNaN(it.1) => return null
         return it
       return null
-    level: 4
   Numstring: do
-    default: ""
     name: \Numstring
+    default: ""
+    level: 6
     test: (->/\d+/.exec("#it"))
     parse: ->
       numbers = []
@@ -47,11 +63,13 @@ plotdb <<< do
       Descending: (a,b) -> plotdb.Numstring.order.Ascending b,a
       index: -> it.numbers.0
   String: do
+    name: \String, test: (-> true), parse: -> it
     default: ""
-    name: \String, test: (-> true), level: 1, parse: -> it
+    level: 2
   Weekday:
     default: \Mon
-    name: \Weekday, level: 3
+    name: \Weekday
+    level: 12
     values: do
       abbr: <[mon tue wed thu fri sat sun]>
       en: <[monday tuesday wednesday thursday friday saturday sunday]>
@@ -78,10 +96,9 @@ plotdb <<< do
         a = plotdb.Weekday.order.index a
         b = plotdb.Weekday.order.index b
         return b - a
-
   Month:
     default: \Jan
-    name: \Month, level: 3
+    name: \Month, level: 12
     values: do
       abbr: <[jan feb mar apr may jun jul aug sep oct nov dec]>
       en: <[january feburary march april may june july august september october november december]>
@@ -110,10 +127,10 @@ plotdb <<< do
         return b - a
   Date:
     default: \1970/1/1
-    name: \Date, level: 2
+    name: \Date, level: 10
     match: do
       type4: /^(\d{1,2})[/-](\d{4})$/
-    test: -> return if @parse it => true else false
+    test: -> return if !/^\d*$/.exec(it) and @parse(it) => true else false
     parse: ->
       d = new Date(it)
       if !(d instanceof Date) or isNaN(d.getTime!) =>
@@ -129,13 +146,13 @@ plotdb <<< do
     return do
       default: ""
       name: \Choice
-      level: 4
+      level: 20
       test: -> v and v.length and (it in v)
       values: v
   Percent: name: \Percent, level: 3, test: -> !!/[0-9.]+%/.exec(it)
   Color: do
     name: \Color
-    level: 4
+    level: 10
     test: -> !!!/(rgba?|hsla?)\([0-9.,]+\)|#[0-9a-f]{3,6}|[a-z0-9]+/.exec(it.trim!)
     default: \#dc4521
     Gray: \#cccccc
@@ -149,7 +166,7 @@ plotdb <<< do
       neutral: "neutral"
   Palette: do
     name: \Palette
-    level: 5
+    level: 30
     re: /^((rgb|hsl)\((\s*[0-9.]+\s*,){2}\s*[0-9.]+\s*\)|(rgb|hsl)a\((\s*[0-9.]+\s*,){3}\s*[0-9.]+\s*\)|\#[0-9a-f]{3}|\#[0-9a-f]{6}|[a-zA-Z][a-zA-Z0-9]*)$/
     test: ->
       if !it => return true
@@ -199,7 +216,7 @@ plotdb <<< do
         d3.scale.linear!domain domain .range range
   Boolean:
     default: true
-    name: \Boolean, level: 2,
+    name: \Boolean, level: 12
     test: -> !!/^(true|false|1|0|yes|no)$/.exec(it)
     parse: ->
       if it and typeof(it) == typeof("") =>
@@ -210,9 +227,10 @@ plotdb <<< do
       return false
 plotdb <<< do
   Order: do
+    level: 4
     default: (k,v,i) -> i
     name: \Order
-    test: -> !!(@subtype.map((type)-> type.test it).filter(->it).0)
+    test: (v) -> !!(@subtype.map((type)-> type.test v).filter(->it).0)
     subtype: [plotdb.Number, plotdb.Date, plotdb.Numstring, plotdb.Month, plotdb.Weekday]
     parse: -> it
     order: do
@@ -231,3 +249,48 @@ plotdb <<< do
       data.sort((a,b)-> sorter(a[fieldname], b[fieldname]))
       #TODO if we can speed up further?
 
+plotdb.Types = do
+  list: <[Number Range Numstring String Weekday Month Date Boolean Order]>
+  resolve-array: (vals) ->
+    matched-types = [[0,\String]]
+    for j from 0 til @list.length =>
+      type = plotdb[@list[j]]
+      matched = true
+      for k from 0 til vals.length =>
+        if !type.test(vals[k]) =>
+          matched = false
+          break
+      if matched => matched-types.push [plotdb[@list[j]].level,@list[j]]
+    matched-types.sort (a,b) -> b.0 - a.0
+    type = (matched-types.0 or [0,\String]).1
+    return type
+
+  resolve-value: (val) ->
+    matched-types = [[0,\String]]
+    for j from 0 til @list.length =>
+      type = plotdb[@list[j]]
+      if type.test(val) =>
+        matched-types.push [plotdb[@list[j]].level,@list[j]]
+    matched-types.sort (a,b) -> b.0 - a.0
+    type = (matched-types.0 or [0,\String]).1
+    return type
+
+  resolve: (obj) ->
+    if Array.isArray(obj) => return @resolve-array obj
+    if typeof(obj) != \object => return @resolve-value obj
+    {headers, rows, fields} = obj
+    types = []
+    for i from 0 til headers.length =>
+      matched-types = []
+      for j from 0 til @list.length =>
+        type = plotdb[@list[j]]
+        matched = true
+        for k from 0 til rows.length =>
+          if !type.test(rows[k][i]) =>
+            matched = false
+            break
+        if matched => matched-types.push [plotdb[@list[j]].level,@list[j]]
+      matched-types.sort (a,b) -> b.0 - a.0
+      type = (matched-types.0 or [0,\String]).1
+      types.push type
+    return types

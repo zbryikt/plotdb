@@ -25,6 +25,10 @@ onmessage = function(e){
     }
     return results$;
   });
+  data.types = plotdb.Types.resolve({
+    rows: data.rows,
+    headers: data.headers
+  });
   return postMessage({
     data: data
   });

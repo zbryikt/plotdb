@@ -7,6 +7,8 @@ onmessage = (e) ->
   list = XLSX.utils.sheet_to_json(sheet) # 0.3
   data.headers = h = [k for k of (list[0] or {})]
   data.rows = list.map (row) -> [row[k] for k in h]
+  data.types = plotdb.Types.resolve do
+    rows: data.rows, headers: data.headers
   #list.map (row) -> for k of h => if !(row[k]?) => row[k] = "" # 0.6
   postMessage({data})
 

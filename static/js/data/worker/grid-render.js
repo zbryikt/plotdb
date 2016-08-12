@@ -14,16 +14,16 @@ escape = function(text){
   });
 };
 onmessage = function(e){
-  var data, len, res$, i$, to$, i, j, w, trs, ths;
+  var data, types, len, ref$, res$, i$, to$, i, w, ths, j, trs;
   data = e.data;
-  if (data.headers.length < 10) {}
+  types = data.types || [];
   len = {
     head: data.headers.length < 10
       ? 10
       : data.headers.length + 1,
-    rows: data.rows.length < 100
+    rows: (data.rows || (data.rows = [])).length < 100
       ? 100
-      : data.rows.length + 10
+      : ((ref$ = data.rows).length || (ref$.length = [])) + 10
   };
   res$ = [];
   for (i$ = 0, to$ = len.head; i$ < to$; ++i$) {
@@ -31,24 +31,30 @@ onmessage = function(e){
     res$.push(data.headers[i] || '');
   }
   data.headers = res$;
+  w = 100 / len.head + "%";
+  if (len.head > 10) {
+    w = "10%";
+  }
+  ths = "<div>" + data.headers.map(function(d, i){
+    var that;
+    return ("<div style='width:" + w + "'><div contenteditable='true' col='" + i + "'>&nbsp;" + escape(d) + "</div>") + ("<small class='grayed'>&nbsp;" + (d ? (that = types[i]) ? that : 'ANY' : '') + "</small></div>");
+  }).join("") + "</div>";
+  if (!data.rows) {
+    return postMessage({
+      ths: ths
+    });
+  }
   res$ = [];
   for (i$ = 0, to$ = len.rows; i$ < to$; ++i$) {
     i = i$;
     res$.push(data.rows[i] || (fn$()));
   }
   data.rows = res$;
-  w = 100 / len.head + "%";
-  if (len.head > 10) {
-    w = "10%";
-  }
   trs = data.rows.map(function(row, i){
     return "<div>" + data.headers.map(function(d, j){
       return "<div contenteditable='true' row='" + i + "' col='" + j + "' style='width:" + w + "'>" + (escape(row[j]) || '') + "</div>";
     }).join("") + "</div>";
   });
-  ths = "<div>" + data.headers.map(function(d, i){
-    return ("<div style='width:" + w + "'><div contenteditable='true' col='" + i + "'>&nbsp;" + escape(d) + "</div>") + ("<small class='grayed'>&nbsp;" + (d ? 'Any' : '') + "</small></div>");
-  }).join("") + "</div>";
   return postMessage({
     trs: trs,
     ths: ths

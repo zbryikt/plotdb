@@ -58,7 +58,6 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
         payload = $scope.grid.data.fieldize();
         $scope.dataset.setFields(payload);
         isCreate = !$scope.dataset.key ? true : false;
-        console.log($scope.dataset);
         return $scope.dataset.save().then(function(r){
           $scope.$apply(function(){
             return plNotify.send('success', "dataset saved");
@@ -315,16 +314,19 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
           $scope.$apply(function(){
             $scope.grid.data.rows = data.rows;
             $scope.grid.data.headers = data.headers;
+            $scope.grid.data.types = data.types;
             return $scope.grid.data.size = buf.length;
           });
           return $scope.grid.render().then(function(){
-            this$.toggle(false);
-            this$.buf = null;
-            if (verbose) {
-              eventBus.fire('loading.dimmer.off');
-            }
-            $scope.loading = false;
-            return res();
+            return $scope.$apply(function(){
+              this$.toggle(false);
+              this$.buf = null;
+              if (verbose) {
+                eventBus.fire('loading.dimmer.off');
+              }
+              $scope.loading = false;
+              return res();
+            });
           });
         };
         return this$.worker.postMessage({
@@ -603,7 +605,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
         return ret;
       }
     },
-    render: function(){
+    render: function(headOnly){
       var this$ = this;
       return new Promise(function(res, rej){
         var head, scroll, content;
@@ -615,9 +617,12 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
         }
         this$.worker.onmessage = function(e){
           var ref$, trs, ths, that;
-          content.innerHTML = "";
           ref$ = [e.data.trs, e.data.ths], trs = ref$[0], ths = ref$[1];
           head.innerHTML = ths;
+          if (headOnly) {
+            return;
+          }
+          content.innerHTML = "";
           if (that = this$.data.clusterizer) {
             that.destroy(true);
           }
@@ -651,14 +656,22 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
           });
           return res();
         };
-        return this$.worker.postMessage({
-          headers: this$.data.headers,
-          rows: this$.data.rows
-        });
+        if (headOnly) {
+          return this$.worker.postMessage({
+            headers: this$.data.headers,
+            types: this$.data.types
+          });
+        } else {
+          return this$.worker.postMessage({
+            headers: this$.data.headers,
+            rows: this$.data.rows,
+            types: this$.data.types
+          });
+        }
       });
     },
     update: function(r, c, val){
-      var i$, i;
+      var i$, i, valtype;
       if (c >= this.data.headers.length) {
         for (i$ = this.data.headers.length; i$ <= c; ++i$) {
           i = i$;
@@ -674,7 +687,19 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
       if (r === -1) {
         return this.data.headers[c] = val;
       } else {
-        return this.data.rows[r][c] = val;
+        this.data.rows[r][c] = val;
+        valtype = plotdb.Types.resolve(val);
+        if (valtype !== this.data.types[c]) {
+          this.data.types[c] = plotdb.Types.resolve((function(){
+            var i$, to$, results$ = [];
+            for (i$ = 0, to$ = this.data.rows.length; i$ < to$; ++i$) {
+              i = i$;
+              results$.push(this.data.rows[i][c]);
+            }
+            return results$;
+          }.call(this)));
+          return this.render(true);
+        }
       }
     },
     empty: function(){

@@ -39,7 +39,6 @@ angular.module \plotDB
       payload = $scope.grid.data.fieldize!
       $scope.dataset.set-fields payload #$scope.parse.result
       is-create = if !$scope.dataset.key => true else false
-      console.log $scope.dataset
       $scope.dataset.save!
         .then (r) ->
           $scope.$apply -> plNotify.send \success, "dataset saved"
@@ -224,8 +223,9 @@ angular.module \plotDB
           $scope.$apply ~>
             $scope.grid.data.rows = data.rows
             $scope.grid.data.headers = data.headers
+            $scope.grid.data.types = data.types
             $scope.grid.data.size = buf.length
-          $scope.grid.render!then ~>
+          $scope.grid.render!then ~> $scope.$apply ~>
             @toggle false
             @buf = null
             if verbose => eventBus.fire \loading.dimmer.off
@@ -410,16 +410,17 @@ angular.module \plotDB
           for i from 0 til @rows.length =>
             for j from 0 til @headers.length => ret[@headers[j]].push @rows[i][j]
           ret
-      render: ->
+      render: (head-only) ->
         return new Promise (res, rej) ~>
           head = document.querySelector '#dataset-editbox .sheet .sheet-head'
           scroll = document.querySelector '#dataset-editbox .sheet .clusterize-scroll'
           content = document.querySelector '#dataset-editbox .sheet .clusterize-content'
           if !@worker => @worker = new Worker \/js/data/worker/grid-render.js
           @worker.onmessage = (e) ~>
-            content.innerHTML = ""
             [trs, ths] = [e.data.trs, e.data.ths]
             head.innerHTML = ths
+            if head-only => return
+            content.innerHTML = ""
             if @data.clusterizer => that.destroy true
             @data.clusterizer = new Clusterize do
               rows: trs
@@ -443,7 +444,10 @@ angular.module \plotDB
                 @update row, h, val
               ), 0
             res!
-          @worker.postMessage {headers: @data.headers, rows: @data.rows}
+          if head-only =>
+            @worker.postMessage {headers: @data.headers, types: @data.types}
+          else 
+            @worker.postMessage {headers: @data.headers, rows: @data.rows, types: @data.types}
 
       update: (r,c,val) ->
         if c >= @data.headers.length =>
@@ -451,7 +455,12 @@ angular.module \plotDB
         if r >= @data.rows.length =>
           for i from @data.rows.length to r => @data.rows[i] = []
         if r == -1 => @data.headers[c] = val
-        else @data.rows[r][c] = val
+        else
+          @data.rows[r][c] = val
+          valtype = plotdb.Types.resolve val
+          if valtype != @data.types[c] =>
+            @data.types[c] = plotdb.Types.resolve [@data.rows[i][c] for i from 0 til @data.rows.length]
+            @render true
 
       empty: ->
         @data.headers = []
