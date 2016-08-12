@@ -249,7 +249,7 @@ angular.module \plotDB
       auth: ->
         auth = gapi.auth2.get-auth-instance!
         if auth.is-signed-in.get! => return auth
-        else 
+        else
           eventBus.fire \loading.dimmer.on
           return auth.sign-in!
       list: ->
@@ -280,7 +280,7 @@ angular.module \plotDB
               spreadsheetId: file.id
               range: 'A:ZZ'
           .then(
-            ((ret) ~> 
+            ((ret) ~>
               list = ret.result.values
               data = $scope.grid.data
               $scope.$apply ~>
@@ -309,7 +309,7 @@ angular.module \plotDB
           @toggled = true
         value: ""
         action: (idx) ->
-          if idx == 0 => 
+          if idx == 0 =>
             if !@value => return
             $scope.{}dataset.name = @value
           @toggled = false
@@ -335,7 +335,7 @@ angular.module \plotDB
 
     $scope.grid = do
       toggled: true
-      _toggle: (v) -> 
+      _toggle: (v) ->
         @toggled = v
         if !@toggled => @convert!
       toggle: (v) ->
@@ -348,11 +348,11 @@ angular.module \plotDB
             callback: ~> if it == 0 => @_toggle ret
         else @_toggle ret
       convert: ->
-        if !@convert-worker => @convert-worker = new Worker \/js/data/worker/convert.js
+        if !@convert-worker => @convert-worker = new Worker \/js/data/worker/data-to-raw-wrap.js
         @convert-worker.onmessage = (e)->
           $scope.$apply -> $scope.rawdata = e.data.raw
 
-        @convert-worker.postMessage @data
+        @convert-worker.postMessage @data{headers, rows, types}
         /*
         h = @data.headers
         list = []
@@ -381,11 +381,17 @@ angular.module \plotDB
         trs: []
         clusterizer: null
         fieldize: ->
+          ret = @headers.map (d,i) -> { data: [], datatype: @types[i], name: d }
+          for i from 0 til @rows.length =>
+            for j from 0 til @headers.length => ret[j].data.push @rows[i][j]
+          return ret
+          /*
           ret = {}
           @headers.forEach -> ret[it] = []
           for i from 0 til @rows.length =>
             for j from 0 til @headers.length => ret[@headers[j]].push @rows[i][j]
           ret
+          */
       render: (obj = {}) ->
         {head-only,ths,trs} = obj
         return new Promise (res, rej) ~>
@@ -395,7 +401,7 @@ angular.module \plotDB
           if !@worker => @worker = new Worker \/js/data/worker/grid-render-wrap.js
           update = (trs,ths) ~>
             head.innerHTML = ths
-            if head-only => return
+            if head-only => return res!
             content.innerHTML = ""
             if @data.clusterizer => that.destroy true
             @data.clusterizer = new Clusterize do
@@ -405,19 +411,49 @@ angular.module \plotDB
             scroll.addEventListener \scroll, (e) -> head.scrollLeft = scroll.scrollLeft
             head.addEventListener \keydown, (e) ~>
               setTimeout (~>
+                key = e.keyCode
                 n = e.target
                 val = n.textContent.trim!
                 col = +n.getAttribute(\col)
-                @update -1, col, val
+                if key >=37 and key <=40 =>
+                  v = [[-1 0],[0 -1],[1 0],[0 1]][key - 37]
+                  if v.1 > 0 =>
+                    node = content.querySelector([
+                      ".sheet-cells >"
+                      "div:first-child >"
+                      "div:nth-of-type(#{col + 1 + v.0})"
+                    ].join(" "))
+                  else
+                    node = head.querySelector([
+                      ".sheet-head > div:first-child >"
+                      "div:nth-of-type(#{col + 1 + v.0}) > div:first-child"
+                    ].join(" "))
+                  if node => that.focus!
+                else @update -1, col, val
               ), 0
             content.addEventListener \keydown, (e) ~>
               setTimeout (~>
+                key = e.keyCode
                 n = e.target
                 val = n.textContent
                 row = +n.getAttribute(\row)
                 col = +n.getAttribute(\col)
                 h = col
-                @update row, h, val
+                if key >=37 and key <=40 =>
+                  v = [[-1 0],[0 -1],[1 0],[0 1]][key - 37]
+                  if row == 0 and v.1 < 0 =>
+                    node = head.querySelector([
+                      ".sheet-head > div >"
+                      "div:nth-of-type(#{col + 1}) > div:first-child"
+                    ].join(" "))
+                  else
+                    node = content.querySelector([
+                      ".sheet-cells >"
+                      "div:nth-of-type(#{row + 1 + v.1}) >"
+                      "div:nth-of-type(#{col + 1 + v.0})"
+                    ].join(" "))
+                  if node => that.focus!
+                else @update row, h, val
               ), 0
             res!
 
@@ -431,21 +467,42 @@ angular.module \plotDB
 
           if head-only =>
             @worker.postMessage {headers: @data.headers, types: @data.types}
-          else 
+          else
             @worker.postMessage {headers: @data.headers, rows: @data.rows, types: @data.types}
 
       update: (r,c,val) ->
+        dirty = false
         if c >= @data.headers.length =>
           for i from @data.headers.length to c => @data.headers[i] = ''
         if r >= @data.rows.length =>
           for i from @data.rows.length to r => @data.rows[i] = []
-        if r == -1 => @data.headers[c] = val
-        else
+        if r == -1 =>
+          if !@data.headers[c] and !val => return
+          @data.headers[c] = val
+        if r >= 0 and !@data.rows[][r][c] and !val => return
+        if c >= @data.[]types.length =>
+          for i from @data.types.length to c =>
+            @data.types[i] = plotdb.Types.resolve [@data.rows[j][i] for j from 0 til @data.rows.length]
+            @data.headers[i] = (if @data.headers[i] => that else '')
+          dirty = true
+        if r >= 0 =>
           @data.rows[r][c] = val
           valtype = plotdb.Types.resolve val
           if valtype != @data.types[c] =>
             @data.types[c] = plotdb.Types.resolve [@data.rows[i][c] for i from 0 til @data.rows.length]
-            @render {head-only: true}
+            dirty = true
+        if dirty => @render {head-only: true} .then ->
+          if r < 0 =>
+            node = document.querySelector(
+              '#dataset-editbox .sheet-head > div >' + " div:nth-of-type(#{c + 1}) > div:first-child"
+            )
+          else
+            node = document.querySelector([
+              '#dataset-editbox .sheet-cells >'
+              "div:nth-of-type(#{r + 1}) >"
+              "div:nth-of-type(#{c + 1})"
+            ].join(" "))
+          if node => that.focus!
 
       empty: ->
         @data.headers = []

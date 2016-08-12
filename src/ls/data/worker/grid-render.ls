@@ -3,6 +3,7 @@ grid-render = (e) ->
   escape = (text="") -> text.replace /[&<>"']/g, (m) -> htmlCharMap[m]
   data = e.data
   types = data.types or []
+  ohlen = data.headers.length
   len = do
     head: (if data.headers.length < 10 => 10 else data.headers.length + 1)
     rows: (if data.[]rows.length < 100 => 100 else data.rows.[]length + 10)
@@ -10,8 +11,14 @@ grid-render = (e) ->
   w = "#{100/len.head}%"
   if  len.head > 10 => w = "10%"
   ths = "<div>" + data.headers.map((d,i)->
-    "<div style='width:#w'><div contenteditable='true' col='#i'>&nbsp;#{escape(d)}</div>" +
-    "<small class='grayed'>&nbsp;#{if d => (if types[i] => that else 'ANY') else ''}</small></div>"
+    [
+      "<div style='width:#w'>"
+      "<div contenteditable='true' col='#i' class='#{if i<ohlen => 'in-use' else ''}'>"
+      ( if d => "&nbsp;#{escape(d)}" else => "")
+      "</div><small class='grayed'>&nbsp;"
+      (if i < ohlen => (if types[i] => that else 'ANY') else '')
+      "</small></div>"
+    ].join("")
   ).join("") + "</div>"
   if !data.rows => return postMessage {ths}
   data.rows = [data.rows[i] or ['' for j from 0 til len.head] for i from 0 til len.rows]

@@ -567,15 +567,20 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
       }
     },
     convert: function(){
+      var ref$;
       if (!this.convertWorker) {
-        this.convertWorker = new Worker('/js/data/worker/convert.js');
+        this.convertWorker = new Worker('/js/data/worker/data-to-raw-wrap.js');
       }
       this.convertWorker.onmessage = function(e){
         return $scope.$apply(function(){
           return $scope.rawdata = e.data.raw;
         });
       };
-      return this.convertWorker.postMessage(this.data);
+      return this.convertWorker.postMessage({
+        headers: (ref$ = this.data).headers,
+        rows: ref$.rows,
+        types: ref$.types
+      });
     },
     worker: null,
     data: {
@@ -585,15 +590,18 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
       clusterizer: null,
       fieldize: function(){
         var ret, i$, to$, i, j$, to1$, j;
-        ret = {};
-        this.headers.forEach(function(it){
-          return ret[it] = [];
+        ret = this.headers.map(function(d, i){
+          return {
+            data: [],
+            datatype: this.types[i],
+            name: d
+          };
         });
         for (i$ = 0, to$ = this.rows.length; i$ < to$; ++i$) {
           i = i$;
           for (j$ = 0, to1$ = this.headers.length; j$ < to1$; ++j$) {
             j = j$;
-            ret[this.headers[j]].push(this.rows[i][j]);
+            ret[j].data.push(this.rows[i][j]);
           }
         }
         return ret;
@@ -615,7 +623,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
           var that;
           head.innerHTML = ths;
           if (headOnly) {
-            return;
+            return res();
           }
           content.innerHTML = "";
           if (that = this$.data.clusterizer) {
@@ -631,22 +639,48 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
           });
           head.addEventListener('keydown', function(e){
             return setTimeout(function(){
-              var n, val, col;
+              var key, n, val, col, v, node, that;
+              key = e.keyCode;
               n = e.target;
               val = n.textContent.trim();
               col = +n.getAttribute('col');
-              return this$.update(-1, col, val);
+              if (key >= 37 && key <= 40) {
+                v = [[-1, 0], [0, -1], [1, 0], [0, 1]][key - 37];
+                if (v[1] > 0) {
+                  node = content.querySelector([".sheet-cells >", "div:first-child >", "div:nth-of-type(" + (col + 1 + v[0]) + ")"].join(" "));
+                } else {
+                  node = head.querySelector([".sheet-head > div:first-child >", "div:nth-of-type(" + (col + 1 + v[0]) + ") > div:first-child"].join(" "));
+                }
+                if (that = node) {
+                  return that.focus();
+                }
+              } else {
+                return this$.update(-1, col, val);
+              }
             }, 0);
           });
           content.addEventListener('keydown', function(e){
             return setTimeout(function(){
-              var n, val, row, col, h;
+              var key, n, val, row, col, h, v, node, that;
+              key = e.keyCode;
               n = e.target;
               val = n.textContent;
               row = +n.getAttribute('row');
               col = +n.getAttribute('col');
               h = col;
-              return this$.update(row, h, val);
+              if (key >= 37 && key <= 40) {
+                v = [[-1, 0], [0, -1], [1, 0], [0, 1]][key - 37];
+                if (row === 0 && v[1] < 0) {
+                  node = head.querySelector([".sheet-head > div >", "div:nth-of-type(" + (col + 1) + ") > div:first-child"].join(" "));
+                } else {
+                  node = content.querySelector([".sheet-cells >", "div:nth-of-type(" + (row + 1 + v[1]) + ") >", "div:nth-of-type(" + (col + 1 + v[0]) + ")"].join(" "));
+                }
+                if (that = node) {
+                  return that.focus();
+                }
+              } else {
+                return this$.update(row, h, val);
+              }
             }, 0);
           });
           return res();
@@ -675,7 +709,8 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
       });
     },
     update: function(r, c, val){
-      var i$, i, valtype;
+      var dirty, i$, i, ref$, j, that, valtype;
+      dirty = false;
       if (c >= this.data.headers.length) {
         for (i$ = this.data.headers.length; i$ <= c; ++i$) {
           i = i$;
@@ -689,8 +724,23 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
         }
       }
       if (r === -1) {
-        return this.data.headers[c] = val;
-      } else {
+        if (!this.data.headers[c] && !val) {
+          return;
+        }
+        this.data.headers[c] = val;
+      }
+      if (r >= 0 && !((ref$ = this.data.rows)[r] || (ref$[r] = []))[c] && !val) {
+        return;
+      }
+      if (c >= ((ref$ = this.data).types || (ref$.types = [])).length) {
+        for (i$ = this.data.types.length; i$ <= c; ++i$) {
+          i = i$;
+          this.data.types[i] = plotdb.Types.resolve((fn$.call(this)));
+          this.data.headers[i] = (that = this.data.headers[i]) ? that : '';
+        }
+        dirty = true;
+      }
+      if (r >= 0) {
         this.data.rows[r][c] = val;
         valtype = plotdb.Types.resolve(val);
         if (valtype !== this.data.types[c]) {
@@ -702,10 +752,31 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
             }
             return results$;
           }.call(this)));
-          return this.render({
-            headOnly: true
-          });
+          dirty = true;
         }
+      }
+      if (dirty) {
+        return this.render({
+          headOnly: true
+        }).then(function(){
+          var node, that;
+          if (r < 0) {
+            node = document.querySelector('#dataset-editbox .sheet-head > div >' + (" div:nth-of-type(" + (c + 1) + ") > div:first-child"));
+          } else {
+            node = document.querySelector(['#dataset-editbox .sheet-cells >', "div:nth-of-type(" + (r + 1) + ") >", "div:nth-of-type(" + (c + 1) + ")"].join(" "));
+          }
+          if (that = node) {
+            return that.focus();
+          }
+        });
+      }
+      function fn$(){
+        var i$, to$, results$ = [];
+        for (i$ = 0, to$ = this.data.rows.length; i$ < to$; ++i$) {
+          j = i$;
+          results$.push(this.data.rows[j][i]);
+        }
+        return results$;
       }
     },
     empty: function(){
