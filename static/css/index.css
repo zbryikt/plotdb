@@ -54,10 +54,6 @@ body {
 select[ngselect2] {
   height: 34px;
 }
- {
-  width: 100%;
-  width: 100%;
-}
 .spc1 {
   height: 0;
 }
@@ -2971,6 +2967,7 @@ small.hint {
 }
 .float-dataedit .ib {
   position: relative;
+  height: 100%;
 }
 .float-dataedit #dataset-create-methods {
   padding: 10px;

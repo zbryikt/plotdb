@@ -2,7 +2,7 @@ div(ng-controller="dataEditCtrl")
   .float-dataedit(ng-cloak,ng-class="{'active': dataPanel.toggled}")
     .dimmer(ng-click="dataPanel.toggle()")
     .ib
-      .closebtn.inner(ng-click="dataPanel.toggle()")
+      .closebtn.inner.lg.inverse(ng-click="dataPanel.toggle()")
       include create.jade
   .high-modal
     include import-modal.jade
