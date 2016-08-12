@@ -1,4 +1,8 @@
-importScripts('/assets/js-xls/0.7.5/xlsx.full.min.js');
+importScripts(
+  \/assets/js-xls/0.7.5/xlsx.full.min.js
+  \/js/plotdb/type.js
+  \/js/data/worker/grid-render.js
+)
 onmessage = (e) ->
   data = {}
   buf = e.{}data.buf
@@ -9,6 +13,6 @@ onmessage = (e) ->
   data.rows = list.map (row) -> [row[k] for k in h]
   data.types = plotdb.Types.resolve do
     rows: data.rows, headers: data.headers
-  #list.map (row) -> for k of h => if !(row[k]?) => row[k] = "" # 0.6
-  postMessage({data})
-
+  ret = grid-render {data}
+  data <<< ret{trs, ths}
+  postMessage {data}

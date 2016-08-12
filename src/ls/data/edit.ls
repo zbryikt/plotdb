@@ -66,6 +66,7 @@ angular.module \plotDB
         $scope.$apply ->
           $scope.grid.data.headers = data.data.headers
           $scope.grid.data.rows = data.data.rows
+          $scope.grid.data.types = data.data.types
         $scope.grid.render!then -> $scope.$apply ->
           $scope.inited = true
           $scope.loading = false
@@ -76,8 +77,7 @@ angular.module \plotDB
           $scope.dataset = dataset = new data-service.dataset ret
           $scope.grid.data.size = JSON.stringify(dataset).length
           worker.postMessage {dataset}
-          #$scope.parse.revert $scope.dataset
-          #$scope.inited = true
+          $scope.inited = true
         .catch (ret) ~>
           <- $scope.$apply
           console.error ret
@@ -125,8 +125,6 @@ angular.module \plotDB
         dataset.name = ""
         if $scope.dataset and $scope.dataset.name => dataset.name = $scope.dataset.name
         $scope <<< {dataset, rawdata}
-        #if $scope.rawdata == rawdata => $scope.parse.run!
-        #$scope.parse.run!
       init: ->
         @reset ""
         # e.g.: /dataset/?k=s123 )
@@ -144,7 +142,6 @@ angular.module \plotDB
         else
           eventBus.fire \loading.dimmer.off
           $scope.inited = true
-        #$scope.$watch 'rawdata', -> $scope.parse.run!
         $(\#dataset-edit-text).on \keydown, -> $scope.$apply -> $scope.parse.run!
         $('[data-toggle="tooltip"]').tooltip!
         @communicate!
@@ -159,31 +156,7 @@ angular.module \plotDB
         $scope.worker.postMessage {type: "parse.revert", data: dataset}
       run: (force = false) -> new Promise (res, rej) ~>
         $scope.loading = true
-        _ = ~>
-          $scope.parser.csv.read $scope.rawdata, false
-          /*
-          @ <<< {handle: null, result: {}, size: $scope.rawdata.length}
-          Papa.parse ($scope.rawdata or ""), do
-            worker: true, header: true
-            step: ({data: rows}) ~>
-              for row in rows => for k,v of row => @result[][k].push v
-            complete: ~>
-              data = $scope.grid.data
-              values = [v for k,v of @result] or []
-              data.headers = [k for k of @result]
-              len = @result[][data.headers.0].length
-              data.rows = [{} for i from 0 til len]
-              data.rows.map (row,i) ~> data.headers.map ~> row[it] = @result[it][i]
-              <~ $scope.grid.render!then
-              <~ $scope.$apply
-              @ <<< {fields: values.length, rows: (values.0 or []).length}
-              $scope.loading = false
-              if @rows > 0 and !$scope.dataset.name => $('#dataset-editbox-meta .input-group input').tooltip('show')
-              res @result
-              if $scope.dimming == true =>
-                $scope.dimming = false
-                eventBus.fire \loading.dimmer.off
-          */
+        _ = ~> $scope.parser.csv.read $scope.rawdata, false
         if @handle => $timeout.cancel @handle
         if force => return _!
         else @handle = $timeout (~> _! ), (if force => 0 else 1000)
@@ -225,7 +198,7 @@ angular.module \plotDB
             $scope.grid.data.headers = data.headers
             $scope.grid.data.types = data.types
             $scope.grid.data.size = buf.length
-          $scope.grid.render!then ~> $scope.$apply ~>
+          $scope.grid.render data{trs, ths} .then ~> $scope.$apply ~>
             @toggle false
             @buf = null
             if verbose => eventBus.fire \loading.dimmer.off
@@ -238,15 +211,17 @@ angular.module \plotDB
       worker: null
       read: (buf) ->
         eventBus.fire \loading.dimmer.on, 1
-        sec = buf.length * 1.7 / 1000
+        sec = buf.length * 2.5 / 1000
         $scope.parser.progress sec
         if !@worker =>
           @worker = new Worker \/js/data/worker/excel.js
           @worker.onmessage = (e) -> $scope.$apply ->
-            $scope.grid.data.headers = e.data.data.headers
-            $scope.grid.data.rows = e.data.data.rows
+            data = e.data.data
+            $scope.grid.data.headers = data.headers
+            $scope.grid.data.rows = data.rows
+            $scope.grid.data.types = data.types
             $scope.grid.data.size = buf.length
-            $scope.grid.render!then -> # 1.3
+            $scope.grid.render data{trs, ths} .then -> # 1.3
               $scope.$apply -> eventBus.fire \loading.dimmer.off
         node = document.getElementById(\dataset-import-dropdown)
         node.className = node.className.replace /open/, ''
@@ -312,10 +287,8 @@ angular.module \plotDB
                 data.headers = h = list.0
                 list.splice 0,1
                 data.rows = list
-                #data.rows = list.map (v) ->
-                #  hash = {}
-                #  for i from 0 til v.length => hash[h[i]] = v[i]
-                #  hash
+                #TODO move to worker
+                data.types = plotdb.Types.resolve data
                 data.size = (ret.body or "").length
               $scope.grid.render!then ~>
                 $scope.$apply ~>
@@ -352,8 +325,6 @@ angular.module \plotDB
         else @toggled = !!! @toggled
     eventBus.listen \dataset.delete, (key) -> if $scope.dataset.key == key => $scope.dataset = null
     eventBus.listen \dataset.edit, (dataset, load = true) ->
-      #TODO: support more type ( currently CSV structure only )
-      #TODO: refactor window heigh
       $scope.inited = false
       if load and dataset._type.location == \server =>
         $scope.load dataset._type, dataset.key
@@ -362,7 +333,6 @@ angular.module \plotDB
         $scope.parse.revert $scope.dataset
         $scope.inited = true
 
-    # dev
     $scope.grid = do
       toggled: true
       _toggle: (v) -> 
@@ -378,12 +348,17 @@ angular.module \plotDB
             callback: ~> if it == 0 => @_toggle ret
         else @_toggle ret
       convert: ->
+        if !@convert-worker => @convert-worker = new Worker \/js/data/worker/convert.js
+        @convert-worker.onmessage = (e)->
+          $scope.$apply -> $scope.rawdata = e.data.raw
+
+        @convert-worker.postMessage @data
+        /*
         h = @data.headers
         list = []
         lastidx = 0
         for i from 0 til @data.rows.length =>
           row = @data.rows[i]
-          #row = h.map(->row[it])
           if row.join('') => lastidx = i
           list.push h.map((d,i)->
             it = row[i]
@@ -398,6 +373,7 @@ angular.module \plotDB
           list.join(\\n)
         ].join(\\n)
         $scope.rawdata = ret.trim!
+        */
       worker: null
       data: do
         rows: []
@@ -410,14 +386,14 @@ angular.module \plotDB
           for i from 0 til @rows.length =>
             for j from 0 til @headers.length => ret[@headers[j]].push @rows[i][j]
           ret
-      render: (head-only) ->
+      render: (obj = {}) ->
+        {head-only,ths,trs} = obj
         return new Promise (res, rej) ~>
           head = document.querySelector '#dataset-editbox .sheet .sheet-head'
           scroll = document.querySelector '#dataset-editbox .sheet .clusterize-scroll'
           content = document.querySelector '#dataset-editbox .sheet .clusterize-content'
-          if !@worker => @worker = new Worker \/js/data/worker/grid-render.js
-          @worker.onmessage = (e) ~>
-            [trs, ths] = [e.data.trs, e.data.ths]
+          if !@worker => @worker = new Worker \/js/data/worker/grid-render-wrap.js
+          update = (trs,ths) ~>
             head.innerHTML = ths
             if head-only => return
             content.innerHTML = ""
@@ -440,10 +416,19 @@ angular.module \plotDB
                 val = n.textContent
                 row = +n.getAttribute(\row)
                 col = +n.getAttribute(\col)
-                h = col #h = @data.headers[col]
+                h = col
                 @update row, h, val
               ), 0
             res!
+
+          if trs and ths =>
+            update trs, ths
+            return
+
+          @worker.onmessage = (e) ~>
+            [trs, ths] = [e.data.trs, e.data.ths]
+            update trs, ths
+
           if head-only =>
             @worker.postMessage {headers: @data.headers, types: @data.types}
           else 
@@ -460,7 +445,7 @@ angular.module \plotDB
           valtype = plotdb.Types.resolve val
           if valtype != @data.types[c] =>
             @data.types[c] = plotdb.Types.resolve [@data.rows[i][c] for i from 0 til @data.rows.length]
-            @render true
+            @render {head-only: true}
 
       empty: ->
         @data.headers = []

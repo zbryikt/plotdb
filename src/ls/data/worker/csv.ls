@@ -2,6 +2,7 @@ importScripts(
   \/assets/papaparse/4.1.2/papaparse.min.js
   \/assets/utf8js/2.0.0/utf8.js
   \/js/plotdb/type.js
+  \/js/data/worker/grid-render.js
 )
 
 onmessage = (e) ->
@@ -20,6 +21,8 @@ onmessage = (e) ->
       data.rows = result
       data.types = plotdb.Types.resolve do
         rows: data.rows, headers: data.headers
+      ret = grid-render {data}
+      data <<< ret{trs, ths}
       #values = [v for k,v of result] or []
       #data.headers = [k for k of result]
       #len = result[][data.headers.0].length

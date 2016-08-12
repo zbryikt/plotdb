@@ -7341,7 +7341,8 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
       data = e.data;
       $scope.$apply(function(){
         $scope.grid.data.headers = data.data.headers;
-        return $scope.grid.data.rows = data.data.rows;
+        $scope.grid.data.rows = data.data.rows;
+        return $scope.grid.data.types = data.data.types;
       });
       return $scope.grid.render().then(function(){
         return $scope.$apply(function(){
@@ -7356,9 +7357,10 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
         var dataset;
         $scope.dataset = dataset = new dataService.dataset(ret);
         $scope.grid.data.size = JSON.stringify(dataset).length;
-        return worker.postMessage({
+        worker.postMessage({
           dataset: dataset
         });
+        return $scope.inited = true;
       });
     })['catch'](function(ret){
       return $scope.$apply(function(){
@@ -7562,7 +7564,10 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
             $scope.grid.data.types = data.types;
             return $scope.grid.data.size = buf.length;
           });
-          return $scope.grid.render().then(function(){
+          return $scope.grid.render({
+            trs: data.trs,
+            ths: data.ths
+          }).then(function(){
             return $scope.$apply(function(){
               this$.toggle(false);
               this$.buf = null;
@@ -7585,16 +7590,22 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
     read: function(buf){
       var sec, node, this$ = this;
       eventBus.fire('loading.dimmer.on', 1);
-      sec = buf.length * 1.7 / 1000;
+      sec = buf.length * 2.5 / 1000;
       $scope.parser.progress(sec);
       if (!this.worker) {
         this.worker = new Worker('/js/data/worker/excel.js');
         this.worker.onmessage = function(e){
           return $scope.$apply(function(){
-            $scope.grid.data.headers = e.data.data.headers;
-            $scope.grid.data.rows = e.data.data.rows;
+            var data;
+            data = e.data.data;
+            $scope.grid.data.headers = data.headers;
+            $scope.grid.data.rows = data.rows;
+            $scope.grid.data.types = data.types;
             $scope.grid.data.size = buf.length;
-            return $scope.grid.render().then(function(){
+            return $scope.grid.render({
+              trs: data.trs,
+              ths: data.ths
+            }).then(function(){
               return $scope.$apply(function(){
                 return eventBus.fire('loading.dimmer.off');
               });
@@ -7694,6 +7705,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
           data.headers = h = list[0];
           list.splice(0, 1);
           data.rows = list;
+          data.types = plotdb.Types.resolve(data);
           return data.size = (ret.body || "").length;
         });
         return $scope.grid.render().then(function(){
@@ -7800,33 +7812,15 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
       }
     },
     convert: function(){
-      var h, list, lastidx, i$, to$, i, row, ret;
-      h = this.data.headers;
-      list = [];
-      lastidx = 0;
-      for (i$ = 0, to$ = this.data.rows.length; i$ < to$; ++i$) {
-        i = i$;
-        row = this.data.rows[i];
-        if (row.join('')) {
-          lastidx = i;
-        }
-        list.push(h.map(fn$).join(','));
+      if (!this.convertWorker) {
+        this.convertWorker = new Worker('/js/data/worker/convert.js');
       }
-      list.splice(lastidx + 1);
-      ret = [this.data.headers.join(','), list.join('\n')].join('\n');
-      return $scope.rawdata = ret.trim();
-      function fn$(d, i){
-        var it;
-        it = row[i];
-        if (!it) {
-          return it;
-        }
-        it = it.replace(/"/g, '""');
-        if (/[ ,\n\t]/.exec(it)) {
-          it = "\"" + it + "\"";
-        }
-        return it;
-      }
+      this.convertWorker.onmessage = function(e){
+        return $scope.$apply(function(){
+          return $scope.rawdata = e.data.raw;
+        });
+      };
+      return this.convertWorker.postMessage(this.data);
     },
     worker: null,
     data: {
@@ -7850,19 +7844,20 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
         return ret;
       }
     },
-    render: function(headOnly){
-      var this$ = this;
+    render: function(obj){
+      var headOnly, ths, trs, this$ = this;
+      obj == null && (obj = {});
+      headOnly = obj.headOnly, ths = obj.ths, trs = obj.trs;
       return new Promise(function(res, rej){
-        var head, scroll, content;
+        var head, scroll, content, update;
         head = document.querySelector('#dataset-editbox .sheet .sheet-head');
         scroll = document.querySelector('#dataset-editbox .sheet .clusterize-scroll');
         content = document.querySelector('#dataset-editbox .sheet .clusterize-content');
         if (!this$.worker) {
-          this$.worker = new Worker('/js/data/worker/grid-render.js');
+          this$.worker = new Worker('/js/data/worker/grid-render-wrap.js');
         }
-        this$.worker.onmessage = function(e){
-          var ref$, trs, ths, that;
-          ref$ = [e.data.trs, e.data.ths], trs = ref$[0], ths = ref$[1];
+        update = function(trs, ths){
+          var that;
           head.innerHTML = ths;
           if (headOnly) {
             return;
@@ -7900,6 +7895,15 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
             }, 0);
           });
           return res();
+        };
+        if (trs && ths) {
+          update(trs, ths);
+          return;
+        }
+        this$.worker.onmessage = function(e){
+          var ref$, trs, ths;
+          ref$ = [e.data.trs, e.data.ths], trs = ref$[0], ths = ref$[1];
+          return update(trs, ths);
         };
         if (headOnly) {
           return this$.worker.postMessage({
@@ -7943,7 +7947,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
             }
             return results$;
           }.call(this)));
-          return this.render(true);
+          return this.render({
+            headOnly: true
+          });
         }
       }
     },

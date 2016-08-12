@@ -1,3 +1,7 @@
+importScripts(
+  \/js/plotdb/type.js
+)
+
 onmessage = (e) ->
   dataset = e.data.dataset
   data = {}
@@ -14,4 +18,6 @@ onmessage = (e) ->
       v
     ).join(",")
   raw = ret.join \\n
+  data.types = plotdb.Types.resolve do
+    rows: data.rows, headers: data.headers
   postMessage {data, raw}

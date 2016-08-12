@@ -1,7 +1,6 @@
-htmlCharMap = '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-escape = (text="") -> text.replace /[&<>"']/g, (m) -> htmlCharMap[m]
-
-onmessage = (e) ->
+grid-render = (e) ->
+  htmlCharMap = '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+  escape = (text="") -> text.replace /[&<>"']/g, (m) -> htmlCharMap[m]
   data = e.data
   types = data.types or []
   len = do
@@ -21,5 +20,4 @@ onmessage = (e) ->
       "<div contenteditable='true' row='#i' col='#j' style='width:#w'>#{escape(row[j]) or ''}</div>"
     ).join("") + "</div>"
   )
-
-  postMessage {trs, ths}
+  return {trs, ths}
