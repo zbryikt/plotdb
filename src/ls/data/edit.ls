@@ -45,6 +45,7 @@ angular.module \plotDB
           if is-create =>
             if $scope.$parent and $scope.$parent.inline-create =>
               $scope.$parent.inline-create $scope.dataset
+              $scope.$apply -> eventBus.fire \loading.dimmer.off
             else
               setTimeout (->
                 window.location.href = data-service.link $scope.dataset
@@ -119,11 +120,19 @@ angular.module \plotDB
             $scope.rawdata = payload.data
             $scope.loading = false
             eventBus.fire 'loading.dimmer.off'
-      reset: (rawdata) ->
-        dataset = new dataService.dataset(window.dataset or {})
-        dataset.name = ""
-        if $scope.dataset and $scope.dataset.name => dataset.name = $scope.dataset.name
-        $scope <<< {dataset, rawdata}
+      reset: (rawdata = "",force=false) ->
+        if force =>
+          if $scope.$parent and $scope.$parent.inline-create =>
+            $scope.dataset = new dataService.dataset!
+            $scope.rawdata = rawdata or ""
+            $scope.grid.data <<< {rows: [], headers: [], types: []}
+            $scope.grid.render!
+          else window.location.href = "/dataset/"
+        else =>
+          dataset = new dataService.dataset(window.dataset or {})
+          dataset.name = ""
+          if $scope.dataset and $scope.dataset.name => dataset.name = $scope.dataset.name
+          $scope <<< {dataset, rawdata}
       init: ->
         @reset ""
         # e.g.: /dataset/?k=s123 )

@@ -65,6 +65,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
           if (isCreate) {
             if ($scope.$parent && $scope.$parent.inlineCreate) {
               $scope.$parent.inlineCreate($scope.dataset);
+              $scope.$apply(function(){
+                return eventBus.fire('loading.dimmer.off');
+              });
             } else {
               setTimeout(function(){
                 return window.location.href = dataService.link($scope.dataset);
@@ -185,14 +188,30 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
         });
       };
     },
-    reset: function(rawdata){
-      var dataset;
-      dataset = new dataService.dataset(window.dataset || {});
-      dataset.name = "";
-      if ($scope.dataset && $scope.dataset.name) {
-        dataset.name = $scope.dataset.name;
+    reset: function(rawdata, force){
+      var ref$, dataset;
+      rawdata == null && (rawdata = "");
+      force == null && (force = false);
+      if (force) {
+        if ($scope.$parent && $scope.$parent.inlineCreate) {
+          $scope.dataset = new dataService.dataset();
+          $scope.rawdata = rawdata || "";
+          ref$ = $scope.grid.data;
+          ref$.rows = [];
+          ref$.headers = [];
+          ref$.types = [];
+          return $scope.grid.render();
+        } else {
+          return window.location.href = "/dataset/";
+        }
+      } else {
+        dataset = new dataService.dataset(window.dataset || {});
+        dataset.name = "";
+        if ($scope.dataset && $scope.dataset.name) {
+          dataset.name = $scope.dataset.name;
+        }
+        return $scope.dataset = dataset, $scope.rawdata = rawdata, $scope;
       }
-      return $scope.dataset = dataset, $scope.rawdata = rawdata, $scope;
     },
     init: function(){
       var ret1, ret2, that, ret;

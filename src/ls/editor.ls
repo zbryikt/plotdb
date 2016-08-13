@@ -141,7 +141,7 @@ angular.module \plotDB
           dimension.fields.splice idx, 1
           $scope.render!
         typematch: (dimtypes = [], fieldtype) ->
-          if !dimtypes or !plotdb[fieldtype] => return true
+          if !dimtypes or !dimtypes.length or !plotdb[fieldtype] => return true
           fieldtypes = []
           queue = [plotdb[fieldtype]]
           while true
@@ -439,7 +439,7 @@ angular.module \plotDB
           tags: null
           library: null
       data-panel: do
-        init: -> eventBus.listen \dataset.saved, ~> $timeout (~> @toggled = false), 1000
+        init: -> eventBus.listen \dataset.saved, ~> $timeout (~> @toggled = false), 200
         toggle: -> @toggled = !!!@toggled
         toggled: false
         edit: (dataset) ->

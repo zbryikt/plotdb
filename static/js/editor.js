@@ -271,7 +271,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       typematch: function(dimtypes, fieldtype){
         var fieldtypes, queue, newqueue, i$, len$, type, dimtype;
         dimtypes == null && (dimtypes = []);
-        if (!dimtypes || !plotdb[fieldtype]) {
+        if (!dimtypes || !dimtypes.length || !plotdb[fieldtype]) {
           return true;
         }
         fieldtypes = [];
@@ -834,7 +834,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         return eventBus.listen('dataset.saved', function(){
           return $timeout(function(){
             return this$.toggled = false;
-          }, 1000);
+          }, 200);
         });
       },
       toggle: function(){

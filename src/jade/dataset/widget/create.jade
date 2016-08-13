@@ -56,7 +56,7 @@ include panel.jade
             li.dropdown
               a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-file-o] File #[span.caret]
               ul.dropdown-menu
-                li: a(href="/dataset/") #[i.fa.align16] New
+                li: a(href="#",ng-click="reset('',true)") #[i.fa.align16] New
                 li.divider
                 li: a(href="#",ng-click="save()") #[i.fa.fa-floppy-o.align16] Save
                 li(ng-class="{'disabled':!dataset.key}",ng-click="clone()")
