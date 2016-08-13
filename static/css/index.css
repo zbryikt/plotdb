@@ -4088,11 +4088,22 @@ small.hint {
   line-height: 12px;
   vertical-align: top;
 }
+.sheet-head > div .closebtn {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  line-height: 12px;
+  font-size: 16px;
+  margin: 0;
+}
 .sheet-head > div > div > .in-use:empty {
   background: #f9f9f9;
 }
 .sheet-head > div > div,
 .sheet-cells > div > div {
+  position: relative;
   height: 100%;
   display: inline-block;
   overflow: hidden;

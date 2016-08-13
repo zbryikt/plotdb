@@ -78,7 +78,8 @@ include panel.jade
                   span #[i.fa.fa-file-excel-o.align16] upload Excel (.xls, .xlsx)
                 li.divider
                 li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] from Google Sheet
-            li.dropdown
+            //-future feature
+            //-li.dropdown
               a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-edit] transform... #[span.caret]
               ul.dropdown-menu
                 li: a(href="#") #[i.fa.align16] Columnize
@@ -87,44 +88,6 @@ include panel.jade
           ul.nav.navbar-nav
             li(ng-class="{'disabled':!dataset.key}"): a(ng-click="panel.toggle()") #[i.fa.fa-users] Share
 
-    //-
-      .btn.btn-link upload csv or xls
-      .btn.btn-link from Google Sheet
-    //-
-      .btn.btn-default.toggle #[img(src="/assets/img/dataset/edit.png")] Type &amp; Paste
-      .dropdown(style="display:inline-block")
-        .btn.btn-default.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-upload(style="font-size:12px")] Upload #[span.caret]
-      .btn.btn-default(ng-click="parser.csv.toggle()") #[img(src="/assets/img/dataset/csv.png")] Upload CSV
-      .btn.btn-default(ng-click="parser.csv.toggle()") #[img(src="/assets/img/dataset/csv.png")] Upload MS Excel
-      .btn.btn-default(ng-click="parser.csv.toggle()") #[img(src="/assets/img/dataset/csv.png")] from Google Sheet
-
-    //-.btn.btn-default(ng-click="parser.gsheet.toggle()")
-      img(src="/assets/img/dataset/spreadsheet.png")
-      span Google Spreadsheet
-    //-.btn.btn-default.pull-right.disabled(data-toggle="tooltip",data-placement="top",title="Coming Soon!")
-      i.fa.fa-flash(style="font-size:24px;vertical-align:middle")
-      span &nbsp; use Dynamic API as Dataset
-  //-.loader.alone.lg(style="position:fixed;top:50%;left:50%;margin:-50px 0 0 -50px",ng-class="{'loading':!inited}")
-  //-#dataset-edit-modal.modal.fade
-    .modal-dialog
-      .modal-content
-        .modal-body
-          label Upload CSV by Link:
-          .input-group
-            input.form-control(type="text",style="border: 1px solid #ccc",ng-model="parser.link.url")
-            span.input-group-btn
-              button.btn.btn-default.dropdown-toggle(
-              data-toggle="dropdown",type="button",style="border: 1px solid #ccc;border-radius:0")
-                span Encoding
-                small {{parser.encoding}}&nbsp;
-                span.caret
-              ul.dropdown-menu.dropdown-meu-right
-                li(ng-class="{'active':parser.encoding=='ISO-8859-1'}")
-                  a(ng-click="parser.encoding='ISO-8859-1'") ISO-8859-1
-                li(ng-class="{'active':parser.encoding=='Big5'}"): a(ng-click="parser.encoding='BIG5'") BIG5
-                li(ng-class="{'active':parser.encoding=='GB2312'}"): a(ng-click="parser.encoding='GB2312'") GB2312
-                li(ng-class="{'active':parser.encoding=='UTF-8'}"): a(ng-click="parser.encoding='UTF-8'") UTF-8
-              button.btn.btn-default(type="button",style="border: 1px solid #ccc",ng-click="readLink()") Read
   //dev
   script(src="/assets/clusterize/0.16.1/clusterize.min.js")
   link(rel="stylesheet",type="text/css",href="/assets/clusterize/0.16.1/clusterize.css")

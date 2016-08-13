@@ -77,7 +77,6 @@ angular.module \plotDB
           $scope.dataset = dataset = new data-service.dataset ret
           $scope.grid.data.size = JSON.stringify(dataset).length
           worker.postMessage {dataset}
-          $scope.inited = true
         .catch (ret) ~>
           <- $scope.$apply
           console.error ret
@@ -154,10 +153,16 @@ angular.module \plotDB
       revert: (dataset) ->
         $scope.loading = true
         $scope.worker.postMessage {type: "parse.revert", data: dataset}
+      promise: null
       run: (force = false) -> new Promise (res, rej) ~>
         $scope.loading = true
-        _ = ~> $scope.parser.csv.read $scope.rawdata, false
-        if @handle => $timeout.cancel @handle
+        _ = ~>
+          $scope.parser.csv.read $scope.rawdata, false
+          res!
+        if @handle =>
+          $timeout.cancel @handle
+          if @promise => @promise.rej!
+        @promise = {res, rej}
         if force => return _!
         else @handle = $timeout (~> _! ), (if force => 0 else 1000)
 
@@ -184,7 +189,8 @@ angular.module \plotDB
         node.className = node.className.replace /open/, ''
         $scope.parser.csv.buf = buf
         $scope.parser.csv.toggle true
-      read: (buf,verbose = true) -> new Promise (res, rej) ~>
+      read: (_buf,verbose = true) -> new Promise (res, rej) ~>
+        buf = _buf
         if !(buf?) => buf = @buf
         if !buf => buf = ""
         if verbose => eventBus.fire \loading.dimmer.on, 1
@@ -348,9 +354,12 @@ angular.module \plotDB
             callback: ~> if it == 0 => @_toggle ret
         else @_toggle ret
       convert: ->
+        eventBus.fire \loading.dimmer.on
         if !@convert-worker => @convert-worker = new Worker \/js/data/worker/data-to-raw-wrap.js
-        @convert-worker.onmessage = (e)->
-          $scope.$apply -> $scope.rawdata = e.data.raw
+        @convert-worker.onmessage = (e) ->
+          <- $scope.$apply
+          $scope.rawdata = e.data.raw.trim!
+          eventBus.fire \loading.dimmer.off
         @convert-worker.postMessage @data{headers, rows, types}
 
       worker: null
@@ -381,58 +390,8 @@ angular.module \plotDB
               rows: trs
               scrollElem: scroll
               contentElem: content
-            scroll.addEventListener \scroll, (e) -> head.scrollLeft = scroll.scrollLeft
-            head.addEventListener \keydown, (e) ~>
-              setTimeout (~>
-                key = e.keyCode
-                n = e.target
-                val = n.textContent.trim!
-                col = +n.getAttribute(\col)
-                if key >=37 and key <=40 =>
-                  v = [[-1 0],[0 -1],[1 0],[0 1]][key - 37]
-                  if v.1 > 0 =>
-                    node = content.querySelector([
-                      ".sheet-cells >"
-                      "div:first-child >"
-                      "div:nth-of-type(#{col + 1 + v.0})"
-                    ].join(" "))
-                  else
-                    node = head.querySelector([
-                      ".sheet-head > div:first-child >"
-                      "div:nth-of-type(#{col + 1 + v.0}) > div:first-child"
-                    ].join(" "))
-                  if node => that.focus!
-                else @update -1, col, val
-              ), 0
-            content.addEventListener \keydown, (e) ~>
-              setTimeout (~>
-                key = e.keyCode
-                n = e.target
-                val = n.textContent
-                row = +n.getAttribute(\row)
-                col = +n.getAttribute(\col)
-                h = col
-                if key >=37 and key <=40 =>
-                  v = [[-1 0],[0 -1],[1 0],[0 1]][key - 37]
-                  if row == 0 and v.1 < 0 =>
-                    node = head.querySelector([
-                      ".sheet-head > div >"
-                      "div:nth-of-type(#{col + 1}) > div:first-child"
-                    ].join(" "))
-                  else
-                    node = content.querySelector([
-                      ".sheet-cells >"
-                      "div:nth-of-type(#{row + 1 + v.1}) >"
-                      "div:nth-of-type(#{col + 1 + v.0})"
-                    ].join(" "))
-                  if node => that.focus!
-                else @update row, h, val
-              ), 0
             res!
-
-          if trs and ths =>
-            update trs, ths
-            return
+          if trs and ths => return update trs, ths
 
           @worker.onmessage = (e) ~>
             [trs, ths] = [e.data.trs, e.data.ths]
@@ -481,7 +440,76 @@ angular.module \plotDB
         @data.headers = []
         @data.rows = []
         @render!
+      init: ->
+        @empty!
+        head = document.querySelector '#dataset-editbox .sheet .sheet-head'
+        scroll = document.querySelector '#dataset-editbox .sheet .clusterize-scroll'
+        content = document.querySelector '#dataset-editbox .sheet .clusterize-content'
+        scroll.addEventListener \scroll, (e) -> head.scrollLeft = scroll.scrollLeft
+        head.addEventListener \click, (e) ~>
+          if /closebtn/.exec e.target.className =>
+            data = $scope.grid.data
+            col = +e.target.getAttribute(\col)
+            <- $scope.$apply
+            eventBus.fire \loading.dimmer.on
+            $timeout (->
+              data.headers.splice col,1
+              data.rows.map (row) -> row.splice col,1
+              data.types.splice col, 1
+              $scope.grid.render!then -> $scope.$apply -> eventBus.fire \loading.dimmer.off
+            ), 0
+          else =>
+            col = +e.target.getAttribute(\col)
+            if !isNaN(col) =>
+              node = head.querySelector ".sheet-head > div > div:nth-of-type(#{col + 1}) > div:first-child"
+              if node => that.focus!
+        head.addEventListener \keydown, (e) ~>
+          setTimeout (~>
+            key = e.keyCode
+            n = e.target
+            val = n.textContent.trim!
+            col = +n.getAttribute(\col)
+            if key >=37 and key <=40 =>
+              v = [[-1 0],[0 -1],[1 0],[0 1]][key - 37]
+              if v.1 > 0 =>
+                node = content.querySelector([
+                  ".sheet-cells >"
+                  "div:first-child >"
+                  "div:nth-of-type(#{col + 1 + v.0})"
+                ].join(" "))
+              else
+                node = head.querySelector([
+                  ".sheet-head > div:first-child >"
+                  "div:nth-of-type(#{col + 1 + v.0}) > div:first-child"
+                ].join(" "))
+              if node => that.focus!
+            else @update -1, col, val
+          ), 0
+        content.addEventListener \keydown, (e) ~>
+          setTimeout (~>
+            key = e.keyCode
+            n = e.target
+            val = n.textContent
+            row = +n.getAttribute(\row)
+            col = +n.getAttribute(\col)
+            h = col
+            if key >=37 and key <=40 =>
+              v = [[-1 0],[0 -1],[1 0],[0 1]][key - 37]
+              if row == 0 and v.1 < 0 =>
+                node = head.querySelector([
+                  ".sheet-head > div >"
+                  "div:nth-of-type(#{col + 1}) > div:first-child"
+                ].join(" "))
+              else
+                node = content.querySelector([
+                  ".sheet-cells >"
+                  "div:nth-of-type(#{row + 1 + v.1}) >"
+                  "div:nth-of-type(#{col + 1 + v.0})"
+                ].join(" "))
+              if node => that.focus!
+            else @update row, h, val
+          ), 0
 
     $scope.init!
-    $scope.grid.empty!
+    $scope.grid.init!
     $scope.parser.gsheet.init!
