@@ -267,6 +267,40 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }
         dimension.fields.splice(idx, 1);
         return $scope.render();
+      },
+      typematch: function(dimtypes, fieldtype){
+        var fieldtypes, queue, newqueue, i$, len$, type, dimtype;
+        dimtypes == null && (dimtypes = []);
+        console.log(dimtypes, fieldtype);
+        if (!dimtypes || !plotdb[fieldtype]) {
+          return true;
+        }
+        fieldtypes = [];
+        queue = [plotdb[fieldtype]];
+        for (;;) {
+          newqueue = [];
+          for (i$ = 0, len$ = queue.length; i$ < len$; ++i$) {
+            type = queue[i$];
+            fieldtypes.push(type);
+            newqueue = newqueue.concat(type.basetype || []);
+          }
+          queue = newqueue;
+          if (!queue.length) {
+            break;
+          }
+        }
+        fieldtypes = fieldtypes.map(function(it){
+          return it.name || "";
+        });
+        console.log("expanded: ", fieldtypes);
+        for (i$ = 0, len$ = dimtypes.length; i$ < len$; ++i$) {
+          dimtype = dimtypes[i$];
+          console.log(dimtype.name + " in " + fieldtypes + " ?", fieldtypes.indexOf(dimtype.name) >= 0);
+          if (fieldtypes.indexOf(dimtype.name) >= 0) {
+            return dimtype.name;
+          }
+        }
+        return false;
       }
     },
     reset: function(){

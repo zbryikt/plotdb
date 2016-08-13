@@ -3156,8 +3156,14 @@ small.hint {
   white-space: nowrap;
 }
 .ds-field.mismatch {
-  background: #fee9a9;
-  color: #900;
+  background: #fff9f0;
+  color: #e40;
+  border: 1px solid #e40;
+  border-bottom: 2px solid #c10;
+}
+.ds-field.mismatch .type {
+  color: #d00;
+  font-weight: bold;
 }
 .chart-dims-panel {
   margin-bottom: 10px;
