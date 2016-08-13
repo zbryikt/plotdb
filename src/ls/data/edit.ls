@@ -443,7 +443,14 @@ angular.module \plotDB
               "div:nth-of-type(#{r + 1}) >"
               "div:nth-of-type(#{c + 1})"
             ].join(" "))
-          if node => that.focus!
+          if node =>
+            node.focus!
+            range = document.createRange!
+            range.setStart node, 1 # set cursor, offset to text end
+            range.collapse true
+            sel = window.getSelection!
+            sel.removeAllRanges!
+            sel.addRange range
 
       empty: ->
         @data.headers = []

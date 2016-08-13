@@ -8018,14 +8018,20 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
         return this.render({
           headOnly: true
         }).then(function(){
-          var node, that;
+          var node, range, sel;
           if (r < 0) {
             node = document.querySelector('#dataset-editbox .sheet-head > div >' + (" div:nth-of-type(" + (c + 1) + ") > div:first-child"));
           } else {
             node = document.querySelector(['#dataset-editbox .sheet-cells >', "div:nth-of-type(" + (r + 1) + ") >", "div:nth-of-type(" + (c + 1) + ")"].join(" "));
           }
-          if (that = node) {
-            return that.focus();
+          if (node) {
+            node.focus();
+            range = document.createRange();
+            range.setStart(node, 1);
+            range.collapse(true);
+            sel = window.getSelection();
+            sel.removeAllRanges();
+            return sel.addRange(range);
           }
         });
       }
