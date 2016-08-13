@@ -141,7 +141,6 @@ angular.module \plotDB
           dimension.fields.splice idx, 1
           $scope.render!
         typematch: (dimtypes = [], fieldtype) ->
-          console.log dimtypes, fieldtype
           if !dimtypes or !plotdb[fieldtype] => return true
           fieldtypes = []
           queue = [plotdb[fieldtype]]
@@ -153,9 +152,7 @@ angular.module \plotDB
             queue = newqueue
             if !queue.length => break
           fieldtypes = fieldtypes.map -> it.name or ""
-          console.log "expanded: ", fieldtypes
           for dimtype in dimtypes =>
-            console.log "#{dimtype.name} in #{fieldtypes} ?", (fieldtypes.indexOf(dimtype.name) >=0)
             if fieldtypes.indexOf(dimtype.name) >=0 => return dimtype.name
           return false
 
