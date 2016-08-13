@@ -490,14 +490,16 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
   $scope.panel = {
     name: {
       promise: null,
+      toggle: function(name){
+        return this.value = name, this.toggled = true, this;
+      },
       prompt: function(){
         var this$ = this;
         return new Promise(function(res, rej){
-          this$.promise = {
+          return this$.promise = {
             res: res,
             rej: rej
-          };
-          return this$.toggled = true;
+          }, this$.toggled = true, this$;
         });
       },
       value: "",
@@ -507,6 +509,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
             return;
           }
           ($scope.dataset || ($scope.dataset = {})).name = this.value;
+          $('#dataset-name').text(this.value);
         }
         this.toggled = false;
         if (this.promise) {

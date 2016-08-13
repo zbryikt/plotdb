@@ -310,14 +310,14 @@ angular.module \plotDB
     $scope.panel = do
       name: do
         promise: null
-        prompt: -> new Promise (res, rej) ~>
-          @promise = {res, rej}
-          @toggled = true
+        toggle: (name) -> @ <<< {value: name, toggled: true}
+        prompt: -> new Promise (res, rej) ~> @ <<< {promise: {res, rej}, toggled: true}
         value: ""
         action: (idx) ->
           if idx == 0 =>
             if !@value => return
             $scope.{}dataset.name = @value
+            $(\#dataset-name).text @value
           @toggled = false
           if @promise =>
             if idx => @promise.rej!

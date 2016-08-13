@@ -61,7 +61,8 @@ include panel.jade
                 li: a(href="#",ng-click="save()") #[i.fa.fa-floppy-o.align16] Save
                 li(ng-class="{'disabled':!dataset.key}",ng-click="clone()")
                   a(href="#") #[i.fa.fa-clone.align16] Make a Copy
-                li(ng-class="{'disabled':!dataset.key}"): a(href="#") #[i.fa.align16] Rename
+                li(ng-class="{'disabled':!dataset.key}",ng-click="panel.name.toggle(dataset.name)")
+                  a(href="#") #[i.fa.align16] Rename
                 li.divider
                 li(ng-class="{'disabled':!dataset.key}",ng-click="delete(dataset)")
                   a(href="#") #[i.fa.fa-trash-o.align16] Delete
