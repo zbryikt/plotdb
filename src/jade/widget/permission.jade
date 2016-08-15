@@ -38,7 +38,7 @@ mixin permDropdown(baseObj)
       .info
         .name
           span {{perm.displayname}}
-          small(ng-cloak): a(ng-show="perm.type=='token'",ng-attr-href="/chart/1?token={{perm.target}}",target="_blank") #[i.fa.fa-link] 
+          small(ng-cloak): a(ng-show="perm.type=='token'",ng-attr-href="?token={{perm.target}}",target="_blank") #[i.fa.fa-link] 
         .email {{perm.username}}
       .btn.btn-text.pull-right(ng-click="removeMember(perm)") &times;
       .dropdown.pull-right

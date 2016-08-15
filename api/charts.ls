@@ -236,9 +236,14 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
   ].join(" "), [req.params.id])
     .then (it={}) ->
       chart := it.[]rows.0
+      token = req.query.token or null
       if !chart => return bluebird.reject new Error(404)
       if (chart.{}permission.switch != \publish)
-      and (!req.user or chart.owner != req.user.key) => return bluebird.reject new Error(403)
+      and (!req.user or chart.owner != req.user.key)
+      and (!token or chart.{}permission.list.filter(->
+        it.type==\token and it.target == token and perm.type.indexOf(it.perm) >= perm.type.indexOf(\read)
+      ).length == 0)
+        => return bluebird.reject new Error(403)
       delete chart.permission
       if !chart.theme => return bluebird.resolve!
       io.query "select * from themes where key = chart.theme"

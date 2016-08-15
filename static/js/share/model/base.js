@@ -261,9 +261,8 @@ model.type = import$({}, {
 import$(model.type, {
   permission: new model({
     name: 'permission',
-    switches: ['private', 'public', 'list', 'token'],
     permtype: ['none', 'list', 'read', 'comment', 'fork', 'write', 'admin'],
-    itemtype: ['user', 'team', 'chart', 'global'],
+    itemtype: ['user', 'team', 'chart', 'global', 'token'],
     lint: function(it){
       var i$, ref$, len$, item;
       if (!it) {
