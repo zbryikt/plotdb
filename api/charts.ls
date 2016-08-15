@@ -263,7 +263,7 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
       fields = fields.filter((f)->
         (f.{}permission.switch == 'publish') or (req.user and f.owner == req.user.key)
         or f.{}permission.list.filter(->
-          it.type == \chart and perm.type.indexOf(it.perm) >= perm.type.indexOf(\read) and it.value == chart.key
+          it.type == \chart and perm.type.indexOf(it.perm) >= perm.type.indexOf(\read) and +it.target == +chart.key
         ).length
       )
       fields.map -> delete it.permission
