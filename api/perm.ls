@@ -5,9 +5,9 @@ perm-handler = do
   fork-idx: 4 # fork
   none-idx: 0 # none
   is-fullfilled: ->
-  caltype: (req, perm, owner, type) -> 
+  caltype: (req, perm, owner, type = null) ->
    val = @calc req, perm, owner
-   val = if val < @type.indexOf(type) => 0 else val
+   if type => val = if val < @type.indexOf(type) => 0 else val
    return [val,@type[val]]
   test: (req, perm, owner, type) -> @calc(req, perm, owner) >= @type.indexOf(type)
   calc: (req, perm, owner) ->

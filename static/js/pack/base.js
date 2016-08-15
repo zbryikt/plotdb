@@ -4302,17 +4302,20 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     },
     settingPanel: {
-      tab: 'publish',
-      permcheck: function(){
-        var ref$;
-        return $scope.writable = permService.test({
-          user: $scope.user.data
-        }, (ref$ = $scope.target()).permission || (ref$.permission = {}), $scope.target().owner, 'write');
-      },
+      tab: 'publish'
+      /*permcheck: ->
+        $scope.writable = permService.test(
+          {user: $scope.user.data}
+          $scope.target!{}permission
+          $scope.target!owner
+          \write
+        )
+      */,
       init: function(){
         var this$ = this;
-        $scope.$watch('chart.permission', $scope.settingPanel.permcheck, true);
-        $scope.$watch('theme.permission', $scope.settingPanel.permcheck, true);
+        $scope.permtype = (window.permtype || (window.permtype = []))[1] || 'none';
+        $scope.writable = permService.isEnough($scope.permtype, 'write');
+        $scope.isAdmin = permService.isEnough($scope.permtype, 'admin');
         $scope.$watch('settingPanel.chart', function(cur, old){
           var k, v, results$ = [];
           for (k in cur) {
@@ -11561,7 +11564,9 @@ x$.service('permService', ['$rootScope'].concat(function($rootScope){
   permHandler = {
     type: ['none', 'list', 'read', 'comment', 'fork', 'write', 'admin'],
     forkIdx: 4,
-    isFullfilled: function(){},
+    isEnough: function(userLevel, requireLevel){
+      return this.type.indexOf(userLevel) >= this.type.indexOf(requireLevel);
+    },
     caltype: function(req, perm, owner, type){
       var val;
       val = this.calc(req, perm, owner);

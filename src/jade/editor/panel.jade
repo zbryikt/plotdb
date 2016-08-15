@@ -43,11 +43,13 @@ mixin searchable
         li(ng-class="{'active':settingPanel.tab=='library'}",ng-click="settingPanel.tab='library'")
           a(href="#") #[i.fa.fa-book] Libraries
 
-      div(ng-show="settingPanel.tab=='permission'")
-        +searchable()
-        .sep
-        div(ng-controller="permEdit",ng-init="setPerm(target().permission)")
-          include /widget/permission.jade
+      div(ng-show="settingPanel.tab=='permission'",style="position:relative")
+        .panel-lock(ng-hide="isAdmin"): div You don't have permission to change this
+        div
+          +searchable()
+          .sep
+          div(ng-controller="permEdit",ng-init="setPerm(target().permission)")
+            include /widget/permission.jade
       div(ng-show="settingPanel.tab=='publish'")
         +publish()
         .sep

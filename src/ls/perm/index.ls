@@ -6,7 +6,7 @@ angular.module \plotDB
     perm-handler = do
       type: <[none list read comment fork write admin]>
       fork-idx: 4 # fork
-      is-fullfilled: ->
+      is-enough: (user-level,require-level) -> @type.indexOf(user-level) >= @type.indexOf(require-level)
       caltype: (req, perm, owner, type) ->
        val = @calc req, perm, owner
        val = if val < @type.indexOf(type) => 0 else val

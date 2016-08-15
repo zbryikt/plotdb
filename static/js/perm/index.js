@@ -9,7 +9,9 @@ x$.service('permService', ['$rootScope'].concat(function($rootScope){
   permHandler = {
     type: ['none', 'list', 'read', 'comment', 'fork', 'write', 'admin'],
     forkIdx: 4,
-    isFullfilled: function(){},
+    isEnough: function(userLevel, requireLevel){
+      return this.type.indexOf(userLevel) >= this.type.indexOf(requireLevel);
+    },
     caltype: function(req, perm, owner, type){
       var val;
       val = this.calc(req, perm, owner);

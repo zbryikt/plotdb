@@ -58,13 +58,16 @@ get-dataset = (req,simple=false) ->
 engine.app.get "/dataset/:id", aux.numid true, (req, res) ->
   get-dataset req, true
     .then (ret) ->
+      if !perm.test(req, ret.{}permission, ret.owner, \admin) => delete ret.permission
       res.render 'dataset/index.jade', {dataset:ret}
       return null
     .catch aux.error-handler res, true
 
 engine.router.api.get "/dataset/:id", aux.numid false, (req, res) ->
   get-dataset req
-    .then (ret) -> res.json ret
+    .then (ret) ->
+      if !perm.test(req, ret.{}permission, ret.owner, \admin) => delete ret.permission
+      res.json ret
     .catch aux.error-handler res
 
 update-size = (req, delta) -> new bluebird (res, rej) ->
@@ -117,7 +120,9 @@ save-dataset = (req, res, okey = null) ->
       data.fields = fields.map -> it{name, datatype}
       pairs = io.aux.insert.format datasettype, data
       delete pairs.key
-      if cur => delete pairs.owner
+      if cur => # dataset exists. don't overwrite owner, and only admin can change permission
+        delete pairs.owner
+        if !perm.test(req, cur.{}permission, cur.owner, \admin) => delete pairs.permission
       pairs = io.aux.insert.assemble pairs
       (if cur =>
         io.query(

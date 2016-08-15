@@ -93,6 +93,7 @@ engine.router.api.get "/chart/:id", aux.numid false, (req, res) ->
       chart = it.[]rows.0
       if !chart => return aux.r404 res
       if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.r403 res, "forbidden"
+      if !perm.test(req, chart.{}permission, chart.owner, \admin) => delete chart.permission
       return res.json chart
     .catch ->
       console.error it.stack
@@ -144,6 +145,7 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
       data := charttype.clean data
       pairs = io.aux.insert.format charttype, data
       <[key createdtime]>.map -> delete pairs[it]
+      if !perm.test(req, chart.{}permission, chart.owner, \admin) => delete pairs.permission
       pairs = io.aux.insert.assemble pairs
       thumb.save 'chart', data
       io.query(
@@ -189,7 +191,9 @@ engine.app.get \/chart/:id, aux.numid true, (req, res) ->
       chart = r.[]rows.0
       if !chart => return aux.r404 res, "", true
       if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.r403 res, "forbidden", true
-      res.render 'view/chart/index.jade', {chart}
+      permtype = perm.caltype req, chart.{}permission, chart.owner
+      if !perm.test(req, chart.{}permission, chart.owner, \admin) => delete chart.permission
+      res.render 'view/chart/index.jade', {chart,permtype}
       return null
     .catch ->
       console.error it.stack
@@ -235,6 +239,7 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
       if !chart => return bluebird.reject new Error(404)
       if (chart.{}permission.switch != \publish)
       and (!req.user or chart.owner != req.user.key) => return bluebird.reject new Error(403)
+      delete chart.permission
       if !chart.theme => return bluebird.resolve!
       io.query "select * from themes where key = chart.theme"
     .then (r={}) ->
@@ -242,6 +247,7 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
       if r =>
         theme := if (r.{}permission.switch != \publish)
         and (!req.user or r.owner != req.user.key) => null else r
+        delete theme.permission
       fieldkeys = [v.[]fields.map(->it.key) for k,v of chart.dimension]
         .reduce(((a,b)->a++b),[])
         .filter(->it)
@@ -260,6 +266,7 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
           it.type == \chart and perm.type.indexOf(it.perm) >= perm.type.indexOf(\read) and it.value == chart.key
         ).length
       )
+      fields.map -> delete it.permission
       fields ++= [v.[]fields.filter(->!it.key) for k,v of chart.dimension].reduce(((a,b)->a++b),[])
       res.render 'view/chart/view.jade', {chart, theme, fields}
       return null

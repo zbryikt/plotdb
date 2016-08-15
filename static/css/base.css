@@ -778,6 +778,21 @@ a.dropdown-toggle {
 .panel {
   box-shadow: 0 1px 1px rgba(0,0,0,0.2);
 }
+.panel-lock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 34;
+  background: rgba(255,255,255,0.9);
+}
+.panel-lock div {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+}
 .panel > .panel-body > h3:first-of-type {
   margin-top: 0;
 }
