@@ -1,0 +1,76 @@
+@import 'basic'
+@import 'vars'
+
+.sheet-body
+  border: 1px solid #ccc
+  //-min-height: 401px
+
+.sheet-outer
+  background: #fff
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  padding-bottom: 35px
+
+.sheet.clusterize
+  height: 100%
+
+.sheet-head
+  border: 1px solid #ccc
+  overflow: hidden
+  box-shadow: 0 2px 1px rgba(0,0,0,0.1)
+
+.sheet-body-outer
+  width: 100%
+  height: 100%
+  padding-bottom: 56px
+
+.sheet-body.clusterize-scroll
+  height: 100%
+  max-height: initial
+
+.sheet-head > div, .sheet-cells > div
+  white-space: nowrap
+  width: 100%
+  height: 20px
+  &:last-child > div
+    border-bottom: none
+
+.sheet-head > div
+  height: 37px
+  & > div > div
+    line-height: 18px
+    margin-top: 3px
+  & small
+    line-height: 12px
+    vertical-align: top
+  .closebtn
+    position: absolute
+    top: 3px
+    left: 3px
+    width: 12px
+    height: 12px
+    line-height: 12px
+    font-size: 16px
+    margin: 0
+
+
+.sheet-head > div > div > .in-use:empty
+  background: #f9f9f9
+.sheet-head > div > div, .sheet-cells > div > div
+  position: relative
+  height: 100%
+  display: inline-block
+  overflow: hidden
+  text-align: right
+  padding: 0 4px
+  border-right: 1px solid #ccc
+  border-bottom: 1px solid #ccc
+  &:last-child
+    border-right: none
+.sheet-cells > div:last-child
+  border-bottom: 1px solid #ccc
+.sheet-head div, .sheet-cells div
+  outline: none

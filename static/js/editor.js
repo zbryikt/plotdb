@@ -267,6 +267,37 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }
         dimension.fields.splice(idx, 1);
         return $scope.render();
+      },
+      typematch: function(dimtypes, fieldtype){
+        var fieldtypes, queue, newqueue, i$, len$, type, dimtype;
+        dimtypes == null && (dimtypes = []);
+        if (!dimtypes || !dimtypes.length || !plotdb[fieldtype]) {
+          return true;
+        }
+        fieldtypes = [];
+        queue = [plotdb[fieldtype]];
+        for (;;) {
+          newqueue = [];
+          for (i$ = 0, len$ = queue.length; i$ < len$; ++i$) {
+            type = queue[i$];
+            fieldtypes.push(type);
+            newqueue = newqueue.concat(type.basetype || []);
+          }
+          queue = newqueue;
+          if (!queue.length) {
+            break;
+          }
+        }
+        fieldtypes = fieldtypes.map(function(it){
+          return it.name || "";
+        });
+        for (i$ = 0, len$ = dimtypes.length; i$ < len$; ++i$) {
+          dimtype = dimtypes[i$];
+          if (fieldtypes.indexOf(dimtype.name) >= 0) {
+            return dimtype.name;
+          }
+        }
+        return false;
       }
     },
     reset: function(){
@@ -803,7 +834,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         return eventBus.listen('dataset.saved', function(){
           return $timeout(function(){
             return this$.toggled = false;
-          }, 1000);
+          }, 200);
         });
       },
       toggle: function(){

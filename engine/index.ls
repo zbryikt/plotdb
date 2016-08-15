@@ -23,19 +23,25 @@ backend = do
         <[script-src
           'self' http://connect.facebook.net/en_US/sdk.js blob:
           https://www.google-analytics.com 'unsafe-inline' 'unsafe-eval'
+          https://apis.google.com
         ]>
         <[style-src
           'self' https://www.google-analytics.com 'unsafe-inline'
           http://fonts.googleapis.com
         ]>
         <[img-src
-          'self' data: blob: https://www.google-analytics.com https://www.facebook.com/ https://static.xx.fbcdn.net
+          'self' data: blob: https://www.google-analytics.com
+          https://www.facebook.com/ https://static.xx.fbcdn.net
+          http://csi.gstatic.com/
         ]>
         <[font-src
           'self' http://fonts.gstatic.com
         ]>
         <[frame-src
           'self' data: blob: http://staticxx.facebook.com/ https://www.facebook.com/
+          https://accounts.google.com/
+          https://content.googleapis.com/
+          https://content-sheets.googleapis.com/
         ]>
         <[connect-src
           'self' data: blob:

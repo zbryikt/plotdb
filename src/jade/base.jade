@@ -29,7 +29,21 @@ html(lang="en")
     script(type="text/javascript",src="/assets/papaparse/4.1.2/papaparse.min.js")
     block head
   body(id=rootid,ng-app="plotDB",ng-controller="plSite")
-    #loading-dimmer(ng-class="{'active':loading.dimmer}")
+    #confirmbox
+      .cover-modal.ng-hide-animate.ng-hide(ng-show="confirmbox.toggled",ng-cloak)
+      .cover-modal-inner.ng-hide-animate.ng-hide(ng-show="confirmbox.toggled",ng-cloak)
+        .panel.panel-default
+          .panel-body
+            h3(ng-show="confirmbox.config.title") {{confirmbox.config.title}}
+            p {{confirmbox.config.message}}
+            .btn.btn-default(ng-repeat="option in confirmbox.config.options",
+            ng-click="confirmbox.handle($index)") {{option}}
+    #loading-dimmer(ng-class="{'active':loading.dimmer, 'show-progress':loading.progress}")
+      .progress
+        .progress-bar.progress-bar-striped.active(
+        aria-valuemin="0",aria-valuemax="100",
+        ng-attr-style="width:{{loading.progress}}%")
+
     div(style="height:0") &nbsp;
     include nav.jade
     include auth/panel.jade

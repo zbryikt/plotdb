@@ -8,7 +8,7 @@
   position: fixed;
   bottom: 10px;
   left: 10px;
-  z-index: 36;
+  z-index: 37;
 }
 .notify {
   border-radius: 2px;
@@ -608,7 +608,7 @@ width: 100%;
   top: 0;
   left: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 35;
+  z-index: 36;
 }
 #alertbox .ib {
   position: relative;
@@ -648,7 +648,7 @@ width: 100%;
 .loader.floating {
   position: absolute;
   left: 50%;
-  z-index: 37;
+  z-index: 38;
 }
 .loader.floating.lg {
   margin-left: -50px;
@@ -799,10 +799,10 @@ a.dropdown-toggle {
   text-align: center;
 }
 .modal-backdrop {
-  z-index: 31 !important;
+  z-index: 32 !important;
 }
 .high-modal {
-  z-index: 32 !important;
+  z-index: 33 !important;
 }
 .form-control-feedback.with-text {
   width: auto;
@@ -973,4 +973,39 @@ width: 100%;
   -webkit-animation: glowing 1s infinite;
   -o-animation: glowing 1s infinite;
   animation: glowing 1s infinite;
+}
+i.fa.align16 {
+  width: 16px;
+  text-align: center;
+}
+ul.dropdown-menu li a.toggle-filepick {
+  position: relative;
+}
+ul.dropdown-menu li a.toggle-filepick input {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.01;
+}
+.dropdown-menu li.header a {
+  border-bottom: 1px solid #ddd;
+}
+#confirmbox .cover-modal-inner {
+  width: 480px;
+  margin-left: -240px;
+}
+#confirmbox .cover-modal-inner .panel-body {
+  min-height: 100px;
+  padding: 40px 20px;
+  text-align: center;
+}
+#confirmbox .cover-modal-inner .panel-body p {
+  margin-bottom: 30px;
+}
+#confirmbox .cover-modal-inner .panel-body .btn {
+  margin-right: 10px;
+  min-width: 80px;
 }

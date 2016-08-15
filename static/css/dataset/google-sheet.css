@@ -1,0 +1,23 @@
+.gsheet-files {
+  height: 400px;
+  overflow: scroll;
+}
+.gsheet-file {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+.gsheet-file a span {
+  opacity: 0;
+}
+.gsheet-file:hover {
+  background: #ed1d78;
+  border-bottom: 1px solid #ed1d78;
+  color: #fff;
+}
+.gsheet-file:hover a {
+  color: #fff;
+}
+.gsheet-file:hover a span {
+  opacity: 1;
+}

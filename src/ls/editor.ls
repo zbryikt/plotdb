@@ -140,6 +140,22 @@ angular.module \plotDB
           if idx < 0 => return
           dimension.fields.splice idx, 1
           $scope.render!
+        typematch: (dimtypes = [], fieldtype) ->
+          if !dimtypes or !dimtypes.length or !plotdb[fieldtype] => return true
+          fieldtypes = []
+          queue = [plotdb[fieldtype]]
+          while true
+            newqueue = []
+            for type in queue =>
+              fieldtypes.push type
+              newqueue ++= (type.basetype or [])
+            queue = newqueue
+            if !queue.length => break
+          fieldtypes = fieldtypes.map -> it.name or ""
+          for dimtype in dimtypes =>
+            if fieldtypes.indexOf(dimtype.name) >=0 => return dimtype.name
+          return false
+
       reset: -> @render!
       render: (rebind = true) ->
         if !@inited => return
@@ -423,7 +439,7 @@ angular.module \plotDB
           tags: null
           library: null
       data-panel: do
-        init: -> eventBus.listen \dataset.saved, ~> $timeout (~> @toggled = false), 1000
+        init: -> eventBus.listen \dataset.saved, ~> $timeout (~> @toggled = false), 200
         toggle: -> @toggled = !!!@toggled
         toggled: false
         edit: (dataset) ->

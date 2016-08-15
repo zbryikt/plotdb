@@ -9,7 +9,11 @@ block body
   div(ng-controller="userDatasetList")
     .page-header: .inner
       include ../widget/usage.jade
-      .title My Dataset
+      .title
+        span My Dataset
+        a.btn.btn-success(href="/dataset/",style="margin-left:20px;vertical-align:text-top")
+          i.fa.fa-plus
+          span &nbsp; New Dataset
       .desc
         .entries
           .entry

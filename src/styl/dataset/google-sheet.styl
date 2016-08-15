@@ -1,0 +1,21 @@
+@import '../basic'
+@import '../vars'
+
+.gsheet-files
+  height: 400px
+  overflow: scroll
+
+.gsheet-file
+  padding: 10px
+  border-bottom: 1px solid #ccc
+  cursor: pointer
+  a span
+    opacity: 0
+  &:hover
+    background: color.primary
+    border-bottom: 1px solid color.primary
+    color: #fff
+    a
+      color: #fff
+    a span
+      opacity: 1

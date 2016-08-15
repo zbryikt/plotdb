@@ -1,10 +1,10 @@
-div(ng-controller="dataEditCtrl")
+#dataset-edit-page(ng-controller="dataEditCtrl")
   .spc1
   .page-header: .inner
     include widget/usage.jade
     .title
       if dataset
-        span #[small dataset] #{dataset.name}
+        span #[small(style="font-size:16px;color:#777") dataset] #[span#dataset-name #{dataset.name}]
       else
         span Create Dataset
     if dataset
@@ -18,7 +18,7 @@ div(ng-controller="dataEditCtrl")
         .entry
           i.fa.fa-archive
           span(ng-cloak) {{dataset.size|size}}
-        .entry.text-danger.clickable(ng-click="delete(dataset)")
+        //-.entry.text-danger.clickable(ng-click="delete(dataset)")
           i.fa.fa-close
           span Delete
     else

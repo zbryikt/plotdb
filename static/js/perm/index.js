@@ -56,10 +56,16 @@ x$.service('permService', ['$rootScope'].concat(function($rootScope){
 x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeout){
   $scope.setPerm = function(it){
     var ref$;
-    $scope.perm = it || {
-      list: [],
-      'switch': 'draft'
-    };
+    if (typeof it === 'string') {
+      $scope.$watch(it, function(p){
+        return $scope.perm = p;
+      });
+    } else {
+      $scope.perm = it || {
+        list: [],
+        'switch': 'draft'
+      };
+    }
     if (!$scope.perm.list) {
       $scope.perm.list = [];
     }

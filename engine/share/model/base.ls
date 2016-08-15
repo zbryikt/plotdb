@@ -148,7 +148,7 @@ model.type <<< do
     name: \permission
     switches: <[private public list token]>
     permtype: <[none list read comment fork write admin]>
-    itemtype: <[user team global]>
+    itemtype: <[user team chart global]>
     lint: ->
       if !it => return [true, null, \ISNULL]
       if typeof(it) != \object => return [true, null, \NOTOBJ]

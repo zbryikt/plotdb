@@ -17,7 +17,7 @@ body {
 }
 #root.with-header {
   margin: -204px 20px 0;
-  padding: 170px 0 100px;
+  padding: 170px 0 88px;
 }
 #root.with-header.simple {
   margin-top: -180px;
@@ -35,6 +35,21 @@ body {
 }
 #loading-dimmer.active {
   display: block;
+}
+#loading-dimmer.show-progress {
+  background-position: center 45%;
+}
+#loading-dimmer.show-progress .progress {
+  display: block;
+}
+#loading-dimmer .progress {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 14px;
+  margin: 30px 0 0 -100px;
 }
 select[ngselect2] {
   height: 34px;
@@ -1016,6 +1031,41 @@ a.disabled,
   -webkit-animation: glowing 1s infinite;
   -o-animation: glowing 1s infinite;
   animation: glowing 1s infinite;
+}
+i.fa.align16 {
+  width: 16px;
+  text-align: center;
+}
+ul.dropdown-menu li a.toggle-filepick {
+  position: relative;
+}
+ul.dropdown-menu li a.toggle-filepick input {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.01;
+}
+.dropdown-menu li.header a {
+  border-bottom: 1px solid #ddd;
+}
+#confirmbox .cover-modal-inner {
+  width: 480px;
+  margin-left: -240px;
+}
+#confirmbox .cover-modal-inner .panel-body {
+  min-height: 100px;
+  padding: 40px 20px;
+  text-align: center;
+}
+#confirmbox .cover-modal-inner .panel-body p {
+  margin-bottom: 30px;
+}
+#confirmbox .cover-modal-inner .panel-body .btn {
+  margin-right: 10px;
+  min-width: 80px;
 }
 .cover-modal,
 #permission-modal,
@@ -2869,19 +2919,32 @@ small.hint {
   vertical-align: middle;
   font-size: 24px;
 }
+#dataset-editbox {
+  width: 100%;
+  min-height: 200px;
+}
+#dataset-editbox .inner {
+  width: 100%;
+  height: 100%;
+  padding-bottom: 56px;
+}
 #dataset-editbox textarea {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
   font-family: monospace;
-  max-width: 100%;
-  min-height: 220px;
+  width: 100%;
+  height: 100%;
 }
 #dataset-editbox-meta {
+  position: absolute;
+  bottom: 0;
   padding: 10px;
+  width: 100%;
+  height: 56px;
   border-radius: 0 0 3px 3px;
   border: 1px solid #ccc;
-  border-top: 0;
   background: #f9f9f9;
+  box-shadow: 0 -2px 1px rgba(0,0,0,0.1);
 }
 .float-dataedit {
   position: fixed;
@@ -2908,6 +2971,7 @@ small.hint {
 }
 .float-dataedit .ib {
   position: relative;
+  height: 100%;
 }
 .float-dataedit #dataset-create-methods {
   padding: 10px;
@@ -3092,8 +3156,14 @@ small.hint {
   white-space: nowrap;
 }
 .ds-field.mismatch {
-  background: #fee9a9;
-  color: #900;
+  background: #fff9f0;
+  color: #e40;
+  border: 1px solid #e40;
+  border-bottom: 2px solid #c10;
+}
+.ds-field.mismatch .type {
+  color: #d00;
+  font-weight: bold;
 }
 .chart-dims-panel {
   margin-bottom: 10px;
@@ -3193,6 +3263,90 @@ small.hint {
 #dataset-filter .item:hover {
   background: #ed1d78;
   color: #fff;
+}
+.dataset-toolbar {
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+  border: 1px solid #ccc;
+  border-bottom: 1px solid #999;
+  min-height: auto;
+  margin-bottom: 0;
+}
+.dataset-toolbar .container-fluid {
+  padding-left: 0;
+}
+.dataset-toolbar.navbar-default .navbar-nav > li > a {
+  color: #444;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  border-right: 1px solid #eee;
+  cursor: pointer;
+}
+.dataset-toolbar.navbar-default .navbar-nav > li > a i.fa {
+  color: #666;
+}
+.dataset-toolbar.navbar-default .navbar-nav > li > a:hover,
+.dataset-toolbar.navbar-default .navbar-nav > li > a:hover i.fa {
+  color: #ed1d78;
+}
+.dataset-toolbar.navbar-default .navbar-nav > li > a i.fa.fa-users,
+.dataset-toolbar.navbar-default .navbar-nav > li > a i.fa.fa-file-o {
+  font-size: 0.8em;
+  position: relative;
+  top: -1px;
+}
+.dataset-toolbar.navbar-default .navbar-nav > li.dropdown.open > a,
+.dataset-toolbar.navbar-default .navbar-nav > li.dropdown.open > a > i.fa {
+  color: #fff;
+  background: #ed1d78;
+}
+.dataset-toolbar .dropdown-menu > li > a {
+  padding-left: 7px;
+}
+.gsheet-files {
+  height: 400px;
+  overflow: scroll;
+}
+.gsheet-file {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+.gsheet-file a span {
+  opacity: 0;
+}
+.gsheet-file:hover {
+  background: #ed1d78;
+  border-bottom: 1px solid #ed1d78;
+  color: #fff;
+}
+.gsheet-file:hover a {
+  color: #fff;
+}
+.gsheet-file:hover a span {
+  opacity: 1;
+}
+#dataset-edit-page {
+  height: 100%;
+  padding-top: 60px;
+}
+#dataset-edit-page .page-header {
+  height: 100px;
+  padding: 12px;
+  margin-top: 0;
+}
+#dataset-edit-page .narrow.with-header {
+  padding-bottom: 0;
+  height: 100%;
+}
+#dataset-editor {
+  height: 100%;
+  padding-bottom: 46px;
+}
+#dataset-editbox {
+  height: 100%;
+  position: relative;
 }
 #request-editor {
   background: #fff;
@@ -3883,6 +4037,132 @@ small.hint {
   height: 20px;
   width: 60px;
   display: inline-block;
+}
+.sheet-body {
+  border: 1px solid #ccc;
+}
+.sheet-outer {
+  background: #fff;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 35px;
+}
+.sheet.clusterize {
+  height: 100%;
+}
+.sheet-head {
+  border: 1px solid #ccc;
+  overflow: hidden;
+  box-shadow: 0 2px 1px rgba(0,0,0,0.1);
+}
+.sheet-body-outer {
+  width: 100%;
+  height: 100%;
+  padding-bottom: 56px;
+}
+.sheet-body.clusterize-scroll {
+  height: 100%;
+  max-height: initial;
+}
+.sheet-head > div,
+.sheet-cells > div {
+  white-space: nowrap;
+  width: 100%;
+  height: 20px;
+}
+.sheet-head > div:last-child > div,
+.sheet-cells > div:last-child > div {
+  border-bottom: none;
+}
+.sheet-head > div {
+  height: 37px;
+}
+.sheet-head > div > div > div {
+  line-height: 18px;
+  margin-top: 3px;
+}
+.sheet-head > div small {
+  line-height: 12px;
+  vertical-align: top;
+}
+.sheet-head > div .closebtn {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  line-height: 12px;
+  font-size: 16px;
+  margin: 0;
+}
+.sheet-head > div > div > .in-use:empty {
+  background: #f9f9f9;
+}
+.sheet-head > div > div,
+.sheet-cells > div > div {
+  position: relative;
+  height: 100%;
+  display: inline-block;
+  overflow: hidden;
+  text-align: right;
+  padding: 0 4px;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+.sheet-head > div > div:last-child,
+.sheet-cells > div > div:last-child {
+  border-right: none;
+}
+.sheet-cells > div:last-child {
+  border-bottom: 1px solid #ccc;
+}
+.sheet-head div,
+.sheet-cells div {
+  outline: none;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  -webkit-border-radius: 0 6px 6px 6px;
+  -moz-border-radius: 0 6px 6px 6px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #999;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #fff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  -webkit-border-radius: 6px 0 6px 6px;
+  -moz-border-radius: 6px 0 6px 6px;
+  border-radius: 6px 0 6px 6px;
 }
 span.select2-container--default .select2-selection--multiple {
   box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);

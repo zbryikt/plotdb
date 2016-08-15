@@ -22,6 +22,7 @@ mixin SaveFork
   span(ng-cloak,ng-show="writable") Save
   span(ng-cloak,ng-show="!writable") Fork
 block head
+  script(src="https://apis.google.com/js/api.js")
   if chart
     script.
       window.chart = !{JSON.stringify(chart).replace(/<\//g, "<\\/")}

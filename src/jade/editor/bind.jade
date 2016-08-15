@@ -57,14 +57,14 @@ div#binding-panel(ng-controller="datasetList",ng-cloak,ng-init="useSample=true")
             i.fa.fa-bars
             .detail
               .name(ng-attr-title="{{fieldAgent.data.name || '(empty)'}}")  {{fieldAgent.data.name || '(empty)'}}&nbsp;
-              .grayed: small {{fieldAgent.data.type || 'Any'}}
+              .grayed: small {{fieldAgent.data.datatype || 'Any'}}
           .ds-fields
             .ds-field(ng-repeat="field in cur.fields",ng-mouseover="fieldAgent.setProxy($event,field)",
             ng-drag="true",ng-drag-data="field")
               i.fa.fa-bars
               .detail
                 .name {{field.name || '(empty)'}}&nbsp;
-                .grayed: small {{field.type || 'Any'}}
+                .grayed: small {{field.datatype || 'Any'}}
 
             .ds-field.flexend(style="cursor:default")
 
@@ -83,12 +83,12 @@ div#binding-panel(ng-controller="datasetList",ng-cloak,ng-init="useSample=true")
               i(ng-show="!dim.type || !dim.type.length") Any
             .ds-fields
               .ds-field.placeholder(ng-show="!dim.fields || !dim.fields.length")
-              //-TODO - scan all dataset field data type then turn on mismatch
-              .ds-field(ng-repeat="field in dim.fields", ng-class="{'mismatch': false && dim.type.length>0 && dim.type.indexOf(field.datatype)<0}")
+              .ds-field(ng-repeat="field in dim.fields",
+              ng-class="{'mismatch': !dimension.typematch(dim.type, field.datatype)}")
                 .delete(ng-click="dimension.unbind($event, dim, field)"): span &times;
-                .name {{field.name}}&nbsp; 
+                .name {{field.name}}&nbsp;
                 small.grayed
-                  span(ng-if="field.datatype"): i {{field.datatype}}
+                  span.type(ng-if="field.datatype"): i {{field.datatype}}
                   span(ng-if="!field.datatype"): i Any
                   br
                   | in {{field.datasetname}}(

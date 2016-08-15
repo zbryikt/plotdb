@@ -64,6 +64,7 @@
         /js/editor.js
         /js/data/sample.js
         /js/data/index.js
+        /js/data/edit.js
         /js/plotdb/main.js
         /js/plotdb/type.js
         /js/plotdb/chart.js

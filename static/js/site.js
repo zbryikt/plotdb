@@ -2,7 +2,7 @@
 var x$, onSignIn, slice$ = [].slice;
 x$ = angular.module('plotDB');
 x$.config(['$compileProvider'].concat(function($compileProvider){
-  return $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob:|https?:\/\/([a-z0-9]+.)?plotdb\.com\/|https?:\/\/([a-z0-9]+.)?plotdb\.io\/|http:\/\/localhost\/|http:\/\/localhost.io\/|https:\/\/www\.facebook\.com\/|https:\/\/www\.pinterest\.com\/|mailto:\?|http:\/\/www\.linkedin\.com\/|http:\/\/twitter\.com\/)|#/);
+  return $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob:|https?:\/\/([a-z0-9]+.)?plotdb\.com\/|https?:\/\/([a-z0-9]+.)?plotdb\.io\/|http:\/\/localhost\/|http:\/\/localhost.io\/|https:\/\/www\.facebook\.com\/|https:\/\/www\.pinterest\.com\/|mailto:\?|http:\/\/www\.linkedin\.com\/|http:\/\/twitter\.com\/)|#|https:\/\/docs.google.com\/spreadsheets\//);
 }));
 x$.service('eventBus', ['$rootScope'].concat(function($rootScope){
   var ret;
@@ -143,14 +143,34 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
       return doPrevent ? prevent(e) : undefined;
     });
   };
+  $scope.confirmbox = {
+    config: {
+      message: "",
+      options: [],
+      callback: function(){}
+    },
+    toggled: false,
+    handle: function(id){
+      this.toggled = false;
+      return this.config.callback(id);
+    }
+  };
+  eventBus.listen('confirmbox.on', function(config){
+    $scope.confirmbox.config = config;
+    return $scope.confirmbox.toggled = true;
+  });
   $scope.loading = {
     dimmer: false
   };
-  eventBus.listen('loading.dimmer.on', function(){
-    return $scope.loading.dimmer = true;
+  eventBus.listen('loading.dimmer.on', function(it){
+    $scope.loading.dimmer = true;
+    return $scope.loading.progress = it != null ? it : 0;
   });
   eventBus.listen('loading.dimmer.off', function(){
     return $scope.loading.dimmer = false;
+  });
+  eventBus.listen('loading.dimmer.progress', function(it){
+    return $scope.loading.progress = it;
   });
   $scope.scrollto = function(sel){
     sel == null && (sel = null);
