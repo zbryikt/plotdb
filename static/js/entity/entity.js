@@ -20,6 +20,19 @@ x$.service('entityService', ['$rootScope', '$http', 'plConfig', 'IOService', 'ba
             }
           }
         },
+        entityChart: {
+          placeholder: "search by user, chart, team name or email address...",
+          ajax: {
+            url: '/d/entity/?type=7',
+            param: function(keyword, limit, offset){
+              return {
+                keyword: keyword,
+                limit: limit,
+                offset: offset
+              };
+            }
+          }
+        },
         entity: {
           placeholder: "search by user, team name or email address...",
           ajax: {

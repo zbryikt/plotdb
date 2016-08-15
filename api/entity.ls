@@ -16,7 +16,7 @@ search = (default-type=0) -> (req, res) ->
   fields = "key,displayname,avatar"
   bluebird.resolve!
     .then ->
-      if (type .>>. 1) == 1 =>
+      if ((type .>>. 1) % 2) == 1 =>
         return io.query([
           "select count(key) from teams"
           "where name ~* $1" if keyword
@@ -24,7 +24,7 @@ search = (default-type=0) -> (req, res) ->
       else return bluebird.resolve {rows: [0]}
     .then (r={}) ->
       teamlen = (r.[]rows.{}0).count or 0
-      if offset < teamlen and (type .>>. 1) == 1 =>
+      if offset < teamlen and ((type .>>. 1) % 2) == 1 =>
         return io.query([
           "select key,name as displayname,avatar from teams"
           "where name ~* $3" if keyword
