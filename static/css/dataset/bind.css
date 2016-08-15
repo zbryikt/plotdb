@@ -169,6 +169,16 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.ds-field.mismatch {
+  background: #fff9f0;
+  color: #e40;
+  border: 1px solid #e40;
+  border-bottom: 2px solid #c10;
+}
+.ds-field.mismatch .type {
+  color: #d00;
+  font-weight: bold;
+}
 .chart-dims-panel {
   margin-bottom: 10px;
   box-shadow: none;
@@ -247,7 +257,7 @@
   position: absolute;
   left: -24px;
   top: 8px;
-  z-index: 24;
+  z-index: 28;
 }
 .chart-dim.panel .panel-heading {
   padding: 3px 8px;

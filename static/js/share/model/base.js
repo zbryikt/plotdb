@@ -263,7 +263,7 @@ import$(model.type, {
     name: 'permission',
     switches: ['private', 'public', 'list', 'token'],
     permtype: ['none', 'list', 'read', 'comment', 'fork', 'write', 'admin'],
-    itemtype: ['user', 'team', 'global'],
+    itemtype: ['user', 'team', 'chart', 'global'],
     lint: function(it){
       var i$, ref$, len$, item;
       if (!it) {

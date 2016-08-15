@@ -256,6 +256,9 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
       fields = r.[]rows
       fields = fields.filter((f)->
         (f.{}permission.switch == 'publish') or (req.user and f.owner == req.user.key)
+        or f.{}permission.list.filter(->
+          it.type == \chart and perm.type.indexOf(it.perm) >= perm.type.indexOf(\read) and it.value == chart.key
+        ).length
       )
       fields ++= [v.[]fields.filter(->!it.key) for k,v of chart.dimension].reduce(((a,b)->a++b),[])
       res.render 'view/chart/view.jade', {chart, theme, fields}

@@ -34,7 +34,10 @@ angular.module \plotDB
   ..controller \permEdit,
   <[$scope $timeout]> ++ ($scope, $timeout) ->
     $scope.setPerm = ->
-      $scope.perm = it or {list: [], switch: 'draft'}
+      # if target might replace its permission object with a new one
+      # we should use scope name to track them.
+      if typeof(it) == \string => $scope.$watch it, (p) -> $scope.perm = p
+      else => $scope.perm = it or {list: [], switch: 'draft'}
       if !$scope.perm.list => $scope.perm.list = []
       if !$scope.perm.switch => $scope.perm.switch = 'draft'
       $scope.check!

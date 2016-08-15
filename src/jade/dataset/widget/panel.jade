@@ -46,7 +46,7 @@ mixin searchable
       div(ng-show="panel.tab=='permission'")
         +searchable()
         .sep
-        div(ng-controller="permEdit",ng-init="setPerm(dataset.permission)")
+        div(ng-controller="permEdit",ng-init="setPerm('dataset.permission')")
           include /widget/permission.jade
       div(ng-show="panel.tab=='publish'")
         +publish()
