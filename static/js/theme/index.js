@@ -116,7 +116,6 @@ x$.controller('themeList', ['$scope', '$http', 'IOService', 'Paging', 'dataServi
         data = (ret || []).map(function(it){
           return new themeService.theme(it);
         });
-        Paging.flexWidth(data);
         return $scope.themes = (reset || !$scope.themes
           ? []
           : $scope.themes).concat(data);

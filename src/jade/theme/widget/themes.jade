@@ -7,11 +7,10 @@
         //-.pull-right.grayed #[i.fa.fa-dot-circle-o] 5
         span {{theme.name}}
       .desc {{theme.description || 'check it yourself!'}}
-    .labels
-      .label(ng-cloak,ng-repeat="tag in theme.tags|tags") {{tag}}
     .social
-      .author #[i.fa.fa-user] {{theme.ownerName}}
-      .favorite #[i.fa.fa-heart] 15
+      a.author(ng-attr-href="/user/{{theme.owner}}") #[i.fa.fa-user] {{theme.ownername}}
+      //-.favorite(ng-click="like(theme)",
+         ng-class="{'active':user.data && theme.liked}") #[i.fa.fa-heart] {{theme.likes || 0}}
 
   .flexend
   #list-end.text-center: span(ng-cloak,ng-show="paging.end")

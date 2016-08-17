@@ -60,7 +60,7 @@ angular.module \plotDB
       ), delay, reset).then (ret) -> $scope.$apply ~>
         $scope.loading = false
         data = (ret or []).map -> new themeService.theme it
-        Paging.flex-width data
+        #Paging.flex-width data
         $scope.themes = (if reset or !$scope.themes => [] else $scope.themes) ++ data
 
     $scope.load-list 0, true
