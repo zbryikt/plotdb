@@ -152,6 +152,12 @@ plotdb.config = do
     default: 10
     category: "Layout"
 
+  aspectRatio: do
+    name: "Aspect Ratio"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Layout"
+
   #TBD
   barThick: do
     name: "Bar Thickness"
@@ -371,5 +377,13 @@ plotdb.config = do
     type: [plotdb.Choice(<[
       linear step step-before step-after basis bundle cardinal monotone
     ]>)]
+    category: "Style"
+
+
+  strokeWidth: do
+    name: "Default Stroke Width"
+    type: [plotdb.Number]
+    desc: "Default width for stroke of visual encoding"
+    default: \2
     category: "Style"
 

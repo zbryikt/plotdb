@@ -127,6 +127,12 @@ plotdb.config = {
     'default': 10,
     category: "Layout"
   },
+  aspectRatio: {
+    name: "Aspect Ratio",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Layout"
+  },
   barThick: {
     name: "Bar Thickness",
     type: [plotdb.Number],
@@ -337,6 +343,13 @@ plotdb.config = {
     name: "Line Smoothing",
     'default': "linear",
     type: [plotdb.Choice(['linear', 'step', 'step-before', 'step-after', 'basis', 'bundle', 'cardinal', 'monotone'])],
+    category: "Style"
+  },
+  strokeWidth: {
+    name: "Default Stroke Width",
+    type: [plotdb.Number],
+    desc: "Default width for stroke of visual encoding",
+    'default': '2',
     category: "Style"
   }
 };
