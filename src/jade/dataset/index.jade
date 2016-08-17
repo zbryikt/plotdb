@@ -5,6 +5,9 @@ block vars
   - var url = "https://plotdb.com/dataset/"
 block head
   script(src="https://apis.google.com/js/api.js")
+  if permtype
+    script.
+      window.permtype = !{JSON.stringify(permtype).replace(/<\//g, "<\\/")}
 block body
   include view.jade
   include ../footer.jade

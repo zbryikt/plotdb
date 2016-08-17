@@ -43,7 +43,8 @@ mixin searchable
         //-li(ng-class="{'active':panel.tab=='library'}",ng-click="panel.tab='library'")
           a(href="#") #[i.fa.fa-book] Libraries
 
-      div(ng-show="panel.tab=='permission'")
+      div(ng-show="panel.tab=='permission'",style="position:relative")
+        .panel-lock(ng-hide="isAdmin"): div You don't have permission to change this
         +searchable()
         .sep
         div(ng-controller="permEdit",ng-init="setPerm('dataset.permission')")

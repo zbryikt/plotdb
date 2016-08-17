@@ -1,8 +1,10 @@
 angular.module \plotDB
   ..controller \dataEditCtrl,
-  <[$scope $interval $timeout $http dataService eventBus plNotify Paging]> ++
-  ($scope, $interval, $timeout, $http, data-service, eventBus, plNotify, Paging) ->
+  <[$scope $interval $timeout $http permService dataService eventBus plNotify Paging]> ++
+  ($scope, $interval, $timeout, $http, permService, data-service, eventBus, plNotify, Paging) ->
     eventBus.fire \loading.dimmer.on
+    $scope.permtype = window.[]permtype.1 or 'none'
+    $scope.is-admin = permService.is-enough($scope.permtype, 'admin')
     $scope <<< do
       rawdata: ""
       dataset: null

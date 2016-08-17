@@ -58,8 +58,9 @@ get-dataset = (req,simple=false) ->
 engine.app.get "/dataset/:id", aux.numid true, (req, res) ->
   get-dataset req, true
     .then (ret) ->
+      permtype = perm.caltype req, ret.{}permission, ret.owner
       if !perm.test(req, ret.{}permission, ret.owner, \admin) => delete ret.permission
-      res.render 'dataset/index.jade', {dataset:ret}
+      res.render 'dataset/index.jade', {dataset: ret, permtype}
       return null
     .catch aux.error-handler res, true
 
