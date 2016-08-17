@@ -12,17 +12,15 @@ mixin selectbox(data,type)
           if block
             block
           else
-            if type == 'chart'
-              span
-                .avatar(ng-attr-style="background-image:url(/s/chart/{{item.key}}.png)")
-                .name {{item.name}}
-            else
-              span(ng-if="item.type=='chart'")
-                .avatar(ng-attr-style="background-image:url(/s/chart/{{item.key}}.png)")
-                .name {{item.displayname}}
-              span(ng-if="item.type!='chart'")
-                .avatar(ng-attr-style="background-image:url(/s/avatar/{{item.avatar || 0}}.jpg)")
-                .name {{item.displayname}}
+            span(ng-if="item.type=='chart'")
+              .avatar(ng-attr-style="background-image:url(/s/chart/{{item.key}}.png);vertical-align:top")
+              .name
+                span {{item.displayname}}
+                br
+                small.grayed ({{item.key}}) by {{item.ownername}}
+            span(ng-if="item.type!='chart'")
+              .avatar(ng-attr-style="background-image:url(/s/avatar/{{item.avatar || 0}}.jpg)")
+              .name {{item.displayname}} #[small.grayed (id:{{item.key}})]
         input
       .select-dropdown
         div &nbsp;
@@ -31,17 +29,17 @@ mixin selectbox(data,type)
           if block
             block
           else
-            if type == 'chart'
-              span
-                .avatar(ng-attr-style="background-image:url(/s/chart/{{opt.key}}.png)")
-                .name {{opt.name}}
-            else
-              span(ng-if="opt.type=='chart'")
-                .avatar(ng-attr-style="background-image:url(/s/chart/{{opt.key}}.png)")
-                .name {{opt.displayname}}
-              span(ng-if="opt.type!='chart'")
-                .avatar(ng-attr-style="background-image:url(/s/avatar/{{opt.avatar || 0}}.jpg)")
-                .name {{opt.displayname}}
+
+            span(ng-if="opt.type=='chart'")
+              .avatar(ng-attr-style="background-image:url(/s/chart/{{opt.key}}.png);vertical-align:top")
+              .name
+                span {{opt.displayname}}
+                br
+                small.grayed ({{opt.key}}) by {{opt.ownername}}
+            span(ng-if="opt.type!='chart'")
+              .avatar(ng-attr-style="background-image:url(/s/avatar/{{opt.avatar || 0}}.jpg)")
+              .name {{opt.displayname}} #[small.grayed (id:{{opt.key}})]
+
             i.fa.fa-check.pull-right
         .select-hint.grayed(ng-show="portal.loading")
           img(src="/assets/img/loading.gif")

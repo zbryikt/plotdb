@@ -42,8 +42,9 @@ search = (default-type=0) -> (req, res) ->
       if flags.chart and clen < limit =>
         params.1 = limit - clen
         return io.query([
-          "select key,name as displayname,key as avatar from charts"
-          "where name ~* $3" if keyword
+          "select charts.key,charts.name as displayname,users.displayname as ownername"
+          "from charts,users where charts.owner = users.key"
+          "and charts.name ~* $3" if keyword
           "offset $1 limit $2"
         ].filter(->it).join(" "),params)
       else return bluebird.resolve {}

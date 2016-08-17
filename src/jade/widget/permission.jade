@@ -41,7 +41,9 @@ mixin permPanel(type)
           .name
             span {{perm.displayname}}
             small(ng-cloak): a(ng-show="perm.type=='token'",ng-attr-href="?token={{perm.target}}",target="_blank") #[i.fa.fa-link] 
-          .email {{perm.username}}
+          .type
+            span {{perm.type}} 
+            span / id: {{perm.target}}
         .btn.btn-text.pull-right(ng-click="removeMember(perm)") &times;
         .dropdown.pull-right
           +permDropdown("perm")
