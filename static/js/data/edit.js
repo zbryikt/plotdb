@@ -52,12 +52,16 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
         var data, payload, isCreate;
         data = $scope.grid.data;
         if (data.headers.length >= 40) {
-          eventBus.fire('loading.dimmer.off');
-          return plNotify.send('danger', "maximal 40 columns is allowed. you have " + data.headers.length);
+          return $scope.$apply(function(){
+            eventBus.fire('loading.dimmer.off');
+            return plNotify.send('danger', "maximal 40 columns is allowed. you have " + data.headers.length);
+          });
         }
-        if (data.headers.lentgth === 0) {
-          eventBus.fire('loading.dimmer.off');
-          return plNotify.send('danger', "no data to save. add some?");
+        if (data.headers.length === 0) {
+          return $scope.$apply(function(){
+            eventBus.fire('loading.dimmer.off');
+            return plNotify.send('danger', "no data to save. add some?");
+          });
         }
         payload = $scope.grid.data.fieldize();
         $scope.dataset.setFields(payload);
@@ -513,16 +517,25 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
   $scope.panel = {
     name: {
       promise: null,
+      focus: function(){
+        if (this.toggled) {
+          return document.getElementById('dataset-name-input').focus();
+        }
+      },
       toggle: function(name){
-        return this.value = name, this.toggled = true, this;
+        this.value = name;
+        this.toggled = true;
+        return this.focus();
       },
       prompt: function(){
         var this$ = this;
         return new Promise(function(res, rej){
-          return this$.promise = {
+          this$.promise = {
             res: res,
             rej: rej
-          }, this$.toggled = true, this$;
+          };
+          this$.toggled = true;
+          return this$.focus();
         });
       },
       value: "",

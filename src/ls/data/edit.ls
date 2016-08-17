@@ -31,12 +31,12 @@ angular.module \plotDB
       else $scope.$apply -> promise := $scope.parser.csv.read($scope.rawdata, false)
       <- promise.then _
       data = $scope.grid.data
-      if data.headers.length >= 40 =>
+      if data.headers.length >= 40 => return $scope.$apply ->
         eventBus.fire \loading.dimmer.off
         return plNotify.send \danger, "maximal 40 columns is allowed. you have #{data.headers.length}"
-      if data.headers.lentgth == 0 =>
+      if data.headers.length == 0 => return $scope.$apply ->
         eventBus.fire \loading.dimmer.off
-        return plNotify.send \danger, "no data to save. add some?"
+        plNotify.send \danger, "no data to save. add some?"
 
       #$scope.dataset._type.location = (if locally => \local else \server) # future feature
       #$scope.dataset.permission = {"list": [], "switch": "publish"}
@@ -323,8 +323,13 @@ angular.module \plotDB
     $scope.panel = do
       name: do
         promise: null
-        toggle: (name) -> @ <<< {value: name, toggled: true}
-        prompt: -> new Promise (res, rej) ~> @ <<< {promise: {res, rej}, toggled: true}
+        focus: -> if @toggled => document.getElementById(\dataset-name-input).focus!
+        toggle: (name) ->
+          @ <<< {value: name, toggled: true}
+          @focus!
+        prompt: -> new Promise (res, rej) ~>
+          @ <<< {promise: {res, rej}, toggled: true}
+          @focus!
         value: ""
         action: (idx) ->
           if idx == 0 =>
