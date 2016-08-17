@@ -13,33 +13,35 @@ mixin permDropdown(baseObj)
     li(ng-class="{'active':" + baseObj + ".perm=='comment'}",ng-click= baseObj + ".perm='comment'"): a can comment
     li(ng-class="{'active':" + baseObj + ".perm=='fork'}",ng-click= baseObj + ".perm='fork'"): a can fork
     li(ng-class="{'active':" + baseObj + ".perm=='read'}",ng-click= baseObj + ".perm='read'"): a can read
-.perm-panel
-  label Add new permission
-  .input-group.long
-    //-(ng-class="{'long':permEdit.list.length>0,'sm':permEdit.list.length==0}")
-    +selectbox("permEdit.list","entity")
-    //-div: select.form-control.input-sm(ngselect2,ng-data="permEdit.list",ng-detail="permEdit.detail",
-       type="entity",multiple="multiple")
-    .input-group-btn
-      +permDropdown("permEdit")
-      .btn.btn-default.btn-sm(ng-click="addMember()") Add
-  .btn.btn-link(ng-click="addToken()"): small #[i.fa.fa-link] generate shareable link
-  .btn.btn-link.pull-right(ng-class="{'disabled':hasGlobal}",ng-click="addGlobal()"): small #[i.fa.fa-users] add everyone
-  //-hr(style="margin:4px auto 6px")
-  .sep.light
-  br
-  label(style="margin-bottom:0") permissions are given to:
-  .sep.light
-  .perm-list
-    .perm-item(ng-show="!perm.list.length")
-      .grayed no custom configuration...
-    .perm-item(ng-cloak,ng-repeat="perm in perm.list")
-      .avatar(ng-attr-style="background-image:url(/s/avatar/{{perm.avatar || 0}}.jpg)")
-      .info
-        .name
-          span {{perm.displayname}}
-          small(ng-cloak): a(ng-show="perm.type=='token'",ng-attr-href="?token={{perm.target}}",target="_blank") #[i.fa.fa-link] 
-        .email {{perm.username}}
-      .btn.btn-text.pull-right(ng-click="removeMember(perm)") &times;
-      .dropdown.pull-right
-        +permDropdown("perm")
+mixin permPanel(type)
+  .perm-panel
+    label Add new permission
+    .input-group.long
+      //-(ng-class="{'long':permEdit.list.length>0,'sm':permEdit.list.length==0}")
+      +selectbox("permEdit.list",type)
+      //-div: select.form-control.input-sm(ngselect2,ng-data="permEdit.list",ng-detail="permEdit.detail",
+         type="entity",multiple="multiple")
+      .input-group-btn
+        +permDropdown("permEdit")
+        .btn.btn-default.btn-sm(ng-click="addMember()") Add
+    .btn.btn-link(ng-click="addToken()"): small #[i.fa.fa-link] generate shareable link
+    .btn.btn-link.pull-right(ng-class="{'disabled':hasGlobal}",ng-click="addGlobal()"): small #[i.fa.fa-users] add everyone
+    //-hr(style="margin:4px auto 6px")
+    .sep.light
+    br
+    label(style="margin-bottom:0") permissions are given to:
+    .sep.light
+    .perm-list
+      .perm-item(ng-show="!perm.list.length")
+        .grayed no custom configuration...
+      .perm-item(ng-cloak,ng-repeat="perm in perm.list")
+        .avatar(ng-if="perm.type=='chart'",ng-attr-style="background-image:url(/s/chart/{{perm.target || 0}}.png)")
+        .avatar(ng-if="perm.type!='chart'",ng-attr-style="background-image:url(/s/avatar/{{perm.avatar || 0}}.jpg)")
+        .info
+          .name
+            span {{perm.displayname}}
+            small(ng-cloak): a(ng-show="perm.type=='token'",ng-attr-href="?token={{perm.target}}",target="_blank") #[i.fa.fa-link] 
+          .email {{perm.username}}
+        .btn.btn-text.pull-right(ng-click="removeMember(perm)") &times;
+        .dropdown.pull-right
+          +permDropdown("perm")

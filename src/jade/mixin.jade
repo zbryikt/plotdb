@@ -12,11 +12,15 @@ mixin selectbox(data,type)
           if block
             block
           else
-            span
-              if type == 'chart'
+            if type == 'chart'
+              span
                 .avatar(ng-attr-style="background-image:url(/s/chart/{{item.key}}.png)")
                 .name {{item.name}}
-              else
+            else
+              span(ng-if="item.type=='chart'")
+                .avatar(ng-attr-style="background-image:url(/s/chart/{{item.key}}.png)")
+                .name {{item.displayname}}
+              span(ng-if="item.type!='chart'")
                 .avatar(ng-attr-style="background-image:url(/s/avatar/{{item.avatar || 0}}.jpg)")
                 .name {{item.displayname}}
         input
@@ -27,12 +31,16 @@ mixin selectbox(data,type)
           if block
             block
           else
-            span
-              if type == 'chart'
-                .avatar(ng-attr-style="background-image:url(/s/chart/{{item.key}}.png)")
+            if type == 'chart'
+              span
+                .avatar(ng-attr-style="background-image:url(/s/chart/{{opt.key}}.png)")
                 .name {{opt.name}}
-              else
-                .avatar(ng-attr-style="background-image:url(/s/avatar/{{item.avatar || 0}}.jpg)")
+            else
+              span(ng-if="opt.type=='chart'")
+                .avatar(ng-attr-style="background-image:url(/s/chart/{{opt.key}}.png)")
+                .name {{opt.displayname}}
+              span(ng-if="opt.type!='chart'")
+                .avatar(ng-attr-style="background-image:url(/s/avatar/{{opt.avatar || 0}}.jpg)")
                 .name {{opt.displayname}}
             i.fa.fa-check.pull-right
         .select-hint.grayed(ng-show="portal.loading")

@@ -7316,6 +7316,10 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
           eventBus.fire('loading.dimmer.off');
           return plNotify.send('danger', "maximal 40 columns is allowed. you have " + data.headers.length);
         }
+        if (data.headers.lentgth === 0) {
+          eventBus.fire('loading.dimmer.off');
+          return plNotify.send('danger', "no data to save. add some?");
+        }
         payload = $scope.grid.data.fieldize();
         $scope.dataset.setFields(payload);
         isCreate = !$scope.dataset.key ? true : false;
@@ -11637,14 +11641,14 @@ x$.service('permService', ['$rootScope'].concat(function($rootScope){
   return permHandler;
 }));
 x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeout){
-  $scope.setPerm = function(it){
+  $scope.setPerm = function(permobj){
     var ref$;
-    if (typeof it === 'string') {
-      $scope.$watch(it, function(p){
+    if (typeof permobj === 'string') {
+      $scope.$watch(permobj, function(p){
         return $scope.perm = p;
       });
     } else {
-      $scope.perm = it || {
+      $scope.perm = permobj || {
         list: [],
         'switch': 'draft'
       };

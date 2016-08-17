@@ -54,6 +54,10 @@ body {
 select[ngselect2] {
   height: 34px;
 }
+ {
+  width: 100%;
+  width: 100%;
+}
 .spc1 {
   height: 0;
 }
@@ -4267,6 +4271,9 @@ span.select2-container--default .select2-selection--multiple {
   display: inline-block;
   width: 100%;
   position: relative;
+}
+.select-box .avatar {
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
 }
 .select-box input:focus {
   outline: none;

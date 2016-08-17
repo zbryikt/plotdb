@@ -34,6 +34,10 @@ angular.module \plotDB
       if data.headers.length >= 40 =>
         eventBus.fire \loading.dimmer.off
         return plNotify.send \danger, "maximal 40 columns is allowed. you have #{data.headers.length}"
+      if data.headers.lentgth == 0 =>
+        eventBus.fire \loading.dimmer.off
+        return plNotify.send \danger, "no data to save. add some?"
+
       #$scope.dataset._type.location = (if locally => \local else \server) # future feature
       #$scope.dataset.permission = {"list": [], "switch": "publish"}
       payload = $scope.grid.data.fieldize!

@@ -56,14 +56,14 @@ x$.service('permService', ['$rootScope'].concat(function($rootScope){
   return permHandler;
 }));
 x$.controller('permEdit', ['$scope', '$timeout'].concat(function($scope, $timeout){
-  $scope.setPerm = function(it){
+  $scope.setPerm = function(permobj){
     var ref$;
-    if (typeof it === 'string') {
-      $scope.$watch(it, function(p){
+    if (typeof permobj === 'string') {
+      $scope.$watch(permobj, function(p){
         return $scope.perm = p;
       });
     } else {
-      $scope.perm = it || {
+      $scope.perm = permobj || {
         list: [],
         'switch': 'draft'
       };

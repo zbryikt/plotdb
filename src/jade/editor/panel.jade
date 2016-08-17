@@ -50,6 +50,7 @@ mixin searchable
           .sep
           div(ng-controller="permEdit",ng-init="setPerm(target().permission)")
             include /widget/permission.jade
+            +permPanel('entity')
       div(ng-show="settingPanel.tab=='publish'")
         +publish()
         .sep

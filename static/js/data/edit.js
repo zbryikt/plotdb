@@ -55,6 +55,10 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'data
           eventBus.fire('loading.dimmer.off');
           return plNotify.send('danger', "maximal 40 columns is allowed. you have " + data.headers.length);
         }
+        if (data.headers.lentgth === 0) {
+          eventBus.fire('loading.dimmer.off');
+          return plNotify.send('danger', "no data to save. add some?");
+        }
         payload = $scope.grid.data.fieldize();
         $scope.dataset.setFields(payload);
         isCreate = !$scope.dataset.key ? true : false;

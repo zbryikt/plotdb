@@ -48,6 +48,7 @@ mixin searchable
         .sep
         div(ng-controller="permEdit",ng-init="setPerm('dataset.permission')")
           include /widget/permission.jade
+          +permPanel('entityChart')
       div(ng-show="panel.tab=='publish'")
         +publish()
         .sep

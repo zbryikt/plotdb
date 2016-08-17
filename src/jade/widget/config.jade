@@ -28,6 +28,7 @@ mixin configPanel(perm,tabs)
       if tabs.indexOf('permission')>=0
         div(ng-show="tab=='permission'")
           include permission.jade
+          +permPanel('entity')
       if tabs.indexOf('publish')>=0
         div(ng-show="tab=='publish'")
           include publish.jade
