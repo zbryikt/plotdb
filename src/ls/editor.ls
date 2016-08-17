@@ -4,8 +4,9 @@ angular.module \plotDB
     #########  Variables  ################################################################
     $scope <<< do
       plConfig: plConfig
-      theme: new theme-service.theme! #TODO defer create. consider theme and chart
-      chart: new chart-service.chart {permission: {switch: <[public]>, value: []}}
+      #TODO defer create. consider theme and chart
+      theme: new theme-service.theme {permission: {switch: \publish, list: []}}
+      chart: new chart-service.chart {permission: {switch: \publish, list: []}}
       showsrc: (if window.innerWidth < 800 => false else true)
       vis: \preview
       lastvis: null
@@ -55,7 +56,8 @@ angular.module \plotDB
       _save: (nothumb = false)->
         if !$scope.writable and @target!.owner != @user.data.key =>
           key = (if @target!._type.location == \server => @target!.key else null)
-          @target! <<< {key: null, owner: null, permission: {switch: <[public]>, value: []}}
+          @target! <<< {key: null, owner: null} #, permission: {switch: <[public]>, value: []}}
+          if !@target!permission => @target!permission = {switch: \publish, list: []}
           # clone will set parent beforehand. so we only set it if necessary.
           if key => @target! <<< {parent: key}
         refresh = if !@target!.key => true else false
@@ -67,7 +69,7 @@ angular.module \plotDB
             if nothumb => plNotify.send \warning, "#{@type} saved, but thumbnail failed to update"
               else plNotify.send \success, "#{@type} saved"
             link = @service.link @target!
-            if refresh or (!window.location.search and !/\/chart\/[^/]+/.exec(window.location.pathname)) =>
+            if refresh or (!window.location.search and !/\/(chart|theme)\/[^/]+/.exec(window.location.pathname)) =>
               window.location.href = link
             if @save.handle => $timeout.cancel @save.handle
             @save.handle = null
@@ -181,6 +183,7 @@ angular.module \plotDB
         send: (name) ->
           if !$scope[name] => return
           @[name]pending = true
+          if !@chart => return
           $scope.library.load @chart.library .then (libhash) ->
             $scope.canvas.window.postMessage(
               { type: "parse-#name", payload: {code: $scope[name].code.content, library: libhash}}
@@ -258,7 +261,7 @@ angular.module \plotDB
       library: do
         hash: {}
         load: (list) ->
-          if !list => list = $scope.chart.library or []
+          if !list => list = $scope.{}chart.library or []
           tasks = list.map(-> [it, it.split '/']).filter(~> !@hash[it.0])
           Promise.all(for item in tasks =>
             ((item) ~> new Promise (res, rej) ~>
@@ -455,8 +458,8 @@ angular.module \plotDB
         social: do
           facebook: null
         is-forkable: ->
-          perms = $scope.target!.permission.[]value
-          forkable = !!perms.filter(->it.perm == \fork and it.switch == \public).length
+          perms = $scope.target!.permission.[]list
+          forkable = permService.is-enough($scope.permtype, 'fork')
         embed: do
           width: \100%
           height: \600px
@@ -490,6 +493,7 @@ angular.module \plotDB
             @embedcode = embedcode-generator!
           $scope.$watch 'sharePanel.link', ~>
             @embedcode = embedcode-generator!
+            if !$scope.chart => return
             @thumblink = $scope.service.thumblink $scope.chart, true
             fbobj = do
               #TODO verify
@@ -539,17 +543,20 @@ angular.module \plotDB
               ["#k=#{encodeURIComponent(v)}" for k,v of twitterobj]
             ).join(\&)
 
-          $scope.$watch 'sharePanel.forkable', ~>
+          /*$scope.$watch 'sharePanel.forkable', ~>
             forkable = @is-forkable!
             if forkable != @forkable and @forkable? =>
               $scope.target!.permission.value = if it => [{switch: \public, perm: \fork}] else []
               $scope.target!.searchable = it
               @save-hint = true
+          */
+          /*
           $scope.$watch "#{$scope.type}.permission.value", (~>
             forkable = @is-forkable!
             if @forkable != forkable and @forkable? => @save-hint = true
             @forkable = forkable
           ), true
+          */
         save-hint: false
         embedcode: ""
         link: ""
@@ -559,18 +566,23 @@ angular.module \plotDB
           @toggled = !!!@toggled
           @save-hint = false
         toggled: false
-        is-public: -> ("public" in $scope.target!.permission.switch)
+        # check if we can remove these BEGIN
+        /*
+        is-public: -> ($scope.target!.permission.switch == \publish)
         set-private: ->
-          $scope.target!.{}permission.switch = <[private]>
+          $scope.target!.{}permission.switch = \draft
           @save-hint = true
         toggle-public: ->
           $scope.target!.{}permission.switch = (
-            if $scope.target!.{}permission.switch.0 == \public => <[private]> else <[public]>
+            #if $scope.target!.{}permission.switch.0 == \public => <[private]> else <[public]>
+            if $scope.target!.{}permission.switch == \publish => <[draft]> else <[publish]>
           )
           @save-hint = true
         set-public: ->
-          $scope.target!.{}permission.switch = <[public]>
+          $scope.target!.{}permission.switch = \publish #<[public]>
           @save-hint = true
+        */
+        # END
       coloredit: do
         config: (v, idx) -> do
           class: "no-palette text-input"
@@ -815,8 +827,8 @@ angular.module \plotDB
               if @chart => @canvas.window.postMessage {type: \parse-chart, payload: {code: @chart.code.content, library: libhash}}, @plotdb-domain
               $scope.parse.chart.pending = null
           if $scope.parse.theme.pending =>
-            $scope.library.load @chart.library .then (libhash) ~>
-              if @theme => @canvas.window.postMessage {type: \parse-theme, payload: {code: @theme, library: libhash}}, @plotdb-domain
+            $scope.library.load @{}chart.library .then (libhash) ~>
+              if @theme => @canvas.window.postMessage {type: \parse-theme, payload: {code: @theme.code.content, library: libhash}}, @plotdb-domain
               $scope.parse.theme.pending = null
         else if data.type == \click =>
           if document.dispatchEvent

@@ -1,4 +1,4 @@
-require! <[../engine/aux ../engine/share/model/ ./thumb]>
+require! <[../engine/aux ../engine/share/model/ ./thumb ./perm]>
 (engine,io) <- (->module.exports = it)  _
 
 themetype = model.type.theme
@@ -10,9 +10,10 @@ engine.router.api.get "/theme/", (req, res) ->
   if !req.user => return res.send []
   io.query(
     ["select users.displayname as ownername,themes.*"
-     "from themes,users where users.key = themes.owner and themes.owner = $1"
+     "from themes,users where users.key = themes.owner"
+     "and (themes.searchable = true or themes.owner = $1)"
      " offset $2 limit $3"
-    ].join(" "),
+    ].filter(->it).join(" "),
     [req.user.key, offset, limit]
   )
     .then -> res.send it.rows
@@ -29,8 +30,8 @@ engine.router.api.get "/theme/:id", aux.numid false, (req, res) ->
     .then (it={}) ->
       theme = it.[]rows.0
       if !theme => return aux.r404 res
-      if (theme.{}permission.switch != 'publish')
-      and (!req.user or theme.owner != req.user.key) => return aux.r403 res, "forbidden"
+      if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.r403 res, "forbidden"
+      if !perm.test(req, chart.{}permission, chart.owner, \admin) => delete chart.permission
       return res.json theme
     .catch -> return aux.r403 res
 
@@ -69,6 +70,7 @@ engine.router.api.post "/theme/", (req, res) ->
 engine.router.api.put "/theme/:id", aux.numid false, (req, res) ~>
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
+  id = parseInt(req.params.id)
   data = req.body
   if !data.key == req.params.id => return aux.r400 res, [true, data.key, \key-mismatch]
 
@@ -76,7 +78,7 @@ engine.router.api.put "/theme/:id", aux.numid false, (req, res) ~>
     .then (r = {}) ->
       theme = r.rows.0
       if !theme => return aux.r404 res
-      if theme.owner != req.user.key => return aux.r403 res
+      if !perm.test(req, theme.{}permission, theme.owner, \write) => return aux.r403 res
       data <<< do
         owner: req.user.key
         key: req.params.id
@@ -84,7 +86,13 @@ engine.router.api.put "/theme/:id", aux.numid false, (req, res) ~>
       ret = themetype.lint(data)
       if ret.0 => return aux.r400 res, ret
       data := themetype.clean data
+
+      pairs = io.aux.insert.format themetype, data
+      <[key owner createdtime]>.map -> delete pairs[it]
+      if !perm.test(req, theme.{}permission, theme.owner, \admin) => delete pairs.permission
+      pairs = io.aux.insert.assemble pairs
       thumb.save 'theme', data
+      /*
       io.query([
         'update themes set'
         ('(name,owner,chart,description,tags,likes,searchable,' +
@@ -97,7 +105,12 @@ engine.router.api.put "/theme/:id", aux.numid false, (req, res) ~>
         data.description or "check it out by yourself!", data.tags,
         0, data.searchable, new Date!toUTCString!, new Date!toUTCString!,
         data.doc, data.style, data.code, data.assets, data.permission
-      ])
+      ])*/
+
+      io.query(
+        "update themes set #{pairs.0} = #{pairs.1} where key = $#{pairs.2.length + 1}",
+        pairs.2 ++ [id]
+      )
         .then (r={}) -> res.send data
         .catch ->
           console.error it.stack
@@ -113,7 +126,7 @@ engine.router.api.delete "/theme/:id", aux.numid false, (req, res) ~>
     .then (r = {}) ->
       theme = r.[]rows.0
       if !theme => return aux.r404 res
-      if theme.owner != req.user.key => return aux.r403 res
+      if !perm.test(req, theme.{}permission, theme.owner, \admin) => return aux.r403 res
       io.query "delete from themes where key = $1", [req.params.id]
         .then -> res.send []
     .catch ->
@@ -128,9 +141,10 @@ engine.app.get \/theme/:id, aux.numid true, (req, res) ->
     .then (r = {}) ->
       theme = r.[]rows.0
       if !theme => return aux.r404 res, "", true
-      if (theme.{}permission.switch != 'publish')
-      and (!req.user or theme.owner != req.user.key) => return aux.r403 res, "forbidden", true
-      res.render 'view/theme/index.jade', {theme}
+      if !perm.test(req, theme.{}permission, theme.owner, \read) => return aux.r403 res, "forbidden", true
+      permtype = perm.caltype req, theme.{}permission, theme.owner
+      if !perm.test(req, theme.{}permission, theme.owner, \admin) => delete theme.permission
+      res.render 'view/theme/index.jade', {theme,permtype}
       return null
     .catch ->
       console.error it.stack

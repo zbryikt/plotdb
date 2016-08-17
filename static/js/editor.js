@@ -4,11 +4,16 @@ x$ = angular.module('plotDB');
 x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', 'plConfig', 'IOService', 'dataService', 'chartService', 'paletteService', 'themeService', 'plNotify', 'eventBus', 'permService'].concat(function($scope, $http, $timeout, $interval, $sce, plConfig, IOService, dataService, chartService, paletteService, themeService, plNotify, eventBus, permService){
   import$($scope, {
     plConfig: plConfig,
-    theme: new themeService.theme(),
+    theme: new themeService.theme({
+      permission: {
+        'switch': 'publish',
+        list: []
+      }
+    }),
     chart: new chartService.chart({
       permission: {
-        'switch': ['public'],
-        value: []
+        'switch': 'publish',
+        list: []
       }
     }),
     showsrc: window.innerWidth < 800 ? false : true,
@@ -106,10 +111,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         ref$ = this.target();
         ref$.key = null;
         ref$.owner = null;
-        ref$.permission = {
-          'switch': ['public'],
-          value: []
-        };
+        if (!this.target().permission) {
+          this.target().permission = {
+            'switch': 'publish',
+            list: []
+          };
+        }
         if (key) {
           this.target().parent = key;
         }
@@ -136,7 +143,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             plNotify.send('success', this$.type + " saved");
           }
           link = this$.service.link(this$.target());
-          if (refresh || (!window.location.search && !/\/chart\/[^/]+/.exec(window.location.pathname))) {
+          if (refresh || (!window.location.search && !/\/(chart|theme)\/[^/]+/.exec(window.location.pathname))) {
             window.location.href = link;
           }
           if (this$.save.handle) {
@@ -359,6 +366,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return;
         }
         this[name].pending = true;
+        if (!this.chart) {
+          return;
+        }
         return $scope.library.load(this.chart.library).then(function(libhash){
           return $scope.canvas.window.postMessage({
             type: "parse-" + name,
@@ -516,7 +526,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       load: function(list){
         var tasks, item, this$ = this;
         if (!list) {
-          list = $scope.chart.library || [];
+          list = ($scope.chart || ($scope.chart = {})).library || [];
         }
         tasks = list.map(function(it){
           return [it, it.split('/')];
@@ -858,10 +868,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       },
       isForkable: function(){
         var perms, ref$, forkable;
-        perms = (ref$ = $scope.target().permission).value || (ref$.value = []);
-        return forkable = !!perms.filter(function(it){
-          return it.perm === 'fork' && it['switch'] === 'public';
-        }).length;
+        perms = (ref$ = $scope.target().permission).list || (ref$.list = []);
+        return forkable = permService.isEnough($scope.permtype, 'fork');
       },
       embed: {
         width: '100%',
@@ -916,9 +924,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           $scope.$watch('sharePanel.aspectRatio', function(){
             return this$.embedcode = embedcodeGenerator();
           });
-          $scope.$watch('sharePanel.link', function(){
+          return $scope.$watch('sharePanel.link', function(){
             var fbobj, k, v, pinobj, emailobj, linkedinobj, twitterobj;
             this$.embedcode = embedcodeGenerator();
+            if (!$scope.chart) {
+              return;
+            }
             this$.thumblink = $scope.service.thumblink($scope.chart, true);
             fbobj = {
               app_id: '1546734828988373',
@@ -993,28 +1004,6 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               return results$;
             }()))).join('&');
           });
-          $scope.$watch('sharePanel.forkable', function(it){
-            var forkable;
-            forkable = this$.isForkable();
-            if (forkable !== this$.forkable && this$.forkable != null) {
-              $scope.target().permission.value = it
-                ? [{
-                  'switch': 'public',
-                  perm: 'fork'
-                }]
-                : [];
-              $scope.target().searchable = it;
-              return this$.saveHint = true;
-            }
-          });
-          return $scope.$watch($scope.type + ".permission.value", function(){
-            var forkable;
-            forkable = this$.isForkable();
-            if (this$.forkable !== forkable && this$.forkable != null) {
-              this$.saveHint = true;
-            }
-            return this$.forkable = forkable;
-          }, true);
         });
       },
       saveHint: false,
@@ -1028,27 +1017,22 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         this.toggled = !this.toggled;
         return this.saveHint = false;
       },
-      toggled: false,
-      isPublic: function(){
-        return in$("public", $scope.target().permission['switch']);
-      },
-      setPrivate: function(){
-        var ref$;
-        ((ref$ = $scope.target()).permission || (ref$.permission = {}))['switch'] = ['private'];
-        return this.saveHint = true;
-      },
-      togglePublic: function(){
-        var ref$;
-        ((ref$ = $scope.target()).permission || (ref$.permission = {}))['switch'] = ((ref$ = $scope.target()).permission || (ref$.permission = {}))['switch'][0] === 'public'
-          ? ['private']
-          : ['public'];
-        return this.saveHint = true;
-      },
-      setPublic: function(){
-        var ref$;
-        ((ref$ = $scope.target()).permission || (ref$.permission = {}))['switch'] = ['public'];
-        return this.saveHint = true;
-      }
+      toggled: false
+      /*
+      is-public: -> ($scope.target!.permission.switch == \publish)
+      set-private: ->
+        $scope.target!.{}permission.switch = \draft
+        @save-hint = true
+      toggle-public: ->
+        $scope.target!.{}permission.switch = (
+          #if $scope.target!.{}permission.switch.0 == \public => <[private]> else <[public]>
+          if $scope.target!.{}permission.switch == \publish => <[draft]> else <[publish]>
+        )
+        @save-hint = true
+      set-public: ->
+        $scope.target!.{}permission.switch = \publish #<[public]>
+        @save-hint = true
+      */
     },
     coloredit: {
       config: function(v, idx){
@@ -1604,12 +1588,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               });
             }
             if ($scope.parse.theme.pending) {
-              return $scope.library.load(this$.chart.library).then(function(libhash){
+              return $scope.library.load((this$.chart || (this$.chart = {})).library).then(function(libhash){
                 if (this$.theme) {
                   this$.canvas.window.postMessage({
                     type: 'parse-theme',
                     payload: {
-                      code: this$.theme,
+                      code: this$.theme.code.content,
                       library: libhash
                     }
                   }, this$.plotdbDomain);
