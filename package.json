@@ -30,6 +30,7 @@
     "gcloud": ">=0.7.1",
     "image-type": "=2.0.2",
     "jade": ">=0.27.6",
+    "jsonwebtoken": "=7.1.9",
     "jstransformer-markdown": "zbryikt/jstransformer-markdown",
     "lwip": "=0.0.7",
     "markdown": "zbryikt/markdown-js",
