@@ -1,4 +1,4 @@
-require! <[bluebird crypto fs fs-extra lwip read-chunk image-type]>
+require! <[bluebird crypto fs fs-extra read-chunk image-type]>
 require! <[../engine/aux ../engine/share/model/ ../engine/throttle]>
 require! <[./entity ./avatar]>
 (engine,io) <- (->module.exports = it)  _
