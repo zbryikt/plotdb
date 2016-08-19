@@ -125,7 +125,7 @@ angular.module \plotDB
       $http do
         url: "/d/team/#{if is-update => $scope.team.key else ''}"
         method: (if is-update => \PUT else \POST)
-        data: if is-update => $scope.team else {team: $scope.team, members: $scope.newMembers}
+        data: if is-update => $scope.team else {team: $scope.team, members: $scope.newMembers.map(->it.key)}
       .success (d) ->
         if !is-update => $scope.team.key = d.key
         if $scope.avatar.files.0 and $scope.avatar.raw =>

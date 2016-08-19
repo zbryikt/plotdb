@@ -25,9 +25,12 @@ include /mixin.jade
         | or 
         .avatar-upload-btn(ng-attr-style="background-image: url({{avatar.preview}})",
         ng-class="{'active':avatar.preview}"): input(type="file",ngfile,ng-data="avatar.files")
-    div(ng-show="tab=='permission'"): div(ng-controller="permEdit",ng-init="setPerm(team.permission)")
-      include /widget/permission.jade
-      +permPanel('entity')
+    div(ng-show="tab=='permission'")
+      div(ng-controller="permEdit",ng-init="setPerm(team.permission)",style="position:relative")
+        if userPermission && userPermission[1]!="admin"
+          .panel-lock(ng-hide="isAdmin"): div You don't have permission to change this
+        include /widget/permission.jade
+        +permPanel('entity')
   .panel-footer.text-right
     .btn.btn-success.btn-sm(ng-click="save()") OK
     span &nbsp;

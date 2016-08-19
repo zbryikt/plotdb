@@ -10513,7 +10513,9 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
         ? $scope.team
         : {
           team: $scope.team,
-          members: $scope.newMembers
+          members: $scope.newMembers.map(function(it){
+            return it.key;
+          })
         }
     }).success(function(d){
       var promise;
@@ -10625,7 +10627,7 @@ x$.service('entityService', ['$rootScope', '$http', 'plConfig', 'IOService', 'ba
         chart: {
           placeholder: "search by chart name or id ...",
           ajax: {
-            url: '/d/chart/',
+            url: '/d/entity/?type=4',
             param: function(keyword, limit, offset){
               return {
                 simple: true,

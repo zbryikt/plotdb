@@ -13,11 +13,11 @@ mixin selectbox(data,type)
             block
           else
             span(ng-if="item.type=='chart'")
-              .avatar(ng-attr-style="background-image:url(/s/chart/{{item.key}}.png);vertical-align:top")
+              .avatar(ng-attr-style="background-image:url(/s/chart/{{item.key}}.png)")
               .name
                 span {{item.displayname}}
-                br
-                small.grayed ({{item.key}}) by {{item.ownername}}
+                //-br
+                   small.grayed ({{item.key}}) by {{item.ownername}}
             span(ng-if="item.type!='chart'")
               .avatar(ng-attr-style="background-image:url(/s/avatar/{{item.avatar || 0}}.jpg)")
               .name {{item.displayname}} #[small.grayed (id:{{item.key}})]

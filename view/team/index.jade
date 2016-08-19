@@ -30,6 +30,9 @@ block body
       label members
       br
       br
+      a.team-member(ng-attr-href="/user/{{team.owner}}",ng-cloak)
+        .avatar.xl.owner(ng-attr-style="background-image:url(/s/avatar/{{team.owneravatar || 0}}.jpg)")
+        span {{team.ownername}}
       a.team-member(ng-repeat="member in members",ng-attr-href="/user/{{member.key}}",ng-cloak)
         .avatar.xl(ng-attr-style="background-image:url(/s/avatar/{{user.avatar || 0}}.jpg)")
           if userPermission[1] == "admin"

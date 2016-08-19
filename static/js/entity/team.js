@@ -218,7 +218,9 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
         ? $scope.team
         : {
           team: $scope.team,
-          members: $scope.newMembers
+          members: $scope.newMembers.map(function(it){
+            return it.key;
+          })
         }
     }).success(function(d){
       var promise;
