@@ -1,0 +1,38 @@
+extends /base.jade
+block vars
+  - var rootid = "payview"
+  - var url = "https://plotdb.com/dev/pay/"
+block head
+  script(type="text/javascript",src="https://js.stripe.com/v2/")
+block body
+  script.
+    Stripe.setPublishableKey("pk_test_DE53QFrgknntLkCNsVr1MqrV");
+
+  .spc1
+  .page-header: .inner
+    .title Payment
+    .desc Subscribe this service
+  #root
+    br
+    div(style="max-width:800px;margin:auto")
+      form#payment.form(action="",method="POST")
+        label Card Number
+        input.form-control(type="text",size="20",data-stripe="number")
+        label Expiration (MM/YY)
+        input.form-control(type="text",size="2",data-stripe="exp_month")
+        input.form-control(type="text",size="2",data-stripe="exp_year")
+        label CVC
+        input.form-control(type="text",size="",data-stripe="cvc")
+        .sep
+        input.btn.btn-default.submit(type="submit",value="Submit")
+
+    script.
+      $("#payment").submit(function(event) {
+        $("#payment .submit").prop("disabled", true);
+        Stripe.card.createToken($("#payment"), function(state, res) {
+          console.log("result from Stripe");
+          console.log("status code: ", state);
+          console.log(res);
+        });
+        return false;
+      });
