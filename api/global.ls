@@ -13,7 +13,11 @@ random = (count) ->
   token = jsonwebtoken.sign val, secret.token-secret
   token
 
-engine.app.get \/global, aux.type.json, (req, res) -> res.render \view/global.ls, {user: req.user, global: true}
+engine.app.get( \/global, engine.csrfProtection, aux.type.json,
+  (req, res) ->
+    res.setHeader \content-type, \application/javascript
+    res.render \view/global.ls, {user: req.user, global: true, csrfToken: req.csrfToken!}
+)
 
 # currently we dont use this instead use Math.random! in browser.
 # perhaps switch to this in the future?

@@ -119,7 +119,7 @@ engine.router.api.post "/chart/", (req, res) ->
       console.error it.stack
       aux.r403 res
 
-engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
+engine.router.api.put "/chart/:id", engine.csrfProtection, aux.numid false, (req, res) ~>
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
   id = parseInt(req.params.id)

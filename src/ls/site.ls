@@ -1,6 +1,12 @@
 angular.module \plotDB
-  ..config <[$compileProvider]> ++ ($compileProvider) ->
+  ..factory \httpRequestInterceptor, <[global]> ++ (global) -> do
+    request: (config) ->
+      config.headers['X-CSRF-Token'] = global.csrfToken
+      config
+  ..config <[$compileProvider $httpProvider]> ++ ($compileProvider, $httpProvider) ->
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob:|https?:\/\/([a-z0-9]+.)?plotdb\.com\/|https?:\/\/([a-z0-9]+.)?plotdb\.io\/|http:\/\/localhost\/|http:\/\/localhost.io\/|https:\/\/www\.facebook\.com\/|https:\/\/www\.pinterest\.com\/|mailto:\?|http:\/\/www\.linkedin\.com\/|http:\/\/twitter\.com\/)|#|https:\/\/docs.google.com\/spreadsheets\//)
+    $httpProvider.interceptors.push \httpRequestInterceptor
+
   ..service 'eventBus', <[$rootScope]> ++ ($rootScope) ->
     ret = @ <<< do
       queues: {}

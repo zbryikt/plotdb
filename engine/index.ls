@@ -1,7 +1,7 @@
 require! <[fs fs-extra path bluebird crypto LiveScript chokidar moment]>
 require! <[express body-parser express-session connect-multiparty]>
 require! <[passport passport-local passport-facebook passport-google-oauth2]>
-require! <[nodemailer nodemailer-smtp-transport]>
+require! <[nodemailer nodemailer-smtp-transport csurf]>
 require! <[./aux ./watch]>
 require! 'uglify-js': uglify-js, LiveScript: lsc
 colors = require \colors/safe
@@ -144,6 +144,8 @@ backend = do
       user: express.Router!
       api: express.Router!
 
+    backend.csrfProtection = csurf!
+
     app
       ..use "/d", router.api
       ..use "/u", router.user
@@ -204,14 +206,16 @@ backend = do
     @watch!
     if !@config.debug =>
       (err, req, res, next) <- @app.use
-      if err =>
+      if !err => return next!
+      if err.code == \EBADCSRFTOKEN =>
+        aux.r403 res, "be hold!", true
+      else
         console.error(
           colors.red.underline("[#{moment!format 'YY/MM/DD HH:mm:ss'}]"),
           colors.yellow(err.path)
         )
         console.error colors.grey(err.stack)
         res.status 500 .render '500'
-      else next!
     if @config.watch => watch.start @config
     server = @app.listen @config.port, -> console.log "listening on port #{server.address!port}"
 
