@@ -1,11 +1,43 @@
 require! <[fs fs-extra path bluebird crypto LiveScript chokidar moment]>
 require! <[express body-parser express-session connect-multiparty]>
 require! <[passport passport-local passport-facebook passport-google-oauth2]>
-require! <[nodemailer nodemailer-smtp-transport]>
+require! <[nodemailer nodemailer-smtp-transport csurf]>
 require! <[./aux ./watch]>
 require! 'uglify-js': uglify-js, LiveScript: lsc
 colors = require \colors/safe
 
+#TODO set this in nginx?
+content-security-policy = [
+  <[default-src
+    'self' blob:
+  ]>
+  <[script-src
+    'self' http://connect.facebook.net/en_US/sdk.js blob:
+    https://www.google-analytics.com 'unsafe-inline' 'unsafe-eval'
+    https://apis.google.com
+  ]>
+  <[style-src
+    'self' https://www.google-analytics.com 'unsafe-inline'
+    http://fonts.googleapis.com
+  ]>
+  <[img-src
+    'self' data: blob: https://www.google-analytics.com
+    https://www.facebook.com/ https://static.xx.fbcdn.net
+    http://csi.gstatic.com/
+  ]>
+  <[font-src
+    'self' http://fonts.gstatic.com
+  ]>
+  <[frame-src
+    'self' data: blob: http://staticxx.facebook.com/ https://www.facebook.com/
+    https://accounts.google.com/
+    https://content.googleapis.com/
+    https://content-sheets.googleapis.com/
+  ]>
+  <[connect-src
+    'self' data: blob:
+  ]>
+].map(-> it.join(" ")).join("; ")
 
 backend = do
   update-user: (req) -> req.logIn req.user, ->
@@ -15,38 +47,10 @@ backend = do
     session-store = -> @ <<< authio.session
     session-store.prototype = express-session.Store.prototype
     app = express!
+    app.disable \x-powered-by
     app.use (req, res, next) ->
-      res.setHeader \Content-Security-Policy, [
-        <[default-src
-          'self' blob:
-        ]>
-        <[script-src
-          'self' http://connect.facebook.net/en_US/sdk.js blob:
-          https://www.google-analytics.com 'unsafe-inline' 'unsafe-eval'
-          https://apis.google.com
-        ]>
-        <[style-src
-          'self' https://www.google-analytics.com 'unsafe-inline'
-          http://fonts.googleapis.com
-        ]>
-        <[img-src
-          'self' data: blob: https://www.google-analytics.com
-          https://www.facebook.com/ https://static.xx.fbcdn.net
-          http://csi.gstatic.com/
-        ]>
-        <[font-src
-          'self' http://fonts.gstatic.com
-        ]>
-        <[frame-src
-          'self' data: blob: http://staticxx.facebook.com/ https://www.facebook.com/
-          https://accounts.google.com/
-          https://content.googleapis.com/
-          https://content-sheets.googleapis.com/
-        ]>
-        <[connect-src
-          'self' data: blob:
-        ]>
-      ].map(-> it.join(" ")).join("; ")
+      res.setHeader \Content-Security-Policy, content-security-policy
+      res.setHeader \X-Content-Security-Policy, content-security-policy
       next!
     app.use body-parser.json limit: config.limit
     app.use body-parser.urlencoded extended: true, limit: config.limit
@@ -140,6 +144,9 @@ backend = do
       user: express.Router!
       api: express.Router!
 
+    backend.csrfProtection = csurf!
+    app.use backend.csrfProtection
+
     app
       ..use "/d", router.api
       ..use "/u", router.user
@@ -200,14 +207,16 @@ backend = do
     @watch!
     if !@config.debug =>
       (err, req, res, next) <- @app.use
-      if err =>
+      if !err => return next!
+      if err.code == \EBADCSRFTOKEN =>
+        aux.r403 res, "be hold!", true
+      else
         console.error(
           colors.red.underline("[#{moment!format 'YY/MM/DD HH:mm:ss'}]"),
           colors.yellow(err.path)
         )
         console.error colors.grey(err.stack)
         res.status 500 .render '500'
-      else next!
     if @config.watch => watch.start @config
     server = @app.listen @config.port, -> console.log "listening on port #{server.address!port}"
 
