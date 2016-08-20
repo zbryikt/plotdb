@@ -145,6 +145,7 @@ backend = do
       api: express.Router!
 
     backend.csrfProtection = csurf!
+    app.use backend.csrfProtection
 
     app
       ..use "/d", router.api
