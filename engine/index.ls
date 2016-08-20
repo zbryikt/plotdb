@@ -15,6 +15,7 @@ backend = do
     session-store = -> @ <<< authio.session
     session-store.prototype = express-session.Store.prototype
     app = express!
+    app.disable \x-powered-by
     app.use (req, res, next) ->
       res.setHeader \Content-Security-Policy, [
         <[default-src
