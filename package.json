@@ -28,6 +28,7 @@
     "express-session": ">=1.7.6",
     "fs-extra": "=0.26.7",
     "gcloud": ">=0.7.1",
+    "helmet": "=2.1.2",
     "image-type": "=2.0.2",
     "jade": ">=0.27.6",
     "jsonwebtoken": "=7.1.9",
@@ -45,9 +46,9 @@
     "read-chunk": "=1.0.1",
     "require-reload": "=0.2.2",
     "sanitize-html": "=1.11.4",
+    "sharp": "=0.16.0",
     "stylus": "=0.50.0",
     "uglify-js": "=2.4.16",
-    "sharp": "=0.16.0",
     "uglifycss": "=0.0.15"
   }
 }
