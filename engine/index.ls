@@ -26,7 +26,7 @@ content-security-policy = [
     http://csi.gstatic.com/
   ]>
   <[font-src
-    'self' http://fonts.gstatic.com
+    'self' data: http://fonts.gstatic.com
   ]>
   <[frame-src
     'self' data: blob: http://staticxx.facebook.com/ https://www.facebook.com/
