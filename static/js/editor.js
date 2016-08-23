@@ -854,6 +854,15 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         return this.toggled = !this.toggled;
       },
       toggled: false,
+      setSampleData: function(data){
+        return eventBus.fire('dataset.sample', data);
+      },
+      showSample: function(){
+        this.toggled = true;
+        return $scope.canvas.window.postMessage({
+          type: 'get-sample-data'
+        }, $scope.plotdbDomain);
+      },
       edit: function(dataset){
         if (dataset._type.location === 'sample') {
           return;
@@ -1516,6 +1525,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             if ($scope.error.lineno) {
               return $("#code-editor-code .CodeMirror-code > div:nth-of-type(" + $scope.error.lineno + ")").addClass('error');
             }
+          } else if (data.type === 'get-sample-data') {
+            return $scope.dataPanel.setSampleData(data.data);
           } else if (data.type === 'alt-enter') {
             return $scope.switchPanel();
           } else if (data.type === 'snapshot') {

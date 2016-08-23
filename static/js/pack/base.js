@@ -4406,6 +4406,15 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         return this.toggled = !this.toggled;
       },
       toggled: false,
+      setSampleData: function(data){
+        return eventBus.fire('dataset.sample', data);
+      },
+      showSample: function(){
+        this.toggled = true;
+        return $scope.canvas.window.postMessage({
+          type: 'get-sample-data'
+        }, $scope.plotdbDomain);
+      },
       edit: function(dataset){
         if (dataset._type.location === 'sample') {
           return;
@@ -5068,6 +5077,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             if ($scope.error.lineno) {
               return $("#code-editor-code .CodeMirror-code > div:nth-of-type(" + $scope.error.lineno + ")").addClass('error');
             }
+          } else if (data.type === 'get-sample-data') {
+            return $scope.dataPanel.setSampleData(data.data);
           } else if (data.type === 'alt-enter') {
             return $scope.switchPanel();
           } else if (data.type === 'snapshot') {
@@ -7846,6 +7857,23 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
     if ($scope.dataset.key === key) {
       return $scope.dataset = null;
     }
+  });
+  eventBus.listen('dataset.sample', function(data){
+    var h, k, v;
+    $scope.grid.data.headers = h = (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = data[0]) {
+        v = ref$[k];
+        results$.push(k);
+      }
+      return results$;
+    }());
+    $scope.grid.data.rows = data.map(function(d){
+      return h.map(function(it){
+        return d[it];
+      });
+    });
+    return $scope.grid.render();
   });
   eventBus.listen('dataset.edit', function(dataset, load){
     load == null && (load = true);

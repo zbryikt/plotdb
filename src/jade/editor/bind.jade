@@ -100,3 +100,5 @@ div#binding-panel(ng-controller="datasetList",ng-cloak,ng-init="useSample=true")
         div
           i.fa.fa-asterisk(style="color:#f00;font-size: 0.8em")
           span &nbsp;= required
+        .sep.gap
+        p Don't know how to prepare your data? #[a(href="#",ng-click="dataPanel.showSample()") Check the Sample Data]

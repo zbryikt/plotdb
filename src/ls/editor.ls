@@ -449,6 +449,11 @@ angular.module \plotDB
         init: -> eventBus.listen \dataset.saved, ~> $timeout (~> @toggled = false), 200
         toggle: -> @toggled = !!!@toggled
         toggled: false
+        set-sample-data: (data) ->
+          eventBus.fire \dataset.sample, data
+        show-sample: ->
+          @toggled = true
+          $scope.canvas.window.postMessage {type: \get-sample-data}, $scope.plotdb-domain
         edit: (dataset) ->
           if dataset._type.location == \sample => return
           @toggled = true
@@ -794,6 +799,7 @@ angular.module \plotDB
           $scope.error.lineno = data.{}payload.lineno or 0
           if $scope.error.lineno =>
             $("\#code-editor-code .CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").addClass \error
+        else if data.type == \get-sample-data => $scope.data-panel.set-sample-data data.data
         else if data.type == \alt-enter => $scope.switch-panel!
         else if data.type == \snapshot =>
           #TODO need sanity check
