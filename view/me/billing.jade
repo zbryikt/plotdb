@@ -1,0 +1,28 @@
+extends /base.jade
+block head
+  script(type="text/javascript",src="/js/profile.js")
+block body
+  #root.narrow
+    h3 billing
+    .panel.panel-default
+      .panel-body
+        .btn.btn-default.pull-right Change
+        label Plan
+        p Basic
+
+        .btn.btn-default.pull-right Change
+        label Payment Method
+        p Credit Card Info #[span xxxx-xxxx-xxxx-4046] 
+
+        label Payment History
+        table
+          tr
+            th Date
+            th Amount
+            th Plan
+          each i in ['2016/01/01', '2016/02/01', '2016/03/01']
+            tr
+              td= i
+              td $5.00
+              td Basic
+  include /footer.jade

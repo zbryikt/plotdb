@@ -53,6 +53,7 @@
             ul.dropdown-menu
               li(ng-show="user.data",ng-cloak): a(href="/user/{{user.data.key}}") Profile
               li: a(href="/me/edit/") Settings
+              li: a(href="/me/billing/") Billing
               li.divider
               li: a(href="#",ng-click="auth.logout()") Logout
 
