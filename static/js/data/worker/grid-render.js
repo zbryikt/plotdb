@@ -11,7 +11,7 @@ gridRender = function(e){
   };
   escape = function(text){
     text == null && (text = "");
-    return text.replace(/[&<>"']/g, function(m){
+    return (text + "").replace(/[&<>"']/g, function(m){
       return htmlCharMap[m];
     });
   };
