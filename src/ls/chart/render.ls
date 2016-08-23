@@ -16,6 +16,8 @@ window.thread = do
 dispatcher = (evt) ->
   if (evt.data.type in <[snapshot getsvg getpng]>) => snapshot evt.data.type
   else if evt.data.type == \render => render evt.data.payload, evt.data.rebind
+  else if evt.data.type == \get-sample-data =>
+    window.parent.postMessage {type: \get-sample-data, data: (window.sample-data or null)}, plotdb-domain
   else if evt.data.type == \parse-chart => parse evt.data.payload, \chart
   else if evt.data.type == \parse-theme => parse evt.data.payload, \theme
   else if evt.data.type == \reload =>
@@ -202,8 +204,9 @@ render = (payload, rebind = true) ->
       #window.module = module
       root = document.getElementById \container
       chart = module.exports
-      if (!data or !data.length) and chart.sample =>
-        data := plotdb.chart.get-sample-data chart, dimension
+      if chart.sample =>
+        window.sample-data = plotdb.chart.get-sample-data chart, dimension
+        if (!data or !data.length) => data := window.sample-data
       config-preset config
       for k,v of (config or {}) =>
         for type in (v.type or [])=>

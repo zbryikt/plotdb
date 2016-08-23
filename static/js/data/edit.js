@@ -577,6 +577,23 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       return $scope.dataset = null;
     }
   });
+  eventBus.listen('dataset.sample', function(data){
+    var h, k, v;
+    $scope.grid.data.headers = h = (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = data[0]) {
+        v = ref$[k];
+        results$.push(k);
+      }
+      return results$;
+    }());
+    $scope.grid.data.rows = data.map(function(d){
+      return h.map(function(it){
+        return d[it];
+      });
+    });
+    return $scope.grid.render();
+  });
   eventBus.listen('dataset.edit', function(dataset, load){
     load == null && (load = true);
     $scope.inited = false;

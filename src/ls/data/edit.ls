@@ -350,6 +350,10 @@ angular.module \plotDB
           @{}[name]toggled = !!!@{}[name]toggled
         else @toggled = !!! @toggled
     eventBus.listen \dataset.delete, (key) -> if $scope.dataset.key == key => $scope.dataset = null
+    eventBus.listen \dataset.sample, (data) ->
+      $scope.grid.data.headers = h = [k for k,v of data.0]
+      $scope.grid.data.rows = data.map((d)-> h.map(->d[it]))
+      $scope.grid.render!
     eventBus.listen \dataset.edit, (dataset, load = true) ->
       $scope.inited = false
       if load and dataset._type.location == \server =>

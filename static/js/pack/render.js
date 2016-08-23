@@ -5879,6 +5879,11 @@ $(document).ready(function(){
       return snapshot(evt.data.type);
     } else if (evt.data.type === 'render') {
       return render(evt.data.payload, evt.data.rebind);
+    } else if (evt.data.type === 'get-sample-data') {
+      return window.parent.postMessage({
+        type: 'get-sample-data',
+        data: window.sampleData || null
+      }, plotdbDomain);
     } else if (evt.data.type === 'parse-chart') {
       return parse(evt.data.payload, 'chart');
     } else if (evt.data.type === 'parse-theme') {
@@ -6188,8 +6193,11 @@ $(document).ready(function(){
         }
         root = document.getElementById('container');
         chart = module.exports;
-        if ((!data || !data.length) && chart.sample) {
-          data = plotdb.chart.getSampleData(chart, dimension);
+        if (chart.sample) {
+          window.sampleData = plotdb.chart.getSampleData(chart, dimension);
+          if (!data || !data.length) {
+            data = window.sampleData;
+          }
         }
         configPreset(config);
         for (k in ref$ = config || {}) {
