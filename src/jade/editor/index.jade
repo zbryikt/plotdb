@@ -177,6 +177,7 @@ block body
             .chart-config.chart-config-end
 
       .col-sm-9(style="padding-left:0;position:relative"): .ib(style="position:relative")
+        //-include annotate.jade
         #code-error(ng-cloak,ng-show="error.msg",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error.msg}}
         #code-editor(ng-class="editor.class")
           .closebtn.inner(ng-cloak,ng-click="editor.fullscreen.toggle()",ng-show="editor.fullscreen.toggled")

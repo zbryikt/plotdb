@@ -24,6 +24,7 @@ dispatcher = (evt) ->
     if !brand-new => window.location.reload!
     else window.parent.postMessage {type: \loaded}, plotdb-domain
   else if evt.data.type == \colorblind-emu => colorblind evt.data.payload
+  else if evt.data.type == \edit => edit evt.data.payload
 
 window.addEventListener \error, (e) ->
   re-bloburl = /blobhttp:%3A\/\/[^:]+:/
@@ -279,6 +280,9 @@ window.parent.postMessage {type: \loaded}, plotdb-domain
 
 # dont enable it for now
 /*
+selection-box = document.createElement("div")
+selection-box.setAttribute("class", "selection-box")
+document.body.appendChild(selection-box)
 hover-box = document.createElement("div")
 hover-box.setAttribute("class", "hover-box")
 document.body.appendChild(hover-box)
@@ -286,20 +290,111 @@ hover-margin = document.createElement("div")
 hover-margin.setAttribute("class", "hover-margin")
 document.body.appendChild(hover-margin)
 html = document.querySelector("html")
+
+fullPath = (node) ->
+  names = []
+  while node.parentNode =>
+    if node.id =>
+      names.unshift "\##{node.id}"
+      break
+    if node == node.ownerDocument.documentElement => names.unshift node.tagName
+    else
+      [c,e] = [1,node]
+      while e.previousElementSibling
+        e = e.previousElementSibling
+        c++
+      names.unshift "#{node.tagName}:nth-child(#c)"
+    node = node.parentNode
+  names.join \>
+
+selection = do
+  start: null
+  end: null
+  nodes: []
+
+edit = (data) ->
+  for node in selection.nodes => d3.select(node).attr data
+
+get-style = ->
+  nodes = selection.nodes
+  style-list = <[stroke fill stroke-width font-family font-style font-weight opacity]>
+  style = {}
+  multiples = {}
+  for i from 0 til nodes.length =>
+    node = nodes[i]
+    for s in style-list =>
+      attr = node.getAttribute s
+      if !(style[s]?) => style[s] = attr
+      else if style[s] != attr => multiples[s] = 1
+  multiples = [k for k of multiples]
+  window.parent.postMessage {type: \editing.selection.style, data: {style, multiples}}, plotdb-domain
+
+get-selection = ->
+  nodes = document.querySelectorAll(".pdb-root svg *")
+  s = selection
+  s.nodes = []
+  [x1,x2] = if s.end.x > s.start.x => [s.start.x, s.end.x] else [s.end.x, s.start.x]
+  [y1,y2] = if s.end.y > s.start.y => [s.start.y, s.end.y] else [s.end.y, s.start.y]
+  nj = left: x1, width: x2 - x1, top: y1, height: y2 - y1
+  for i from 0 til nodes.length =>
+    if nodes[i].tagName == \g => continue
+    ni = nodes[i].getBoundingClientRect!
+    if !(nj.left > ni.left + ni.width or nj.left + nj.width < ni.left or
+    nj.top > ni.top + ni.height or nj.top + nj.height < ni.top) => s.nodes.push nodes[i]
+  get-style!
+
+window.addEventListener \mousedown, (e) ->
+  selection.start = null
+  selection.end = null
+  selection-box.style.display = \none
+
 window.addEventListener \mousemove, (e) ->
+  s = selection
+  if e.buttons and (!s.start or s.end) =>
+    s.start = x: e.clientX, y: e.clientY
+    cur = s.start
+    s.end = null
+    node = document.querySelector \.pdb-root
+    node.setAttribute \class, (node.getAttribute(\class) + " editing")
+  else if !e.buttons and s.start and !s.end =>
+    s.cur = s.end = x: e.clientX, y: e.clientY
+    node = document.querySelector \.pdb-root
+    node.setAttribute \class, (node.getAttribute(\class).replace(/ *editing */, ''))
+    get-selection!
+  else if e.buttons =>
+    cur = x: e.clientX, y: e.clientY
+  else => cur = s.end
+  if s.start and cur =>
+    [x1,x2] = if cur.x > s.start.x => [s.start.x, cur.x] else [cur.x, s.start.x]
+    [y1,y2] = if cur.y > s.start.y => [s.start.y, cur.y] else [cur.y, s.start.y]
+    selection-box.style
+      ..display = \block
+      ..top     = "#{y1}px"
+      ..left    = "#{x1}px"
+      ..height  = "#{y2 - y1}px"
+      ..width   = "#{x2 - x1}px"
+
+window.addEventListener \click, (e) ->
   rect = e.target.getBoundingClientRect!
   scroll = top: (document.body.scrollTop or html.scrollTop), left: (document.body.scrollLeft or html.scrollTop)
   style = e.target.currentStyle || window.getComputedStyle(e.target);
+  tag-name = e.target.tagName.toLowerCase!
+  if tag-name != \g and tag-name != \svg =>
+    selection.nodes = [e.target]
+    get-style!
+  #window.active-node = e.target
+  #console.log fullPath e.target
+  #console.log d3.select(e.target).datum!
 
   margin = do
     top: +style.marginTop.replace(\px,''), left: +style.marginLeft.replace(\px,'')
     bottom: +style.marginBottom.replace(\px,''), right: +style.marginRight.replace(\px,'')
 
   hover-box.style
-    ..top    = "#{rect.top + scroll.top}px"
-    ..left   = "#{rect.left + scroll.left}px"
-    ..height = "#{rect.height}px"
-    ..width  = "#{rect.width}px"
+    ..top    = "#{rect.top + scroll.top - 2}px"
+    ..left   = "#{rect.left + scroll.left - 2}px"
+    ..height = "#{rect.height + 4}px"
+    ..width  = "#{rect.width + 4}px"
 
   hover-margin.style
     ..top    = "#{rect.top + scroll.top - margin.top}px"

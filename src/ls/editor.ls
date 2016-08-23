@@ -445,6 +445,22 @@ angular.module \plotDB
           category: null
           tags: null
           library: null
+      edit-panel: do
+        attr: {}
+        set-style: (data)->
+          @attr <<< data.style
+          console.log @attr
+        test: ->
+          $scope.canvas.window.postMessage {type: \edit, payload: @attr}, $scope.plotdb-domain
+        init: ->
+          $scope.$watch 'editPanel.attr', (~> @test!), true
+        toggleDisplay: ->
+          @attr.opacity = (if !(@attr.opacity?) or @attr.opacity == 1 => 0 else 1)
+        toggleBold: ->
+          @attr['font-weight'] = (if !(@attr['font-weight']?) or @attr['font-weight'] == \normal => \bold else \normal)
+        toggleItalic: ->
+          @attr['font-style'] = (if !(@attr['font-style']?) or @attr['font-style'] == \normal => \italic else \normal)
+
       data-panel: do
         init: -> eventBus.listen \dataset.saved, ~> $timeout (~> @toggled = false), 200
         toggle: -> @toggled = !!!@toggled
@@ -800,6 +816,7 @@ angular.module \plotDB
           if $scope.error.lineno =>
             $("\#code-editor-code .CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").addClass \error
         else if data.type == \get-sample-data => $scope.data-panel.set-sample-data data.data
+        else if data.type == \editing.selection.style => $scope.edit-panel.set-style data.data
         else if data.type == \alt-enter => $scope.switch-panel!
         else if data.type == \snapshot =>
           #TODO need sanity check
@@ -902,6 +919,7 @@ angular.module \plotDB
         @setting-panel.init!
         @share-panel.init!
         @data-panel.init!
+        @edit-panel.init!
         if @type == \theme => @charts.init!
         if @type == \chart => @themes.init!
 

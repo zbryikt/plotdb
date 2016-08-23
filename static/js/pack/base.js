@@ -4368,6 +4368,34 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         library: null
       }
     },
+    editPanel: {
+      attr: {},
+      setStyle: function(data){
+        import$(this.attr, data.style);
+        return console.log(this.attr);
+      },
+      test: function(){
+        return $scope.canvas.window.postMessage({
+          type: 'edit',
+          payload: this.attr
+        }, $scope.plotdbDomain);
+      },
+      init: function(){
+        var this$ = this;
+        return $scope.$watch('editPanel.attr', function(){
+          return this$.test();
+        }, true);
+      },
+      toggleDisplay: function(){
+        return this.attr.opacity = !(this.attr.opacity != null) || this.attr.opacity === 1 ? 0 : 1;
+      },
+      toggleBold: function(){
+        return this.attr['font-weight'] = !(this.attr['font-weight'] != null) || this.attr['font-weight'] === 'normal' ? 'bold' : 'normal';
+      },
+      toggleItalic: function(){
+        return this.attr['font-style'] = !(this.attr['font-style'] != null) || this.attr['font-style'] === 'normal' ? 'italic' : 'normal';
+      }
+    },
     dataPanel: {
       init: function(){
         var this$ = this;
@@ -5054,6 +5082,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             }
           } else if (data.type === 'get-sample-data') {
             return $scope.dataPanel.setSampleData(data.data);
+          } else if (data.type === 'editing.selection.style') {
+            return $scope.editPanel.setStyle(data.data);
           } else if (data.type === 'alt-enter') {
             return $scope.switchPanel();
           } else if (data.type === 'snapshot') {
@@ -5254,6 +5284,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       this.settingPanel.init();
       this.sharePanel.init();
       this.dataPanel.init();
+      this.editPanel.init();
       if (this.type === 'theme') {
         this.charts.init();
       }
