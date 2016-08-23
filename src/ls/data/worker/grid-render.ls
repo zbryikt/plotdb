@@ -1,6 +1,6 @@
 grid-render = (e) ->
   htmlCharMap = '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-  escape = (text="") -> text.replace /[&<>"']/g, (m) -> htmlCharMap[m]
+  escape = (text="") -> "#text".replace /[&<>"']/g, (m) -> htmlCharMap[m]
   data = e.data
   types = data.types or []
   ohlen = data.headers.length
