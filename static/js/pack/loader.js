@@ -57,9 +57,9 @@ plotdb.Order = {
   sort: function(data, fieldname, isAscending){
     var field, types, i$, to$, i, j$, to1$, j, type, sorter;
     isAscending == null && (isAscending = true);
-    field = data.map(function(it){
+    field = fieldname ? data.map(function(it){
       return it[fieldname];
-    });
+    }) : data;
     types = plotdb.OrderTypes.map(function(it){
       return it;
     });
@@ -74,16 +74,26 @@ plotdb.Order = {
       types = types.filter(fn$);
     }
     type = types[0];
-    if (type) {
-      for (i$ = 0, to$ = data.length; i$ < to$; ++i$) {
-        i = i$;
-        data[i][fieldname] = type.parse(data[i][fieldname]);
-      }
-    }
     sorter = ((type || {}).order || this.order)[isAscending ? 'Ascending' : 'Descending'];
-    return data.sort(function(a, b){
-      return sorter(a[fieldname], b[fieldname]);
-    });
+    if (fieldname) {
+      if (type) {
+        for (i$ = 0, to$ = data.length; i$ < to$; ++i$) {
+          i = i$;
+          data[i][fieldname] = type.parse(data[i][fieldname]);
+        }
+      }
+      return data.sort(function(a, b){
+        return sorter(a[fieldname], b[fieldname]);
+      });
+    } else {
+      if (type) {
+        for (i$ = 0, to$ = data.length; i$ < to$; ++i$) {
+          i = i$;
+          data[i] = type.parse(data[i]);
+        }
+      }
+      return data.sort(sorter);
+    }
     function fn$(it){
       return it;
     }
