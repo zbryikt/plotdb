@@ -2,7 +2,7 @@
   config = do
     css: do
       frameworks: <[
-          /assets/bootstrap/3.3.5/css/bootstrap.min.css
+          /assets/bootstrap/3.3.7/css/bootstrap.min.css
           /assets/fontawesome/4.6.1/css/font-awesome.min.css
           /assets/select2/4.0.1/css/select2.min.css
           /assets/ldcolorpicker/0.1.1/ldcp.css
@@ -99,7 +99,7 @@
           /assets/jquery/1.10.2/jquery.min.js
           /assets/d3js/3.5.12/d3.v3.min.js
           /assets/angular/1.3.15/angular.min.js
-          /assets/bootstrap/3.3.5/js/bootstrap.min.js
+          /assets/bootstrap/3.3.7/js/bootstrap.min.js
         ]>
       legacy: <[
           /lib/topojson/1.6.24/index.min.js

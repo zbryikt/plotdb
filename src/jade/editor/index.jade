@@ -51,8 +51,8 @@ block body
         .tab.cat.shown(ng-click="showsrc=!!!showsrc")
           div.text-right #[span src]
           .desc.text-right
-            i.glyphicon.glyphicon-chevron-right(ng-cloak,ng-show="!showsrc")
-            i.glyphicon.glyphicon-chevron-left(ng-show="showsrc")
+            i.fa.fa-chevron-right(ng-cloak,ng-show="!showsrc")
+            i.fa.fa-chevron-left(ng-show="showsrc")
         .tab.shown(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'",ng-cloak)
           div #[span preview]
           .desc {{target().dimension|length}} dimensions
@@ -201,7 +201,7 @@ block body
               .closebtn.outer(ng-click="target().removeFile(f)")
               .title {{f.name}}
               .type #[i {{f.type}}] #[small.pull-right {{(f.content || "").length|size}}]
-          #code-ctrl
+          #code-ctrl(ng-cloak)
             .btn.btn-default(ng-click="scrollto('#binding-panel')",ng-show="!editor.fullscreen.toggled") Bind Data
             .btn-group
               .btn.btn-default(ng-click="editor.color.toggle()") Editor Style
@@ -210,8 +210,8 @@ block body
                 span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave 
                 span
                   | Fullscreen 
-                  i.glyphicon.glyphicon-fullscreen(ng-show="!editor.fullscreen.toggled")
-                  i.glyphicon.glyphicon-resize-small(ng-show="editor.fullscreen.toggled")
+                  i.fa.fa-arrows-alt(ng-show="!editor.fullscreen.toggled")
+                  i.fa.fa-compress(ng-show="editor.fullscreen.toggled")
               .btn.btn-default(ng-click="vis='preview'") Preview #[small.hint Alt-Enter]
 
         #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
@@ -245,8 +245,8 @@ block body
               span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave 
               span
                 | Fullscreen 
-                i.glyphicon.glyphicon-fullscreen(ng-show="!editor.fullscreen.toggled")
-                i.glyphicon.glyphicon-resize-small(ng-show="editor.fullscreen.toggled")
+                i.fa.fa-arrows-alt(ng-show="!editor.fullscreen.toggled")
+                i.fa.fa-compress(ng-show="editor.fullscreen.toggled")
             .btn.btn-default(ng-click="vis='code'") Edit Code #[small.hint Alt-Enter]
 
           .btn-group(style="right:auto;left:90px;bottom:0")

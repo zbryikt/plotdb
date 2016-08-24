@@ -1,4 +1,8 @@
 <- $ document .ready
+$('.loader.fixed.scrolling').css opacity: 0
+setTimeout (->
+  $('.loader.fixed.scrolling').css opacity: 1
+), 2000
 data = [{value: Math.random!} for i from 0 til 400]
 box = document.getElementById(\landing-svg).parentNode.getBoundingClientRect!
 svg = d3.select \#landing-svg
