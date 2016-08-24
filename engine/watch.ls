@@ -74,9 +74,15 @@ base = do
   ignore-func: (f) -> @ignore-list.filter(-> it.exec f.replace(cwd-re, "")replace(/^\.\/+/, ""))length
   start: (config) ->
     @config = config
-    <[src src/ls src/styl static static/css static/js static/js/pack/]>.map ->
+    <[src src/ls src/styl static static/css static/js static/js/pack/ static/css/pack/]>.map ->
       if !fs.exists-sync it => fs.mkdir-sync it
+    chokidar.watch 'static/css', ignored: (~> @ignore-func it), persistent: true
+      .on \add, ~> @packer.watcher it
+      .on \change, ~> @packer.watcher it
     chokidar.watch 'static/js', ignored: (~> @ignore-func it), persistent: true
+      .on \add, ~> @packer.watcher it
+      .on \change, ~> @packer.watcher it
+    chokidar.watch 'static/assets', ignored: (~> @ignore-func it), persistent: true
       .on \add, ~> @packer.watcher it
       .on \change, ~> @packer.watcher it
     watcher = chokidar.watch 'src', ignored: (~> @ignore-func it), persistent: true
@@ -87,24 +93,33 @@ base = do
     queue: {}
     handler: ->
       @handle = null
-      for k,v of @queue =>
+
+      for k,v of @queue.{}js =>
         des = "static/js/pack/#k.js"
         ret = [fs.read-file-sync(file).toString! for file in v.1].join("")
         #ret = uglify-js.minify(ret,{fromString:true}).code
         #if !base.config.debug => ret = uglify-js.minify(ret,{fromString:true}).code
         fs.write-file-sync des, ret
         console.log "[BUILD] Pack '#k' -> #des by #{v.0}"
+
+      for k,v of @queue.{}css =>
+        des = "static/css/pack/#k.css"
+        ret = [fs.read-file-sync(file).toString! for file in v.1].join("")
+        fs.write-file-sync des, ret
+        console.log "[BUILD] Pack '#k' -> #des by #{v.0}"
+
       @queue = {}
 
     watcher: (d) ->
       packers = reload "./share/scriptpack.ls"
-      for k,v of packers =>
-        if @queue[k] => continue
+      pack = [[\js, k,v] for k,v of packers.js] ++ [[\css, k,v] for k,v of packers.css]
+      for [type,k,v] in pack =>
+        if @queue{}[type][k] => continue
         files = v.map(->path.join(\static, it))
-        if (d in files) => @queue[k] = [d, files]
-      if [k for k of @queue].length =>
+        if (d in files) => @queue{}[type][k] = [d, files]
+      if [k for k of @queue.{}css].length or [k for k of @queue.{}js].length =>
         if @handle => clearTimeout(@handle)
-        @handle = setTimeout((~> @handler!), 1000)
+        @handle = setTimeout((~> @handler!), 500)
   watch-handler: (d) ->
     setTimeout (~> @_watch-handler d), 500
   _watch-handler: ->
