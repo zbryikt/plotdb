@@ -1,8 +1,5 @@
 include /mixin.jade
 include panel.jade
-mixin SaveFork
-  span(ng-cloak,ng-show="writable") Save
-  span(ng-cloak,ng-show="!writable") Fork
 #assets-preview(ng-cloak,ng-show="assets.preview.toggled"): .ib
   .closebtn.inner(ng-click="assets.preview.toggled=false")
   a(ng-attr-download="{{assets.download.name}}", ng-attr-href="{{assets.download.url}}")
@@ -132,9 +129,9 @@ include /widget/palette-edit-modal.jade
   .col-sm-9(style="padding-left:0;position:relative"): .ib(style="position:relative")
     //-include annotate.jade
     #code-error(ng-cloak,ng-show="error.msg",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error.msg}}
-    #code-editor(ng-class="editor.class")
+    #code-editor(ng-class="editor.class",style="background:#fff url(/assets/img/loading.gif) center center no-repeat")
       .closebtn.inner(ng-cloak,ng-click="editor.fullscreen.toggle()",ng-show="editor.fullscreen.toggled")
-      #code-header(ng-class="{'fullscreen':editor.fullscreen.toggled}")
+      #code-header(ng-cloak,ng-class="{'fullscreen':editor.fullscreen.toggled}",ng-show="inited")
         .tabs
           span(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'") #[i.fa.fa-pie-chart] Preview
           span(ng-class="{'active':vis=='code'}",ng-click="vis='code'") #[i.fa.fa-terminal] Code
@@ -153,7 +150,7 @@ include /widget/palette-edit-modal.jade
           .closebtn.outer(ng-click="target().removeFile(f)")
           .title {{f.name}}
           .type #[i {{f.type}}] #[small.pull-right {{(f.content || "").length|size}}]
-      #code-ctrl(ng-cloak)
+      #code-ctrl(ng-cloak,ng-show="inited")
         .btn.btn-default(ng-click="scrollto('#binding-panel')",ng-show="!editor.fullscreen.toggled") Bind Data
         .btn-group
           .btn.btn-default(ng-click="editor.color.toggle()") Editor Style
@@ -165,7 +162,8 @@ include /widget/palette-edit-modal.jade
               i.fa.fa-arrows-alt(ng-show="!editor.fullscreen.toggled")
               i.fa.fa-compress(ng-show="editor.fullscreen.toggled")
           .btn.btn-default(ng-click="vis='preview'") Preview #[small.hint Alt-Enter]
-    #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
+    #visualization-canvas2.plpanel(ng-show="inited",
+    ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
       .closebtn.inner(ng-click="editor.fullscreen.toggle()")
       .dropup(style="position:absolute",ng-show="editor.fullscreen.toggled")
         .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")

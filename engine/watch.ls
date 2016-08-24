@@ -160,7 +160,6 @@ base = do
       console.log "[BUILD] recursive from #src:"
       _src = src
       if srcs.indexOf(_src) < 0 => srcs ++= _src
-      console.log ">>>", srcs
       if srcs => for src in srcs
         if !/src\/jade/.exec(src) => continue
         try

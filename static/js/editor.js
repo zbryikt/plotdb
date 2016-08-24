@@ -53,32 +53,42 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     type: null,
     service: null
   });
-  $http({
-    url: $scope.plotdbRenderer,
-    method: 'GET'
-  }).success(function(html){
-    var ret;
-    ret = /<meta name="script" content="([^"]+)">/.exec(html);
-    if (ret) {
-      return $http({
-        url: ret[1],
-        method: 'GET'
-      }).success(function(js){
-        var urljs, urlhtml;
-        urljs = URL.createObjectURL(new Blob([js], {
-          type: 'text/javascript'
-        }));
-        html = html.replace(/<meta name="script" content="([^"]+)">/, "<script type='text/javascript' src='" + urljs + "'></script>");
-        urlhtml = URL.createObjectURL(new Blob([html], {
-          type: 'text/html'
-        }));
-        return $timeout(function(){
-          $scope.plotdbRenderer = $sce.trustAsResourceUrl(urlhtml);
-          return $('#chart-renderer')[0].setAttribute("src", urlhtml);
-        }, 1000);
-      });
-    }
-  });
+  (function(){
+    return $http({
+      url: '/render-fast.html',
+      method: 'GET'
+    }).success(function(html){
+      var urlhtml;
+      urlhtml = URL.createObjectURL(new Blob([html], {
+        type: 'text/html'
+      }));
+      return $timeout(function(){
+        $scope.plotdbRenderer = $sce.trustAsResourceUrl(urlhtml);
+        return $('#chart-renderer')[0].setAttribute("src", urlhtml);
+      }, 10);
+    });
+  })();
+  /*
+  $http url: $scope.plotdb-renderer, method: \GET
+    .success (html) ->
+      ret = /<meta name="script" content="([^"]+)">/.exec html
+      if ret =>
+        $http url: ret.1, method: \GET
+          .success (js) ->
+            urljs = URL.createObjectURL new Blob [js], {type: \text/javascript}
+            html := html.replace(
+              /<meta name="script" content="([^"]+)">/
+              "<script type='text/javascript' src='#urljs'></script>"
+            )
+            urlhtml = URL.createObjectURL new Blob [html], {type: \text/html}
+            # seems that firefox doesn't like urlhtml...
+            #$scope.plotdb-domain = #urlhtml
+            #TODO: directly regen iframe so we don't have to consider timing issue
+            $timeout (->
+              $scope.plotdb-renderer = $sce.trustAsResourceUrl(urlhtml)
+              $(\#chart-renderer)[0].setAttribute("src", urlhtml)
+            ), 10
+  */
   import$($scope, {
     target: function(){
       return this[this.type];
@@ -343,9 +353,10 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }
       });
     },
-    renderAsync: function(rebind){
+    renderAsync: function(rebind, delay){
       var this$ = this;
       rebind == null && (rebind = true);
+      delay == null && (delay = 500);
       if (this.parse.theme.pending || this.parse.chart.pending) {
         return;
       }
@@ -358,7 +369,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       return this.renderAsync.handler = $timeout(function(){
         this$.renderAsync.handler = null;
         return this$.render(rebind);
-      }, 500);
+      }, delay);
     },
     parse: {
       send: function(name){
@@ -1594,9 +1605,13 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               (hash[key$ = v.category || 'Other'] || (hash[key$] = {}))[k] = v;
             }
             $scope.configHash = hash;
-            this$.inited = true;
             this$.applyTheme();
-            return $scope.renderAsync();
+            if (!this$.inited) {
+              this$.inited = true;
+              return $scope.render();
+            } else {
+              return $scope.renderAsync();
+            }
           } else if (data.type === 'parse-theme') {
             $scope.parse.theme.pending = false;
             ref$ = JSON.parse(data.payload), config = ref$.config, typedef = ref$.typedef;

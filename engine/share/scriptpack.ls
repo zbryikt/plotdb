@@ -7,6 +7,7 @@
           /assets/select2/4.0.1/css/select2.min.css
           /assets/ldcolorpicker/0.1.1/ldcp.css
           /assets/codemirror/5.10/lib/codemirror.css
+          /assets/clusterize/0.16.1/clusterize.css
           /css/index.css
         ]>
     js: do
@@ -67,6 +68,7 @@
           /assets/utf8js/2.0.0/utf8.js
           /assets/base64/0.1.0/base64.js
           /assets/select2/4.0.3/js/select2.full.min.js
+          /assets/clusterize/0.16.1/clusterize.min.js
           /js/plotdb.js
           /js/share/config.js
           /js/io.js

@@ -25,7 +25,18 @@ angular.module \plotDB
         window: document.getElementById(\chart-renderer).contentWindow
       type: null     # chart or theme
       service: null  # chart-service or theme-service
-
+    (->
+      $http do
+        url: '/render-fast.html',
+        method: \GET
+      .success (html) ->
+        urlhtml = URL.createObjectURL new Blob [html], {type: \text/html}
+        $timeout (->
+          $scope.plotdb-renderer = $sce.trustAsResourceUrl(urlhtml)
+          $(\#chart-renderer)[0].setAttribute("src", urlhtml)
+        ), 10
+    )!
+    /*
     $http url: $scope.plotdb-renderer, method: \GET
       .success (html) ->
         ret = /<meta name="script" content="([^"]+)">/.exec html
@@ -44,7 +55,8 @@ angular.module \plotDB
               $timeout (->
                 $scope.plotdb-renderer = $sce.trustAsResourceUrl(urlhtml)
                 $(\#chart-renderer)[0].setAttribute("src", urlhtml)
-              ), 1000
+              ), 10
+    */
 
     #########  Functions  ################################################################
     $scope <<< do
@@ -171,14 +183,14 @@ angular.module \plotDB
           if !rebind => @canvas.window.postMessage {type: \render, payload, rebind}, @plotdb-domain
           else @canvas.window.postMessage {type: \reload}, @plotdb-domain
 
-      render-async: (rebind = true) ->
+      render-async: (rebind = true, delay = 500) ->
         if @parse.theme.pending or @parse.chart.pending => return
         if !@chart => return
         if @render-async.handler => $timeout.cancel @render-async.handler
         @render-async.handler = $timeout (~>
           @render-async.handler = null
           @render rebind
-        ), 500
+        ), delay
       parse: do
         send: (name) ->
           if !$scope[name] => return
@@ -832,9 +844,11 @@ angular.module \plotDB
           hash = {}
           for k,v of @chart.config => hash{}[v.category or \Other][k] = v
           $scope.configHash = hash
-          @inited = true
           @apply-theme!
-          $scope.render-async!
+          if !@inited =>
+            @inited = true
+            $scope.render!
+          else $scope.render-async!
         else if data.type == \parse-theme =>
           $scope.parse.theme.pending = false
           {config,typedef} = JSON.parse(data.payload)
