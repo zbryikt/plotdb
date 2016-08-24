@@ -19,7 +19,7 @@ engine.app.get( \/global, engine.csrfProtection,
     #inline js to speed up.
     #res.render \view/global.ls, {user: req.user, global: true, csrfToken: req.csrfToken!}
     payload = JSON.stringify({user: req.user, global: true, csrfToken: req.csrfToken!})
-    delete req.user.{}payment.strip
+    if req.user => delete req.user.{}payment.strip
     res.send """(function() { var req = #payload;
     if(window._backend_) { angular.module("backend").factory("global",["context",function(context){
       var own={}.hasOwnProperty,key;
