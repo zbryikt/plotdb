@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-pngquant --force --ext .png -- ../work/thumbnail/*.png
+#pngquant --force --speed 1 --verbose --ext .png 256 -- ../work/thumbnail/*.png
+pngquant --force --speed 1 --verbose --ext .png 256 -- ../work/thumbnail/*.png
