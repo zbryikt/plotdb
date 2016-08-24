@@ -359,7 +359,7 @@ window.addEventListener \mousemove, (e) ->
   else if !e.buttons and s.start and !s.end =>
     s.cur = s.end = x: e.clientX, y: e.clientY
     node = document.querySelector \.pdb-root
-    node.setAttribute \class, (node.getAttribute(\class).replace(/ *editing */, ''))
+    node.setAttribute \class, (node.getAttribute(\class).replace(/ *editing ?/, ''))
     get-selection!
   else if e.buttons =>
     cur = x: e.clientX, y: e.clientY
