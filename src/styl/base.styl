@@ -137,7 +137,13 @@ li.disabled a
   position: absolute
   left: 50%
   z-index: index(order, 'float-loader')
-.loader.floating.lg
+.loader.fixed.scrolling
+  position: fixed
+  left: 50%
+  z-index: index(order, 'float-loader')
+  bottom: 20px
+
+.loader.floating.lg, .loader.fixed.scrolling.lg
   margin-left: -50px
 
 .loader.alone.lg
