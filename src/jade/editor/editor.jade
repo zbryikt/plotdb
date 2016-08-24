@@ -1,0 +1,254 @@
+include /mixin.jade
+include panel.jade
+mixin SaveFork
+  span(ng-cloak,ng-show="writable") Save
+  span(ng-cloak,ng-show="!writable") Fork
+#assets-preview(ng-cloak,ng-show="assets.preview.toggled"): .ib
+  .closebtn.inner(ng-click="assets.preview.toggled=false")
+  a(ng-attr-download="{{assets.download.name}}", ng-attr-href="{{assets.download.url}}")
+    i.fa.fa-download(style="top:4px;right:22px;cursor:pointer;position:absolute;")
+  .iframe(style="width:100%;height:100%;border:none")
+include /widget/palette-edit-modal.jade
+#fullscreen-dimmer(ng-class="{'fullscreen':editor.fullscreen.toggled}")
+#code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
+  #code-tabs
+    .pull-right
+      .tab.action(ng-click="settingPanel.toggle('permission')") #[i.fa.fa-cog] #[span settings]
+      .tab.action(ng-click="settingPanel.toggle('publish')") #[i.fa.fa-user] #[span share]
+    .tab.cat.shown(ng-click="showsrc=!!!showsrc")
+      div.text-right #[span src]
+      .desc.text-right
+        i.fa.fa-chevron-right(ng-cloak,ng-show="!showsrc")
+        i.fa.fa-chevron-left(ng-show="showsrc")
+    .tab.shown(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'",ng-cloak)
+      div #[span preview]
+      .desc {{target().dimension|length}} dimensions
+    .tab.src(ng-class="{'active':vis=='code','shown':showsrc}",ng-click="vis='code'",ng-cloak)
+      div #[span code] #[small javascript]
+      .desc {{target().code.size|size}}, {{target().code.lines}} lines
+    .tab.src(ng-class="{'active':vis=='stylesheet','shown':showsrc}",ng-click="vis='stylesheet'",ng-cloak)
+      div #[span stylesheet] #[small css]
+      .desc {{target().style.size|size}}, {{target().style.lines}} lines
+    .tab.src(ng-class="{'active':vis=='document','shown':showsrc}",ng-click="vis='document'",ng-cloak)
+      div #[span document] #[small html]
+      .desc {{target().doc.size|size}}, {{target().doc.lines}} lines
+    .tab.src(ng-class="{'active':vis=='assets','shown':showsrc}",ng-click="vis='assets'",ng-cloak)
+      div #[span assets] #[small]
+      .desc
+        span(ng-cloak,ng-if="!target().assets.length") no file
+        span(ng-cloak,ng-if="target().assets.length") {{target().assets.length}} files, {{target().assets.size|size}}
+.row
+  .col-sm-3
+    #config-panel.plpanel
+      #chart-settings
+        #chart-name
+          input.form-control(type="text",ng-model="target().name",placeholder="Project Name")
+          span name
+        #chart-action.btn-group(style="width:100%")
+          .btn.btn-default.loader(ng-disabled="!target().name",ng-click="save()",
+          ng-class="{'loading':save.handle}")
+            +SaveFork
+          .dropdown
+            .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
+              i.fa.fa-download
+              span.caret
+            ul.dropdown-menu
+              li.disabled(ng-show="!download.png.url"): a PNG #[img(src="/assets/img/loading.gif")]
+              li.disabled(ng-show="!download.svg.url"): a SVG #[img(src="/assets/img/loading.gif")]
+              li.disabled(ng-show="!download.plotdb.url"): a PlotDB.json #[img(src="/assets/img/loading.gif")]
+              li.disabled(ng-show="download.png.url=='#'"): a PNG #[i.fa.fa-warning.text-danger]
+              li.disabled(ng-show="download.svg.url=='#'"): a SVG #[i.fa.fa-warning.text-danger]
+              li(ng-show="download.png.url && download.png.url!='#'")
+                a(ng-attr-download="{{target().name}}.png",ng-attr-href="{{download.png.url}}")
+                  | PNG #[small(ng-show="download.png.size") {{download.png.size|size}}]
+              li(ng-show="download.svg.url && download.svg.url!='#'")
+                a(ng-attr-download="{{target().name}}.svg",ng-attr-href="{{download.svg.url}}")
+                  | SVG #[small(ng-show="download.svg.size") {{download.svg.size|size}}]
+              li(ng-show="download.plotdb.url && download.plotdb.url!='#'")
+                a(ng-attr-download="{{target().name}}.plotdb.json",ng-attr-href="{{download.plotdb.url}}")
+                  | PlotDB.json #[small(ng-show="download.plotdb.size") {{download.plotdb.size|size}}]
+      #chart-config-header
+        .pull-right: a(href="#",ng-click="resetConfig()") reset
+        label Config
+      #chart-configs: .ib
+        .chart-config(ng-cloak)
+          .btn-group(ng-show="type=='chart'")
+            span.input-group-addon Theme
+            .dropdown
+              .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                i.fa.fa-caret-down.pull-right
+                span {{theme.name || 'No Theme'}}
+              ul.dropdown-menu
+                li: a(ng-click="themes.set(null)") No Theme
+                li(ng-repeat="item in themes.list"): a(ng-click="themes.set(item)") {{item.name}}
+          .btn-group(ng-show="type=='theme'")
+            span.input-group-addon Chart
+            .dropdown
+              .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                i.fa.fa-caret-down.pull-right
+                span {{chart.name || 'No Chart'}}
+              ul.dropdown-menu.charts-dropdown-menu
+                li: a(ng-click="charts.set(null)") No Chart
+                li(ng-repeat="item in charts.list"): a(ng-click="charts.set(item)") {{item.name}}
+        .chart-config-group(ng-cloak,ng-repeat="(category,list) in configHash",ng-show="!v._bytheme")
+          .chart-config-category {{category}}
+          .chart-config(ng-cloak,ng-repeat="(name,v) in list",ng-show="!v._bytheme")
+            // Otherwise
+            i.fa.fa-question-circle(ng-cloak,ng-show="v.desc")
+            .hint-popup {{v.desc}}
+            .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color' && v.type[0].name!='Range'")
+              span.input-group-addon: div {{v.name || name}}
+              input.form-control(type="text",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value",style="text-align:center")
+            .btn-group(ng-if="v.type[0].name=='Choice'")
+              span.input-group-addon: div {{v.name || name}}
+              .dropdown
+                .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                  i.fa.fa-caret-down.pull-right
+                  span {{v.value}}
+                ul.dropdown-menu
+                  li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice}}
+            //TODO coloredit
+            .btn-group(ng-if="v.type[0].name=='Color'")
+              span.input-group-addon: div {{v.name || name}}
+              .input-color
+                div(ng-attr-style="background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v,category+' '+$index)") &nbsp;
+            //- Range
+            .input-group.chart-config-range(ng-if="v.type[0].name=='Range'")
+              span.input-group-addon: div {{v.name || name}}
+              span.label.min min
+              input.form-control(style="width:50%",ng-model="v.value[0]")
+              span.label.max max
+              input.form-control(style="width:50%",ng-model="v.value[1]")
+            //- Palette
+            .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);")
+              span.input-group-addon: div {{v.name || name}}
+              .input-palette
+                div(ng-repeat="c in v.value.colors",ng-attr-style="background:{{c.hex}};height:30px;display:inline-block;border-radius:2px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 1px") &nbsp;
+            //- Boolean
+            .btn-group(ng-if="v.type[0].name=='Boolean'")
+              span.input-group-addon: div {{v.name || name}}
+              .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
+        .chart-config.chart-config-end
+  .col-sm-9(style="padding-left:0;position:relative"): .ib(style="position:relative")
+    //-include annotate.jade
+    #code-error(ng-cloak,ng-show="error.msg",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error.msg}}
+    #code-editor(ng-class="editor.class")
+      .closebtn.inner(ng-cloak,ng-click="editor.fullscreen.toggle()",ng-show="editor.fullscreen.toggled")
+      #code-header(ng-class="{'fullscreen':editor.fullscreen.toggled}")
+        .tabs
+          span(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'") #[i.fa.fa-pie-chart] Preview
+          span(ng-class="{'active':vis=='code'}",ng-click="vis='code'") #[i.fa.fa-terminal] Code
+          span(ng-class="{'active':vis=='stylesheet'}",ng-click="vis='stylesheet'") #[i.fa.fa-paint-brush] Stylesheet
+          span(ng-class="{'active':vis=='document'}",ng-click="vis='document'") #[i.fa.fa-code] Document
+          span(ng-class="{'active':vis=='assets'}",ng-click="vis='assets'") #[i.fa.fa-files-o] Assets
+      #code-editor-code.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",
+      ng-model="target().code.content",ui-refresh="vis",ng-class="{'active':vis=='code'}")
+      #code-editor-style.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",
+      ng-model="target().style.content",ui-refresh="vis",ng-class="{'active':vis=='stylesheet'}")
+      #code-editor-doc.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",
+      ng-model="target().doc.content",ui-refresh="vis",ng-class="{'active':vis=='document'}")
+      #code-editor-assets.box(ng-cloak,ng-class="{'active':vis=='assets'}")
+        .file.uploader Upload ... #[input(type="file",multiple)]
+        .file(ng-repeat="f in target().assets",ng-click="assets.preview(f)")
+          .closebtn.outer(ng-click="target().removeFile(f)")
+          .title {{f.name}}
+          .type #[i {{f.type}}] #[small.pull-right {{(f.content || "").length|size}}]
+      #code-ctrl(ng-cloak)
+        .btn.btn-default(ng-click="scrollto('#binding-panel')",ng-show="!editor.fullscreen.toggled") Bind Data
+        .btn-group
+          .btn.btn-default(ng-click="editor.color.toggle()") Editor Style
+          .btn.btn-default(ng-click="reset()") Reload
+          .btn.btn-default(ng-click="editor.fullscreen.toggle()")
+            span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave 
+            span
+              | Fullscreen 
+              i.fa.fa-arrows-alt(ng-show="!editor.fullscreen.toggled")
+              i.fa.fa-compress(ng-show="editor.fullscreen.toggled")
+          .btn.btn-default(ng-click="vis='preview'") Preview #[small.hint Alt-Enter]
+    #visualization-canvas2.plpanel(ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
+      .closebtn.inner(ng-click="editor.fullscreen.toggle()")
+      .dropup(style="position:absolute",ng-show="editor.fullscreen.toggled")
+        .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
+          i.fa.fa-download
+          span.caret
+        ul.dropdown-menu
+          li.disabled(ng-show="!download.png.url"): a PNG #[img(src="/assets/img/loading.gif")]
+          li.disabled(ng-show="!download.svg.url"): a SVG #[img(src="/assets/img/loading.gif")]
+          li.disabled(ng-show="!download.plotdb.url"): a PlotDB.json #[img(src="/assets/img/loading.gif")]
+          li.disabled(ng-show="download.png.url=='#'"): a PNG #[i.fa.fa-warning.text-danger]
+          li.disabled(ng-show="download.svg.url=='#'"): a SVG #[i.fa.fa-warning.text-danger]
+          li(ng-show="download.png.url && download.png.url!='#'")
+            a(ng-attr-download="{{target().name}}.png",ng-attr-href="{{download.png.url}}")
+              | PNG #[small(ng-show="download.png.size") {{download.png.size|size}}]
+          li(ng-show="download.svg.url && download.svg.url!='#'")
+            a(ng-attr-download="{{target().name}}.svg",ng-attr-href="{{download.svg.url}}")
+              | SVG #[small(ng-show="download.svg.size") {{download.svg.size|size}}]
+          li(ng-show="download.plotdb.url && download.plotdb.url!='#'")
+            a(ng-attr-download="{{target().name}}.plotdb.json",ng-attr-href="{{download.plotdb.url}}")
+              | PlotDB.json #[small(ng-show="download.plotdb.size") {{download.plotdb.size|size}}]
+      .btn.btn-default(style="position:absolute;bottom:5px;left:5px;",ng-show="!editor.fullscreen.toggled",
+      ng-click="scrollto('#binding-panel')") Bind Data
+      .btn-group
+        .btn.btn-default(ng-click="reset()") Reload
+        .btn.btn-default(ng-click="editor.fullscreen.toggle()")
+          span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave 
+          span
+            | Fullscreen 
+            i.fa.fa-arrows-alt(ng-show="!editor.fullscreen.toggled")
+            i.fa.fa-compress(ng-show="editor.fullscreen.toggled")
+        .btn.btn-default(ng-click="vis='code'") Edit Code #[small.hint Alt-Enter]
+      .btn-group(style="right:auto;left:90px;bottom:0")
+        #editor-colorblind-dropup.dropup.btn-group
+          .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+            span(ng-show="colorblind.val=='normal'")
+              i.fa.fa-eye-slash.grayed
+              span &nbsp;colorblind #[span.caret]
+            span(ng-cloak,ng-show="colorblind.val!='normal'")
+              i.fa.fa-eye
+              span &nbsp;{{colorblind.val}} #[span.caret]
+          ul.dropdown-menu
+            li(ng-class="{'active':colorblind.val=='normal'}")
+              a(href="#",ng-click="colorblind.set('normal')") Normal People
+            li(ng-class="{'active':colorblind.val=='deuteranopia'}")
+              a(href="#",ng-click="colorblind.set('deuteranopia')") Red-Green #[small.grayed (9%)]
+            li(ng-class="{'active':colorblind.val=='achromatopsia'}")
+              a(href="#",ng-click="colorblind.set('achromatopsia')") Monochromasy #[small.grayed (0.003%)]
+            li.divider
+            small.grayed(style="margin-left:20px") Advanced Options
+            li(ng-class="{'active':colorblind.val=='protanopia'}")
+              a(href="#",ng-click="colorblind.set('protanopia')") Protanopia
+            li(ng-class="{'active':colorblind.val=='protanomaly'}")
+              a(href="#",ng-click="colorblind.set('protanomaly')") Protanomaly
+            li(ng-class="{'active':colorblind.val=='deuteranopia'}")
+              a(href="#",ng-click="colorblind.set('deuteranopia')") Deuteranopia
+            li(ng-class="{'active':colorblind.val=='deuteranomaly'}")
+              a(href="#",ng-click="colorblind.set('deuteranomaly')") Deuteranomaly
+            li(ng-class="{'active':colorblind.val=='tritanopia'}")
+              a(href="#",ng-click="colorblind.set('tritanopia')") Tritanopia
+            li(ng-class="{'active':colorblind.val=='tritanomaly'}")
+              a(href="#",ng-click="colorblind.set('tritanomaly')") Tritanomaly
+            li(ng-class="{'active':colorblind.val=='achromatopsia'}")
+              a(href="#",ng-click="colorblind.set('achromatopsia')") Achromatopsia
+            li(ng-class="{'active':colorblind.val=='achromatomaly'}")
+              a(href="#",ng-click="colorblind.set('achromatomaly')") Achromatomaly
+        #editor-rwdtest-dropup.dropup.btn-group
+          .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+            span(ng-show="rwdtest.val=='default'")
+              i.fa.fa-desktop.grayed
+              span &nbsp;responsive #[span.caret]
+            span(ng-cloak,ng-show="rwdtest.val!='default'")
+              i.fa.fa-desktop
+              span &nbsp;{{rwdtest.val}} #[span.caret]
+          ul.dropdown-menu
+            li(ng-class="{'active':rwdtest.val=='default'}")
+              a(href="#",ng-click="rwdtest.set('default')") Default
+            li(ng-class="{'active':rwdtest.val=='QVGA'}")
+              a(href="#",ng-click="rwdtest.set('QVGA')") QVGA #[small.grayed (240x320)]
+            li(ng-class="{'active':rwdtest.val=='HVGA'}")
+              a(href="#",ng-click="rwdtest.set('HVGA')") HVGA #[small.grayed (320x480)]
+            li(ng-class="{'active':rwdtest.val=='Thumb'}")
+              a(href="#",ng-click="rwdtest.set('Thumb')") Thumb#[small.grayed (308x229)]
+      //-iframe#chart-renderer(ng-attr-src="{{plotdbRenderer}}",
+      iframe#chart-renderer(
+      style="width:100%;height:100%;border:none;background:url(/assets/img/loading-sm.svg) center center no-repeat")
+

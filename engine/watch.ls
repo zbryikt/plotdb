@@ -121,6 +121,7 @@ base = do
         if @handle => clearTimeout(@handle)
         @handle = setTimeout((~> @handler!), 500)
   watch-handler: (d) ->
+    if /^src\/jade\/static/.exec(d) => return
     setTimeout (~> @_watch-handler d), 500
   _watch-handler: ->
     if !it or /node_modules|\.swp$/.exec(it)=> return
@@ -158,6 +159,8 @@ base = do
         console.log e.message
       console.log "[BUILD] recursive from #src:"
       _src = src
+      if srcs.indexOf(_src) < 0 => srcs ++= _src
+      console.log ">>>", srcs
       if srcs => for src in srcs
         if !/src\/jade/.exec(src) => continue
         try
