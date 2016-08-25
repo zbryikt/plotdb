@@ -51,7 +51,7 @@ jade-tree = src-tree(
   (-> if /^ *include (.+)| *extends (.+)/.exec(it) => (that.1 or that.2) else null),
   ((it, dir) ->
     if /^\//.exec it => it = path.join(('../' * dir.split(/src\/jade\//)[* - 1].split(\/).length),it)
-    it.replace(/(.jade)?$/, ".jade")
+    it
   )
 )
 
@@ -129,7 +129,6 @@ base = do
     src = src.replace path.join(cwd,\/), ""
     [type,cmd,des] = [ftype(src), "",""]
 
-    if type == \other => return
     if type == \md =>
       try
         des = src.replace(/src\/md/, "static/doc").replace(/.md/, ".html")
@@ -148,18 +147,18 @@ base = do
         console.log "[BUILD]   #src failed: "
         console.log e.message
 
-    if type == \jade =>
+    if type == \jade or type == \other =>
       if /^src\/jade\/view\//.exec(src) => return
       data = reload "./config/#{@config.config}.ls"
       try
-        jade-tree.parse src
+        if type == \jade => jade-tree.parse src
         srcs = jade-tree.find-root src
       catch
         console.log "[BUILD] #src failed: "
         console.log e.message
       console.log "[BUILD] recursive from #src:"
       _src = src
-      if srcs.indexOf(_src) < 0 => srcs ++= _src
+      if srcs.indexOf(_src) < 0 and type == \jade => srcs ++= _src
       if srcs => for src in srcs
         if !/src\/jade/.exec(src) => continue
         try
