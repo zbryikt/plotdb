@@ -25,7 +25,18 @@ angular.module \plotDB
         window: document.getElementById(\chart-renderer).contentWindow
       type: null     # chart or theme
       service: null  # chart-service or theme-service
-
+    (->
+      $http do
+        url: '/render-fast.html',
+        method: \GET
+      .success (html) ->
+        urlhtml = URL.createObjectURL new Blob [html], {type: \text/html}
+        $timeout (->
+          $scope.plotdb-renderer = $sce.trustAsResourceUrl(urlhtml)
+          $(\#chart-renderer)[0].setAttribute("src", urlhtml)
+        ), 10
+    )!
+    /*
     $http url: $scope.plotdb-renderer, method: \GET
       .success (html) ->
         ret = /<meta name="script" content="([^"]+)">/.exec html
@@ -44,7 +55,8 @@ angular.module \plotDB
               $timeout (->
                 $scope.plotdb-renderer = $sce.trustAsResourceUrl(urlhtml)
                 $(\#chart-renderer)[0].setAttribute("src", urlhtml)
-              ), 1000
+              ), 10
+    */
 
     #########  Functions  ################################################################
     $scope <<< do
@@ -171,14 +183,14 @@ angular.module \plotDB
           if !rebind => @canvas.window.postMessage {type: \render, payload, rebind}, @plotdb-domain
           else @canvas.window.postMessage {type: \reload}, @plotdb-domain
 
-      render-async: (rebind = true) ->
+      render-async: (rebind = true, delay = 500) ->
         if @parse.theme.pending or @parse.chart.pending => return
         if !@chart => return
         if @render-async.handler => $timeout.cancel @render-async.handler
         @render-async.handler = $timeout (~>
           @render-async.handler = null
           @render rebind
-        ), 500
+        ), delay
       parse: do
         send: (name) ->
           if !$scope[name] => return
@@ -445,6 +457,22 @@ angular.module \plotDB
           category: null
           tags: null
           library: null
+      edit-panel: do
+        attr: {}
+        set-style: (data)->
+          @attr <<< data.style
+          console.log @attr
+        test: ->
+          $scope.canvas.window.postMessage {type: \edit, payload: @attr}, $scope.plotdb-domain
+        init: ->
+          $scope.$watch 'editPanel.attr', (~> @test!), true
+        toggleDisplay: ->
+          @attr.opacity = (if !(@attr.opacity?) or @attr.opacity == 1 => 0 else 1)
+        toggleBold: ->
+          @attr['font-weight'] = (if !(@attr['font-weight']?) or @attr['font-weight'] == \normal => \bold else \normal)
+        toggleItalic: ->
+          @attr['font-style'] = (if !(@attr['font-style']?) or @attr['font-style'] == \normal => \italic else \normal)
+
       data-panel: do
         init: -> eventBus.listen \dataset.saved, ~> $timeout (~> @toggled = false), 200
         toggle: -> @toggled = !!!@toggled
@@ -800,6 +828,7 @@ angular.module \plotDB
           if $scope.error.lineno =>
             $("\#code-editor-code .CodeMirror-code > div:nth-of-type(#{$scope.error.lineno})").addClass \error
         else if data.type == \get-sample-data => $scope.data-panel.set-sample-data data.data
+        else if data.type == \editing.selection.style => $scope.edit-panel.set-style data.data
         else if data.type == \alt-enter => $scope.switch-panel!
         else if data.type == \snapshot =>
           #TODO need sanity check
@@ -815,9 +844,11 @@ angular.module \plotDB
           hash = {}
           for k,v of @chart.config => hash{}[v.category or \Other][k] = v
           $scope.configHash = hash
-          @inited = true
           @apply-theme!
-          $scope.render-async!
+          if !@inited =>
+            @inited = true
+            $scope.render!
+          else $scope.render-async!
         else if data.type == \parse-theme =>
           $scope.parse.theme.pending = false
           {config,typedef} = JSON.parse(data.payload)
@@ -902,6 +933,7 @@ angular.module \plotDB
         @setting-panel.init!
         @share-panel.init!
         @data-panel.init!
+        @edit-panel.init!
         if @type == \theme => @charts.init!
         if @type == \chart => @themes.init!
 

@@ -1,0 +1,31 @@
+#chart-annotate(ng-cloak)
+  .color.fill(ng-attr-style="background-color:{{editPanel.attr.fill}}",ldcolorpicker,
+  ng-model="editPanel.attr.fill",config="{exclusive: true, context: 'fill', class: 'no-palette'}")
+  .color.stroke(ng-attr-style="border-color:{{editPanel.attr.stroke}}",ldcolorpicker,
+  ng-model="editPanel.attr.stroke",config="{exclusive: true, context: 'stroke', class: 'no-palette'}")
+  select.form-control(style="width:50px",ng-model="editPanel.attr['stroke-width']")
+    option 0
+    option 1
+    option 2
+    option 3
+    option 4
+    option 5
+    option 6
+    option 7
+    option 8
+    option 9
+    option 10
+  select.form-control(style="width:120px",ng-model="editPanel.attr['font-family']")
+    option Arial
+    option Verdana
+    option Courier New
+  .btn-group
+    .btn.btn-default(ng-click="editPanel.toggleItalic()",
+    ng-class="{'active':editPanel.attr['font-style']=='italic'}") #[i.fa.fa-italic]
+    .btn.btn-default(ng-click="editPanel.toggleBold()",
+    ng-class="{'active':editPanel.attr['font-weight']=='bold'}") #[i.fa.fa-bold]
+  .btn.btn-default(ng-click="editPanel.toggleDisplay()")
+    span
+      i.fa.fa-check-square-o.text-success(ng-show="editPanel.attr.opacity!=0")
+      i.fa.fa-square-o(ng-show="editPanel.attr.opacity==0")
+      span &nbsp;Show

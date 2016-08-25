@@ -5908,6 +5908,8 @@ $(document).ready(function(){
       }
     } else if (evt.data.type === 'colorblind-emu') {
       return colorblind(evt.data.payload);
+    } else if (evt.data.type === 'edit') {
+      return edit(evt.data.payload);
     }
   };
   window.addEventListener('error', function(e){

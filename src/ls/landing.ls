@@ -1,5 +1,9 @@
 <- $ document .ready
-data = [{value: Math.random!} for i from 0 til 400]
+$('.loader.fixed.scrolling').css opacity: 0
+setTimeout (->
+  $('.loader.fixed.scrolling').css opacity: 1
+), 2000
+data = [{value: Math.random!} for i from 0 til 200]
 box = document.getElementById(\landing-svg).parentNode.getBoundingClientRect!
 svg = d3.select \#landing-svg
   .attr do
@@ -33,9 +37,10 @@ tick = ->
     r: -> it.value * 7 + 3
     fill: -> colors it.value
     opacity: -> 
-      dy = (it.y - (box.height * 0.5 )) / (box.height * 0.5)
-      if dy < 0 => return 0.8
-      0.8 - dy * 0.8
+      r = box.height * 0.8
+      ret = if it.y <= r => 1 else Math.abs(50 / (it.y - (r - 50))) ** 3
+      if ret < 0.01 => ret = 0
+      ret
   if force.alpha! < 0.015 => force.alpha 0.03
   speed := speed * 0.994
   if speed < 0.2 => speed := 0.2

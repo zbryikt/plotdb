@@ -13,10 +13,21 @@ random = (count) ->
   token = jsonwebtoken.sign val, secret.token-secret
   token
 
-engine.app.get( \/global, engine.csrfProtection, aux.type.json,
+engine.app.get( \/global, engine.csrfProtection,
   (req, res) ->
     res.setHeader \content-type, \application/javascript
-    res.render \view/global.ls, {user: req.user, global: true, csrfToken: req.csrfToken!}
+    #inline js to speed up.
+    #res.render \view/global.ls, {user: req.user, global: true, csrfToken: req.csrfToken!}
+    payload = JSON.stringify({user: req.user, global: true, csrfToken: req.csrfToken!})
+    if req.user => delete req.user.{}payment.strip
+    res.send """(function() { var req = #payload;
+    if(window._backend_) { angular.module("backend").factory("global",["context",function(context){
+      var own={}.hasOwnProperty,key;
+      for (key in req) if (own.call(req, key)) context[key] = req[key];
+      return req;
+    }]); }else{
+      angular.module("backend",[]).factory("global",[function(){return req;}]);
+    }})()"""
 )
 
 # currently we dont use this instead use Math.random! in browser.

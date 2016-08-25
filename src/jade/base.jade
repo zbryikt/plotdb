@@ -1,5 +1,4 @@
 doctype html
-//- basic libraries: jquery(1.10.2), d3js(3.3.11), angularjs(1.2.3), bootstrap(3.0)/semantic-ui(0.9.3/0.9.5)
 include version.jade
 include mixin.jade
 - var assets = "/assets"
@@ -15,18 +14,15 @@ include mixin.jade
 html(lang="en")
   block vars
   head(prefix="og: http://ogp.me/ns#")
-    include library.jade
-    link(rel="stylesheet",type="text/css",href="/css/index.css?"+version)
-    link(href='//fonts.googleapis.com/css?family=Lato:300,400,700',rel='stylesheet',type='text/css')
-    //- think about Lato, Open Sans ( Condensed ), Noto Sans, Helvetica Neue, Century Gothic.
-    link(href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700',rel='stylesheet',type='text/css')
-    //-link(rel="chrome-webstore-item",href="https://chrome.google.com/webstore/detail/einojbmllcjnkcapgajdbjjnpibkjnhh")
-    link(rel="stylesheet",type="text/css",href="/assets/codemirror/5.10/lib/codemirror.css")
-    link(rel="stylesheet",type="text/css",href="/assets/ldcolorpicker/0.1.1/ldcp.css")
-    link(rel="stylesheet",type="text/css",href="/assets/select2/4.0.1/css/select2.min.css")
+    include meta.jade
+    link(rel="icon",type="image/x-icon",href="#{favicon}")
+    link(rel="stylesheet",type="text/css",
+    href="//fonts.googleapis.com/css?family=Lato:300,400,700|Open+Sans+Condensed:300,700")
+    link(rel="stylesheet",type="text/css",href="/css/pack/frameworks.css?" + version)
+    script(src="/js/pack/frameworks.js?" + version)
+
     script(type="text/javascript",src="/global")
     script(type="text/javascript",src="/js/pack/base.js?" + version)
-    script(type="text/javascript",src="/assets/papaparse/4.1.2/papaparse.min.js")
     block head
   body(id=rootid,ng-app="plotDB",ng-controller="plSite")
     #confirmbox
@@ -58,16 +54,3 @@ html(lang="en")
     include /feedback.jade
     include /ga.jade
     include /fb.jade
-    //-script.
-      window.twttr = (function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0],
-          t = window.twttr || {};
-        if (d.getElementById(id)) return t;
-        js = d.createElement(s);
-        js.id = id;
-        js.src = "https://platform.twitter.com/widgets.js";
-        fjs.parentNode.insertBefore(js, fjs);
-        t._e = [];
-        t.ready = function(f) { t._e.push(f); };
-        return t;
-      }(document, "script", "twitter-wjs"));

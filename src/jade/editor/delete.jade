@@ -1,0 +1,12 @@
+.row(ng-show="target().key && target().owner == user.data.key",ng-cloak)
+  .col-sm-12
+    .panel.panel-default
+      .panel-heading: label Danger Zone
+      .panel-body
+        div(style="display:flex")
+          div(style="flex: 1 1 0")
+            .text-center: label Delete
+            p.text-center(ng-cloak) Permanently delete this {{type}}. Are you sure?
+            .text-center
+              .btn.btn-danger.loader(ng-click="delete()",ng-class="{'loading':delete.handle}") Yes, Delete it
+

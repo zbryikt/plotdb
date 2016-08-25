@@ -44,7 +44,7 @@ include panel.jade
     .panel-footer.text-right
       .btn.btn-primary(ng-class="{'disabled':!panel.name.value}",ng-click="panel.name.action(0)")
         span &nbsp; OK &nbsp;
-      span &nbsp
+      span &nbsp;
       .btn.btn-default(ng-click="panel.name.action(1)") Cancel
 
 #dataset-editor
@@ -90,8 +90,8 @@ include panel.jade
             li(ng-class="{'disabled':!dataset.key}"): a(ng-click="panel.toggle()") #[i.fa.fa-users] Share
 
   //dev
-  script(src="/assets/clusterize/0.16.1/clusterize.min.js")
-  link(rel="stylesheet",type="text/css",href="/assets/clusterize/0.16.1/clusterize.css")
+  //-script(src="/assets/clusterize/0.16.1/clusterize.min.js")
+     link(rel="stylesheet",type="text/css",href="/assets/clusterize/0.16.1/clusterize.css")
   #dataset-editbox
     .inner
       #dataset-edit-grid.sheet-outer(ng-show="grid.toggled")
