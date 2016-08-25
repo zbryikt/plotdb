@@ -1,4 +1,4 @@
-require! <[fs fs-extra path bluebird crypto LiveScript chokidar moment]>
+require! <[os fs fs-extra path bluebird crypto LiveScript chokidar moment]>
 require! <[express body-parser express-session connect-multiparty]>
 require! <[passport passport-local passport-facebook passport-google-oauth2]>
 require! <[nodemailer nodemailer-smtp-transport csurf]>
@@ -37,13 +37,28 @@ content-security-policy = [
   <[connect-src
     'self' data: blob:
   ]>
-].map(-> it.join(" ")).join("; ")
+]
+
+get-ip = (default-ifname = "en0") ->
+  ret = []
+  ifaces = os.networkInterfaces!
+  Object.keys ifaces .forEach (ifname) ->
+    if default-ifname and ifname != default-ifname => return
+    ifaces[ifname].forEach (iface) ->
+      if \IPv4 == iface.family and iface.internal == false => ret.push iface.address
+  ret
 
 backend = do
   update-user: (req) -> req.logIn req.user, ->
   #session-store: (backend) -> @ <<< backend.dd.session-store!
   init: (config, authio) -> new bluebird (res, rej) ~>
     @config = config
+    if @config.debug => # for weinre debug
+      ip = get-ip!0 or "127.0.0.1"
+      (list) <- content-security-policy.map
+      if <[connect-src script-src]>.indexOf(list.0) < 0 => return
+      list.push "http://#ip:8080"
+    content-security-policy := content-security-policy.map(-> it.join(" ")).join("; ")
     session-store = -> @ <<< authio.session
     session-store.prototype = express-session.Store.prototype
     app = express!
