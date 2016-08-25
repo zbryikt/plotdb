@@ -10,7 +10,7 @@ $(document).ready(function(){
     });
   }, 2000);
   res$ = [];
-  for (i$ = 0; i$ < 400; ++i$) {
+  for (i$ = 0; i$ < 200; ++i$) {
     i = i$;
     res$.push({
       value: Math.random()
@@ -60,12 +60,15 @@ $(document).ready(function(){
         return colors(it.value);
       },
       opacity: function(it){
-        var dy;
-        dy = (it.y - box.height * 0.5) / (box.height * 0.5);
-        if (dy < 0) {
-          return 0.8;
+        var r, ret;
+        r = box.height * 0.8;
+        ret = it.y <= r
+          ? 1
+          : Math.pow(Math.abs(50 / (it.y - (r - 50))), 3);
+        if (ret < 0.01) {
+          ret = 0;
         }
-        return 0.8 - dy * 0.8;
+        return ret;
       }
     });
     if (force.alpha() < 0.015) {
