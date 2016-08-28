@@ -54,10 +54,6 @@ body {
 select[ngselect2] {
   height: 34px;
 }
- {
-  width: 100%;
-  width: 100%;
-}
 .spc1 {
   height: 0;
 }
@@ -2552,6 +2548,15 @@ small.hint {
   #subnav-top {
     display: none;
   }
+  #nav-top ul.nav.navbar-nav li a .name {
+    display: none;
+  }
+}
+@media (min-width: 800px) {
+  #nav-top ul.nav.navbar-nav li a i.fa,
+  #nav-top ul.nav.navbar-nav li a img {
+    display: none;
+  }
 }
 @media (max-width: 480px) {
   #nav-top nav.navbar-default .navbar-nav > li > a {
@@ -3796,6 +3801,11 @@ small.hint {
 }
 #chart-filter.sticked #chart-explore-bar {
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+@media (min-width: 800px) {
+  #chart-filter.landing.sticked {
+    margin-top: 25px;
+  }
 }
 @media (max-width: 768px) {
   #chart-filter {

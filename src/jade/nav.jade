@@ -7,7 +7,10 @@
       div
         ul.nav.navbar-nav
           li#nav-chart.dropdown
-            a.dropdown-toggle(href="#",data-toggle="dropdown") CHARTS#[span.caret]
+            a.dropdown-toggle(href="#",data-toggle="dropdown")
+              i.fa.fa-bar-chart
+              span.name &nbsp;CHARTS
+              span.caret
             ul.dropdown-menu
               li: a(href="/chart/explore/") Explore
               li(ng-show="user.data",ng-cloak): a(href="/chart/me") My Charts
@@ -16,21 +19,29 @@
               //-li: a(href="/chart/?demo") Demo Chart
 
           li#nav-dataset.dropdown
-            a.dropdown-toggle(href="#",data-toggle="dropdown") DATASET#[span.caret]
+            a.dropdown-toggle(href="#",data-toggle="dropdown")
+              i.fa.fa-table
+              span.name &nbsp;DATASET
+              span.caret
             ul.dropdown-menu
               //-li: a(href="/dataset/explore/") Explore
               li: a(href="/dataset/me/",ng-cloak,ng-show="user.data") My Dataset
               li.divider
               li: a(href="/dataset/") New Dataset
           li#nav-theme.dropdown
-            a.dropdown-toggle(href="#",data-toggle="dropdown") THEME#[span.caret]
+            a.dropdown-toggle(href="#",data-toggle="dropdown")
+              i.fa.fa-paint-brush
+              span.name &nbsp;THEME
+              span.caret
             ul.dropdown-menu
               li: a(href="/theme/explore/") Explore
               li: a(href="/theme/me/",ng-cloak,ng-show="user.data") My Theme
               //-li: a(href="/palette/editor.html",ng-cloak,ng-show="user.data") Palette Editor
               li.divider
               li: a(href="/theme/") Make New Theme
-          li#nav-palette: a(href="/palette/editor.html",ng-cloak,ng-show="user.data") PALETTE EDITOR
+          li#nav-palette: a(href="/palette/editor.html",ng-cloak,ng-show="user.data")
+            img(src="/assets/img/palette2.svg",style="vertical-align:text-top;width:14px;margin-top:2px;")
+            span.name &nbsp;PALETTE EDITOR
 
         ul.nav.navbar-nav.pull-right
           //- temporarily hide 'request' button
