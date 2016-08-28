@@ -19,7 +19,8 @@
   padding-bottom: 37px;
   -webkit-flex: 1 1 320px;
   flex: 1 1 320px;
-  background: #faf9f8;
+  overflow: hidden;
+  background: #fdfdfc;
 }
 .chart:hover .chart-img .ib {
   background-size: initial;
@@ -46,11 +47,11 @@
   margin: 5px 10px;
 }
 .chart .chart-desc .title {
+  color: #ed1d78;
   margin: 5px 0 2px;
   font-size: 1.2em;
   font-family: arial #000;
   font-weight: bold;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.1);
   cursor: pointer;
 }
 .chart .chart-desc .desc {
@@ -107,15 +108,14 @@
 }
 .chart .labels .label {
   padding: 1px 6px 2px;
-  color: #fff;
-  background-color: #aaa;
   margin: 0 5px 5px 0;
   font-weight: 200;
   letter-spacing: 1px;
   font-size: 12px;
   text-shadow: 0 0px 1px rgba(0,0,0,0.2);
-  -webkit-flex: 1 1 auto;
-  flex: 1 1 auto;
+  padding: 2px 4px 2px 0;
+  margin: 0 4px 3px 0;
+  color: #999;
 }
 .chart .social {
   position: absolute;
@@ -124,6 +124,7 @@
   border-top: 1px dashed #e0e0e0;
   font-size: 0.8em;
   bottom: 0;
+  background: #fbfbf9;
 }
 .chart .social i.fa {
   font-size: 1.2em;
@@ -151,7 +152,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 17;
+  z-index: 18;
   background: rgba(0,0,0,0.8);
   padding: 20px 20px 80px 20px;
 }
@@ -508,7 +509,7 @@
   position: relative;
   background: #fff;
   padding: 10px;
-  z-index: 22;
+  z-index: 23;
   border-bottom: 1px solid #ccc;
   padding-bottom: 10px;
 }
@@ -569,23 +570,23 @@
   display: block;
 }
 #code-editor.active {
-  z-index: 20;
+  z-index: 21;
 }
 #visualization-canvas2.active {
-  z-index: 20;
+  z-index: 21;
   opacity: 1;
 }
 #code-editor.fullscreen {
-  z-index: 28;
+  z-index: 29;
 }
 #visualization-canvas2.fullscreen {
-  z-index: 28;
+  z-index: 29;
 }
 #code-editor.fullscreen.active {
-  z-index: 29;
+  z-index: 30;
 }
 #visualization-canvas2.fullscreen.active {
-  z-index: 29;
+  z-index: 30;
 }
 #fullscreen-dimmer {
   display: none;
@@ -597,7 +598,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 19;
+  z-index: 20;
   background: rgba(0,0,0,0.5);
 }
 #code-error {
@@ -612,12 +613,12 @@
   border-radius: 3px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   color: #900;
-  z-index: 21;
+  z-index: 22;
   overflow: scroll;
   width: 50%;
 }
 #code-error.fullscreen {
-  z-index: 30;
+  z-index: 31;
   position: fixed;
   bottom: 10px;
   left: 10px;
@@ -692,7 +693,7 @@ small.hint {
   border-radius: 2px;
 }
 .ldColorPicker.bubble {
-  z-index: 27;
+  z-index: 28;
 }
 .file {
   position: relative;
@@ -752,7 +753,7 @@ small.hint {
 }
 #assets-preview {
   position: fixed;
-  z-index: 34;
+  z-index: 35;
   top: 0;
   left: 0;
   width: 100%;
@@ -980,7 +981,7 @@ small.hint {
 }
 #user-feedback {
   position: fixed;
-  z-index: 33;
+  z-index: 34;
   bottom: 0;
   right: 20px;
   width: 180px;

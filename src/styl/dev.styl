@@ -18,7 +18,8 @@
   min-height: 320px
   padding-bottom: 37px
   flex(1 1 320px)
-  background: #faf9f8
+  overflow: hidden
+  background: color["bklite"]
   &:hover .chart-img .ib
     background-size: initial
   .chart-img
@@ -39,13 +40,12 @@
       background-size: contain
   .chart-desc
     margin: 5px 10px
-    //-margin: 0 5px
     .title
+      color: color["primary"]
       margin: 5px 0 2px
       font-size: 1.2em
       font-family: arial black
       font-weight: bold
-      text-shadow: 0 1px 1px rgba(0,0,0,0.1)
       cursor: pointer
     .desc
       margin: 0
@@ -94,14 +94,14 @@
   flex-wrap(wrap)
   .label
     padding: 1px 6px 2px
-    color: #fff
-    background-color: #aaa
     margin: 0 5px 5px 0
     font-weight: 200
     letter-spacing: 1px
     font-size: 12px
     text-shadow: 0 0px 1px rgba(0,0,0,0.2)
-    flex(1 1 auto)
+    padding: 2px 4px 2px 0
+    margin: 0 4px 3px 0
+    color: #999
 
 .chart .social
   position: absolute
@@ -110,6 +110,7 @@
   border-top: 1px dashed #e0e0e0
   font-size: 0.8em
   bottom: 0
+  background: color["bklite"] - 1%
   i.fa
     font-size: 1.2em
   .favorite

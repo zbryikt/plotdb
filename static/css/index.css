@@ -5,8 +5,8 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background: #ebeae9;
+  font-family: lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #f9f9f9;
   color: #333;
 }
 #root {
@@ -802,7 +802,7 @@ a.dropdown-toggle {
   cursor: pointer;
 }
 .progress {
-  background: #d5d3d0;
+  background: #e0e0e0;
 }
 .progress .progress-bar {
   max-width: 100%;
@@ -1224,7 +1224,7 @@ ul.dropdown-menu li a.toggle-filepick input {
 .team-header {
   width: 100%;
   height: 144px;
-  background: #f9f9f9;
+  background: #fdfdfc;
   color: #444;
   margin: 60px 0 -20px;
   padding: 24px;
@@ -1295,7 +1295,8 @@ ul.dropdown-menu li a.toggle-filepick input {
   padding-bottom: 37px;
   -webkit-flex: 1 1 320px;
   flex: 1 1 320px;
-  background: #faf9f8;
+  overflow: hidden;
+  background: #fdfdfc;
 }
 .chart:hover .chart-img .ib {
   background-size: initial;
@@ -1322,11 +1323,11 @@ ul.dropdown-menu li a.toggle-filepick input {
   margin: 5px 10px;
 }
 .chart .chart-desc .title {
+  color: #ed1d78;
   margin: 5px 0 2px;
   font-size: 1.2em;
   font-family: arial #000;
   font-weight: bold;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.1);
   cursor: pointer;
 }
 .chart .chart-desc .desc {
@@ -1383,15 +1384,14 @@ ul.dropdown-menu li a.toggle-filepick input {
 }
 .chart .labels .label {
   padding: 1px 6px 2px;
-  color: #fff;
-  background-color: #aaa;
   margin: 0 5px 5px 0;
   font-weight: 200;
   letter-spacing: 1px;
   font-size: 12px;
   text-shadow: 0 0px 1px rgba(0,0,0,0.2);
-  -webkit-flex: 1 1 auto;
-  flex: 1 1 auto;
+  padding: 2px 4px 2px 0;
+  margin: 0 4px 3px 0;
+  color: #999;
 }
 .chart .social {
   position: absolute;
@@ -1400,6 +1400,7 @@ ul.dropdown-menu li a.toggle-filepick input {
   border-top: 1px dashed #e0e0e0;
   font-size: 0.8em;
   bottom: 0;
+  background: #fbfbf9;
 }
 .chart .social i.fa {
   font-size: 1.2em;
@@ -2547,6 +2548,15 @@ small.hint {
   #subnav-top {
     display: none;
   }
+  #nav-top ul.nav.navbar-nav li a .name {
+    display: none;
+  }
+}
+@media (min-width: 800px) {
+  #nav-top ul.nav.navbar-nav li a i.fa,
+  #nav-top ul.nav.navbar-nav li a img {
+    display: none;
+  }
 }
 @media (max-width: 480px) {
   #nav-top nav.navbar-default .navbar-nav > li > a {
@@ -2737,7 +2747,7 @@ small.hint {
   display: none;
 }
 .dataset-entry {
-  background: #f9f9f9;
+  background: #fdfdfc;
   padding: 0;
   border: 1px solid #ccc;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -3791,6 +3801,11 @@ small.hint {
 }
 #chart-filter.sticked #chart-explore-bar {
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+@media (min-width: 800px) {
+  #chart-filter.landing.sticked {
+    margin-top: 25px;
+  }
 }
 @media (max-width: 768px) {
   #chart-filter {

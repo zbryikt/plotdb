@@ -99,7 +99,7 @@
           data-toggle="tooltip",data-placement="top",title="Show My Favorite",
           ng-class="{'active':q.fav}",ng-click="q.fav=!!!q.fav") #[i.fa.fa-heart]
           | &nbsp;
-          .input-group
+          .input-group.pull-right(style="max-width:200px")
             input.form-control(ng-class="{'active': qLazy.keyword}",
             type="text",placeholder="Search",ng-model="qLazy.keyword")
             .input-group-btn(ng-click="loadList()")
