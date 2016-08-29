@@ -1,0 +1,57 @@
+mixin pricing-panel
+  .panel.panel-default(style="max-width:480px;margin:auto;background:#f9f9f9")
+    .panel-body(style="border-bottom:1px solid #ccc;min-height:initial")
+      .row.text-center
+        .col-sm-6(style="position:relative;border-right:1px solid #ccc")
+          div(style="width:80px;height:83px;margin:auto;background:url(/assets/img/pricing/pic2-frame.png);background-size:contain;top:-55px;left:50%;margin-left:-40px;position:absolute;")
+          h3(style="margin-top:30px") BASIC PLAN
+          small 100+ Charts
+          br
+          small PNG/SVG Download
+          br
+          small Customizable Theme
+          br
+          small: a(href="#") detail...
+          h3 20$ #[small / month]
+          input(type="radio",name="plan")
+        .col-sm-6(style="position:relative")
+          div(style="width:117px;height:83px;margin:auto;background:url(/assets/img/pricing/pic3-frame.png);background-size:cover;top:-55px;left:50%;margin-left:-50px;position:absolute;")
+          h3(style="margin-top:30px") EXPERT PLAN
+          small Privacy Control
+          br
+          small Team Manage
+          br
+          small Source Editing 
+          br
+          small: a(href="#") detail...
+          h3 50$ #[small / month]
+          input(type="radio",name="plan")
+      br
+      .text-center: .btn-group
+        .btn.btn-default.btn-sm.active Monthly
+        .btn.btn-default.btn-sm Yearly
+    .panel-body(style="min-height:initial")
+      .form
+        .pull-right: big: big
+          i.fa.fa-cc-visa(style="vertical-align:top")
+          span &nbsp;
+          i.fa.fa-cc-mastercard(style="vertical-align:top")
+          span &nbsp;
+          i.fa.fa-cc-amex(style="vertical-align:top")
+          span &nbsp;
+          i.fa.fa-cc-jcb(style="vertical-align:top")
+          span &nbsp;
+          i.fa.fa-cc-stripe(style="vertical-align:top")
+        label Credit Card Number
+        input.form-control(type="input",placeholder="Card Number")
+        br
+        .row
+          .col-sm-6
+            label Expiration
+            input.form-control(type="input",placeholder="Expire Date MM/YY",style="display:inline")
+          .col-sm-6
+            label CVC Code
+            input.form-control(type="input",placeholder="CVC",style="display:inline")
+        br
+      .btn.btn-primary.btn-block.btn-lg Make Payment
+

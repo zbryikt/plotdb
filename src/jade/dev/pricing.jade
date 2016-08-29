@@ -7,6 +7,7 @@ block head
   style(type="text/css").
     html,body { background: #fff;}
     .normal { color: #aaa; }
+include pricing-panel.jade
 mixin blocks(i)
   .text-center
     each j in [1,2,3,4,5,6,7,8,9]
@@ -113,3 +114,10 @@ block body
                     input.form-control(type="input",placeholder="CVC",style="display:inline")
                 br
               .btn.btn-primary.btn-block.btn-lg Make Payment
+
+      br
+      br
+      br
+      .btn.btn-default(ng-click="pricingPanel = true")
+      +cover-modal("pricingPanel","pricingPanel = false")
+        +pricing-panel
