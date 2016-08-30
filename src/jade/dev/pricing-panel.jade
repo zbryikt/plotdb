@@ -1,57 +1,93 @@
 mixin pricing-panel
-  .panel.panel-default(style="max-width:480px;margin:auto;background:#f9f9f9")
-    .panel-body(style="border-bottom:1px solid #ccc;min-height:initial")
+  #prc-widget.panel.panel-default(ng-controller="payment")
+    .panel-body
       .row.text-center
-        .col-sm-6(style="position:relative;border-right:1px solid #ccc")
-          div(style="width:80px;height:83px;margin:auto;background:url(/assets/img/pricing/pic2-frame.png);background-size:contain;top:-55px;left:50%;margin-left:-40px;position:absolute;")
-          h3(style="margin-top:30px") BASIC PLAN
-          small 100+ Charts
-          br
-          small PNG/SVG Download
-          br
-          small Customizable Theme
-          br
-          small: a(href="#") detail...
-          h3 20$ #[small / month]
-          input(type="radio",name="plan")
-        .col-sm-6(style="position:relative")
-          div(style="width:117px;height:83px;margin:auto;background:url(/assets/img/pricing/pic3-frame.png);background-size:cover;top:-55px;left:50%;margin-left:-50px;position:absolute;")
-          h3(style="margin-top:30px") EXPERT PLAN
-          small Privacy Control
-          br
-          small Team Manage
-          br
-          small Source Editing 
-          br
-          small: a(href="#") detail...
-          h3 50$ #[small / month]
-          input(type="radio",name="plan")
+        .col-sm-6(style="border-right:1px solid #ccc")
+          .selection(ng-click="setting.plan=1",ng-class="{'active': setting.plan==1}")
+            .prc-widget-logo.logo2
+            h3 BASIC PLAN
+            small 100+ Charts
+            br
+            small PNG/SVG Download
+            br
+            small Customize Theme
+            br
+            small: a(href="#") detail...
+            h3(style="margin-top:10px")
+              span ${{prices[setting.period][1]}}
+              small: span  / #[span(ng-show="setting.period==0") month]#[span(ng-show="setting.period==1") year]
+            i.fa.fa-check-circle.text-success
+        .col-sm-6
+          .selection(ng-click="setting.plan=2",ng-class="{'active': setting.plan==2}")
+            .prc-widget-logo.logo3
+            h3 EXPERT PLAN
+            small Privacy Control
+            br
+            small Team Manage
+            br
+            small Source Editing
+            br
+            small: a(href="#") detail...
+            h3(style="margin-top:10px")
+              span ${{prices[setting.period][2]}}
+              small: span  / #[span(ng-show="setting.period==0") month]#[span(ng-show="setting.period==1") year]
+            i.fa.fa-check-circle.text-success
+
       br
-      .text-center: .btn-group
-        .btn.btn-default.btn-sm.active Monthly
-        .btn.btn-default.btn-sm Yearly
-    .panel-body(style="min-height:initial")
+      .row.text-center
+        .col-sm-6
+          small.grayed Subscription Frequency
+          .btn-group
+            .btn.btn-default.btn-sm(ng-class="{'active':setting.period==0}",
+            ng-click="setting.period=0") Monthly
+            .btn.btn-default.btn-sm(ng-class="{'active':setting.period==1}",
+            ng-click="setting.period=1") Yearly ( Save 17% )
+        .col-sm-6
+          small.grayed Have a coupon code?
+          .input-group
+            input.form-control.input-sm(type="input",placeholder="Enter coupon code here")
+            span.input-group-btn: .btn.btn-default.btn-sm Apply
+
+    #prc-cc.panel-body
       .form
         .pull-right: big: big
-          i.fa.fa-cc-visa(style="vertical-align:top")
-          span &nbsp;
-          i.fa.fa-cc-mastercard(style="vertical-align:top")
-          span &nbsp;
-          i.fa.fa-cc-amex(style="vertical-align:top")
-          span &nbsp;
-          i.fa.fa-cc-jcb(style="vertical-align:top")
-          span &nbsp;
-          i.fa.fa-cc-stripe(style="vertical-align:top")
+          i.fa.fa-cc-visa(ng-class="{'text-primary':cardtype=='Visa'}")
+          i.fa.fa-cc-mastercard(ng-class="{'text-primary':cardtype=='Mastercard'}")
+          i.fa.fa-cc-amex(ng-class="{'text-primary':cardtype=='American Express'}")
+          i.fa.fa-cc-jcb(ng-class="{'text-primary':cardtype=='JCB'}")
+          i.fa.fa-cc-stripe
         label Credit Card Number
-        input.form-control(type="input",placeholder="Card Number")
-        br
-        .row
-          .col-sm-6
-            label Expiration
-            input.form-control(type="input",placeholder="Expire Date MM/YY",style="display:inline")
-          .col-sm-6
+        .form-group(ng-class="{'has-feedback has-error':error.number}",style="margin-bottom:13px")
+          input.form-control(type="input",placeholder="Card Number",ng-model="payinfo.number",
+          ng-keydown="check('number')")
+          .form-control-feedback.with-text(ng-show="error.number",ng-cloak,style="margin-top:3px")
+            small 16 digit number, like: 1000200030004000
+        .row(style="margin-bottom:13px")
+          .col-sm-7
+            label Expiration Date
+            div
+            .form-group(ng-class="{'has-feedback has-error':error.exp_month}",style="display:inline;margin-bottom:0")
+              input.form-control(type="input",placeholder="Month",ng-model="payinfo.exp_month",
+              style="display:inline;width:50%;border-right:0;border-radius:3px 0 0 3px",
+              ng-keydown="check('exp_month')")
+              .form-control-feedback.with-text(ng-show="error.exp_month",style="margin-top:15px",ng-cloak)
+                small 01 ~ 12, like: 08
+            .form-group(ng-class="{'has-feedback has-error':error.exp_year}",style="display:inline;margin-bottom:0")
+              input.form-control(type="input",placeholder="Year",ng-model="payinfo.exp_year",
+              style="display:inline;width:50%;border-radius:0 3px 3px 0",
+              ng-keydown="check('exp_year')")
+              .form-control-feedback.with-text(ng-show="error.exp_year",style="margin-top:15px",ng-cloak)
+                small future year, like: 2018
+          .col-sm-5
             label CVC Code
-            input.form-control(type="input",placeholder="CVC",style="display:inline")
-        br
-      .btn.btn-primary.btn-block.btn-lg Make Payment
-
+            .form-group(ng-class="{'has-feedback has-error':error.cvc}",style="margin-bottom:0")
+              input.form-control(type="input",placeholder="CVC",style="display:inline",
+              ng-model="payinfo.cvc",ng-keydown="check('cvc')")
+              .form-control-feedback.with-text(ng-show="error.cvc",ng-cloak)
+                small 3 digit number, like: 476
+      .btn.btn-primary.btn-block.btn-lg(ng-class="{'disabled':error.all}",style="margin-top:20px",
+      ng-click="createToken()")
+        span Subscribe with 
+        span ${{prices[setting.period][setting.plan]}}
+        small: span  / #[span(ng-show="setting.period==0") month]#[span(ng-show="setting.period==1") year]
+    img.pull-right(src="/assets/img/pricing/stripe-powered-light.png",style="margin:5px 0 0")
