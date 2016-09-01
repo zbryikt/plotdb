@@ -4295,21 +4295,43 @@ small.hint {
   background: #fff;
   border-radius: 50%;
 }
+.prc-widget-logo.float {
+  top: -35px;
+  left: 50%;
+  position: absolute;
+  margin-left: -30px;
+}
 .prc-widget-logo {
   height: 62px;
   margin: auto;
   background-size: cover;
-  top: -35px;
-  left: 50%;
-  position: absolute;
   width: 60px;
   background-image: url("/assets/img/pricing/pic2-frame.png");
-  margin-left: -30px;
 }
 .prc-widget-logo.logo3 {
   width: 88px;
   background-image: url("/assets/img/pricing/pic3-frame.png");
+}
+.prc-widget-logo.logo3.float {
   margin-left: -39px;
+}
+.prc-widget-logo.lg {
+  width: 88px;
+  height: 88px;
+  background-image: url("/assets/img/pricing/p1f-lg.png");
+}
+.prc-widget-logo.lg.float {
+  margin-left: -44px;
+}
+.prc-widget-logo.lg.logo2 {
+  background-image: url("/assets/img/pricing/p2f-lg.png");
+}
+.prc-widget-logo.lg.logo3 {
+  width: 124px;
+  background-image: url("/assets/img/pricing/p3f-lg.png");
+}
+.prc-widget-logo.lg.logo3.float {
+  margin-left: -62px;
 }
 .prc-plan-logo {
   width: 108px;

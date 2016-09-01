@@ -2,6 +2,10 @@ extends /base.jade
 block head
   script(type="text/javascript",src="/js/profile.js")
 block body
+  script(type="text/javascript",src="https://js.stripe.com/v2/")
+  include /pricing/credit-card.jade
+  +cover-modal("ccpanel==true","ccpanel=!!!ccpanel")
+    +credit-card-panel
   #root.narrow
     h3 Billing Information
     .sep.gap
@@ -10,12 +14,27 @@ block body
         .panel.panel-default
           .panel-body(style="position:relative")
             .text-center
-              span Your Current Plan
-              br
-              br
-              div(style="width:80px;height:83px;margin:auto;background:url(/assets/img/pricing/pic2-frame.png);background-size:contain;")
-              h2(style="margin-top:0px;margin-bottom:5px") Basic Plan
-              small usd 20$ / month
+              div(style="margin-bottom:15px") Your Current Plan
+              .prc-widget-logo.lg(class="logo" + (plan + 1))
+              h2(style="margin-top:0px;margin-bottom:5px")
+                if plan == 0
+                  span Free Plan
+                if plan == 1
+                  span Basic Plan
+                if plan == 2
+                  span Expert Plan
+              if plan == 0
+                small $0 usd / forever
+              if period == 0
+                if plan == 1
+                  small $20 usd / month
+                if plan == 2
+                  small $50 usd / month
+              if period == 1
+                if plan == 1
+                  small $200 usd / year
+                if plan == 2
+                  small $500 usd / year
             br
             .text-center
               .btn.btn-link #[i.fa.fa-question-circle-o]  what's in this plan?
@@ -32,18 +51,18 @@ block body
               .pull-right: big: big
                 i.fa.fa-credit-card(style="vertical-align:top")
               label Using Credit Card
-              input.form-control.disabled(type="input",disabled,placeholder="Card Number",value="xxxx-xxxx-xxxx-4046")
+              input.form-control.disabled(type="input",disabled,placeholder="Card Number",value=ccn)
               br
               .row
                 .col-sm-6
                   label Next Billing Due
-                  div(style="background:#eee;padding:5px 10px;border-radius:3px") 2016-09-01 $20.00
+                  div(style="background:#eee;padding:5px 10px;border-radius:3px")= "{{'" + expiredate + "'|nicedate}}"
                 .col-sm-6
                   label Amount
                   br
-                  div(style="background:#eee;padding:5px 10px;border-radius:3px") $20.00
+                  div(style="background:#eee;padding:5px 10px;border-radius:3px")= "$" + amount
               .sep.gap
-            a.pull-right update payment method
+            a.pull-right(ng-click="ccpanel=true") update payment method
             a.pull-left payment history
 
     style(type="text/css").

@@ -24,8 +24,9 @@ mixin block(i,j)
 mixin selectbtn(current,value)
   div(ng-cloak)
     .btn.btn-link.btn-lg.disabled(ng-if=current) Current Plan&nbsp; #[i.fa.fa-dot-circle-o]
-    .btn.btn-lg.btn-success.btn-block(ng-if="setting.plan == " + value) Selected &nbsp; #[i.fa.fa-check-circle]
-    .btn.btn-lg.btn-default.btn-block(ng-if="!(" + current +") && setting.plan != " + value, ng-click="setting.plan = " + value)  Select &nbsp; #[i.fa.fa-circle-thin]
+    .btn.btn-lg.btn-success.btn-block(
+    ng-if="!(" + current +") && settings.plan == " + value) Selected &nbsp; #[i.fa.fa-check-circle]
+    .btn.btn-lg.btn-default.btn-block(ng-if="!(" + current +") && settings.plan != " + value, ng-click="settings.plan = " + value)  Select &nbsp; #[i.fa.fa-circle-thin]
 block body
   .spc1
   #root(ng-controller="payment")
@@ -37,14 +38,14 @@ block body
         .col-sm-4(style="border-right:2px solid #ccc")
           .prc-plan-logo.logo1
           .text-center
-            h3(style="margin-bottom:2px") NOVICE
+            h3(style="margin-bottom:2px") FREE
             p suitable for a quick evaluation
             +blocks(0)
             h2(style="margin-bottom:0") &nbsp;0$ #[small / month]
             small 0$ / annually
             br
             br
-            +selectbtn("!user.data.plan.value", 0)
+            +selectbtn("!user.data.payment.plan", 0)
 
         .col-sm-4(style="border-right:2px solid #ccc")
           .prc-plan-logo.logo2
@@ -56,7 +57,7 @@ block body
             small or 200$ / annually
             br
             br
-            +selectbtn("use.data.plan.value == 1", 1)
+            +selectbtn("user.data.payment.plan == 1", 1)
 
         .col-sm-4
           .prc-plan-logo.logo3
@@ -68,16 +69,16 @@ block body
             small or 500$ / annually
             br
             br
-            +selectbtn("use.data.plan.value == 2", 2)
+            +selectbtn("user.data.payment.plan == 2", 2)
 
       br
       br
       .text-center
         label.radio-inline
-          input(type="radio",name="period",checked,ng-model="setting.period",value="0")
+          input(type="radio",name="period",checked,ng-model="settings.period",value="0")
           span monthly
         label.radio-inline
-          input(type="radio",name="period",ng-model="setting.period",value="1")
+          input(type="radio",name="period",ng-model="settings.period",value="1")
           span annually ( save 17% )
       br
       .sep.gap
@@ -87,16 +88,16 @@ block body
           br
           small Your Choice:
           .text-center(ng-cloak)
-            h2 #[span(ng-show="setting.plan==1") Basic] #[span(ng-show="setting.plan==2") Expert] Plan
+            h2 #[span(ng-show="settings.plan==1") Basic] #[span(ng-show="settings.plan==2") Expert] Plan
             big
-              span ${{prices[setting.period][setting.plan]}} USD / 
-              span(ng-show="setting.period=='1'") year
-              span(ng-show="setting.period=='0'") month
+              span ${{prices[settings.period][settings.plan]}} USD / 
+              span(ng-show="settings.period=='1'") year
+              span(ng-show="settings.period=='0'") month
             br
             br
             small.grayed * this is a recurring payment
             br
-            small.grayed(ng-if="user.data.plan.value==1 && setting.plan==2") * we will only ${{prices[setting.period][2] - prices[setting.period][1]}} will be charged for an upgrade in the first #[span(ng-show="setting.period==0") month]#[span(ng-show="setting.period==1") year]
+            small.grayed(ng-if="user.data.payment.plan==1 && settings.plan==2") * we will only ${{prices[settings.period][2] - prices[settings.period][1]}} will be charged for an upgrade in the first #[span(ng-show="settings.period==0") month]#[span(ng-show="settings.period==1") year]
             br
 
         .col-sm-8
@@ -115,7 +116,7 @@ block body
                   input.form-control(type="input",placeholder="Card Number",ng-model="payinfo.number",
                   ng-keydown="check('number')")
                   .form-control-feedback.with-text(ng-show="error.number",ng-cloak,style="margin-top:3px")
-                    small 16 digit number, like: 1000200030004000
+                    small incorrect number. correct example: 1000200030004000
                 .row(style="margin-bottom:13px")
                   .col-sm-7
                     label Expiration Date
@@ -145,7 +146,7 @@ block body
                   span.input-group-btn: .btn.btn-default.btn-sm Apply
                 br
               .btn.btn-primary.btn-block.btn-lg(ng-class="{'disabled':error.all}",
-              ng-click="createToken()") Make Payment
+              ng-click="subscribe()") Make Payment
 
           img.pull-right(src="/assets/img/pricing/stripe-powered.png",style="margin:5px 20px 0 0")
 

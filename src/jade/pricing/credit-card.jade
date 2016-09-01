@@ -1,53 +1,5 @@
-mixin pricing-panel
+mixin credit-card-panel
   #prc-widget.panel.panel-default(ng-controller="payment")
-    .panel-body
-      .row.text-center
-        .col-sm-6(style="border-right:1px solid #ccc")
-          .selection(ng-click="settings.plan=1",ng-class="{'active': settings.plan==1}")
-            .prc-widget-logo.logo2
-            h3 BASIC PLAN
-            small 100+ Charts
-            br
-            small PNG/SVG Download
-            br
-            small Customize Theme
-            br
-            small: a(href="#") detail...
-            h3(style="margin-top:10px")
-              span ${{prices[settings.period][1]}}
-              small: span  / #[span(ng-show="settings.period==0") month]#[span(ng-show="settings.period==1") year]
-            i.fa.fa-check-circle.text-success
-        .col-sm-6
-          .selection(ng-click="settings.plan=2",ng-class="{'active': settings.plan==2}")
-            .prc-widget-logo.logo3
-            h3 EXPERT PLAN
-            small Privacy Control
-            br
-            small Team Manage
-            br
-            small Source Editing
-            br
-            small: a(href="#") detail...
-            h3(style="margin-top:10px")
-              span ${{prices[settings.period][2]}}
-              small: span  / #[span(ng-show="settings.period==0") month]#[span(ng-show="settings.period==1") year]
-            i.fa.fa-check-circle.text-success
-
-      br
-      .row.text-center
-        .col-sm-6
-          small.grayed Subscription Frequency
-          .btn-group
-            .btn.btn-default.btn-sm(ng-class="{'active':settings.period==0}",
-            ng-click="settings.period=0") Monthly
-            .btn.btn-default.btn-sm(ng-class="{'active':settings.period==1}",
-            ng-click="settings.period=1") Yearly ( Save 17% )
-        .col-sm-6
-          small.grayed Have a coupon code?
-          .input-group
-            input.form-control.input-sm(type="input",placeholder="Enter coupon code here")
-            span.input-group-btn: .btn.btn-default.btn-sm Apply
-
     #prc-cc.panel-body
       .form
         .pull-right: big: big
@@ -86,8 +38,7 @@ mixin pricing-panel
               .form-control-feedback.with-text(ng-show="error.cvc",ng-cloak)
                 small 3 digit number, like: 476
       .btn.btn-primary.btn-block.btn-lg(ng-class="{'disabled':error.all}",style="margin-top:20px",
-      ng-click="subscribe()")
-        span Subscribe with 
-        span ${{prices[settings.period][settings.plan]}}
-        small: span  / #[span(ng-show="settings.period==0") month]#[span(ng-show="settings.period==1") year]
+      ng-click="update()")
+        span Update
     img.pull-right(src="/assets/img/pricing/stripe-powered-light.png",style="margin:5px 0 0")
+

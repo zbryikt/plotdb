@@ -4,6 +4,7 @@ angular.module \plotDB
   ($scope, $http, $timeout, plNotify, eventBus) ->
     Stripe.setPublishableKey \pk_test_DE53QFrgknntLkCNsVr1MqrV
     $scope.payinfo = {cvc:null,exp_month:null,exp_year:null,number:null}
+    #$scope.payinfo = {cvc:'123',exp_month:'02',exp_year:'18',number:'4242424242424242'}
     $scope.error = {all: true}
     $scope.prices = [[0,20,50],[0,16,40]]
     $scope.check = (target) ->
@@ -20,32 +21,56 @@ angular.module \plotDB
         if !target or target == \number =>
           $scope.error.number = (
             !!!(/^[0-9]{16}$/.exec($scope.payinfo.number)) or
-            Stripe.card.validateCardNumber $scope.payinfo.number
+            !Stripe.card.validateCardNumber($scope.payinfo.number)
           )
           $scope.cardtype = Stripe.card.cardType $scope.payinfo.number
-        console.log [v for k,v of $scope.error]
-        console.log [v for k,v of $scope.payinfo].filter(->!it).length
         $scope.error.all = false
         $scope.error.all = (
           [v for k,v of $scope.error].filter(->it).length or
           [v for k,v of $scope.payinfo].filter(->!it).length
         )
       ), 500
-    $scope.setting = do
+    $scope.settings = do
       plan: 1
       period: 0
-    $scope.createToken = ->
+
+    $scope.update = ->
+      eventBus.fire \loading.dimmer.on
+      Stripe.card.create-token $scope.payinfo, (state, token) -> $scope.$apply ->
+        if state != 200 =>
+          alert "We can't verify this card, please check if the information you provided is correct."
+          eventBus.fire \loading.dimmer.off
+          plNotify.send \danger, "update payment info failed."
+          return
+        $http do
+          url: \/d/payment-method
+          method: \POST
+          data: {token: token.id}
+        .success (d) ->
+          plNotify.send \success, "payment info updated"
+          $timeout (-> window.location.reload!), 500
+        .error (d) ->
+          plNotify.send \danger, "something wrong, try again later? "
+          eventBus.fire \loading.dimmer.off
+    $scope.subscribe = ->
       if $scope.error.all => return
       eventBus.fire \loading.dimmer.on
-      Stripe.card.create-token $scope.payinfo, (state, res) ->
-        console.log "result from Stripe"
-        console.log "status code: ", state
-        console.log res
+      Stripe.card.create-token $scope.payinfo, (state, token) -> $scope.$apply ->
+        if state != 200 =>
+          #TODO detail error handling
+          alert "failed to make payment, please check if the information you provided is correct."
+          eventBus.fire \loading.dimmer.off
+          plNotify.send \danger, "payment failed."
+          return
+        console.log token, token.id
         $http do
-          url: \/d/testpay
+          url: \/d/subscribe
           method: \POST
-          data: res
+          data: {settings: $scope.settings, token: token.id}
         .success (d) ->
+          console.log "before:", JSON.stringify($scope.user.data)
+          $scope.user.data.payment <<< d.payment
+          console.log $scope.user.data
           plNotify.send \success, "you've subscribed!"
           eventBus.fire \loading.dimmer.off
         .error (d) ->

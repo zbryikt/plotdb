@@ -10,6 +10,13 @@ x$.filter('tags', function(){
     }
   };
 });
+x$.filter('nicedate', function(){
+  return function(it){
+    var date;
+    date = new Date(it);
+    return (date.getYear() + 1900) + "/" + (date.getMonth() + 1) + "/" + date.getDate();
+  };
+});
 x$.filter('date', function(){
   return function(it){
     return new Date(it);

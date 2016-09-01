@@ -27,9 +27,6 @@ get-user = (req, key) ->
 
 engine.router.api.get \/user/, entity.search 1
 
-engine.app.get \/me/billing/, (req, res) ->
-  res.render \view/me/billing.jade
-
 engine.app.get \/me/, throttle.limit {lower-delta: 2, upper-delta: 6, penalty: 1, limit: 6}, (req, res) ->
   if !req.user => return aux.r404 res, "", true
   get-user req, req.user.key

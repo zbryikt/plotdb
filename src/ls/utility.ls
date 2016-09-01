@@ -1,5 +1,8 @@
 angular.module \plotDB
   ..filter \tags, -> -> if Array.isArray(it) => it else (it or "").split(\,)
+  ..filter \nicedate, -> ->
+    date = new Date(it)
+    "#{date.getYear! + 1900}/#{date.getMonth! + 1}/#{date.getDate!}"
   ..filter \date, -> -> new Date(it)
   ..filter \timestamp -> -> new Date(it).getTime!
   ..filter \datelite, -> ->
