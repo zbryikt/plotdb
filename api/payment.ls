@@ -15,22 +15,6 @@ date-offset = (date, year=0, month=0, day=0, hour=0, minute=0) ->
   s = now.getSeconds! + 1
   new Date(y,m,d,h,M,s)
 
-#TODO update user session
-engine.router.api.post \/stripe/webhook, (req, res) ->
-  if !req.body or typeof(req.body) != \object => return aux.r400 res
-  (err, event) <- stripe.events.retrieve req.body.id, _
-  if err or !event => return aux.r400 res
-  if event.type == \charge.succeeded =>
-    io.query "cus_92bDMeCbKY8s8m"
-    io.query "select * from users where payment->'stripe'->>'id' = $1", [event.data.object.customer]
-      .then (r={}) ->
-        user = r.[]rows.0
-        if !user => return aux.reject 404
-        user.payment.active-until = date-offset user.payment.active-until, 0, 1
-        io.query "update users set (payment) = $2 where key = $1", [user.key, user.payment]
-      .then -> res.send!
-      .catch aux.error-handler res
-
 engine.router.api.post \/testpay, (req, res) ->
   if !req.user or !req.user.key => return aux.r403 res
   if !req.body or !req.body.id => return aux.r400 res

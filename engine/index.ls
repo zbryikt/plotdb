@@ -69,7 +69,7 @@ get-ip = (default-ifname = "en0") ->
 backend = do
   update-user: (req) -> req.logIn req.user, ->
   #session-store: (backend) -> @ <<< backend.dd.session-store!
-  init: (config, authio) -> new bluebird (res, rej) ~>
+  init: (config, authio, extapi) -> new bluebird (res, rej) ~>
     @config = config
     if @config.debug => # for weinre debug
       ip = get-ip!0 or "127.0.0.1"
@@ -177,6 +177,7 @@ backend = do
       user: express.Router!
       api: express.Router!
 
+    app.use "/e", extapi(@, authio)
     backend.csrfProtection = csurf!
     app.use backend.csrfProtection
 
@@ -242,7 +243,7 @@ backend = do
       (err, req, res, next) <- @app.use
       if !err => return next!
       if err.code == \EBADCSRFTOKEN =>
-        aux.r403 res, "be hold!", true
+        aux.r403 res, "be hold!", false
       else
         console.error(
           colors.red.underline("[#{moment!format 'YY/MM/DD HH:mm:ss'}]"),
