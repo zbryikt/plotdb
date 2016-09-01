@@ -9,30 +9,48 @@ colors = require \colors/safe
 #TODO set this in nginx?
 content-security-policy = [
   <[default-src
-    'self' blob:
+    'self'
+    blob:
   ]>
   <[script-src
-    'self' http://connect.facebook.net/en_US/sdk.js blob:
-    https://www.google-analytics.com 'unsafe-inline' 'unsafe-eval'
-    https://apis.google.com
+    'self'
+    blob:
+    'unsafe-inline'
+    'unsafe-eval'
+    connect.facebook.net/en_US/sdk.js
+    www.google-analytics.com
+    apis.google.com
+    *.stripe.com
   ]>
   <[style-src
-    'self' https://www.google-analytics.com 'unsafe-inline'
-    http://fonts.googleapis.com
+    'self'
+    'unsafe-inline'
+    www.google-analytics.com
+    fonts.googleapis.com
   ]>
   <[img-src
-    'self' data: blob: https://www.google-analytics.com
-    https://www.facebook.com/ https://static.xx.fbcdn.net
-    http://csi.gstatic.com/
+    'self'
+    data:
+    blob:
+    www.google-analytics.com
+    www.facebook.com
+    static.xx.fbcdn.net
+    csi.gstatic.com
+    *.stripe.com
   ]>
   <[font-src
-    'self' data: http://fonts.gstatic.com
+    'self'
+    data:
+    fonts.gstatic.com
   ]>
   <[frame-src
-    'self' data: blob: http://staticxx.facebook.com/ https://www.facebook.com/
-    https://accounts.google.com/
-    https://content.googleapis.com/
-    https://content-sheets.googleapis.com/
+    'self'
+    data:
+    blob:
+    *.stripe.com
+    *.facebook.com
+    *.googleapis.com
+    accounts.google.com
   ]>
   <[connect-src
     'self' data: blob:
