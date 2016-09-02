@@ -3,6 +3,16 @@ angular.module \plotDB
   ..filter \nicedate, -> ->
     date = new Date(it)
     "#{date.getYear! + 1900}/#{date.getMonth! + 1}/#{date.getDate!}"
+  ..filter \nicedatetime, -> ->
+    pad = (it) -> "#{if it < 10 => '0' else ''}#it"
+    date = new Date(it)
+    Y = date.getYear! + 1900
+    M = pad(date.getMonth! + 1)
+    D = pad date.getDate!
+    h = pad date.getHours!
+    m = pad date.getMinutes!
+    s = pad date.getSeconds!
+    "#Y/#M/#D #h:#m:#s"
   ..filter \date, -> -> new Date(it)
   ..filter \timestamp -> -> new Date(it).getTime!
   ..filter \datelite, -> ->

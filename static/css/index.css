@@ -1141,7 +1141,6 @@ ul.dropdown-menu li a.toggle-filepick input {
   left: 50%;
   width: 640px;
   margin: 70px 0 0 -320px;
-  min-height: 530px;
   z-index: 34;
 }
 .cover-modal-inner.narrow {

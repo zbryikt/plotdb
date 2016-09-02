@@ -17,15 +17,15 @@ block body
               div(style="margin-bottom:15px") Your Current Plan
               .prc-widget-logo.lg(class="logo" + (plan + 1))
               h2(style="margin-top:0px;margin-bottom:5px")
-                if plan == 0
+                if !plan
                   span Free Plan
                 if plan == 1
                   span Basic Plan
                 if plan == 2
                   span Expert Plan
-              if plan == 0
+              if !plan
                 small $0 usd / forever
-              if period == 0
+              if !period
                 if plan == 1
                   small $20 usd / month
                 if plan == 2
@@ -39,7 +39,7 @@ block body
             .text-center
               .btn.btn-link #[i.fa.fa-question-circle-o]  what's in this plan?
               span |
-              .btn.btn-link change plan
+              a.btn.btn-link(href="/pricing/") change plan
 
       .col-sm-6
         .panel.panel-default
@@ -56,13 +56,17 @@ block body
               .row
                 .col-sm-6
                   label Next Billing Due
-                  div(style="background:#eee;padding:5px 10px;border-radius:3px")= "{{'" + expiredate + "'|nicedate}}"
+                  div(style="background:#eee;padding:5px 10px;border-radius:3px")
+                    if expiredate
+                      span= "{{'" + expiredate + "'|nicedate}}"
+                    else
+                      span -
                 .col-sm-6
                   label Amount
                   br
                   div(style="background:#eee;padding:5px 10px;border-radius:3px")= "$" + amount
               .sep.gap
-            a.pull-right(ng-click="ccpanel=true") update payment method
+            a.pull-right(href="#",ng-click="ccpanel=true") update payment method
             a.pull-left payment history
 
     style(type="text/css").
@@ -87,13 +91,14 @@ block body
           td: b Amount
           td: b Plan
           td: b Payment Method
-        each i in ['2016/01/01', '2016/02/01', '2016/03/01','2016/04/01']
-          tr
+
+        each item in history
+          tr(ng-cloak)
             td: i.fa.fa-check.text-success
-            td XUSQ3AS
-            td= i
-            td $20.00
-            td Basic
-            td #[i.fa.fa-credit-card] xxxx-xxxx-xxxx-4046
+            td= item.id
+            td= "{{'" + item.date + "'|nicedatetime}}"
+            td= "$" + (item.amount/100)
+            td= item.plan
+            td #[i.fa.fa-credit-card] #[span= item.method]
 
   include /footer.jade

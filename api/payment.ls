@@ -115,12 +115,18 @@ engine.router.api.post \/subscribe/, (req, res) ->
     .catch aux.error-handler res
 
 engine.app.get \/me/billing/, (req, res) ->
+  if !req.user => return aux.r403 res, "", true
+  payload = {}
   get-customer req, req.user, null
     .then (customer) ->
-      subscription = customer.{}subscriptions.[]data[0] or {}
-      data = customer.{}sources.[]data[0] or {}
+      subscription = (customer and customer.{}subscriptions.[]data[0]) or {}
+      data = (customer and customer.{}sources.[]data[0]) or {}
       ccn = (if data.last4 => "xxxx-xxxx-xxxx-#{data.last4}" else "N/A")
-      res.render \view/me/billing.jade, {
+      payload <<< {
         ccn: ccn
-        amount: subscription.plan.amount/100
+        amount: (if subscription => (subscription.{}plan.amount or 0) else 0)/100
       } <<< req.user.payment{plan, period, expiredate}
+      io.query "select * from paymenthistory where owner = $1", [req.user.key]
+    .then (r={}) ->
+      payload.history = r.[]rows
+      res.render \view/me/billing.jade, payload
