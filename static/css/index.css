@@ -1,11 +1,10 @@
-@import url("//fonts.googleapis.com/earlyaccess/notosanstc.css");
 html,
 body {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: lato, "Heiti TC", "Microsoft JhengHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #f9f9f9;
   color: #333;
 }
@@ -1237,7 +1236,6 @@ ul.dropdown-menu li a.toggle-filepick input {
 .team-header .inner {
   max-width: 1200px;
   margin: auto;
-  font-family: lato;
   padding-left: 10px;
 }
 .page-header .inner .title,
@@ -2319,7 +2317,6 @@ small.hint {
   margin: 0 auto;
 }
 #nav-top nav.navbar-default li a {
-  font-family: Lato, 'Helvetica Neue', Helvetica, sans-serif;
   font-weight: 200;
 }
 #nav-top nav.navbar-default .dropdown li a {
@@ -2604,42 +2601,11 @@ small.hint {
   color: #444;
   box-shadow: inset 0 -6px 12px rgba(0,0,0,0.3);
 }
-#landing .title {
-  width: 100%;
-  font-size: 64px;
-  text-align: center;
-  position: absolute;
-  top: 35%;
-  margin-top: -32px;
-  font-family: 'Lato', 'Helvetica Neue', Helvetica, sans-serif;
-  font-weight: 700;
-}
-#landing .subtitle {
-  width: 100%;
-  font-family: Open Sans Condensed, verdana, arial, sans-serif;
-  font-weight: 300;
-  font-size: 24px;
-  text-align: center;
-  position: absolute;
-  top: 35%;
-  font-weight: 200;
-  margin-top: 48px;
-}
 #landing-svg {
   width: 100%;
   height: 150%;
   position: absolute;
   z-index: 1;
-}
-@media (max-width: 800px) {
-  #landing .title {
-    font-size: 48px;
-    margin-top: -24px;
-  }
-  #landing .subtitle {
-    font-size: 16px;
-    margin-top: 40px;
-  }
 }
 #product-description {
   position: relative;
@@ -2661,7 +2627,6 @@ small.hint {
   border-top: 1px solid #ccc;
   background: #444;
   color: #fff;
-  font-family: Lato, 'Helvetica Neue', Helvetica, sans-serif;
   font-weight: 200;
   padding: 20px;
   box-shadow: 0 -1px 2px rgba(0,0,0,0.1);
@@ -3274,7 +3239,6 @@ small.hint {
 .ds-fields-panel .panel-heading,
 .chart-dims-panel .panel-heading,
 .chart-dim.panel .panel-heading {
-  font-family: lato;
   padding: 3px 16px;
   color: #999;
 }
@@ -3749,7 +3713,6 @@ small.hint {
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   border: 1px solid #ccc;
   font-size: 1.2em;
-  font-family: 'Lato', 'Helvetica Neue', Helvetica, sans-serif;
 }
 #chart-explore-bar .navbar-nav > li > a:hover {
   color: #ed1d78;
@@ -3883,7 +3846,6 @@ small.hint {
 #request-editor .medium-editor-insert-plugin .medium-insert-buttons .medium-insert-buttons-show,
 #request-editor .medium-editor-insert-plugin .medium-insert-buttons .medium-insert-buttons-addons li a {
   border: none;
-  font-family: lato;
   color: #ddd;
   font-weight: 900;
   background: #fff;
