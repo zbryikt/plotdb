@@ -3495,7 +3495,11 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
           console.log("before:", JSON.stringify($scope.user.data));
           import$($scope.user.data.payment, d.payment);
           console.log($scope.user.data);
-          plNotify.send('success', "you've subscribed!");
+          if (!d.payment.plan) {
+            plNotify.send('success', "you've switched to free plan.");
+          } else {
+            plNotify.send('success', "you've subscribed!");
+          }
           return eventBus.fire('loading.dimmer.off');
         }).error(function(d){
           plNotify.send('danger', "something wrong, try again later? ");

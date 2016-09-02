@@ -525,6 +525,16 @@ base = function(model){
   base.paymentHistory = new model({
     name: 'payment-history',
     base: {
+      owner: {
+        required: true,
+        type: model.type.key({
+          type: model.type.user
+        })
+      },
+      status: {
+        required: true,
+        type: model.type.number
+      },
       id: {
         required: true,
         type: model.type.string

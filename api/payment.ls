@@ -93,7 +93,7 @@ engine.router.api.post \/subscribe/, (req, res) ->
   settings = req.body.settings
   get-customer req, req.user
     .then (customer) ->
-      if !customer => create-customer req, req.user, req.body.token
+      if !customer or customer.deleted => create-customer req, req.user, req.body.token
       else bluebird.resolve customer
     .then (customer) ->
       plan-name = "#{plans[settings.plan]}-plan#{if settings.plan => '-'+period[settings.period] else ''}"

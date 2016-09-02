@@ -71,7 +71,8 @@ angular.module \plotDB
           console.log "before:", JSON.stringify($scope.user.data)
           $scope.user.data.payment <<< d.payment
           console.log $scope.user.data
-          plNotify.send \success, "you've subscribed!"
+          if !d.payment.plan => plNotify.send \success, "you've switched to free plan."
+          else plNotify.send \success, "you've subscribed!"
           eventBus.fire \loading.dimmer.off
         .error (d) ->
           plNotify.send \danger, "something wrong, try again later? "
