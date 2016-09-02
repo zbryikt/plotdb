@@ -177,7 +177,7 @@ backend = do
       user: express.Router!
       api: express.Router!
 
-    app.use "/e", extapi(@, authio)
+    app.use "/e", extapi!
     backend.csrfProtection = csurf!
     app.use backend.csrfProtection
 

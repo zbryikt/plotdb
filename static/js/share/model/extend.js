@@ -522,6 +522,31 @@ base = function(model){
       }
     }
   });
+  base.paymentHistory = new model({
+    name: 'payment-history',
+    base: {
+      id: {
+        required: true,
+        type: model.type.string
+      },
+      date: {
+        required: true,
+        type: model.type.date
+      },
+      amount: {
+        required: true,
+        type: model.type.number
+      },
+      plan: {
+        require: true,
+        type: model.type.string
+      },
+      method: {
+        require: true,
+        type: model.type.string
+      }
+    }
+  });
   return base;
 };
 module.exports = base;

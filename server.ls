@@ -16,7 +16,7 @@ pgsql = new postgresql config
 #lfs = new localfs!
 #<- lfs.init!then
 
-engine.init config, pgsql.authio, ext
+engine.init config, pgsql.authio, (-> ext engine, pgsql)
   .then ->
     engine.app.get \/, (req, res) -> res.render 'index.jade'
     api engine, pgsql
