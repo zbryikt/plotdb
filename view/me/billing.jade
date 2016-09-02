@@ -37,8 +37,8 @@ block body
                   small $500 usd / year
             br
             .text-center
-              .btn.btn-link #[i.fa.fa-question-circle-o]  what's in this plan?
-              span |
+              //-.btn.btn-link #[i.fa.fa-question-circle-o]  what's in this plan?
+              //-span |
               a.btn.btn-link(href="/pricing/") change plan
 
       .col-sm-6
@@ -67,7 +67,6 @@ block body
                   div(style="background:#eee;padding:5px 10px;border-radius:3px")= "$" + amount
               .sep.gap
             a.pull-right(href="#",ng-click="ccpanel=true") update payment method
-            a.pull-left payment history
 
     style(type="text/css").
       .pay-history {
