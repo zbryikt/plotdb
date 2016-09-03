@@ -240,7 +240,6 @@
 .ds-fields-panel .panel-heading,
 .chart-dims-panel .panel-heading,
 .chart-dim.panel .panel-heading {
-  font-family: lato;
   padding: 3px 16px;
   color: #999;
 }
