@@ -478,6 +478,12 @@ angular.module \plotDB
         toggle: -> @toggled = !!!@toggled
         toggled: false
         set-sample-data: (data) ->
+          data = data.map (row)->
+            for k,v of row =>
+              if Array.isArray(v) =>
+                delete row[k]
+                for i from 0 til v.length => row["#{k}[#{i+1}]"] = v[i]
+            row
           eventBus.fire \dataset.sample, data
         show-sample: ->
           @toggled = true

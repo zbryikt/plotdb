@@ -193,7 +193,10 @@ engine.app.get \/chart/:id, aux.numid true, (req, res) ->
       if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.r403 res, "forbidden", true
       permtype = perm.caltype req, chart.{}permission, chart.owner
       if !perm.test(req, chart.{}permission, chart.owner, \admin) => delete chart.permission
-      res.render 'view/chart/index.jade', {chart,permtype}
+      res.render 'view/chart/index.jade', {chart,permtype}, (err, html) ->
+        # size
+        # console.log html.length
+        res.send html
       return null
     .catch ->
       console.error it.stack
@@ -273,7 +276,10 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
       )
       fields.map -> delete it.permission
       fields ++= [v.[]fields.filter(->!it.key) for k,v of chart.dimension].reduce(((a,b)->a++b),[])
-      res.render 'view/chart/view.jade', {chart, theme, fields}
+      res.render 'view/chart/view.jade', {chart, theme, fields}, (err, html) ->
+        # size
+        # console.log html.length
+        res.send html
       return null
     .catch ->
       if it.message == \404 => return res.render 'view/chart/404.jade'

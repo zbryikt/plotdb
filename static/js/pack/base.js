@@ -4594,6 +4594,20 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       },
       toggled: false,
       setSampleData: function(data){
+        data = data.map(function(row){
+          var k, v, i$, to$, i;
+          for (k in row) {
+            v = row[k];
+            if (Array.isArray(v)) {
+              delete row[k];
+              for (i$ = 0, to$ = v.length; i$ < to$; ++i$) {
+                i = i$;
+                row[k + "[" + (i + 1) + "]"] = v[i];
+              }
+            }
+          }
+          return row;
+        });
         return eventBus.fire('dataset.sample', data);
       },
       showSample: function(){
