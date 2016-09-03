@@ -50,7 +50,10 @@ src-tree = (matcher, morpher) ->
 jade-tree = src-tree(
   (-> if /^ *include (.+)| *extends (.+)/.exec(it) => (that.1 or that.2) else null),
   ((it, dir) ->
-    if /^\//.exec it => it = path.join(('../' * dir.split(/src\/jade\//)[* - 1].split(\/).length),it)
+    if /^\//.exec it =>
+      rpath = dir.split(/src\/jade\/?/)[* - 1]
+      if rpath => it = path.join(("../" * rpath.split(\/).length), it)
+      it
     it
   )
 )
