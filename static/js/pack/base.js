@@ -3865,8 +3865,13 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         });
       })['catch'](function(err){
         return this$.$apply(function(){
-          plNotify.aux.error.io('save', this$.type, err);
-          console.error("[save " + name + "]", err);
+          if (err[2] === 402) {
+            eventBus.fire('quota.widget.on');
+            plNotify.send('danger', "Failed: Quota exceeded");
+          } else {
+            plNotify.aux.error.io('save', this$.type, err);
+            console.error("[save " + name + "]", err);
+          }
           if (this$.save.handle) {
             $timeout.cancel(this$.save.handle);
           }
@@ -11347,6 +11352,15 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
   return $scope.load = function(chart){
     return window.location.href = chartService.link(chart);
   };
+}));
+x$.controller('quota', ['$scope', 'eventBus'].concat(function($scope, eventBus){
+  $scope.quota = {};
+  eventBus.listen('quota.widget.on', function(){
+    return $scope.quota.showQuota = true;
+  });
+  return eventBus.listen('quota.widget.off', function(){
+    return $scope.quota.showQuota = false;
+  });
 }));
 onSignIn = function(it){
   return console.log(it);

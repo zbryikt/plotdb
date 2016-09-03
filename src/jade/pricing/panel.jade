@@ -1,6 +1,7 @@
-mixin pricing-panel
+mixin pricing-panel(toggle)
   #prc-widget.panel.panel-default(ng-controller="payment")
-    .panel-body
+    .panel-body.relpos
+      .closebtn.inner.lg.inverse(ng-click=toggle)
       .row.text-center
         .col-sm-6(style="border-right:1px solid #ccc")
           .selection(ng-click="settings.plan=1",ng-class="{'active': settings.plan==1}")

@@ -29,6 +29,9 @@ block head
       window.theme = !{JSON.stringify(theme).replace(/<\//g, "<\\/")};
 block body
   .spc1
+  script(type="text/javascript",src="https://js.stripe.com/v2/")
+  include /widget/quota.jade
+  +quota-panel
   #root.pleditor(ng-controller="plEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")
     //- include static version for speeding up
     include /static/editor/editor.html

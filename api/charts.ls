@@ -100,24 +100,29 @@ engine.router.api.get "/chart/:id", aux.numid false, (req, res) ->
       return aux.r403 res
 
 engine.router.api.post "/chart/", (req, res) ->
+  data = []
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
-  data = req.body <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
-  ret = charttype.lint data
-  if ret.0 => return aux.r400 res, ret
-  data = charttype.clean data
-  pairs = io.aux.insert.format charttype, data
-  delete pairs.key
-  pairs = io.aux.insert.assemble pairs
-  thumb.save 'chart', data
-  io.query "insert into charts #{pairs.0} values #{pairs.1} returning key", pairs.2
+  io.query "select count(key) as count from charts where owner = $1", [req.user.key]
+    .then (r={}) ->
+      plan = req.user.{}payment.plan or 0
+      count = ((r.[]rows.0 or {}).count or 0)
+      if (plan == 0 and count >= 30) or (plan == 1 and count >= 300) =>
+        return aux.reject 402, 'exceed chart count limit'
+      data := req.body <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
+      ret = charttype.lint data
+      if ret.0 => return aux.r400 res, ret
+      data := charttype.clean data
+      pairs = io.aux.insert.format charttype, data
+      delete pairs.key
+      pairs = io.aux.insert.assemble pairs
+      thumb.save 'chart', data
+      io.query "insert into charts #{pairs.0} values #{pairs.1} returning key", pairs.2
     .then (r={}) ->
       key = r.[]rows.0.key
       data.key = key
       res.send data
-    .catch ->
-      console.error it.stack
-      aux.r403 res
+    .catch aux.error-handler res
 
 engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
   if !req.user => return aux.r403 res

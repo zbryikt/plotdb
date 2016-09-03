@@ -1,0 +1,25 @@
+include /mixin.jade
+include /pricing/panel.jade
+mixin quota-panel
+  div(ng-controller="quota")
+    +cover-modal("quota.showPricing==true","quota.showPricing = !!!quota.showPricing")
+      +pricing-panel("quota.showPricing = !!!quota.showPricing")
+    +cover-modal("quota.showQuota==true","quota.showQuota=!!!quota.showQuota")
+      .panel.panel-default(style="max-width:400px;margin:auto")
+        .panel-body
+          br
+          .text-center
+            img(src="/assets/img/pricing/quota.png")
+            br
+            h3 You've used all your quota.
+            br
+            br
+            p.grayed want more?
+            .btn.btn-success.btn-lg(ng-click="quota.showPricing=true;quota.showQuota=false") subscribe now!
+            br
+            br
+            br
+            a.grayed(href="#",ng-click="quota.showQuota=false") I'm cool, maybe later &times;
+            br
+            br
+
