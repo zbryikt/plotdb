@@ -156,7 +156,7 @@ angular.module \plotDB
         else
           eventBus.fire \loading.dimmer.off
           $scope.inited = true
-        $(\#dataset-edit-text).on \keydown, -> $scope.$apply -> $scope.parse.run!
+        $(\#dataset-edit-text).on \keydown, -> $scope.$apply -> $scope.parse.run!catch ->
         $('[data-toggle="tooltip"]').tooltip!
         @communicate!
 
@@ -176,7 +176,7 @@ angular.module \plotDB
           res!
         if @handle =>
           $timeout.cancel @handle
-          if @promise => @promise.rej!
+          if @promise => @promise.rej \cancelled
         @promise = {res, rej}
         if force => return _!
         else @handle = $timeout (~> _! ), (if force => 0 else 1000)

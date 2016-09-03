@@ -7558,7 +7558,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       }
       $('#dataset-edit-text').on('keydown', function(){
         return $scope.$apply(function(){
-          return $scope.parse.run();
+          return $scope.parse.run()['catch'](function(){});
         });
       });
       $('[data-toggle="tooltip"]').tooltip();
@@ -7593,7 +7593,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         if (this$.handle) {
           $timeout.cancel(this$.handle);
           if (this$.promise) {
-            this$.promise.rej();
+            this$.promise.rej('cancelled');
           }
         }
         this$.promise = {

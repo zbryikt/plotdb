@@ -4,6 +4,7 @@ grid-render = (e) ->
   data = e.data
   types = data.types or []
   ohlen = data.headers.length
+  rlen = head: data.headers.length, rows: data.[]rows.length
   len = do
     head: (if data.headers.length < 10 => 10 else data.headers.length + 1)
     rows: (if data.[]rows.length < 100 => 100 else data.rows.[]length + 10)
@@ -23,10 +24,13 @@ grid-render = (e) ->
     ].join("")
   ).join("") + "</div>"
   if !data.rows => return postMessage {ths}
-  data.rows = [data.rows[i] or ['' for j from 0 til len.head] for i from 0 til len.rows]
-  trs = data.rows.map (row,i) -> (
-    "<div>" + headers.map((d,j)->
-      "<div contenteditable='true' row='#i' col='#j' style='width:#w'>#{escape(row[j]) or ''}</div>"
+  data.rows = [data.rows[i] or ['' for j from 0 til rlen.head] for i from 0 til rlen.rows]
+  trs = []
+  for i from 0 til len.rows
+    trs.push "<div>" + headers.map((d,j)->
+      "<div contenteditable='true' row='#i' col='#j' style='width:#w'>" +
+      (escape((data.rows[i] or [])[j]) or '') +
+      "</div>"
     ).join("") + "</div>"
-  )
+
   return {trs, ths}
