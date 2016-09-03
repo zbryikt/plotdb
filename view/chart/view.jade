@@ -19,7 +19,8 @@ block body
   include /render/pdb-style.jade
   include /render/base-style.jade
   #wrapper.loading.pdb-root
-  a#plotdb-mark(href="https://plotdb.com",target="_blank") POWERED BY PLOTDB
+  if chart.plan != 2
+    a#plotdb-mark(href="https://plotdb.com",target="_blank") POWERED BY PLOTDB
 block foot
   script(type="text/javascript").
     var chart = !{JSON.stringify(chart).replace(/<\//g, "<\\/")};

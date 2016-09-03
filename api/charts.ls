@@ -234,7 +234,7 @@ engine.router.api.put \/chart/:id/like, aux.numid false, (req, res) ->
 engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
   [chart,theme] = [null,null]
   io.query([
-    'select users.displayname as ownername, charts.* from users,charts'
+    'select users.displayname as ownername, users.payment as payment, charts.* from users,charts'
     'where users.key = owner and charts.key=$1'
   ].join(" "), [req.params.id])
     .then (it={}) ->
@@ -248,6 +248,7 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
       ).length == 0)
         => return bluebird.reject new Error(403)
       delete chart.permission
+      chart.plan = chart.{}payment.plan or 0
       if !chart.theme => return bluebird.resolve!
       io.query "select * from themes where key = chart.theme"
     .then (r={}) ->
