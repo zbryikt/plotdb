@@ -1,14 +1,46 @@
-.select2-user img {
-  width: 14px;
-  vertical-align: middle;
-}
-.select2-user span {
-  font-size: 14px;
-  vertical-align: middle;
-}
-.select2-user.selected {
+.avatar-upload .avatar-current,
+.avatar-upload .avatar-upload-btn {
+  width: 64px;
+  height: 64px;
   display: inline-block;
-  margin-left: 2px;
-  border-left: 1px solid #ccc;
-  padding-left: 4px;
+  margin-right: 5px;
+  border-radius: 3px;
+  box-shadow: none;
+  vertical-align: middle;
+  background-color: #aaa;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.avatar-upload .avatar-current {
+  background-image: url("/assets/img/avatar.png");
+}
+.avatar-upload .avatar-upload-btn {
+  position: relative;
+  background-size: cover;
+}
+.avatar-upload .avatar-upload-btn:after {
+  content: " ";
+  display: block;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  background: url("/assets/img/upload.png") center center no-repeat;
+  background-size: cover;
+  z-index: 1;
+}
+.avatar-upload .avatar-upload-btn input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.01;
+  cursor: pointer;
+  z-index: 2;
+}
+.avatar-upload .avatar-upload-btn.active:after {
+  opacity: 0.5;
 }

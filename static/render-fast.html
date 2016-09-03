@@ -6166,16 +6166,13 @@ $(document).ready(function(){
       sched.clear();
     }
     thread.inc(reboot);
-    console.log(1);
     try {
-      console.log(2);
       if (false && "script tag disallow") {
         ret = /<\s*script[^>]*>.*<\s*\/\s*script\s*>/g.exec(doc.toLowerCase());
         if (ret) {
           throw new Error("script tag is not allowed in document.");
         }
       }
-      console.log(3);
       if (reboot) {
         node = document.getElementById("wrapper");
         if (!node) {
@@ -6191,7 +6188,6 @@ $(document).ready(function(){
       } else {
         promise = Promise.resolve(window.module);
       }
-      console.log(123);
       promise.then(function(module){
         var root, chart, k, ref$, v, i$, ref1$, len$, type, e, assetsmap, file, raw, array, j$, to$, idx, promise, this$ = this;
         if (thread.racing()) {
@@ -6199,15 +6195,12 @@ $(document).ready(function(){
         }
         root = document.getElementById('container');
         chart = module.exports;
-        console.log(dimension);
         if (chart.sample) {
           window.sampleData = plotdb.chart.getSampleData(chart, dimension);
-          console.log(dimension);
           if (!data || !data.length) {
             data = window.sampleData;
           }
         }
-        console.log(456);
         configPreset(config);
         for (k in ref$ = config || {}) {
           v = ref$[k];

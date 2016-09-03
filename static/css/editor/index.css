@@ -1,0 +1,176 @@
+#code-panel {
+  margin-top: 15px;
+}
+#code-editor.dark {
+  border: 1px solid #292929;
+}
+#code-editor.dark .CodeMirror {
+  background: #181818;
+  color: #d8d8d8;
+}
+#code-editor.dark .CodeMirror .cm-string {
+  color: #f99;
+}
+#code-editor.dark .CodeMirror .cm-number {
+  color: #9f9;
+}
+#code-editor.dark .CodeMirror .cm-keyword {
+  color: #f9f;
+}
+#code-editor.dark .CodeMirror .cm-def {
+  color: #99f;
+}
+#code-editor.dark .CodeMirror .cm-property {
+  color: #9cf;
+}
+#code-editor.dark #code-header {
+  background: #383838;
+  border-bottom: 1px solid #292929;
+  color: #b8b8b8;
+}
+#code-editor.dark #code-header .tabs span {
+  color: #777;
+}
+#code-editor.dark #code-header .tabs span i {
+  background: #444;
+}
+#code-editor.dark #code-header .tabs span.active,
+#code-editor.dark #code-header .tabs span:hover {
+  color: #fff;
+}
+#code-editor.dark #code-header .tabs span.active i,
+#code-editor.dark #code-header .tabs span:hover i {
+  background: #777;
+}
+#code-editor.dark #code-ctrl {
+  background: #383838;
+  color: #b8b8b8;
+  border-top: 1px solid #292929;
+}
+#code-editor.dark .CodeMirror-linenumber {
+  color: #565858;
+}
+#code-editor.dark .CodeMirror-linenumbers {
+  background: #282828;
+}
+#code-editor.dark .btn {
+  background: #484848;
+  color: #b8b8b8;
+  border: 1px solid #585858;
+}
+#code-editor.dark .CodeMirror-cursor {
+  border-left: 1px solid #4f4;
+}
+#code-editor.dark .CodeMirror-code > .error {
+  background: #a11;
+}
+#code-editor.dark .CodeMirror-code > .error .CodeMirror-linenumber {
+  color: #fff;
+  background: #810;
+}
+.charts-dropdown-menu {
+  left: -60px;
+  height: 230px;
+  overflow-y: scroll;
+}
+.chart-config .chart-config-range span.label {
+  position: absolute;
+  z-index: 10;
+  display: inline-block;
+  width: 28px;
+  background: rgba(255,255,255,0.3);
+  color: #999;
+  border: 1px solid #ccc;
+  height: 14px;
+  padding: 0;
+  line-height: 12px;
+  font-size: 12px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 100;
+  letter-spacing: 1px;
+}
+.chart-config .chart-config-range span.label.min {
+  border-radius: 0 0 3px 0;
+}
+.chart-config .chart-config-range span.label.max {
+  right: 0;
+  border-radius: 0 3px 0 3px;
+}
+#chart-edit-iframe-config .checkbox {
+  display: inline-block;
+  margin: 0 0 0 10px;
+}
+#chart-edit-iframe-config input.input-sm {
+  height: 20px;
+  width: 60px;
+  display: inline-block;
+}
+@media (max-width: 800px) {
+  .pleditor .row {
+    margin: 0;
+  }
+  #code-panel {
+    margin-top: 0;
+  }
+  #code-editor,
+  #visualization-canvas2 {
+    margin: 7px;
+    height: 400px;
+  }
+  #binding-panel {
+    margin: 420px 15px 0;
+  }
+  #code-ctrl > .btn,
+  #visualization-canvas2 > .btn {
+    display: none;
+  }
+  #code-ctrl .btn,
+  #visualization-canvas2 .btn {
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 0.9em;
+  }
+  #editor-colorblind-dropup {
+    left: 5px !important;
+  }
+}
+#chart-annotate {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 28;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  border-radius: 3px;
+  padding: 3px 6px;
+}
+#chart-annotate .color {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  margin-right: 2px;
+  border-radius: 3px;
+  vertical-align: top;
+}
+#chart-annotate .color.fill {
+  background: #f00;
+  border: 2px transparent;
+}
+#chart-annotate .color.stroke {
+  background: transparent;
+  border: 2px solid #f00;
+}
+#chart-annotate select.form-control {
+  display: inline-block;
+  height: 24px;
+  margin-right: 2px;
+}
+#chart-annotate .btn-group {
+  margin-right: 2px;
+}
+#chart-annotate .btn.btn-default {
+  height: 24px;
+  padding: 1px 6px;
+  font-size: 14px;
+}

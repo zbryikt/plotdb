@@ -1,0 +1,115 @@
+.cover-modal,
+#permission-modal,
+#setting-modal,
+#data-edit-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 33;
+}
+.cover-modal-inner.ng-hide-animate,
+.cover-modal.ng-hide-animate {
+  -ms-transition: all 0.5s cubic-bezier(0, 0, 0, 1);
+  -moz-transition: all 0.5s cubic-bezier(0, 0, 0, 1);
+  -webkit-transition: all 0.5s cubic-bezier(0, 0, 0, 1);
+  -o-transition: all 0.5s cubic-bezier(0, 0, 0, 1);
+  transition: all 0.5s cubic-bezier(0, 0, 0, 1);
+}
+.cover-modal-inner.ng-hide-animate.ng-hide {
+  top: -30px;
+  opacity: 0;
+  z-index: -1;
+}
+.cover-modal.ng-hide-animate.ng-hide {
+  opacity: 0;
+  z-index: -1;
+}
+.cover-modal-inner {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  width: 640px;
+  margin: 70px 0 0 -320px;
+  min-height: 530px;
+  z-index: 34;
+}
+.cover-modal-inner.narrow {
+  width: 500px;
+  margin-left: -250px;
+}
+.cover-modal-inner.narrow .panel-default {
+  width: 500px;
+}
+.cover-modal-inner .panel-default {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+#permission-modal .ib,
+#setting-modal .ib,
+#data-edit-modal .ib,
+#setting-modal-inner .ib {
+  width: 640px;
+  height: 530px;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 4px 4px rgba(0,0,0,0.5);
+  padding: 10px;
+  margin: 70px auto 0;
+  position: relative;
+}
+#permission-modal h3,
+#setting-modal h3,
+#data-edit-modal h3,
+#setting-modal-inner h3 {
+  margin: 0;
+  padding: 8px 0 8px 10px;
+  border-bottom: 1px solid #eee;
+}
+#permission-modal .save-hint-btn,
+#setting-modal .save-hint-btn,
+#data-edit-modal .save-hint-btn,
+#setting-modal-inner .save-hint-btn {
+  margin-right: 5px;
+}
+#permission-modal .save-hint-btn.btn-warning,
+#setting-modal .save-hint-btn.btn-warning,
+#data-edit-modal .save-hint-btn.btn-warning,
+#setting-modal-inner .save-hint-btn.btn-warning {
+  -ms-animation: jump 1s infinite linear;
+  -moz-animation: jump 1s infinite linear;
+  -webkit-animation: jump 1s infinite linear;
+  -o-animation: jump 1s infinite linear;
+  animation: jump 1s infinite linear;
+}
+#data-edit-modal .ib {
+  width: 90%;
+  height: 580px;
+}
+#setting-modal-inner .ib {
+  height: auto;
+  z-index: 34;
+  position: absolute;
+  left: 50%;
+  margin-left: -320px;
+}
+.cover-modal-inner .panel-heading,
+.cover-modal-inner .panel-footer {
+  padding-top: 5px;
+}
+.cover-modal-inner .panel-body {
+  min-height: 400px;
+}
+.cover-modal-inner .panel-footer {
+  padding-right: 5px;
+  padding-bottom: 5px;
+}
+.cover-modal-inner .nav-tabs {
+  margin-top: -47px;
+  margin-bottom: 13px;
+}
+.cover-modal-inner .nav-tabs > li > a {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
