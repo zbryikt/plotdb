@@ -751,7 +751,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       if (r >= 0 && !((ref$ = this.data.rows)[r] || (ref$[r] = []))[c] && !val) {
         return;
       }
-      if (c >= ((ref$ = this.data).types || (ref$.types = [])).length) {
+      if (c >= ((ref$ = this.data).types || (ref$.types = [])).length && val) {
         for (i$ = this.data.types.length; i$ <= c; ++i$) {
           i = i$;
           this.data.types[i] = plotdb.Types.resolve((fn$.call(this)));
@@ -774,11 +774,32 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           dirty = true;
         }
       }
+      for (i$ = this.data.rows.length - 1; i$ >= 0; --i$) {
+        i = i$;
+        if (this.data.rows[i].filter(fn1$).length) {
+          break;
+        }
+      }
+      this.data.rows.splice(i + 1);
+      for (i$ = this.data.types.length - 1; i$ >= 0; --i$) {
+        i = i$;
+        if (this.data.rows.filter(fn2$).length || this.data.headers[i]) {
+          break;
+        }
+      }
+      if (i < this.data.types.length - 1) {
+        this.data.headers.splice(i + 1, 1);
+        this.data.rows.map(function(row){
+          return row.splice(i + 1, 1);
+        });
+        this.data.types.splice(i + 1);
+        dirty = true;
+      }
       if (dirty) {
         return this.render({
           headOnly: true
         }).then(function(){
-          var node, range, sel;
+          var node, range, e, sel;
           if (r < 0) {
             node = document.querySelector('#dataset-editbox .sheet-head > div >' + (" div:nth-of-type(" + (c + 1) + ") > div:first-child"));
           } else {
@@ -787,7 +808,12 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           if (node) {
             node.focus();
             range = document.createRange();
-            range.setStart(node, 1);
+            try {
+              range.setStart(node, 1);
+            } catch (e$) {
+              e = e$;
+              range.setStart(node, 0);
+            }
             range.collapse(true);
             sel = window.getSelection();
             sel.removeAllRanges();
@@ -802,6 +828,12 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           results$.push(this.data.rows[j][i]);
         }
         return results$;
+      }
+      function fn1$(it){
+        return it;
+      }
+      function fn2$(it){
+        return it[i];
       }
     },
     empty: function(){
@@ -866,7 +898,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
               return that.focus();
             }
           } else {
-            return this$.update(-1, col, val);
+            return $scope.$apply(function(){
+              return this$.update(-1, col, val);
+            });
           }
         }, 0);
       });
@@ -890,7 +924,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
               return that.focus();
             }
           } else {
-            return this$.update(row, h, val);
+            return $scope.$apply(function(){
+              return this$.update(row, h, val);
+            });
           }
         }, 0);
       });

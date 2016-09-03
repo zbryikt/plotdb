@@ -436,17 +436,31 @@ angular.module \plotDB
           if !@data.headers[c] and !val => return
           @data.headers[c] = val
         if r >= 0 and !@data.rows[][r][c] and !val => return
-        if c >= @data.[]types.length =>
-          for i from @data.types.length to c =>
+
+        if c >= @data.[]types.length and val =>
+          for i from @data.types.length to c=>
             @data.types[i] = plotdb.Types.resolve [@data.rows[j][i] for j from 0 til @data.rows.length]
             @data.headers[i] = (if @data.headers[i] => that else '')
           dirty = true
+
         if r >= 0 =>
           @data.rows[r][c] = val
           valtype = plotdb.Types.resolve val
           if valtype != @data.types[c] =>
             @data.types[c] = plotdb.Types.resolve [@data.rows[i][c] for i from 0 til @data.rows.length]
             dirty = true
+
+        for i from @data.rows.length - 1 to 0 by -1
+          if @data.rows[i].filter(->it).length => break
+        @data.rows.splice i + 1
+        for i from @data.types.length - 1 to 0 by -1
+          if @data.rows.filter(->it[i]).length or @data.headers[i] => break
+        if i < @data.types.length - 1 =>
+          @data.headers.splice i + 1,1
+          @data.rows.map (row) -> row.splice i + 1,1
+          @data.types.splice i + 1
+          dirty = true
+
         if dirty => @render {head-only: true} .then ->
           if r < 0 =>
             node = document.querySelector(
@@ -461,7 +475,10 @@ angular.module \plotDB
           if node =>
             node.focus!
             range = document.createRange!
-            range.setStart node, 1 # set cursor, offset to text end
+            try
+              range.setStart node, 1 # set cursor, offset to text end
+            catch
+              range.setStart node, 0
             range.collapse true
             sel = window.getSelection!
             sel.removeAllRanges!
@@ -514,7 +531,7 @@ angular.module \plotDB
                   "div:nth-of-type(#{col + 1 + v.0}) > div:first-child"
                 ].join(" "))
               if node => that.focus!
-            else @update -1, col, val
+            else $scope.$apply ~> @update -1, col, val
           ), 0
         content.addEventListener \keydown, (e) ~>
           setTimeout (~>
@@ -538,7 +555,7 @@ angular.module \plotDB
                   "div:nth-of-type(#{col + 1 + v.0})"
                 ].join(" "))
               if node => that.focus!
-            else @update row, h, val
+            else $scope.$apply ~> @update row, h, val
           ), 0
 
     $scope.init!
