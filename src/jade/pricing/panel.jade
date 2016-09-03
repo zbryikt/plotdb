@@ -90,4 +90,6 @@ mixin pricing-panel
         span Subscribe with 
         span ${{prices[settings.period][settings.plan]}}
         small: span  / #[span(ng-show="settings.period==0") month]#[span(ng-show="settings.period==1") year]
-    img.pull-right(src="/assets/img/pricing/stripe-powered-light.png",style="margin:5px 0 0")
+    .pull-right
+      img(src="/assets/img/ssl-secure-light.png",style="margin:5px 5px 0 0")
+      img(src="/assets/img/pricing/stripe-powered-light.png",style="margin:5px 0 0")
