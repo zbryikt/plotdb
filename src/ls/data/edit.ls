@@ -326,6 +326,9 @@ angular.module \plotDB
       name: do
         promise: null
         focus: -> if @toggled => document.getElementById(\dataset-name-input).focus!
+        keyhandler: (e) ->
+          key = e.keyCode or e.which
+          if key == 13 => @action 0
         toggle: (name) ->
           @ <<< {value: name, toggled: true}
           @focus!

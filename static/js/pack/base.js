@@ -7855,6 +7855,13 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           return document.getElementById('dataset-name-input').focus();
         }
       },
+      keyhandler: function(e){
+        var key;
+        key = e.keyCode || e.which;
+        if (key === 13) {
+          return this.action(0);
+        }
+      },
       toggle: function(name){
         this.value = name;
         this.toggled = true;
