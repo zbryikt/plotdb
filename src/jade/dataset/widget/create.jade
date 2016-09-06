@@ -39,7 +39,8 @@ include panel.jade
       div(style="width:94%;margin:auto")
         p(ng-if="!dataset.name") Looks like your dataset doesn't have a name yet. Let's give it a name:
         p(ng-if="dataset.name") Give your dataset a new name:
-        input#dataset-name-input.form-control(placeholder="e.g., US 2015 Population",ng-model="panel.name.value")
+        input#dataset-name-input.form-control(placeholder="e.g., US 2015 Population",ng-model="panel.name.value",
+        ng-keydown="panel.name.keyhandler($event)")
       br
     .panel-footer.text-right
       .btn.btn-primary(ng-class="{'disabled':!panel.name.value}",ng-click="panel.name.action(0)")

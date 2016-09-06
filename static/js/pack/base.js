@@ -3960,6 +3960,22 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     },
     dimension: {
+      rebind: function(key){
+        var promises, k, ref$, v, i$, ref1$, len$, field;
+        promises = [];
+        for (k in ref$ = chart.dimension) {
+          v = ref$[k];
+          for (i$ = 0, len$ = (ref1$ = v.fields).length; i$ < len$; ++i$) {
+            field = ref1$[i$];
+            if (field.dataset === key) {
+              promises.push(field.update());
+            }
+          }
+        }
+        return Promise.all(promises).then(function(){
+          return $scope.render();
+        });
+      },
       bind: function(event, dimension, field){
         var this$ = this;
         field == null && (field = {});
@@ -4588,7 +4604,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     dataPanel: {
       init: function(){
         var this$ = this;
-        return eventBus.listen('dataset.saved', function(){
+        return eventBus.listen('dataset.saved', function(dataset){
+          $scope.dimension.rebind(dataset.key);
           return $timeout(function(){
             return this$.toggled = false;
           }, 200);
@@ -8016,6 +8033,13 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       focus: function(){
         if (this.toggled) {
           return document.getElementById('dataset-name-input').focus();
+        }
+      },
+      keyhandler: function(e){
+        var key;
+        key = e.keyCode || e.which;
+        if (key === 13) {
+          return this.action(0);
         }
       },
       toggle: function(name){

@@ -39,6 +39,21 @@ ret.get = function(val) {
   return ret;
 };
 
+ret.getCentroid = function(d) {
+  var coord, max = -1;
+  for(var area,j=0,node,v;j<d.geometry.coordinates.length;j++) {
+     v = d.geometry.coordinates[j];
+     if(d.geometry.type == "Polygon") v = [v];
+     var node = {type: "Feature", geometry: {type: "Polygon", coordinates: v}};
+     area = d3.geo.area(node);
+     if(area > max) {
+       max = area;
+       coord = d3.geo.centroid(node);
+     }
+  }
+  return coord;
+};
+
 ret.randName = function() {
   return codemap.shortname[ parseInt(Math.random() * codemap.shortname.length) ];
 };
