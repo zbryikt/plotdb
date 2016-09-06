@@ -139,6 +139,11 @@ angular.module \plotDB
       reset-config: -> if @chart => for k,v of @chart.config => v.value = v.default
       #TODO review binding process
       dimension: do
+        rebind: (key) ->
+          promises = []
+          for k,v of chart.dimension =>
+            for field in v.fields => if field.dataset == key => promises.push field.update!
+          Promise.all promises .then -> $scope.render!
         bind: (event, dimension, field = {}) ->
           if (dimension.fields or []).filter(->it == field).length => return
           field.update!
@@ -474,7 +479,9 @@ angular.module \plotDB
           @attr['font-style'] = (if !(@attr['font-style']?) or @attr['font-style'] == \normal => \italic else \normal)
 
       data-panel: do
-        init: -> eventBus.listen \dataset.saved, ~> $timeout (~> @toggled = false), 200
+        init: -> eventBus.listen \dataset.saved, (dataset) ~>
+          $scope.dimension.rebind dataset.key
+          $timeout (~>@toggled = false), 200
         toggle: -> @toggled = !!!@toggled
         toggled: false
         set-sample-data: (data) ->
