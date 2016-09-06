@@ -1,8 +1,9 @@
-mixin credit-card-panel
+mixin credit-card-panel(toggle)
   #prc-widget.panel.panel-default(ng-controller="payment")
-    #prc-cc.panel-body
+    #prc-cc.panel-body.relpos
+      .closebtn.inner.lg.inverse(ng-click=toggle)
       .form
-        .pull-right: big: big
+        .pull-right(style="margin-right:10px"): big: big
           i.fa.fa-cc-visa(ng-class="{'text-primary':cardtype=='Visa'}")
           i.fa.fa-cc-mastercard(ng-class="{'text-primary':cardtype=='Mastercard'}")
           i.fa.fa-cc-amex(ng-class="{'text-primary':cardtype=='American Express'}")

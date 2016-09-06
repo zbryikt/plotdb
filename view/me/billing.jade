@@ -4,8 +4,8 @@ block head
 block body
   script(type="text/javascript",src="https://js.stripe.com/v2/")
   include /pricing/credit-card.jade
-  +cover-modal("ccpanel==true","ccpanel=!!!ccpanel")
-    +credit-card-panel
+  +cover-modal("ccPanel.toggle==true","ccPanel.toggle=!!!ccPanel.toggle","narrow")
+    +credit-card-panel("ccPanel.toggle=false")
   #root.narrow
     h3 Billing Information
     .sep.gap
@@ -66,7 +66,7 @@ block body
                   br
                   div(style="background:#eee;padding:5px 10px;border-radius:3px")= "$" + amount
               .sep.gap
-            a.pull-right(href="#",ng-click="ccpanel=true") update payment method
+            a.pull-right(href="#",ng-click="ccPanel.toggle=true") update payment method
 
     style(type="text/css").
       .pay-history {
