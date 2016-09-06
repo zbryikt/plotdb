@@ -155,6 +155,6 @@ block body
       br
       br
       br
-  .btn.btn-default(ng-click="pricingPanel = true")
-  +cover-modal("pricingPanel","pricingPanel = false")
-    +pricing-panel
+  .btn.btn-default(ng-click="pricing.Panel = true")
+  +cover-modal("pricing.Panel","pricing.Panel = false")
+    +pricing-panel("pricing.Panel=false")
