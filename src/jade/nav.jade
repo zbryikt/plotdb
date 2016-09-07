@@ -68,6 +68,15 @@
                 label.label.label-info(ng-show="user.data.payment.plan==1") Basic
                 label.label.label-info(ng-show="user.data.payment.plan==2") Expert
               //-li(ng-show="user.data",ng-cloak): a(href="/user/{{user.data.key}}") Profile
+              li.divider
+              li: a(href="#")
+                label.grayed Storage Usage
+                .progress(style="width:120px;margin:0")
+                  .progress-bar.progress-bar-info(
+                  ng-class="{'progress-bar-info': ((user.data.datasize || 0) / 100000 < 50), 'progress-bar-warning': ((user.data.datasize || 0) / 100000 > 50)}",
+                  ng-attr-style="width:{{(user.data.datasize || 0)/ 100000}}%")
+                    span(ng-cloak) {{user.data.datasize|size}}
+              li.divider
               li: a(href="/me/edit/") Settings
               li: a(href="/me/billing/") Billing
               li.divider

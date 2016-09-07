@@ -1,7 +1,8 @@
 require! <[fs bluebird]>
-require! <[../engine/aux ../engine/share/model/ ./thumb ./perm]>
+require! <[../engine/aux ../engine/share/model/ ./thumb ./perm ./control]>
 (engine,io) <- (->module.exports = it)  _
 
+control := control engine, io
 charttype = model.type.chart
 
 # for cross domain loading chart. disabled for now
@@ -103,12 +104,14 @@ engine.router.api.post "/chart/", (req, res) ->
   data = []
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
+  if control.size-limit req.user => return aux.r402 res, 'exceed size limit'
   io.query "select count(key) as count from charts where owner = $1", [req.user.key]
     .then (r={}) ->
+      # personal item count control
       plan = req.user.{}payment.plan or 0
       count = ((r.[]rows.0 or {}).count or 0)
       if (plan == 0 and count >= 30) or (plan == 1 and count >= 300) =>
-        return aux.reject 402, 'exceed chart count limit'
+        return aux.reject 402, 'exceed count limit'
       data := req.body <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
       ret = charttype.lint data
       if ret.0 => return aux.r400 res, ret
@@ -121,7 +124,9 @@ engine.router.api.post "/chart/", (req, res) ->
     .then (r={}) ->
       key = r.[]rows.0.key
       data.key = key
-      res.send data
+      control.get-size [[\charts, \key, key]]
+    .then (size) -> control.update-size req, req.user, size
+    .then -> res.send data
     .catch aux.error-handler res
 
 engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
@@ -130,23 +135,27 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
   id = parseInt(req.params.id)
   data = req.body
   chart = null
+  oldsize = 0
   if data.key != id => return aux.r400 res, [true, data.key, \key-mismatch]
   io.query "select * from charts where key = $1", [id]
     .then (r = {}) ->
       chart := r.rows.0
-      if !chart => return bluebird.reject new Error(404)
+      if !chart => return aux.reject 404
       if chart.parent => return io.query("select key from charts where key = $1", [chart.parent])
       else return {rows: []}
     .then (r = {}) ->
       if !r.rows or !r.rows.length => chart.parent = null
       if !chart.parent => delete data.parent
-      if !perm.test(req, chart.{}permission, chart.owner, \write) => return aux.r403 res
+      if !perm.test(req, chart.{}permission, chart.owner, \write) => return aux.reject 403
+      return control.get-size [[\charts, \key, data.key]]
+    .then (size) ->
+      oldsize := size
       data <<< do
         owner: chart.owner
         key: id
         modifiedtime: new Date!toUTCString!
       ret = charttype.lint(data)
-      if ret.0 => return aux.r400 res, ret
+      if ret.0 => return aux.reject 400, ret
       data := charttype.clean data
       pairs = io.aux.insert.format charttype, data
       <[key createdtime]>.map -> delete pairs[it]
@@ -157,26 +166,24 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
         "update charts set #{pairs.0} = #{pairs.1} where key = $#{pairs.2.length + 1}",
         pairs.2 ++ [id]
       )
-        .then (r={}) -> res.send data
-        .catch ->
-          console.error it.stack
-          aux.r403 res
-    .catch ->
-      if it.message == \404 => return aux.r404 res
-      console.error it.stack
-      return aux.r403 res
+    .then -> control.get-size [[\charts, \key, data.key]]
+    .then (size) -> control.update-size req, data.owner, size - oldsize
+    .then -> res.send data
+    .catch aux.error-handler res
 
 engine.router.api.delete "/chart/:id", aux.numid false, (req, res) ~>
+  chart = null
   if !req.user => return aux.r403 res
   io.query "update charts set parent = null where parent = $1", [req.params.id]
-    .then ->
-      io.query "select * from charts where key = $1", [req.params.id]
+    .then -> io.query "select * from charts where key = $1", [req.params.id]
     .then (r = {}) ->
-      chart = r.[]rows.0
-      if !chart => return aux.r404 res
-      if !perm.test(req, chart.{}permission, chart.owner, \admin) => return aux.r403 res
-      io.query "delete from charts where key = $1", [req.params.id]
-        .then -> res.send []
+      chart := r.[]rows.0
+      if !chart => return aux.reject 404
+      if !perm.test(req, chart.{}permission, chart.owner, \admin) => return aux.reject 403
+      return control.get-size [[\charts, \key, chart.key]]
+    .then (size) -> control.update-size(req, chart.owner, -size),
+    .then -> io.query("delete from charts where key = $1", [req.params.id])
+    .then -> res.send []
     .catch ->
       console.error it.stack
       return aux.r403 res
