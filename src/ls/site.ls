@@ -210,5 +210,9 @@ angular.module \plotDB
     $scope.load = (chart) ->
       window.location.href = chartService.link chart
       #"/chart/?k=#{chart.{}type.name or 'local'}|charttype|#{chart.key}"
+  ..controller \quota, <[$scope eventBus]> ++ ($scope, eventBus) ->
+    $scope.quota = {}
+    eventBus.listen \quota.widget.on, -> $scope.quota.showQuota = true
+    eventBus.listen \quota.widget.off, -> $scope.quota.showQuota = false
 
 onSignIn = -> console.log it

@@ -37,7 +37,8 @@ init-users-table = """create table if not exists users (
   lastactive timestamp,
   public_email boolean,
   avatar text,
-  detail jsonb
+  detail jsonb,
+  payment jsonb
 )"""
 
 init-datasets-table = """create table if not exists datasets (
@@ -183,6 +184,16 @@ init-team-themes-table = """create table if not exists teamthemes (
   primary key(team, theme)
 )"""
 
+init-payment-history-table = """create table if not exists paymenthistory (
+  owner int references users(key),
+  status int,
+  id text,
+  date timestamp,
+  amount int,
+  plan text,
+  method text
+)"""
+
 alter-themes-table = """
 do $$
   begin
@@ -222,6 +233,7 @@ query init-users-table
   .then -> query init-team-charts-table
   .then -> query init-team-datasets-table
   .then -> query init-team-themes-table
+  .then -> query init-payment-history-table
   .then ->
     query alter-themes-table
       .catch ->

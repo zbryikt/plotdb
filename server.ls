@@ -1,5 +1,5 @@
 require! <[bluebird fs-extra]>
-require! <[./secret ./engine ./engine/aux ./api/]>
+require! <[./secret ./engine ./engine/aux ./api/ ./api/ext/]>
 require! <[./engine/io/localfs ./engine/io/postgresql/]>
 config = require "./engine/config/#{secret.config}"
 
@@ -16,7 +16,7 @@ pgsql = new postgresql config
 #lfs = new localfs!
 #<- lfs.init!then
 
-engine.init config, pgsql.authio
+engine.init config, pgsql.authio, (-> ext engine, pgsql)
   .then ->
     engine.app.get \/, (req, res) -> res.render 'index.jade'
     api engine, pgsql

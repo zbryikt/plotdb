@@ -1,0 +1,29 @@
+extends /base.jade
+block vars
+  - var rootid = "payview"
+  - var url = "https://plotdb.com/dev/pay/"
+block head
+  script(type="text/javascript",src="https://js.stripe.com/v2/")
+block body
+  .spc1
+  .page-header: .inner
+    .title Payment
+    .desc Subscribe this service
+  #root(ng-controller="payment")
+    br
+    div(style="max-width:800px;margin:auto")
+      h3(ng-if="user.data.payment") You've subscribed
+      div {{user.data.payment.activeUntil}}
+      br
+      div wanna pay again?
+      .sep
+      form#payment.form(action="",method="POST")
+        label Card Number
+        input.form-control(type="text",size="20",ng-model="payinfo.number")
+        label Expiration (MM/YY)
+        input.form-control(type="text",size="2",ng-model="payinfo.exp_month")
+        input.form-control(type="text",size="2",ng-model="payinfo.exp_year")
+        label CVC
+        input.form-control(type="text",size="",ng-model="payinfo.cvc")
+        .sep
+        .btn.btn-default(ng-click="createToken()") Submit

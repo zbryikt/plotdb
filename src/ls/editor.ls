@@ -96,8 +96,12 @@ angular.module \plotDB
             @backup.unguard 3000
             @share-panel.save-hint = false
           .catch (err) ~> @$apply ~>
-            plNotify.aux.error.io \save, @type, err
-            console.error "[save #name]", err
+            if err.2 == 402 =>
+              eventBus.fire \quota.widget.on
+              plNotify.send \danger, "Failed: Quota exceeded"
+            else
+              plNotify.aux.error.io \save, @type, err
+              console.error "[save #name]", err
             if @save.handle => $timeout.cancel @save.handle
             @save.handle = null
       save: ->

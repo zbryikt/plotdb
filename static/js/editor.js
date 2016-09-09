@@ -182,8 +182,13 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         });
       })['catch'](function(err){
         return this$.$apply(function(){
-          plNotify.aux.error.io('save', this$.type, err);
-          console.error("[save " + name + "]", err);
+          if (err[2] === 402) {
+            eventBus.fire('quota.widget.on');
+            plNotify.send('danger', "Failed: Quota exceeded");
+          } else {
+            plNotify.aux.error.io('save', this$.type, err);
+            console.error("[save " + name + "]", err);
+          }
           if (this$.save.handle) {
             $timeout.cancel(this$.save.handle);
           }

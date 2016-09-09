@@ -51,18 +51,34 @@
             span: small Request a Chart
           //-li#nav-theme: a(href="/doc/"): small Dev Guide
           //-li#nav-localdata: a(href="/",ng-cloak) {{dataService.local.size|size}}, {{dataService.local.rows}} Rows
+          li#nav-pricing: a(href="/pricing/") Pricing
           li(ng-cloak,ng-show="!user.data"): a#nav-login(href="#",ng-click="auth.show = !!!auth.show")
             i.fa.fa-sign-in
             | &nbsp; 
             span LOGIN / SIGNUP
           li#nav-profile.dropdown(ng-cloak,ng-show="user.data")
             .btn(data-toggle="dropdown")
-              span {{user.data.displayname}}
+              //-span {{user.data.displayname}}
               .avatar(ng-attr-style="background-image:url(/s/avatar/{{user.data.avatar || '0'}}.jpg)")
               span.caret
             ul.dropdown-menu
-              li(ng-show="user.data",ng-cloak): a(href="/user/{{user.data.key}}") Profile
+              li(ng-show="user.data",ng-cloak): a(href="/user/{{user.data.key}}")
+                b(style="vertical-align:middle") {{user.data.displayname}}&nbsp;
+                label.label.label-default(ng-show="!user.data.payment.plan") Free
+                label.label.label-info(ng-show="user.data.payment.plan==1") Basic
+                label.label.label-info(ng-show="user.data.payment.plan==2") Expert
+              //-li(ng-show="user.data",ng-cloak): a(href="/user/{{user.data.key}}") Profile
+              li.divider
+              li: a(href="#")
+                label.grayed Storage Usage
+                .progress(style="width:120px;margin:0")
+                  .progress-bar.progress-bar-info(
+                  ng-class="{'progress-bar-info': ((user.data.datasize || 0) / 100000 < 50), 'progress-bar-warning': ((user.data.datasize || 0) / 100000 > 50)}",
+                  ng-attr-style="width:{{(user.data.datasize || 0)/ 100000}}%")
+                    span(ng-cloak) {{user.data.datasize|size}}
+              li.divider
               li: a(href="/me/edit/") Settings
+              li: a(href="/me/billing/") Billing
               li.divider
               li: a(href="#",ng-click="auth.logout()") Logout
 

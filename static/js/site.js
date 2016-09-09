@@ -345,6 +345,15 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     return window.location.href = chartService.link(chart);
   };
 }));
+x$.controller('quota', ['$scope', 'eventBus'].concat(function($scope, eventBus){
+  $scope.quota = {};
+  eventBus.listen('quota.widget.on', function(){
+    return $scope.quota.showQuota = true;
+  });
+  return eventBus.listen('quota.widget.off', function(){
+    return $scope.quota.showQuota = false;
+  });
+}));
 onSignIn = function(it){
   return console.log(it);
 };

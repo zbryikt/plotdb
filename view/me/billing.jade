@@ -1,0 +1,103 @@
+extends /base.jade
+block head
+  script(type="text/javascript",src="/js/profile.js")
+block body
+  script(type="text/javascript",src="https://js.stripe.com/v2/")
+  include /pricing/credit-card.jade
+  +cover-modal("ccPanel.toggle==true","ccPanel.toggle=!!!ccPanel.toggle","narrow")
+    +credit-card-panel("ccPanel.toggle=false")
+  #root.narrow
+    h3 Billing Information
+    .sep.gap
+    .row
+      .col-sm-6
+        .panel.panel-default
+          .panel-body(style="position:relative")
+            .text-center
+              div(style="margin-bottom:15px") Your Current Plan
+              .prc-widget-logo.lg(class="logo" + (plan + 1))
+              h2(style="margin-top:0px;margin-bottom:5px")
+                if !plan
+                  span Free Plan
+                if plan == 1
+                  span Basic Plan
+                if plan == 2
+                  span Expert Plan
+              if !plan
+                small $0 usd / forever
+              if !period
+                if plan == 1
+                  small $20 usd / month
+                if plan == 2
+                  small $50 usd / month
+              if period == 1
+                if plan == 1
+                  small $200 usd / year
+                if plan == 2
+                  small $500 usd / year
+            br
+            .text-center
+              //-.btn.btn-link #[i.fa.fa-question-circle-o]  what's in this plan?
+              //-span |
+              a.btn.btn-link(href="/pricing/") change plan
+
+      .col-sm-6
+        .panel.panel-default
+          .panel-body
+            span Current Payment Information:
+            br
+            .form(style="max-width:480px;margin:auto")
+              .sep.gap
+              .pull-right: big: big
+                i.fa.fa-credit-card(style="vertical-align:top")
+              label Using Credit Card
+              input.form-control.disabled(type="input",disabled,placeholder="Card Number",value=ccn)
+              br
+              .row
+                .col-sm-6
+                  label Next Billing Due
+                  div(style="background:#eee;padding:5px 10px;border-radius:3px")
+                    if expiredate
+                      span= "{{'" + expiredate + "'|nicedate}}"
+                    else
+                      span -
+                .col-sm-6
+                  label Amount
+                  br
+                  div(style="background:#eee;padding:5px 10px;border-radius:3px")= "$" + amount
+              .sep.gap
+            a.pull-right(href="#",ng-click="ccPanel.toggle=true") update payment method
+
+    style(type="text/css").
+      .pay-history {
+        width: 100%;
+      }
+      .pay-history tr {
+        border-bottom: 1px solid #bbb;
+      }
+      .pay-history tr td{
+        border-right: 1px solid #ddd;
+        padding: 5px;
+        text-align: center;
+      }
+    .panel.panel-default
+      .panel-heading: b Payment History
+      table.panel-body.pay-history
+        tr
+          td: b State
+          td: b Transaction ID
+          td: b Date
+          td: b Amount
+          td: b Plan
+          td: b Payment Method
+
+        each item in history
+          tr(ng-cloak)
+            td: i.fa.fa-check.text-success
+            td= item.id
+            td= "{{'" + item.date + "'|nicedatetime}}"
+            td= "$" + (item.amount/100)
+            td= item.plan
+            td #[i.fa.fa-credit-card] #[span= item.method]
+
+  include /footer.jade

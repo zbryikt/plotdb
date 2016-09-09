@@ -10,6 +10,29 @@ x$.filter('tags', function(){
     }
   };
 });
+x$.filter('nicedate', function(){
+  return function(it){
+    var date;
+    date = new Date(it);
+    return (date.getYear() + 1900) + "/" + (date.getMonth() + 1) + "/" + date.getDate();
+  };
+});
+x$.filter('nicedatetime', function(){
+  return function(it){
+    var pad, date, Y, M, D, h, m, s;
+    pad = function(it){
+      return (it < 10 ? '0' : '') + "" + it;
+    };
+    date = new Date(it);
+    Y = date.getYear() + 1900;
+    M = pad(date.getMonth() + 1);
+    D = pad(date.getDate());
+    h = pad(date.getHours());
+    m = pad(date.getMinutes());
+    s = pad(date.getSeconds());
+    return Y + "/" + M + "/" + D + " " + h + ":" + m + ":" + s;
+  };
+});
 x$.filter('date', function(){
   return function(it){
     return new Date(it);

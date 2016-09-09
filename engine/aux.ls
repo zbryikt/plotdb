@@ -36,6 +36,10 @@ base = do
     if as-page => res.status(403).render '403.jade', {msg: msg}
     else res.status(403)send msg
     return null
+  r402: (res, msg = "", as-page = false) ->
+    if as-page => res.status(402).render '400.jade', {msg: msg}
+    else res.status(402)send msg
+    return null
   r400: (res, msg = "", as-page = false) ->
     if as-page => res.status(400).render '400.jade', {msg: msg}
     else res.status(400)send msg

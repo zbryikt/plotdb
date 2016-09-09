@@ -153,7 +153,16 @@ base = (model) ->
     base: do
       theme: {required: true, type: model.type.key({type: base.theme})}
       team: {required: true, type: model.type.key({type: base.team})}
-
+  base.payment-history = new model do
+    name: \payment-history
+    base: do
+      owner: {required: true, type: model.type.key({type:model.type.user})}
+      status: {required: true, type: model.type.number}
+      id: {required: true, type: model.type.string}
+      date: {required: true, type: model.type.date}
+      amount: {required: true, type: model.type.number}
+      plan: {require: true, type: model.type.string}
+      method: {require: true, type: model.type.string}
   base
 
 module.exports = base

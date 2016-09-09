@@ -72,6 +72,7 @@
           /js/plotdb.js
           /js/share/config.js
           /js/io.js
+          /js/payment.js
           /js/utility.js
           /js/editor.js
           /js/data/sample.js

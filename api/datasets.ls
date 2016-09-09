@@ -1,6 +1,7 @@
-require! <[../engine/aux ../engine/share/model/ bluebird ./perm]>
+require! <[../engine/aux ../engine/share/model/ bluebird ./perm ./control]>
 (engine,io) <- (->module.exports = it)  _
 
+control := control engine, io
 datasettype = model.type.dataset
 datafieldtype = model.type.datafield
 
@@ -71,6 +72,7 @@ engine.router.api.get "/dataset/:id", aux.numid false, (req, res) ->
       res.json ret
     .catch aux.error-handler res
 
+/*
 update-size = (req, delta) -> new bluebird (res, rej) ->
   if !req.user => return rej aux.error 403
   io.query "select datasize from users where users.key = $1", [req.user.key or -1]
@@ -85,11 +87,19 @@ update-size = (req, delta) -> new bluebird (res, rej) ->
     .catch ->
       console.error it.stack
       rej it
-
+*/
 #TODO remove length check for dynamic dataset
 save-dataset = (req, res, okey = null) ->
   if okey and !/^\d+$/.exec("#okey") => return aux.r400 res
   if !req.user => return aux.reject 403
+  if !okey and control.size-limit(req.user) => return aux.reject 402, 'exceed size limit'
+  # personal item count control
+  io.query "select count(key) as count from datasets where owner = $1", [req.user.key]
+    .then (r={}) ->
+      plan = req.user.{}payment.plan or 0
+      count = ((r.[]rows.0 or {}).count or 0)
+      if (plan == 0 and count >= 30) or (plan == 1 and count >= 300) =>
+        return aux.reject 402, 'exceed count limit'
   if typeof(req.body) != \object => return aux.r400 res
   data = req.body <<< {owner: req.user.key, modifiedtime: new Date!}
   if Array.isArray(data.{}permission.switch) => data.{}permission.switch = \publish
@@ -175,25 +185,25 @@ save-dataset = (req, res, okey = null) ->
           )
           return bluebird.all(promises)
         .then (r = {}) ->
-          update-size req, data.size - (if cur => cur.size else 0)
-            .then -> res.send data
-          /*
-          # only send keys to save bandwidth
-          data.fields = r.[]rows
-          req.user.datasize = (req.user.datasize or 0) + data.size
-          return io.query "select datasize from users where users.key = $1", [req.user.key]
+          control.update-size req, data.owner, data.size - (if cur => cur.size else 0)
+        .then -> res.send data
+        /*
+        # only send keys to save bandwidth
+        data.fields = r.[]rows
+        req.user.datasize = (req.user.datasize or 0) + data.size
+        return io.query "select datasize from users where users.key = $1", [req.user.key]
         .then (r) ->
-          user = r.[]rows.0
-          if !user =>
-            console.error "[post dataset: update user failed]"
-            return res.send data
-          datasize = (user.datasize or 0) + data.size
-          if cur => datasize -= cur.size
-          io.query "update users set datasize = $1 where users.key=$2", [datasize, req.user.key]
-            .then ->
-              req.login req.user, -> res.send data
-              return null
-          */
+        user = r.[]rows.0
+        if !user =>
+          console.error "[post dataset: update user failed]"
+          return res.send data
+        datasize = (user.datasize or 0) + data.size
+        if cur => datasize -= cur.size
+        io.query "update users set datasize = $1 where users.key=$2", [datasize, req.user.key]
+          .then ->
+            req.login req.user, -> res.send data
+            return null
+        */
 
     .catch aux.error-handler res
 
@@ -205,12 +215,12 @@ engine.router.api.put "/dataset/:id", aux.numid false, (req, res) ->
 
 engine.router.api.delete "/dataset/:id", aux.numid false, (req, res) ->
   if !req.user => return aux.r403 res
-  io.query "select key,owner from datasets where key = $1", [req.params.id]
+  io.query "select key,owner,size from datasets where key = $1", [req.params.id]
     .then (r) ->
       dataset = r.[]rows.0
       if !dataset => return aux.reject 404
       if !perm.test(req, dataset.{}permission, dataset.owner, \admin) => return aux.reject 403
-      update-size req, -dataset.size
+      control.update-size req, dataset.owner, -( dataset.size or 0)
       bluebird.all [
         io.query "delete from datafields where dataset = $1", [req.params.id]
         io.query "delete from datasets where key = $1", [req.params.id]

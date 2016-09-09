@@ -1,0 +1,47 @@
+mixin credit-card-panel(toggle)
+  #prc-widget.panel.panel-default(ng-controller="payment")
+    #prc-cc.panel-body.relpos
+      .closebtn.inner.lg.inverse(ng-click=toggle)
+      .form
+        .pull-right(style="margin-right:10px"): big: big
+          i.fa.fa-cc-visa(ng-class="{'text-primary':cardtype=='Visa'}")
+          i.fa.fa-cc-mastercard(ng-class="{'text-primary':cardtype=='Mastercard'}")
+          i.fa.fa-cc-amex(ng-class="{'text-primary':cardtype=='American Express'}")
+          i.fa.fa-cc-jcb(ng-class="{'text-primary':cardtype=='JCB'}")
+          i.fa.fa-cc-stripe
+        label Credit Card Number
+        .form-group(ng-class="{'has-feedback has-error':error.number}",style="margin-bottom:13px")
+          input.form-control(type="input",placeholder="Card Number",ng-model="payinfo.number",
+          ng-keydown="check('number')")
+          .form-control-feedback.with-text(ng-show="error.number",ng-cloak,style="margin-top:3px")
+            small 16 digit number, like: 1000200030004000
+        .row(style="margin-bottom:13px")
+          .col-sm-7
+            label Expiration Date
+            div
+            .form-group(ng-class="{'has-feedback has-error':error.exp_month}",style="display:inline;margin-bottom:0")
+              input.form-control(type="input",placeholder="Month",ng-model="payinfo.exp_month",
+              style="display:inline;width:50%;border-right:0;border-radius:3px 0 0 3px",
+              ng-keydown="check('exp_month')")
+              .form-control-feedback.with-text(ng-show="error.exp_month",style="margin-top:15px",ng-cloak)
+                small 01 ~ 12, like: 08
+            .form-group(ng-class="{'has-feedback has-error':error.exp_year}",style="display:inline;margin-bottom:0")
+              input.form-control(type="input",placeholder="Year",ng-model="payinfo.exp_year",
+              style="display:inline;width:50%;border-radius:0 3px 3px 0",
+              ng-keydown="check('exp_year')")
+              .form-control-feedback.with-text(ng-show="error.exp_year",style="margin-top:15px",ng-cloak)
+                small future year, like: 2018
+          .col-sm-5
+            label CVC Code
+            .form-group(ng-class="{'has-feedback has-error':error.cvc}",style="margin-bottom:0")
+              input.form-control(type="input",placeholder="CVC",style="display:inline",
+              ng-model="payinfo.cvc",ng-keydown="check('cvc')")
+              .form-control-feedback.with-text(ng-show="error.cvc",ng-cloak)
+                small 3 digit number, like: 476
+      .btn.btn-primary.btn-block.btn-lg(ng-class="{'disabled':error.all}",style="margin-top:20px",
+      ng-click="update()")
+        span Update
+    .pull-right
+      img(src="/assets/img/ssl-secure-light.png",style="margin:5px 5px 0 0")
+      img(src="/assets/img/pricing/stripe-powered-light.png",style="margin:5px 0 0")
+

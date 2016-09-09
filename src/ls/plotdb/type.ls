@@ -36,17 +36,22 @@ plotdb.Order = do
   order: do
     Ascending: (a,b) -> if b > a => -1 else if b < a => 1 else 0
     Descending: (a,b) -> if b > a => 1 else if b < a => -1 else 0
+  # if we dont proide fieldname, then data will be sorted directly.
   sort: (data, fieldname, is-ascending = true) ->
-    field = data.map(->it[fieldname])
+    field = if fieldname => data.map(->it[fieldname]) else data
     types = plotdb.OrderTypes.map(->it)
     for i from 0 til field.length
       for j from 0 til types.length
         if !types[j].test(field[i]) => types[j] = null
       types = types.filter(->it)
     type = types[0]
-    if type => for i from 0 til data.length => data[i][fieldname] = type.parse data[i][fieldname]
     sorter = ((type or {}).order or @order)[if is-ascending => \Ascending else \Descending]
-    data.sort((a,b)-> sorter(a[fieldname], b[fieldname]))
+    if fieldname =>
+      if type => for i from 0 til data.length => data[i][fieldname] = type.parse data[i][fieldname]
+      data.sort((a,b)-> sorter(a[fieldname], b[fieldname]))
+    else
+      if type => for i from 0 til data.length => data[i] = type.parse data[i]
+      data.sort sorter
     #TODO if we can speed up further?
 
 plotdb.Boolean = do
