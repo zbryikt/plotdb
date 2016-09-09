@@ -308,14 +308,17 @@ $(document).ready(function(){
     }
   };
   saveLocal = function(chart, key){
-    return function(){
+    return function(cb){
       var req;
       req = new XMLHttpRequest();
       req.onload = function(){
-        return console.log('ok');
+        if (cb) {
+          return cb();
+        }
       };
-      req.open('put', plotdbDomain + "/d/chart/" + key, true);
-      return req.send(chart.local);
+      req.open('put', plotdbDomain + "/e/chart/" + key + "/local", true);
+      req.setRequestHeader('Content-Type', "application/json;charset=UTF-8");
+      return req.send(JSON.stringify(chart.local));
     };
   };
   render = function(payload, rebind){

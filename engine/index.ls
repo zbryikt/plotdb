@@ -76,11 +76,19 @@ backend = do
       (list) <- content-security-policy.map
       if <[connect-src script-src]>.indexOf(list.0) < 0 => return
       list.push "http://#ip:8080"
+      list.push "#{config.urlschema}#{config.domain}"
     content-security-policy := content-security-policy.map(-> it.join(" ")).join("; ")
     session-store = -> @ <<< authio.session
     session-store.prototype = express-session.Store.prototype
     app = express!
     app.disable \x-powered-by
+    app.use (req, res, next) ->
+      res.header "Access-Control-Allow-Origin", "#{config.urlschema}#{config.domainIO}"
+      res.header "Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept"
+      res.header "Access-Control-Allow-Methods", "PUT"
+      next!
+
+
     app.use (req, res, next) ->
       res.setHeader \Content-Security-Policy, content-security-policy
       res.setHeader \X-Content-Security-Policy, content-security-policy

@@ -1438,6 +1438,20 @@ plotdb.view = {
     if (root) {
       this.attach(root);
     }
+    chart.saveLocal = function(chart, key){
+      return function(cb){
+        var req;
+        req = new XMLHttpRequest();
+        req.onload = function(){
+          if (cb) {
+            return cb();
+          }
+        };
+        req.open('put', plConfig.urlschema + "" + plConfig.domain + "/e/chart/" + key + "/local", true);
+        req.setRequestHeader('Content-Type', "application/json;charset=UTF-8");
+        return req.send(JSON.stringify(chart.local));
+      };
+    }(chart, chart.key);
     return this;
   }
 };

@@ -164,12 +164,12 @@ snapshot = (type='snapshot') ->
     console.log e
     window.parent.postMessage {type, payload: null}, plotdb-domain
 
-
-save-local = (chart, key) -> ->
+save-local = (chart, key) -> (cb) ->
   req = new XMLHttpRequest!
-  req.onload = -> console.log \ok
-  req.open \put, "#{plotdb-domain}/d/chart/#key", true
-  req.send chart.local
+  req.onload = -> if cb => cb!
+  req.open \put, "#{plotdb-domain}/e/chart/#key/local", true
+  req.setRequestHeader \Content-Type, "application/json;charset=UTF-8"
+  req.send JSON.stringify(chart.local)
 
 render = (payload, rebind = true) ->
   [code,style,doc] = <[code style doc]>.map(->payload.{}chart[it].content)

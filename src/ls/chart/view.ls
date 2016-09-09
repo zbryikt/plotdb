@@ -23,6 +23,14 @@ plotdb.view = do
     if theme? => @theme theme
     if fields? => @sync fields
     if root => @attach root
+    chart.save-local = ((chart, key) -> (cb) ->
+      req = new XMLHttpRequest!
+      req.onload = -> if cb => cb!
+      req.open \put, "#{plConfig.urlschema}#{plConfig.domain}/e/chart/#key/local", true
+      req.setRequestHeader \Content-Type, "application/json;charset=UTF-8"
+      req.send JSON.stringify(chart.local)
+    ) chart, chart.key
+
     @
 
 plotdb.view.chart.prototype <<< do
