@@ -65,6 +65,11 @@ angular.module \plotDB
         $scope <<< switch value
         | \chart => {value, type: \chart, service: chart-service}
         | \theme => {value, type: \theme, service: theme-service}
+      local: do
+        get: ->
+          new Promise (res, rej) ~>
+            @promise = {res, rej}
+            $scope.canvas.window.postMessage {type: \get-local}, $scope.plotdb-domain
       _save: (nothumb = false)->
         if !$scope.writable and @target!.owner != @user.data.key =>
           key = (if @target!._type.location == \server => @target!.key else null)
@@ -74,7 +79,10 @@ angular.module \plotDB
           if key => @target! <<< {parent: key}
         refresh = if !@target!.key => true else false
         if @target!.dimension => @target!.dimlen = [k for k of @target!.dimension or {}].length
-        @target!.save!
+        @local.get!
+          .then (local) ~>
+            @target!local = local
+            @target!save!
           .then (ret) ~>
             <~ @$apply
             if refresh => eventBus.fire \loading.dimmer.on
@@ -904,6 +912,11 @@ angular.module \plotDB
           for idx from 0 til bytes.length => ints[idx] = bytes.charCodeAt idx
           $scope.download.png.url = URL.createObjectURL(new Blob [buf], {type: 'image/png'})
           $scope.download.png.size = bytes.length
+        else if data.type == \get-local =>
+          $scope.local.data = data.data
+          res = $scope.local.{}promise.res
+          $scope.local.promise = null
+          if res => res data.data
       field-agent: do
         init: ->
           $(\#field-agent).on \mousewheel, ~> @set-position!

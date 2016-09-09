@@ -113,8 +113,22 @@ init-charts-table = """create table if not exists charts (
   assets jsonb,
   permission jsonb,
   config jsonb,
-  library text[]
+  library text[],
+  local jsonb
 )"""
+
+alter-charts-table = """
+do $$
+  begin
+    begin
+      alter table charts add column local jsonb;
+    exception
+      when duplicate_column then raise notice '';
+    end;
+  end;
+$$
+"""
+
 
 init-likes-table = """create table if not exists likes (
   key serial primary key,
@@ -197,6 +211,7 @@ query init-users-table
   .then -> query init-datafields-table
   .then -> query init-themes-table
   .then -> query init-charts-table
+  .then -> query alter-charts-table
   .then -> query init-palettes-table
   .then -> query init-requests-table
   .then -> query init-comments-table

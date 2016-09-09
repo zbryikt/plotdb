@@ -119,6 +119,27 @@ engine.router.api.post "/chart/", (req, res) ->
       console.error it.stack
       aux.r403 res
 
+engine.router.api.put \/chart/:id/local, aux.numid false, (req, res) ->
+  if !req.user => return aux.r403 res
+  if typeof(req.body) != \object => return aux.r400 res
+  id = parseInt(req.params.id)
+  data = req.body
+  chart = null
+  if data.key != id => return aux.r400 res, [true, data.key, \key-mismatch]
+  io.query "select local,permission from charts where key = $1", [id]
+    .then (r = {}) ->
+      chart := r.rows.0
+      if !chart => return bluebird.reject new Error(404)
+      if !perm.test(req, chart.{}permission, chart.owner, \write) => return aux.r403 res
+      chart.local <<< data
+      chart.modifiedtime = new Date!toUTCString!
+      io.query(
+        "update charts set (local,modifiedtime) = ($2,$3) where key = $1"
+        [id, chart.local, chart.modifiedtime]
+      )
+    .then -> res.send!
+    .catch aux.error-handler res
+
 engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res

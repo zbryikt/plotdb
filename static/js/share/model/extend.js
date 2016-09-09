@@ -328,6 +328,10 @@ base = function(model){
         type: model.type.array({
           type: model.type.string
         })
+      },
+      local: {
+        required: false,
+        type: model.type.json
       }
     }
   });

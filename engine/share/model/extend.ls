@@ -90,6 +90,7 @@ base = (model) ->
       assets: {required: false, type: model.type.array({type: base.file})}
       permission: {required: false, type: model.type.permission}
       library: { required: false, type: model.type.array({type: model.type.string})}
+      local: { required: false, type: model.type.json }
       #TODO: add mapping or binding for dataset fields in chart
 
   base.palette = new model do

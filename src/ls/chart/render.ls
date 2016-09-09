@@ -25,6 +25,8 @@ dispatcher = (evt) ->
     else window.parent.postMessage {type: \loaded}, plotdb-domain
   else if evt.data.type == \colorblind-emu => colorblind evt.data.payload
   else if evt.data.type == \edit => edit evt.data.payload
+  else if evt.data.type == \get-local =>
+    window.parent.postMessage {type: \get-local, data: window.module.exports.local}, plotdb-domain
 
 window.addEventListener \error, (e) ->
   re-bloburl = /blobhttp:%3A\/\/[^:]+:/
@@ -163,9 +165,15 @@ snapshot = (type='snapshot') ->
     window.parent.postMessage {type, payload: null}, plotdb-domain
 
 
+save-local = (chart, key) -> ->
+  req = new XMLHttpRequest!
+  req.onload = -> console.log \ok
+  req.open \put, "#{plotdb-domain}/d/chart/#key", true
+  req.send chart.local
+
 render = (payload, rebind = true) ->
   [code,style,doc] = <[code style doc]>.map(->payload.{}chart[it].content)
-  [data,assets] = <[data assets]>.map(->payload.chart[it])
+  [data,assets,local,key] = <[data assets local key]>.map(->payload.chart[it])
   dimension = payload.chart.dimension or {}
   config = payload.chart.config or {}
   theme = payload.theme or {}
@@ -205,6 +213,7 @@ render = (payload, rebind = true) ->
       #window.module = module
       root = document.getElementById \container
       chart = module.exports
+      if !chart.local => chart.local = local
       if chart.sample =>
         window.sample-data = plotdb.chart.get-sample-data chart, dimension
         if (!data or !data.length) => data := window.sample-data
@@ -234,6 +243,7 @@ render = (payload, rebind = true) ->
         file.datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
         assetsmap[file.name] = file
       chart <<< {config}
+      chart.save-local = save-local chart, key
       if rebind or reboot or !(chart.root and chart.data) => chart <<< {root, data, dimension}
       promise = Promise.resolve!
       if reboot => promise = promise.then ->
@@ -279,7 +289,7 @@ window.addEventListener \keydown, (e) ->
 window.parent.postMessage {type: \loaded}, plotdb-domain
 
 # dont enable it for now
-/*
+
 selection-box = document.createElement("div")
 selection-box.setAttribute("class", "selection-box")
 document.body.appendChild(selection-box)
@@ -401,4 +411,4 @@ window.addEventListener \click, (e) ->
     ..left   = "#{rect.left + scroll.left - margin.left}px"
     ..height = "#{rect.height + margin.top + margin.bottom}px"
     ..width  = "#{rect.width + margin.left + margin.right}px"
-*/
+

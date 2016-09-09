@@ -113,6 +113,20 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }()));
       }
     },
+    local: {
+      get: function(){
+        var this$ = this;
+        return new Promise(function(res, rej){
+          this$.promise = {
+            res: res,
+            rej: rej
+          };
+          return $scope.canvas.window.postMessage({
+            type: 'get-local'
+          }, $scope.plotdbDomain);
+        });
+      }
+    },
     _save: function(nothumb){
       var key, ref$, refresh, k, this$ = this;
       nothumb == null && (nothumb = false);
@@ -141,7 +155,10 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return results$;
         }.call(this)).length;
       }
-      return this.target().save().then(function(ret){
+      return this.local.get().then(function(local){
+        this$.target().local = local;
+        return this$.target().save();
+      }).then(function(ret){
         return this$.$apply(function(){
           var link;
           if (refresh) {
@@ -1584,7 +1601,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         var data;
         data = arg$.data;
         return $scope.$apply(function(){
-          var ref$, config, dimension, k, v, hash, key$, typedef, ref1$, event, bytes, mime, buf, ints, i$, to$, idx;
+          var ref$, config, dimension, k, v, hash, key$, typedef, ref1$, event, bytes, mime, buf, ints, i$, to$, idx, res;
           if (!data || typeof data !== 'object') {
             return;
           }
@@ -1726,6 +1743,13 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               type: 'image/png'
             }));
             return $scope.download.png.size = bytes.length;
+          } else if (data.type === 'get-local') {
+            $scope.local.data = data.data;
+            res = ((ref$ = $scope.local).promise || (ref$.promise = {})).res;
+            $scope.local.promise = null;
+            if (res) {
+              return res(data.data);
+            }
           }
         });
       }, false);

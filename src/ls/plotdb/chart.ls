@@ -71,4 +71,3 @@ plotdb.chart = do
       if type.0 and plotdb[type.0].parse =>
         config[k] = plotdb[type.0].parse config[k]
       #if type.filter(->it == \Number).length => config[k] = parseFloat(config[k])
-
