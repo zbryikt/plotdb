@@ -189,7 +189,7 @@ engine.router.api.delete "/chart/:id", aux.numid false, (req, res) ~>
       return aux.r403 res
 
 engine.app.get \/chart/, (req, res) ->
-  return res.render 'view/chart/index.jade'
+  return res.render 'view/chart/index.jade', {chart: {}}
 
 engine.app.get \/chart/:id, aux.numid true, (req, res) ->
   io.query(
