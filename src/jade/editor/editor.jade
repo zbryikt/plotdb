@@ -112,10 +112,10 @@ include /widget/palette-edit-modal.jade
             //- Range
             .input-group.chart-config-range(ng-if="v.type[0].name=='Range'")
               span.input-group-addon: div {{v.name || name}}
-              span.label.min min
-              input.form-control(style="width:50%",ng-model="v.value[0]")
-              span.label.max max
-              input.form-control(style="width:50%",ng-model="v.value[1]")
+              div.form-control
+                input.form-control(ng-model="v.value[0]")
+                span to
+                input.form-control(ng-model="v.value[1]")
             //- Palette
             .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);")
               span.input-group-addon: div {{v.name || name}}

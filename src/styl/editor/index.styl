@@ -67,27 +67,30 @@ d3 = #333
   height: 230px
   overflow-y: scroll
 
-.chart-config .chart-config-range span.label
-  position: absolute
-  z-index: 10
-  display: inline-block
-  width: 28px
-  background: rgba(255,255,255,0.3)
-  color: #999
-  border: 1px solid #ccc
-  height: 14px
+.chart-config-range div.form-control
   padding: 0
-  line-height: 12px
-  font-size: 12px
-  text-align: center
-  font-size: 12px
-  font-weight: 100
-  letter-spacing: 1px
-  &.min
-    border-radius: 0 0 3px 0
-  &.max
-    right: 0
-    border-radius: 0 3px 0 3px
+  margin: 0
+  border: 0
+  position: relative
+  input
+    width: 50%
+    text-align: center
+    &:first-child
+      border-right: 2px solid #fff
+  span
+    position: absolute
+    top: 50%
+    left: 50%
+    z-index: index(order, 'chart-configs') + 1
+    padding: 5px
+    border-radius: 50%
+    color: #bbb
+    background: #fff
+    height: 20px
+    width: 20px
+    line-height: 10px
+    font-size: 12px
+    margin: -10px 0 0 -10px
 
 #chart-edit-iframe-config
   .checkbox
