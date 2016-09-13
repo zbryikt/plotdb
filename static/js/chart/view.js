@@ -36,6 +36,7 @@ plotdb.view = {
     if (chart) {
       this._.chart = chart = import$(eval(chart.code.content), chart);
     }
+    plotdb.chart.updateDimension(chart);
     plotdb.chart.updateConfig(chart, chart.config);
     plotdb.chart.updateAssets(chart, chart.assets);
     if (data) {

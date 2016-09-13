@@ -5250,6 +5250,23 @@ plotdb.chart = {
   updateData: function(chart){
     return chart.data = plotdb.chart.dataFromDimension(chart.dimension);
   },
+  updateDimension: function(chart){
+    var k, ref$, v, results$ = [];
+    for (k in ref$ = chart.dimension) {
+      v = ref$[k];
+      if (Array.isArray(v.type)) {
+        results$.push(v.type = v.type.map(fn$));
+      }
+    }
+    return results$;
+    function fn$(it){
+      if (typeof it === 'object') {
+        return it;
+      } else {
+        return plotdb[it] || {};
+      }
+    }
+  },
   updateAssets: function(chart, assets){
     var ret, i$, len$, file, raw, array, j$, to$, idx;
     assets == null && (assets = []);

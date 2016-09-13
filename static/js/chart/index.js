@@ -56,6 +56,7 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
       }
     });
     import$(this, src);
+    plotdb.chart.updateDimension(this);
     for (k in ref$ = this.dimension || {}) {
       v = ref$[k];
       v.fields = (v.fields || []).map(fn$);

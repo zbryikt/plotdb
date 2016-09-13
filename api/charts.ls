@@ -157,6 +157,8 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
       ret = charttype.lint(data)
       if ret.0 => return aux.reject 400, ret
       data := charttype.clean data
+      for name,value of data.dimension =>
+        value.type = value.type.map -> if typeof(it) == typeof({}) => it.name else it
       pairs = io.aux.insert.format charttype, data
       <[key createdtime]>.map -> delete pairs[it]
       if !perm.test(req, chart.{}permission, chart.owner, \admin) => delete pairs.permission

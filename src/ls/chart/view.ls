@@ -15,6 +15,7 @@ plotdb.view = do
     @_ = {handler: {}, _chart: JSON.stringify(chart), fields, root, inited: false}
     if chart =>
       @_.chart = chart = eval(chart.code.content) <<< chart
+    plotdb.chart.update-dimension chart
     plotdb.chart.update-config chart, chart.config
     plotdb.chart.update-assets chart, chart.assets
     if data => @data data

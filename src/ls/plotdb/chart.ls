@@ -51,6 +51,9 @@ plotdb.chart = do
     #TODO abstract so that sample data in renderer can also use this. we now just copy it.
     #TODO fields data load by demand
     chart.data = plotdb.chart.data-from-dimension chart.dimension
+  update-dimension: (chart) ->
+    for k,v of chart.dimension => if Array.isArray(v.type) =>
+      v.type = v.type.map -> if typeof(it) == \object => it else (plotdb[it] or {})
   update-assets: (chart, assets = []) ->
     ret = {}
     for file in assets =>
