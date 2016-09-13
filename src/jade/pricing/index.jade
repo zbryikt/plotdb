@@ -88,7 +88,11 @@ block body
           br
           small Your Choice:
           .text-center(ng-cloak)
-            h2 #[span(ng-show="settings.plan==1") Basic] #[span(ng-show="settings.plan==2") Expert] Plan
+            h2
+              span(ng-show="!settings.plan") Free
+              span(ng-show="settings.plan==1") Basic
+              span(ng-show="settings.plan==2") Expert
+              span Plan
             big
               span ${{prices[settings.period][settings.plan]}} USD / 
               span(ng-show="settings.period=='1'") year
@@ -102,8 +106,9 @@ block body
 
         .col-sm-8
           #prc-cc.panel.panel-default(style="max-width:480px;margin:auto;background:#f9f9f9")
-            .panel-body
-
+            .panel-body.relpos
+              #prc-cc-free(ng-cloak,ng-show="!settings.plan"): .inner
+                .btn.btn-default.btn-lg.btn-block(ng-click="subscribe()") Downgrade to Free Plan
               .form
                 .pull-right: big: big
                   i.fa.fa-cc-visa(ng-class="{'text-primary':cardtype=='Visa'}")

@@ -91,10 +91,36 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
     });
   };
   return $scope.subscribe = function(){
-    if ($scope.error.all) {
+    var _subscribe;
+    if ($scope.settings.plan && $scope.error.all) {
       return;
     }
     eventBus.fire('loading.dimmer.on');
+    _subscribe = function(token){
+      token == null && (token = {});
+      return $http({
+        url: '/d/subscribe',
+        method: 'POST',
+        data: {
+          settings: $scope.settings,
+          token: token.id
+        }
+      }).success(function(d){
+        import$($scope.user.data.payment, d.payment);
+        if (!d.payment.plan) {
+          plNotify.send('success', "you've switched to free plan.");
+        } else {
+          plNotify.send('success', "you've subscribed!");
+        }
+        return eventBus.fire('loading.dimmer.off');
+      }).error(function(d){
+        plNotify.send('danger', "something wrong, try again later? ");
+        return eventBus.fire('loading.dimmer.off');
+      });
+    };
+    if ($scope.settings.plan === 0) {
+      return _subscribe();
+    }
     return Stripe.card.createToken($scope.payinfo, function(state, token){
       return $scope.$apply(function(){
         if (state !== 200) {
@@ -103,28 +129,7 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
           plNotify.send('danger', "payment failed.");
           return;
         }
-        console.log(token, token.id);
-        return $http({
-          url: '/d/subscribe',
-          method: 'POST',
-          data: {
-            settings: $scope.settings,
-            token: token.id
-          }
-        }).success(function(d){
-          console.log("before:", JSON.stringify($scope.user.data));
-          import$($scope.user.data.payment, d.payment);
-          console.log($scope.user.data);
-          if (!d.payment.plan) {
-            plNotify.send('success', "you've switched to free plan.");
-          } else {
-            plNotify.send('success', "you've subscribed!");
-          }
-          return eventBus.fire('loading.dimmer.off');
-        }).error(function(d){
-          plNotify.send('danger', "something wrong, try again later? ");
-          return eventBus.fire('loading.dimmer.off');
-        });
+        return _subscribe(token);
       });
     });
   };

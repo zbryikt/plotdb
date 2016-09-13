@@ -87,19 +87,24 @@ engine.router.api.post \/payment-method/, (req, res) ->
 engine.router.api.post \/subscribe/, (req, res) ->
   if !req.user or !req.user.key => return aux.r403 res
   if !req.body or !req.body.settings => return aux.r400 res
-  if !req.user.payment.stripe and (!req.body.token) => return aux.r400 res
   plans = <[free basic expert]>
   period = <[monthly annually]>
   settings = req.body.settings
-  get-customer req, req.user
-    .then (customer) ->
-      if !customer or customer.deleted => create-customer req, req.user, req.body.token
-      else bluebird.resolve customer
-    .then (customer) ->
-      plan-name = "#{plans[settings.plan]}-plan#{if settings.plan => '-'+period[settings.period] else ''}"
-      sub = customer.subscriptions.data.filter(->!it.deleted).0 or {}
-      if sub.{}plan.id == plan-name => return aux.reject 400, "same plan"
-      make-subscription customer.id, sub.id, plan-name
+  plan-name = "#{plans[settings.plan]}-plan#{if settings.plan => '-'+period[settings.period] else ''}"
+  if plan-name != \free and !req.user.payment.stripe and !req.body.token => return aux.r400 res
+  promise = (
+    if plan-name == \free and !req.user.payment.stripe and !req.body.token => bluebird.resolve!
+    else
+      get-customer req, req.user
+        .then (customer) ->
+          if !customer or customer.deleted => create-customer req, req.user, req.body.token
+          else bluebird.resolve customer
+        .then (customer) ->
+          sub = customer.subscriptions.data.filter(->!it.deleted).0 or {}
+          if sub.{}plan.id == plan-name => return aux.reject 400, "same plan"
+          make-subscription customer.id, sub.id, plan-name
+  )
+  promise
     .then ->
       if settings.period == 1 =>      [dy, dm] = [1,0]
       else if settings.period == 0 => [dy, dm] = [0,1]

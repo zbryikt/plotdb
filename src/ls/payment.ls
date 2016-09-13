@@ -53,8 +53,22 @@ angular.module \plotDB
           plNotify.send \danger, "something wrong, try again later? "
           eventBus.fire \loading.dimmer.off
     $scope.subscribe = ->
-      if $scope.error.all => return
+      if $scope.settings.plan and $scope.error.all => return
       eventBus.fire \loading.dimmer.on
+      _subscribe = (token = {})->
+        $http do
+          url: \/d/subscribe
+          method: \POST
+          data: {settings: $scope.settings, token: token.id}
+        .success (d) ->
+          $scope.user.data.payment <<< d.payment
+          if !d.payment.plan => plNotify.send \success, "you've switched to free plan."
+          else plNotify.send \success, "you've subscribed!"
+          eventBus.fire \loading.dimmer.off
+        .error (d) ->
+          plNotify.send \danger, "something wrong, try again later? "
+          eventBus.fire \loading.dimmer.off
+      if $scope.settings.plan == 0 => return _subscribe!
       Stripe.card.create-token $scope.payinfo, (state, token) -> $scope.$apply ->
         if state != 200 =>
           #TODO detail error handling
@@ -62,20 +76,5 @@ angular.module \plotDB
           eventBus.fire \loading.dimmer.off
           plNotify.send \danger, "payment failed."
           return
-        console.log token, token.id
-        $http do
-          url: \/d/subscribe
-          method: \POST
-          data: {settings: $scope.settings, token: token.id}
-        .success (d) ->
-          console.log "before:", JSON.stringify($scope.user.data)
-          $scope.user.data.payment <<< d.payment
-          console.log $scope.user.data
-          if !d.payment.plan => plNotify.send \success, "you've switched to free plan."
-          else plNotify.send \success, "you've subscribed!"
-          eventBus.fire \loading.dimmer.off
-        .error (d) ->
-          plNotify.send \danger, "something wrong, try again later? "
-          eventBus.fire \loading.dimmer.off
-
+        _subscribe token
 
