@@ -16,9 +16,12 @@ plotd3.html.tooltip = (root, sel, cb) ->
     popup.attr class: "pdb-popup pdb-tooltip #{if isLeft => 'left' else 'right'}"
     update = ->
       pbox = popup.0.0.getBoundingClientRect!
-      popup.style top: "#{box.top + box.height / 2 - pbox.height/2 - rbox.top}px", opacity: 1
-      left = if isLeft => box.left - pbox.width - 10 - rbox.left
-      else box.left + box.width + 10 - rbox.left
+      #popup.style top: "#{box.top + box.height / 2 - pbox.height/2 - rbox.top}px", opacity: 1
+      #left = if isLeft => box.left - pbox.width - 10 - rbox.left
+      #else box.left + box.width + 10 - rbox.left
+      popup.style top: "#{box.top + box.height / 2 - pbox.height/2}px", opacity: 1
+      left = if isLeft => box.left - pbox.width - 10
+      else box.left + box.width + 10
       if left < 3 => left = 3
       if left + pbox.width >= rbox.width - 3=> left = rbox.width - pbox.width - 3
       popup.style left: "#{left}px"

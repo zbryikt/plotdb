@@ -40,12 +40,12 @@ plotd3.html.tooltip = function(root, sel, cb){
       var pbox, left;
       pbox = popup[0][0].getBoundingClientRect();
       popup.style({
-        top: (box.top + box.height / 2 - pbox.height / 2 - rbox.top) + "px",
+        top: (box.top + box.height / 2 - pbox.height / 2) + "px",
         opacity: 1
       });
       left = isLeft
-        ? box.left - pbox.width - 10 - rbox.left
-        : box.left + box.width + 10 - rbox.left;
+        ? box.left - pbox.width - 10
+        : box.left + box.width + 10;
       if (left < 3) {
         left = 3;
       }
@@ -175,7 +175,6 @@ plotd3.html.popup = function(root, sel, cb, store){
     pbox = popup[0][0].getBoundingClientRect();
     rbox = root.getBoundingClientRect();
     x = x - pbox.width / 2 - rbox.left;
-    y = y + 20 - rbox.top;
     if (y > rbox.height - pbox.height - 50) {
       y = y - pbox.height - 40;
     }
