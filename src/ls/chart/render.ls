@@ -60,7 +60,8 @@ proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
   empty="{exports:{init:function(){},update:function(){},resize:function(){},bind:function(){},render:function(){}}}"
   window.error-message = ""
   module = if updateModule => \module else \moduleLocal
-  code := "(function() { #code; window.#module = (typeof(module)=='undefined'?#empty:module); })()"
+  if code.0 == '{' => code := "(function() { window.#module = {exports:#code}; })()"
+  else code := "(function() { #code; window.#module = (typeof(module)=='undefined'?#empty:module); })()"
   window.codeURL = codeURL = URL.createObjectURL new Blob [code], {type: "text/javascript"}
   codeNode = document.createElement("script")
   codeNode.onload = ->
