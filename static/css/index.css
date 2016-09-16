@@ -2778,6 +2778,47 @@ small.hint {
 #land-edit-cog .pal .color:nth-child(2n) {
   background: #ccc;
 }
+#land-more {
+  text-align: center;
+  margin-left: 300px;
+}
+#land-more div:nth-child(1) {
+  display: block;
+}
+#land-more div:nth-child(2) {
+  display: none;
+}
+#land-more i.fa {
+  font-size: 48px;
+  -ms-animation: jump 0.5s infinite linear;
+  -moz-animation: jump 0.5s infinite linear;
+  -webkit-animation: jump 0.5s infinite linear;
+  -o-animation: jump 0.5s infinite linear;
+  animation: jump 0.5s infinite linear;
+}
+#land-show {
+  font-size: 1.3em;
+}
+#land-show .ib {
+  max-width: 1024px;
+  margin: auto;
+}
+#land-show h3 {
+  font-size: 2em;
+  margin-top: 70px;
+}
+#land-show .thumb {
+  width: 320px;
+  height: 255px;
+  background-color: #eee;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+  border-radius: 3px;
+  margin: 10px;
+}
 @media (max-width: 1280px) {
   #landing .try {
     left: 50px;
@@ -2845,6 +2886,15 @@ small.hint {
   #land-edit {
     display: none;
   }
+  #land-more {
+    margin-left: 0;
+  }
+  #land-more div:nth-child(1) {
+    display: none;
+  }
+  #land-more div:nth-child(2) {
+    display: block;
+  }
 }
 @media (max-width: 800px) {
   #landing {
@@ -2880,49 +2930,6 @@ small.hint {
   #landing .features .ib {
     margin: 0 20px;
   }
-}
-#product-description {
-  position: relative;
-  width: 100%;
-}
-#product-description .row {
-  border-top: 1px solid #999;
-  border-bottom: 1px solid #999;
-  padding: 40px 0;
-}
-#product-description b {
-  color: #ed1d78;
-}
-#land-more {
-  font-size: 48px;
-  -ms-animation: jump 0.5s infinite linear;
-  -moz-animation: jump 0.5s infinite linear;
-  -webkit-animation: jump 0.5s infinite linear;
-  -o-animation: jump 0.5s infinite linear;
-  animation: jump 0.5s infinite linear;
-}
-#land-show {
-  font-size: 1.3em;
-}
-#land-show .ib {
-  max-width: 1024px;
-  margin: auto;
-}
-#land-show h3 {
-  font-size: 2em;
-  margin-top: 70px;
-}
-#land-show .thumb {
-  width: 320px;
-  height: 255px;
-  background-color: #eee;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
-  border: 1px solid #ddd;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.2);
-  border-radius: 3px;
-  margin: 10px;
 }
 #footer {
   letter-spacing: 0.6px;

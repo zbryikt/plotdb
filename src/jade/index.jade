@@ -43,11 +43,11 @@ block body
         .ib(idx="2") #[.icon(style="background-position:-86px 0")]#[small voronoi]
         .ib(idx="3") #[.icon(style="background-position:-129px 0")]#[small coxcomb]
         .ib(idx="4") #[.icon(style="background-position:-172px 0")]#[small bubble]
-  br
-  h2.text-center(style="margin-left:200px")
+  h2#land-more
     div but wait, there are more!
-    a(href="#root"): i#land-more.fa.fa-angle-double-down
-  #root
+    div Let's pick a viswork!
+    a(href="#root"): i.fa.fa-angle-double-down
+  #root(style="padding-top:10px")
     div(ng-controller="chartList")
       div(style="height:52px")
       #chart-filter.landing.scroll-stick(data-top="55")
