@@ -31,7 +31,12 @@ block body
       .ib #[.icon(style="background-position: -88px 0")]#[small editable svg]
     .try
     #land-edit: .ib
-      #land-pdb-root #[div] #[div] #[div] #[div] #[div]
+      #land-pdb-root
+        div #[big Employees Gender, by Dept.] #[div]
+        div #[big Charisma of Employees] #[div]
+        div #[big Comparing Work Hours by Dept.] #[div]
+        div #[big Avg. Work Hours by Gender] #[div]
+        div #[big Performance by Individual] #[div]
       #land-edit-cog
         .pal #[.color]#[.color]#[.color]#[.color]#[.color]
         .btn-group(style="display:inline-block")
@@ -40,7 +45,7 @@ block body
       #land-edit-pick(ng-click="pick()")
         .ib(idx="0") #[.icon(style="background-position:0 0")]#[small chord]
         .ib(idx="1") #[.icon(style="background-position:-43px 0")]#[small ternary]
-        .ib(idx="2") #[.icon(style="background-position:-86px 0")]#[small voronoi]
+        .ib.active(idx="2") #[.icon(style="background-position:-86px 0")]#[small voronoi]
         .ib(idx="3") #[.icon(style="background-position:-129px 0")]#[small coxcomb]
         .ib(idx="4") #[.icon(style="background-position:-172px 0")]#[small bubble]
   h2#land-more

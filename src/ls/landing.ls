@@ -1,13 +1,14 @@
 <- $ document .ready
 
 last-data-idx = 0
-last-idx = 0
+last-idx = 2
 setdata = (i) ->
+  if !(i?) => i = last-data-idx
   chart = charts[last-idx]
-  chart.data data[i]
+  chart.data data[i][last-idx]
   chart.parse!
-  chart.bind!
   chart.resize!
+  chart.bind!
   chart.render!
 update = (idx=-1, color) ->
   if idx>=0 => pal.colors[idx].hex = color
@@ -17,7 +18,9 @@ update = (idx=-1, color) ->
   chart.render!
 
 $(\#land-edit-pick).on \click, (e)->
-  idx = +(e.target.getAttribute(\idx) or e.target.parentNode.getAttribute(\idx))
+  idx = e.target.getAttribute(\idx) or e.target.parentNode.getAttribute(\idx)
+  if !(idx?) => return
+  idx = +idx
   $("\#land-pdb-root > div:nth-child(#{last-idx + 1})").hide!
   $("\#land-edit-pick > .ib:nth-child(#{last-idx + 1})").removeClass \active
 
@@ -25,12 +28,64 @@ $(\#land-edit-pick).on \click, (e)->
   $("\#land-pdb-root > div:nth-child(#{idx + 1})").show!
   $("\#land-edit-pick > .ib:nth-child(#{last-idx + 1})").addClass \active
   update!
+  setdata!
 
-data = [null,null]
-d1value = d3.range(12).map(->Math.round(Math.random!*100))
-name = <[James Peter David Ben Cathy Tim Rob Edward Frank Eve Helen Stan]>
-d1cat1 = <[HR FIN GM RD IT]>
-d1cat2 = <[M F]>
+generate = (seed) ->
+  name = <[James Peter David Ben Cathy Tim Rob Edward Frank Eve Helen Stan]>
+  dept = <[HR FIN GM RD IT]>
+  gender = <[Male Female Other]>
+  list = d3.range(12).map (d,i) ->
+    ret = do
+      name: name[i % name.length]
+      dept: dept[i % dept.length]
+    if seed =>
+      ret.gender = gender[if Math.random! > 0.8 => 1 else 0]
+      ret.workhour = Math.round( 10 * Math.random! * (10 + i % dept.length))/10 + 3
+      ret.performance = Math.round( 10 * Math.random! * 100)/10 + 1
+      ret.charisma = d3.range(3).map -> Math.random! + it/3
+      ret.monwork = [
+        Math.round(10*Math.random!*3)/10 + 6
+        Math.round(10*Math.random!*5)/10 + 9
+      ]
+    else
+      ret.gender = gender[i % gender.length]
+      ret.workhour = Math.round( 10 * Math.random! * 5)/10 + 7
+      ret.performance = Math.round( 10 * Math.random! * 30)/10 + 10
+      ret.charisma = d3.range(3).map -> Math.random! + 0.01
+      ret.monwork = [
+        Math.round(10*Math.random!*2)/10 + 8
+        Math.round(10*Math.random!*3)/10 + 7
+      ]
+    ret.charisma = ret.charisma.map -> Math.round(100 * it / d3.sum(ret.charisma))
+    ret.charisma[2] = 100 - (ret.charisma[0] + ret.charisma[1])
+    ret
+  ret = [{},{},{},{},{}]
+  ret.0 = do
+    src: [{name: "", data: list.map -> it.dept}]
+    des: [{name: "", data: list.map -> it.gender}]
+    size: [{name: "", data: list.map -> it.workhour}]
+  ret.1 = do
+    value1: [{name: "", data: list.map -> it.charisma.0}]
+    value2: [{name: "", data: list.map -> it.charisma.1}]
+    value3: [{name: "", data: list.map -> it.charisma.2}]
+  ret.2 = do
+    category: [{name: "", data: list.map -> it.dept}]
+    name: [{name: "", data: list.map -> it.name}]
+    value: [{name: "", data: list.map -> it.workhour}]
+  ret.3 = do
+    order: [{name: "", data: <[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec]>}]
+    values: [
+      {name: "Female", data: list.map -> it.monwork.0}
+      {name: "Male", data: list.map -> it.monwork.1}
+    ]
+  ret.4 = do
+    category: [{name: "Dept.", data: list.map -> it.dept}]
+    name: [{name: "Name", data: list.map -> it.name}]
+    value: [{name: "", data: list.map -> it.performance}]
+  ret
+
+data = [generate(0), generate(1)]
+/*
 data[0] = do
   category: [{name: "", data: d1value.map((d,i)->d1cat1[i%5])}]
   src: [{name: "", data: d1value.map((d,i)->d1cat1[i%5])}]
@@ -58,6 +113,7 @@ data[1] = do
   value1: [{name: "", data: d2value}]
   value2: [{name: "", data: d2value.map(-> Math.round((100 - it) * Math.random!))}]
 data[1].value3 = [{name: "", data: d2value.map((d,i)->100 - d - data[1].value2.0.data[i])}]
+*/
 
 pal = {colors: [
   {hex: \#d54876},
@@ -71,20 +127,21 @@ charts = []
 plotdb.load \/assets/json/samples.json, (ret) ->
   charts := ret
   for i from 0 til charts.length =>
-    node = $("\#land-pdb-root > div:nth-child(#{i + 1})").0
+    root = $("\#land-pdb-root > div:nth-child(#{i + 1})")
+    node = $("\#land-pdb-root > div:nth-child(#{i + 1}) > div").0
     chart = charts[i]
-    chart.config {palette: pal}
-    chart.data data[0]
+    chart.config {palette: pal, value1Label: "Creativity", value2Label: "Dignity", value3Label: "Logic"}
+    chart.data data[0][i]
     chart.attach node
-    if i == 0 => $(node).show! else $(node).hide!
+    if i == 2 => root.show! else root.hide!
   for i from 1 til 3 =>
     ((v) ->
       node = $("\#land-edit-cog .btn-group .btn-default:nth-child(#v)")
       node.on \click, ->
-        node = $("\#land-edit-cog .btn-group .btn-default:nth-child(#last-data-idx)").removeClass \active
+        node = $("\#land-edit-cog .btn-group .btn-default:nth-child(#{last-data-idx + 1})").removeClass \active
         setdata v - 1
-        last-data-idx := v
-        node = $("\#land-edit-cog .btn-group .btn-default:nth-child(#last-data-idx)").addClass \active
+        last-data-idx := v - 1
+        node = $("\#land-edit-cog .btn-group .btn-default:nth-child(#{last-data-idx + 1})").addClass \active
     ) i
   for i from 0 til 5 =>
     ((v) ->
