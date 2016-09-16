@@ -180,35 +180,6 @@ $(document).ready(function(){
     return ret;
   };
   data = [generate(0), generate(1)];
-  /*
-  data[0] = do
-    category: [{name: "", data: d1value.map((d,i)->d1cat1[i%5])}]
-    src: [{name: "", data: d1value.map((d,i)->d1cat1[i%5])}]
-    des: [{name: "", data: d1value.map((d,i)->d1cat2[i%2])}]
-    name: [{name: "", data: d1value.map(->"")}]
-    value: [{name: "", data: d1value}]
-    size: [{name: "", data: d1value}]
-    values: [{name: "KPI", data: d1value}]
-    value1: [{name: "", data: d1value}]
-    value2: [{name: "", data: d1value.map(-> Math.round((100 - it) * Math.random!))}]
-  data[0].value3 = [{name: "", data: d1value.map((d,i)-> 100 - d - data[0].value2.0.data[i])}]
-  
-  d2value = d3.range(12).map(->Math.round(Math.random!*100))
-  name = <[James Peter David Ben Cathy Tim Rob Edward Frank Eve Helen Stan]>
-  d2cat1 = <[HR FIN GM RD IT]>
-  d2cat2 = <[M F]>
-  data[1] = do
-    category: [{name: "", data: d2value.map((d,i)->d2cat1[i%5])}]
-    src: [{name: "", data: d2value.map((d,i)->d2cat1[i%5])}]
-    des: [{name: "", data: d2value.map((d,i)->d2cat2[i%2])}]
-    name: [{name: "", data: d2value.map(->"")}]
-    value: [{name: "", data: d2value}]
-    size: [{name: "", data: d2value}]
-    values: [{name: "KPI", data: d2value}]
-    value1: [{name: "", data: d2value}]
-    value2: [{name: "", data: d2value.map(-> Math.round((100 - it) * Math.random!))}]
-  data[1].value3 = [{name: "", data: d2value.map((d,i)->100 - d - data[1].value2.0.data[i])}]
-  */
   pal = {
     colors: [
       {
@@ -251,7 +222,7 @@ $(document).ready(function(){
       i = i$;
       fn$(i);
     }
-    for (i$ = 0; i$ < 5; ++i$) {
+    for (i$ = 0; i$ < 6; ++i$) {
       i = i$;
       results$.push(fn1$(i));
     }
@@ -268,17 +239,21 @@ $(document).ready(function(){
       });
     }
     function fn1$(v){
-      var node, ldcp;
-      node = $("#land-edit-cog .color:nth-child(" + (v + 1) + ")")[0];
+      var node, ldcp, ref$;
+      node = $("#land-edit-cog .color:nth-child(" + v + ")")[0];
       ldcp = new ldColorPicker(node, {
-        index: v,
+        index: (ref$ = v - 1) > 0 ? ref$ : 0,
         exclusive: true,
         'class': 'no-palette no-alpha',
-        palette: pal
+        palette: pal,
+        context: 'common'
       });
+      if (!node) {
+        return;
+      }
       return ldcp.on('change', function(it){
         node.style.background = it;
-        return update(v, it);
+        return update(v - 1, it);
       });
     }
   });
