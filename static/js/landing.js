@@ -212,7 +212,7 @@ $(document).ready(function(){
     }
     function fn1$(v){
       var node, ldcp;
-      node = $("#land-edit-cog .color:nth-of-type(" + (v + 1))[0];
+      node = $("#land-edit-cog .color:nth-child(" + (v + 1) + ")")[0];
       ldcp = new ldColorPicker(node, {
         index: v,
         exclusive: true,

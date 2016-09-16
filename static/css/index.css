@@ -774,6 +774,9 @@ li.disabled a:hover {
   width: 0;
   height: 0;
 }
+.sep.active {
+  border-top: 20px solid #ed1d78;
+}
 .sep {
   border-top: 1px solid rgba(0,0,0,0.2);
   width: 100%;
@@ -2889,6 +2892,37 @@ small.hint {
 }
 #product-description b {
   color: #ed1d78;
+}
+#land-more {
+  font-size: 48px;
+  -ms-animation: jump 0.5s infinite linear;
+  -moz-animation: jump 0.5s infinite linear;
+  -webkit-animation: jump 0.5s infinite linear;
+  -o-animation: jump 0.5s infinite linear;
+  animation: jump 0.5s infinite linear;
+}
+#land-show {
+  font-size: 1.3em;
+}
+#land-show .ib {
+  max-width: 1024px;
+  margin: auto;
+}
+#land-show h3 {
+  font-size: 2em;
+  margin-top: 70px;
+}
+#land-show .thumb {
+  width: 320px;
+  height: 255px;
+  background-color: #eee;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+  border-radius: 3px;
+  margin: 10px;
 }
 #footer {
   letter-spacing: 0.6px;

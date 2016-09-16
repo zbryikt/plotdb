@@ -44,7 +44,9 @@ block body
         .ib(idx="3") #[.icon(style="background-position:-129px 0")]#[small coxcomb]
         .ib(idx="4") #[.icon(style="background-position:-172px 0")]#[small bubble]
   br
-  h2.text-center(style="margin-left:200px") but wait, there are more! #[img(src="/assets/img/land/arrow.png")]
+  h2.text-center(style="margin-left:200px")
+    div but wait, there are more!
+    a(href="#root"): i#land-more.fa.fa-angle-double-down
   #root
     div(ng-controller="chartList")
       div(style="height:52px")
@@ -59,6 +61,18 @@ block body
     br
     h2.text-center Showcases
     .text-center Let's see who and how they uses PlotDB.
+    .sep.gap.active
+    #land-show
+      .ib
+        .row
+          .col-sm-5
+            .thumb(style="background-image:url(/assets/img/land/showcase/reporter.jpg);background-color:#fff")
+          .col-sm-5
+            h3.text-center #[img(src="/assets/img/land/showcase/reporter-logo.png")] the Reporter
+            p the Reporter, a NPO by the Reporter Foundation, uses PlotDB in their stories about Rio 2016 Olympic and foreign worker issues, etc.
+            .pull-right: a(href="https://www.twreporter.org/a/olympic-2016/athletics/",target="_blank") view full story
+        hr
+
     br
     //-for i in [1,2,3,4,5]
       div(style="max-width:1200px;margin:auto")

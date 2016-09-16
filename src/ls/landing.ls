@@ -88,7 +88,7 @@ plotdb.load \/assets/json/samples.json, (ret) ->
     ) i
   for i from 0 til 5 =>
     ((v) ->
-      node = $("\#land-edit-cog .color:nth-of-type(#{v + 1}").0
+      node = $("\#land-edit-cog .color:nth-child(#{v + 1})").0
       ldcp = new ldColorPicker node, {index: v, exclusive: true, class: 'no-palette no-alpha', palette: pal}
       ldcp.on \change, ->
         node.style.background = it
