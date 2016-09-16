@@ -4,7 +4,9 @@ plotdb.view = do
     req = new XMLHttpRequest!
     req.onload = ->
       try
-        cb(new plotdb.view.chart(JSON.parse(@responseText),{}))
+        ret = JSON.parse(@responseText)
+        if Array.isArray(ret) => cb(ret.map(->new plotdb.view.chart(it, {})))
+        else cb(new plotdb.view.chart(ret,{}))
       catch e
         console.error "load chart #key failed when parsing response: "
         console.error e

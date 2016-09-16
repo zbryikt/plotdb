@@ -1,0 +1,249 @@
+#landing
+  width: 100%
+  height: 400px
+  background: url(/assets/img/land/bk.jpg) top right
+  position: relative
+  margin-top: 60px
+  border-bottom: 14px solid #ed1e79
+  .iconmask
+    height: 400px
+    position: absolute
+    top: 0
+    background-image: url(/assets/img/land/iconmask.png)
+    opacity: 0.1
+  .iconmask.left
+    width: 145px
+    left: 0
+    background-position: -306px 0
+  .iconmask.right
+    width: 305px
+    right: 0
+    background-position: 0 0
+  .hl
+    position: absolute
+    left: 588px
+    right: 0px
+    height: 200px
+    text-align: center
+    top: 100px
+    font-size: 26px
+  .logo
+    margin: 0 auto 15px
+    width: 335px
+    height: 61px
+    background: url(/assets/img/land/name.png) 0 0 no-repeat
+  .title
+    font-size: 1em
+    color: #fff
+    letter-spacing:1px
+  .subtitle
+    margin: auto
+    font-size: 0.61em
+    color: #bbb
+    letter-spacing: 1px
+    font-weight: light
+  .subhl
+    position: absolute
+    top: 280px
+    left: 870px
+    color: #fff
+    font-size: 32px
+    div:first-child
+      font-size: 0.4375em
+    div:last-child
+      margin-left: 10px
+      font-size: 1em
+  .features
+    position: absolute
+    left: 604px
+    top: 300px
+    color: #fff
+    opacity: 0.5
+    font-size: 12px
+    .ib
+      display: inline-block
+      text-align: center
+      margin: 0 12px 0 0
+      small
+        font-weight: 100
+  .icon
+    width: 44px
+    height: 52px
+    background-image: url(/assets/img/land/feature.png)
+    background-repeat: no-repeat
+    margin: auto
+  .try
+    position: absolute
+    left: 153px
+    top: 330px
+    width: 71px
+    height: 76px
+    background: url(/assets/img/land/try.png)
+    z-index: 10
+
+#land-edit
+  position: absolute
+  left: 183px
+  top: 40px
+  width: 405px
+  height: 470px
+  background: #fff
+  box-shadow: 0 8px 13px rgba(0,0,0,0.32)
+  border-radius: 3px
+  border: 3px solid #fff
+  & > .ib
+    width: 100%
+    height: 100%
+    border: 3px solid #3f3f3f
+    border-radius: 3px
+    font-weight: 100
+    color: #8a8a8a
+
+#land-pdb-root
+  position: relative
+  width: 100%
+  height: 316px
+  padding: 20px
+#land-pdb-root text
+  font-family: lato, sans-serif
+  font-weight: bold
+#land-pdb-root text.value
+  font-size: 16px
+#land-pdb-root > div
+  position: absolute
+  top: 5%
+  left: 5%
+  width: 90%
+  height: 90%
+
+#land-edit-pick
+  width: 100%
+  height: 104px
+  text-align: center
+  .ib
+    display: inline-block
+    border-radius: 3px
+    text-align: center
+    padding: 6px 6px
+    margin: 0 6px
+    cursor: pointer
+    &:hover
+      background: #ff9
+    &.active
+      background: #9f9
+  .icon
+    width: 43px
+    height: 41px
+    margin: auto
+    background-image: url(/assets/img/land/charts.png)
+    background-repeat: no-repeat
+
+#land-edit-cog
+  width: 100%
+  height: 50px
+  text-align: center
+  .pal
+    display: inline-block
+    height: 30px
+    border-radius: 3px
+    overflow: hidden
+    vertical-align: top
+    margin-right: 20px
+    .color
+      width: 36px
+      height: 30px
+      display: inline-block
+      background: #aaa
+    .color:nth-child(2n)
+      background: #ccc
+
+@media(max-width:1280px)
+  #landing
+    .try
+      left: 50px
+    .features
+      left: 495px
+    .subhl
+      left: initial
+      right: 6%
+      font-size: 28px
+      div:last-child
+        margin-left: 10px
+    .hl
+      left: 488px
+  #land-edit
+    left: 80px
+    .pal .color
+      width: 24px
+
+@media(max-width:1024px)
+  #landing
+    .try
+      top: 250px
+      left: 5px
+    .features
+      left: 370px
+    .hl
+      left: 360px
+  #land-edit
+    left: 40px
+    width: 320px
+    height: 410px
+  #land-pdb-root
+    height: 266px
+    padding: 10px
+  #land-edit-pick .ib
+    margin: 0
+    padding: 3px 6px
+
+@media(max-width:900px)
+  #landing
+    .hl
+      left: 0
+    .subhl
+      left: 200px
+      text-align: center
+    .features
+      left: 5px
+    .try
+      display: none
+  #land-edit
+    display: none
+
+@media(max-width:800px)
+  #landing
+    margin-top: 46px
+    .hl
+      font-size: 22px
+    .logo
+      width: 260px
+      background-size: contain
+      background-position: bottom center
+
+@media(max-width:600px)
+  #landing
+    .hl
+      top: 50px
+      font-size: 20px
+    .subhl
+      top: 200px
+      left: 0
+      font-size: 20px
+      div:first-child
+        font-size: 12px
+    .features
+      left: 0
+      width: 100%
+      text-align: center
+      .ib
+        margin: 0 20px
+
+#product-description
+  position: relative
+  width: 100%
+  .row
+    border-top: 1px solid #999
+    border-bottom: 1px solid #999
+    padding: 40px 0
+  b
+    color: #ed1d78

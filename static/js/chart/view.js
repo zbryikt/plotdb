@@ -5,9 +5,16 @@ plotdb.view = {
     var req;
     req = new XMLHttpRequest();
     req.onload = function(){
-      var e;
+      var ret, e;
       try {
-        return cb(new plotdb.view.chart(JSON.parse(this.responseText), {}));
+        ret = JSON.parse(this.responseText);
+        if (Array.isArray(ret)) {
+          return cb(ret.map(function(it){
+            return new plotdb.view.chart(it, {});
+          }));
+        } else {
+          return cb(new plotdb.view.chart(ret, {}));
+        }
       } catch (e$) {
         e = e$;
         console.error("load chart " + key + " failed when parsing response: ");

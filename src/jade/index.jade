@@ -7,57 +7,51 @@ block vars
   - var thumbtype = "image/png"
   - var url = "https://plotdb.com/"
 block head
+  link(rel="stylesheet",type="text/css",href="/css/render/pdb.css")
+  link(rel="stylesheet",type="text/css",href="/assets/ldcolorpicker/0.1.1/ldcp.css")
   script(type="text/javascript",src="/js/landing.js")
+  script(type="text/javascript",src="/js/chart/view.js")
+  script(type="text/javascript",src="/js/chart/plotd3.js")
+  script(type="text/javascript",src="/assets/ldcolorpicker/0.1.1/ldcp.min.js")
+  script(type="text/javascript",src="/lib/voronoijs/0.0.1/index.min.js")
 block body
-  //-#landing(style="background-image:url(/assets/img/test/landing.png);background-size:cover")
-  #subnav-top: .ib
-    a(href="/chart/explore/?cat=1") Infographics
-    a(href="/chart/explore/?cat=2") Geographic
-    a(href="/chart/explore/?cat=4") Journalism
-    a(href="/chart/explore/?cat=5") Statistics
-    a(href="/chart/explore/?cat=6") Business
   #landing
-    svg#landing-svg
-    img(src="/assets/img/logo-alt.png",style="top:50%;position:relative;z-index:2")
-
-  #product-description: .ib
-    +margin-break
-    br
-    h2.text-center Break the Gap
-    .text-center(style="font-size:1.2em") Coding skill is not the limit of your creativity
-    br
-    br
-    br
-    .row.text-center(style="max-width:1024px;margin:auto")
-      .col-sm-4
-        img(src="/assets/img/lock.svg", style="width:128px;margin:32px 0")
-        h3 Keep Data Locally
-        span use your data #[b without uploading]. #[br] Privacy First!
-      .col-sm-4
-        img(src="/assets/img/creativity.svg", style="width:192px")
-        br
-        h3 Infinite Creativity
-        span more than common charts. #[b Much more]. #[br] Plot Like Shopping!
-      .col-sm-4
-        img(src="/assets/img/test/gears.svg",style="width:128px;margin:32px 0")
-        br
-        h3 Full Control
-        span #[b source code] and #[b stylesheet] in your hand. #[br] Customize as You Can!
-    br
+    .iconmask.left
+    .iconmask.right
+    .hl
+      .logo
+      .title 100+ Visualizations for Your Data
+      .subtitle enough with basic charts? need full control of your viswork?
+    .subhl
+      div with PlotDB, you just
+      div Pick. Drag. Download.
+    .features
+      .ib #[.icon(style="background-position: 0 0")]#[small mobile ready]
+      .ib #[.icon(style="background-position: -44px 0")]#[small interactive]
+      .ib #[.icon(style="background-position: -88px 0")]#[small editable svg]
+    .try
+    #land-edit: .ib
+      #land-pdb-root #[div] #[div] #[div] #[div] #[div]
+      #land-edit-cog
+        .pal #[.color]#[.color]#[.color]#[.color]#[.color]
+        .btn-group(style="display:inline-block")
+          .btn.btn-default.btn-sm.active Data1
+          .btn.btn-default.btn-sm Data2
+      #land-edit-pick(ng-click="pick()")
+        .ib(idx="0") #[.icon(style="background-position:0 0")]#[small chord]
+        .ib(idx="1") #[.icon(style="background-position:-43px 0")]#[small ternary]
+        .ib(idx="2") #[.icon(style="background-position:-86px 0")]#[small voronoi]
+        .ib(idx="3") #[.icon(style="background-position:-129px 0")]#[small coxcomb]
+        .ib(idx="4") #[.icon(style="background-position:-172px 0")]#[small bubble]
+  br
+  h2.text-center(style="margin-left:200px") but wait, there are more! #[img(src="/assets/img/land/arrow.png")]
   #root
-    br
-    h2.text-center Choose a Visualization and Start!
-    .text-center Instead of step-by-step, we do this in a #[b top-down] style - choose a finished visualization then modify it.
-    br
-    br
     div(ng-controller="chartList")
       div(style="height:52px")
       #chart-filter.landing.scroll-stick(data-top="55")
         include chart/widget/search.jade
       include chart/widget/charts.jade
-
     br
-
     br
     .text-center: a.btn.btn-lg.btn-success(href="/chart/explore/"): big give me more!
     br
