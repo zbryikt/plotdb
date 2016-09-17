@@ -113,8 +113,12 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     data: global.user,
     authed: function(){
       return this.data && this.data.key;
-    }
+    },
+    storage: {}
   };
+  $scope.user.storage.used = 100 * ($scope.user.data.datasize || 0) / plConfig.plan.sizeLimits[plConfig.mode % 2
+    ? 2
+    : $scope.user.data.payment.plan || 0];
   $scope.dataService = dataService;
   $scope.limitscroll = function(node){
     var prevent;

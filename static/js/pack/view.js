@@ -1539,6 +1539,9 @@ plotdb.config = {
     },
     google: {
       clientID: '1003996266757-4gv30no8ije0sd8d8qsd709dluav0676.apps.googleusercontent.com'
+    },
+    plan: {
+      sizeLimits: [1000000, 50000000, 1000000000]
     }
   };
   if (typeof module != 'undefined' && module !== null) {

@@ -1,7 +1,7 @@
 require! <[../engine/aux bluebird]>
 (engine,io) <- (->module.exports = it)  _
 
-size-limits = [1000000, 50000000, 1000000000]
+size-limits = engine.config.plan.size-limits
 size-limit = (user) ->
   plan = user.{}payment.plan or 0
   if (engine.config.mode % 2) => return user.datasize > size-limits.2

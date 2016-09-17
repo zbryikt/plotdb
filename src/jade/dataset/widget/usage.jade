@@ -2,7 +2,7 @@
   label.grayed Your Storage Usage
   .progress(style="width:240px")
     .progress-bar.progress-bar-info(
-    ng-class="{'progress-bar-info': ((user.data.datasize || 0) / 100000 < 50), 'progress-bar-warning': ((user.data.datasize || 0) / 100000 > 50)}",
-    ng-attr-style="width:{{(user.data.datasize || 0)/ 100000}}%")
+    ng-class="{'progress-bar-info': (user.storage.used < 50), 'progress-bar-warning': (user.storage.used > 50)}",
+    ng-attr-style="width:{{user.storage.used}}%")
       span(ng-cloak) {{user.data.datasize|size}}
 

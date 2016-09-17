@@ -3074,6 +3074,9 @@ angular.module('plotDB', ['backend', 'ui.codemirror', 'ngDraggable', 'ldColorPic
     },
     google: {
       clientID: '1003996266757-4gv30no8ije0sd8d8qsd709dluav0676.apps.googleusercontent.com'
+    },
+    plan: {
+      sizeLimits: [1000000, 50000000, 1000000000]
     }
   };
   if (typeof module != 'undefined' && module !== null) {
@@ -11369,8 +11372,12 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     data: global.user,
     authed: function(){
       return this.data && this.data.key;
-    }
+    },
+    storage: {}
   };
+  $scope.user.storage.used = 100 * ($scope.user.data.datasize || 0) / plConfig.plan.sizeLimits[plConfig.mode % 2
+    ? 2
+    : $scope.user.data.payment.plan || 0];
   $scope.dataService = dataService;
   $scope.limitscroll = function(node){
     var prevent;
