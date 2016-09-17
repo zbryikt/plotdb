@@ -408,3 +408,35 @@ ul.dropdown-menu li a.toggle-filepick
     .btn
       margin-right: 10px
       min-width: 80px
+
+#beta-ribbon
+  position: fixed
+  top: 0
+  left: 0
+  width: 80px
+  height: 80px
+  z-index: index(order, 'high-modal')
+  background: url(/assets/img/land/beta-ribbon.png) bottom right no-repeat
+@media(max-width:1200px)
+ #beta-ribbon
+    width: 75px
+    height: 70px
+@media(max-width:800px)
+ #beta-ribbon
+    background: none
+    &:after
+      content: "beta"
+      display: block
+      color: #fff
+      background: color.primary
+      padding: 0 3px
+      font-size: 12px
+      font-weight: bold
+      width: 34px
+      height: 16px
+      line-height: 12px
+      border: 2px solid #000
+      border-radius: 4px
+      margin: 4px
+
+
