@@ -445,14 +445,26 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     download: {
       prepare: function(){
         var this$ = this;
-        return ['svg', 'png', 'plotdb'].map(function(n){
-          return setTimeout(function(){
-            return $scope.$apply(function(){
-              return [this$[n].url = '', this$[n]()];
-            });
-          }, 300);
+        return this.queue = ['png', 'svg', 'plotdb'].map(function(n, i){
+          var postfix, ret, ref$;
+          postfix = ['png', 'svg', 'json'];
+          ret = {
+            state: 0,
+            name: n.toUpperCase(),
+            filename: $scope.target().name + "." + postfix[i]
+          };
+          if (i < 1 || ($scope.user.data && ((ref$ = $scope.user.data).payment || (ref$.payment = {})).plan > 0)) {
+            setTimeout(function(){
+              return $scope.$apply(function(){
+                return [this$[n].url = '', this$[n]()];
+              });
+            }, 300);
+            return ret;
+          }
+          return ret.state = 3, ret;
         });
       },
+      queue: [{}, {}, {}],
       svg: function(){
         return $scope.canvas.window.postMessage({
           type: 'getsvg'
@@ -466,10 +478,11 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       plotdb: function(){
         var payload;
         payload = angular.toJson($scope.target());
-        this.plotdb.url = URL.createObjectURL(new Blob([payload], {
+        this.queue[2].url = URL.createObjectURL(new Blob([payload], {
           type: 'application/json'
         }));
-        return this.plotdb.size = payload.length;
+        this.queue[2].size = payload.length;
+        return this.queue[2].state = 2;
       }
     },
     rwdtest: {
@@ -1606,7 +1619,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         var data;
         data = arg$.data;
         return $scope.$apply(function(){
-          var ref$, config, dimension, k, v, hash, key$, typedef, ref1$, event, bytes, mime, buf, ints, i$, to$, idx, res;
+          var ref$, config, dimension, k, v, hash, key$, typedef, ref1$, event, bytes, mime, buf, ints, i$, to$, idx, node, res;
           if (!data || typeof data !== 'object') {
             return;
           }
@@ -1723,20 +1736,23 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             }
           } else if (data.type === 'getsvg') {
             if (!data.payload) {
-              return $scope.download.svg.url = '#';
+              return $scope.download.queue[1].state = 1;
             }
-            $scope.download.svg.url = URL.createObjectURL(new Blob([data.payload], {
-              type: 'image/svg+xml'
-            }));
-            return $scope.download.svg.size = data.payload.length;
+            return import$($scope.download.queue[1], {
+              state: 2,
+              size: data.payload.length,
+              url: URL.createObjectURL(new Blob([data.payload], {
+                type: 'image/svg+xml'
+              }))
+            });
           } else if (data.type === 'getpng') {
             if (!data.payload) {
-              return $scope.download.png.url = '#';
+              return $scope.download.queue[0].state = 1;
             }
             bytes = atob(data.payload.split(',')[1]);
             mime = data.payload.split(',')[0].split(':')[1].split(';')[0];
             if (mime !== 'image/png') {
-              return $scope.download.png.url = '#';
+              return $scope.download.queue[1].state = 1;
             }
             buf = new ArrayBuffer(bytes.length);
             ints = new Uint8Array(buf);
@@ -1744,10 +1760,13 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               idx = i$;
               ints[idx] = bytes.charCodeAt(idx);
             }
-            $scope.download.png.url = URL.createObjectURL(new Blob([buf], {
-              type: 'image/png'
-            }));
-            return $scope.download.png.size = bytes.length;
+            return node = import$($scope.download.queue[0], {
+              state: 2,
+              size: bytes.length,
+              url: URL.createObjectURL(new Blob([buf], {
+                type: 'image/png'
+              }))
+            });
           } else if (data.type === 'get-local') {
             $scope.local.data = data.data;
             res = ((ref$ = $scope.local).promise || (ref$.promise = {})).res;

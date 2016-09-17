@@ -1466,7 +1466,6 @@ plotdb.config = {
 ['X', 'Y', 'Radial', 'Angular'].forEach(function(n){
   var p, c, b;
   p = n.charAt(0).toLowerCase() + "Axis";
-  console.log(p);
   c = n + " Axis";
   b = [plotdb.Boolean];
   n = [plotdb.Number];

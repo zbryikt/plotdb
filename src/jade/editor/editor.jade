@@ -49,21 +49,17 @@ include /widget/palette-edit-modal.jade
             .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
               i.fa.fa-download
               span.caret
-            ul.dropdown-menu
-              li.disabled(ng-show="!download.png.url"): a PNG #[img(src="/assets/img/loading.gif")]
-              li.disabled(ng-show="!download.svg.url"): a SVG #[img(src="/assets/img/loading.gif")]
-              li.disabled(ng-show="!download.plotdb.url"): a PlotDB.json #[img(src="/assets/img/loading.gif")]
-              li.disabled(ng-show="download.png.url=='#'"): a PNG #[i.fa.fa-warning.text-danger]
-              li.disabled(ng-show="download.svg.url=='#'"): a SVG #[i.fa.fa-warning.text-danger]
-              li(ng-show="download.png.url && download.png.url!='#'")
-                a(ng-attr-download="{{target().name}}.png",ng-attr-href="{{download.png.url}}")
-                  | PNG #[small(ng-show="download.png.size") {{download.png.size|size}}]
-              li(ng-show="download.svg.url && download.svg.url!='#'")
-                a(ng-attr-download="{{target().name}}.svg",ng-attr-href="{{download.svg.url}}")
-                  | SVG #[small(ng-show="download.svg.size") {{download.svg.size|size}}]
-              li(ng-show="download.plotdb.url && download.plotdb.url!='#'")
-                a(ng-attr-download="{{target().name}}.plotdb.json",ng-attr-href="{{download.plotdb.url}}")
-                  | PlotDB.json #[small(ng-show="download.plotdb.size") {{download.plotdb.size|size}}]
+            ul.dropdown-menu.chart-download-options
+              li(ng-repeat="item in download.queue",
+              ng-class="['disabled','disabled failed','ready','disabled needpro'][item.state]")
+                a.pending
+                  span {{item.name}}&nbsp;
+                  img(src="/assets/img/loading.gif")
+                  i.fa.fa-warning
+                  .label.label-info Need Pro
+                a.link(ng-attr-download="{{item.filename}}",
+                ng-attr-href="{{item.url}}") {{item.name}} #[small {{item.size|size}}]
+
       #chart-config-header
         .pull-right: a(href="#",ng-click="resetConfig()") reset
         label Config
@@ -169,21 +165,17 @@ include /widget/palette-edit-modal.jade
         .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
           i.fa.fa-download
           span.caret
-        ul.dropdown-menu
-          li.disabled(ng-show="!download.png.url"): a PNG #[img(src="/assets/img/loading.gif")]
-          li.disabled(ng-show="!download.svg.url"): a SVG #[img(src="/assets/img/loading.gif")]
-          li.disabled(ng-show="!download.plotdb.url"): a PlotDB.json #[img(src="/assets/img/loading.gif")]
-          li.disabled(ng-show="download.png.url=='#'"): a PNG #[i.fa.fa-warning.text-danger]
-          li.disabled(ng-show="download.svg.url=='#'"): a SVG #[i.fa.fa-warning.text-danger]
-          li(ng-show="download.png.url && download.png.url!='#'")
-            a(ng-attr-download="{{target().name}}.png",ng-attr-href="{{download.png.url}}")
-              | PNG #[small(ng-show="download.png.size") {{download.png.size|size}}]
-          li(ng-show="download.svg.url && download.svg.url!='#'")
-            a(ng-attr-download="{{target().name}}.svg",ng-attr-href="{{download.svg.url}}")
-              | SVG #[small(ng-show="download.svg.size") {{download.svg.size|size}}]
-          li(ng-show="download.plotdb.url && download.plotdb.url!='#'")
-            a(ng-attr-download="{{target().name}}.plotdb.json",ng-attr-href="{{download.plotdb.url}}")
-              | PlotDB.json #[small(ng-show="download.plotdb.size") {{download.plotdb.size|size}}]
+        ul.dropdown-menu.chart-download-options
+          li(ng-repeat="item in download.queue",
+          ng-class="['disabled','disabled failed','ready','disabled needpro'][item.state]")
+            a.pending
+              span {{item.name}}&nbsp;
+              img(src="/assets/img/loading.gif")
+              i.fa.fa-warning
+              .label.label-info Need Pro
+            a.link(ng-attr-download="{{item.filename}}",
+            ng-attr-href="{{item.url}}") {{item.name}} #[small {{item.size|size}}]
+
       .btn.btn-default(style="position:absolute;bottom:5px;left:5px;",ng-show="!editor.fullscreen.toggled",
       ng-click="scrollto('#binding-panel')") Bind Data
       .btn-group

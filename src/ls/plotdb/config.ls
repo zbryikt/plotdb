@@ -461,7 +461,6 @@ plotdb.config = do
 
 <[X Y Radial Angular]>.forEach (n) ->
   p = "#{n.charAt(0).toLowerCase!}Axis"
-  console.log p
   c = "#{n} Axis"
   b = [plotdb.Boolean]
   n = [plotdb.Number]

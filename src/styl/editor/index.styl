@@ -101,6 +101,30 @@ d3 = #333
     width: 60px
     display: inline-block
 
+.chart-download-options
+  .fa-warning
+    color: #f20
+    margin-left: 5px
+  .label
+    float: right
+    margin-top: 2px
+  .label, .fa-warning, .link
+    display: none
+  li.failed
+    img
+      display: none
+    .fa-warning
+      display: inline-block
+  li.ready
+    .pending
+      display: none
+    .link
+      display: block
+  li.needpro
+    img
+      display: none
+    .label
+      display: inline
 
 @media(max-width: 800px)
   .pleditor

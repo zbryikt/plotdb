@@ -226,14 +226,21 @@ angular.module \plotDB
         @target![it].lines = (@target![it].content or "").split(\\n).length
         @target![it].size = (@target![it].content or "").length
       download: do
-        prepare: -> <[svg png plotdb]>.map (n) ~>
-          setTimeout (~> $scope.$apply ~> [@[n].url = '', @[n]!]), 300
+        prepare: -> @queue = <[png svg plotdb]>.map (n,i) ~>
+          postfix = <[png svg json]>
+          ret = {state: 0, name: n.toUpperCase!, filename: "#{$scope.target!.name}.#{postfix[i]}"}
+          if i < 1 or ($scope.user.data and $scope.user.data.{}payment.plan > 0) =>
+            setTimeout (~> $scope.$apply ~> [@[n].url = '', @[n]!]), 300
+            return ret
+          return ret <<< {state: 3}
+        queue: [{},{},{}]
         svg: -> $scope.canvas.window.postMessage {type: \getsvg}, $scope.plotdb-domain
         png: -> $scope.canvas.window.postMessage {type: \getpng}, $scope.plotdb-domain
         plotdb: ->
           payload = angular.toJson($scope.target!)
-          @plotdb.url = URL.createObjectURL new Blob [payload], {type: \application/json}
-          @plotdb.size = payload.length
+          @queue.2.url = URL.createObjectURL new Blob [payload], {type: \application/json}
+          @queue.2.size = payload.length
+          @queue.2.state = 2
       rwdtest: do
         val: \default
         vals: <[default QVGA HVGA Thumb]>
@@ -903,19 +910,23 @@ angular.module \plotDB
             event.synthetic = true
             document.fireEvent("onclick", event)
         else if data.type == \getsvg =>
-          if !data.payload => return $scope.download.svg.url = '#'
-          $scope.download.svg.url = URL.createObjectURL(new Blob [data.payload], {type: 'image/svg+xml'})
-          $scope.download.svg.size = data.payload.length
+          if !data.payload => return $scope.download.queue.1.state = 1
+          $scope.download.queue.1 <<< do
+            state: 2
+            size: data.payload.length
+            url: URL.createObjectURL(new Blob [data.payload], {type: 'image/svg+xml'})
         else if data.type == \getpng =>
-          if !data.payload => return $scope.download.png.url = '#'
+          if !data.payload => return $scope.download.queue.0.state = 1
           bytes = atob(data.payload.split(\,).1)
           mime = data.payload.split(\,).0.split(\:).1.split(\;).0
-          if mime != 'image/png' => return $scope.download.png.url = '#'
+          if mime != 'image/png' => return $scope.download.queue.1.state = 1
           buf = new ArrayBuffer bytes.length
           ints = new Uint8Array buf
           for idx from 0 til bytes.length => ints[idx] = bytes.charCodeAt idx
-          $scope.download.png.url = URL.createObjectURL(new Blob [buf], {type: 'image/png'})
-          $scope.download.png.size = bytes.length
+          node = $scope.download.queue.0 <<< do
+            state: 2
+            size: bytes.length
+            url: URL.createObjectURL(new Blob [buf], {type: 'image/png'})
         else if data.type == \get-local =>
           $scope.local.data = data.data
           res = $scope.local.{}promise.res
