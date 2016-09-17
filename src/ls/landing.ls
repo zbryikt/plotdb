@@ -105,6 +105,7 @@ plotdb.load \/assets/json/samples.json, (ret) ->
     chart.data data[0][i]
     chart.attach node
     if i == 2 => root.show! else root.hide!
+    root.css \opacity, 1
   for i from 1 til 3 =>
     ((v) ->
       node = $("\#land-edit-cog .btn-group .btn-default:nth-child(#v)")

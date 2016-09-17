@@ -217,6 +217,7 @@ $(document).ready(function(){
       } else {
         root.hide();
       }
+      root.css('opacity', 1);
     }
     for (i$ = 1; i$ < 3; ++i$) {
       i = i$;
