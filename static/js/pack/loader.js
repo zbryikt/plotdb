@@ -1527,6 +1527,7 @@ plotdb.config = {
     urlschema: "http://",
     name: 'plotdb',
     debug: true,
+    mode: 1,
     facebook: {
       clientID: '1546734828988373'
     },

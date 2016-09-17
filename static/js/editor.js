@@ -453,7 +453,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             name: n.toUpperCase(),
             filename: $scope.target().name + "." + postfix[i]
           };
-          if (i < 1 || ($scope.user.data && ((ref$ = $scope.user.data).payment || (ref$.payment = {})).plan > 0)) {
+          if (i < 1 || ($scope.user.data && ((ref$ = $scope.user.data).payment || (ref$.payment = {})).plan > 0) || plConfig.mode % 2) {
             setTimeout(function(){
               return $scope.$apply(function(){
                 return [this$[n].url = '', this$[n]()];

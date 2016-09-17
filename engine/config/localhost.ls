@@ -7,6 +7,8 @@
     urlschema: "http://"
     name: \plotdb
     debug: true
+    # 0x01 - all user all pro features
+    mode: 1
     facebook:
       clientID: \1546734828988373
     google:

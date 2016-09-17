@@ -229,7 +229,7 @@ angular.module \plotDB
         prepare: -> @queue = <[png svg plotdb]>.map (n,i) ~>
           postfix = <[png svg json]>
           ret = {state: 0, name: n.toUpperCase!, filename: "#{$scope.target!.name}.#{postfix[i]}"}
-          if i < 1 or ($scope.user.data and $scope.user.data.{}payment.plan > 0) =>
+          if i < 1 or ($scope.user.data and $scope.user.data.{}payment.plan > 0) or (plConfig.mode % 2) =>
             setTimeout (~> $scope.$apply ~> [@[n].url = '', @[n]!]), 300
             return ret
           return ret <<< {state: 3}

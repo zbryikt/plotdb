@@ -3068,6 +3068,7 @@ angular.module('plotDB', ['backend', 'ui.codemirror', 'ngDraggable', 'ldColorPic
     urlschema: "http://",
     name: 'plotdb',
     debug: true,
+    mode: 1,
     facebook: {
       clientID: '1546734828988373'
     },
@@ -4158,7 +4159,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             name: n.toUpperCase(),
             filename: $scope.target().name + "." + postfix[i]
           };
-          if (i < 1 || ($scope.user.data && ((ref$ = $scope.user.data).payment || (ref$.payment = {})).plan > 0)) {
+          if (i < 1 || ($scope.user.data && ((ref$ = $scope.user.data).payment || (ref$.payment = {})).plan > 0) || plConfig.mode % 2) {
             setTimeout(function(){
               return $scope.$apply(function(){
                 return [this$[n].url = '', this$[n]()];
