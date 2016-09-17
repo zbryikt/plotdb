@@ -90,10 +90,15 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           }
           return eventBus.fire('dataset.saved', $scope.dataset);
         })['catch'](function(e){
-          console.log(e.stack);
           return $scope.$apply(function(){
-            plNotify.aux.error.io('save', 'data', e);
-            return eventBus.fire('loading.dimmer.off');
+            eventBus.fire('loading.dimmer.off');
+            if (e[2] === 402) {
+              eventBus.fire('quota.widget.on');
+              return plNotify.send('danger', "Failed: Quota exceeded");
+            } else {
+              console.log(e.stack);
+              return plNotify.aux.error.io('save', 'data', e);
+            }
           });
         });
       });

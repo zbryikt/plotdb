@@ -45,7 +45,7 @@ mixin searchable
           a(href="#") #[i.fa.fa-book] Libraries
 
       div(ng-show="panel.tab=='permission'",style="position:relative")
-        .panel-lock(ng-hide="isAdmin"): div You don't have permission to change this
+        include /widget/panel-lock.jade
         +searchable()
         .sep
         div(ng-controller="permEdit",ng-init="setPerm('dataset.permission')")

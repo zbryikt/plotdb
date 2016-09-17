@@ -45,12 +45,13 @@ angular.module \plotDB
     @
 
   ..controller \plSite,
-  <[$scope $http $interval global plNotify dataService chartService eventBus]> ++
-  ($scope, $http, $interval, global, plNotify, data-service, chart-service, eventBus) ->
+  <[$scope $http $interval global plNotify plConfig dataService chartService eventBus]> ++
+  ($scope, $http, $interval, global, plNotify, plConfig, data-service, chart-service, eventBus) ->
     $scope.track-event = (cat, act, label, value) -> ga \send, \event, cat, act, label, value
     $scope.notifications = plNotify.queue
     $scope.alert = plNotify.alert
     $scope.nexturl = if /nexturl=([^&]+)/exec((window.location.search or "")) => that.1 else window.location.href
+    $scope.plConfig = plConfig
     $scope.user = do
       data: global.user
       authed: -> return @data and @data.key

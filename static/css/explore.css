@@ -60,7 +60,7 @@
 }
 @media (min-width: 800px) {
   #chart-filter.landing.sticked {
-    margin-top: 25px;
+    margin-top: 0;
   }
 }
 @media (max-width: 768px) {

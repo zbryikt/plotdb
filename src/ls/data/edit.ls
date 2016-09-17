@@ -59,11 +59,14 @@ angular.module \plotDB
           else
             $scope.$apply -> eventBus.fire 'loading.dimmer.off'
           eventBus.fire \dataset.saved, $scope.dataset
-        .catch (e) ->
-          console.log e.stack
-          $scope.$apply ->
+        .catch (e) -> $scope.$apply ->
+          eventBus.fire 'loading.dimmer.off'
+          if e.2 == 402 =>
+            eventBus.fire \quota.widget.on
+            plNotify.send \danger, "Failed: Quota exceeded"
+          else
+            console.log e.stack
             plNotify.aux.error.io \save, \data, e
-            eventBus.fire 'loading.dimmer.off'
     $scope.load = (_type, key) ->
       eventBus.fire \loading.dimmer.on
       $scope.rawdata = ""

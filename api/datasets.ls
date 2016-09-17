@@ -92,22 +92,28 @@ update-size = (req, delta) -> new bluebird (res, rej) ->
 save-dataset = (req, res, okey = null) ->
   if okey and !/^\d+$/.exec("#okey") => return aux.r400 res
   if !req.user => return aux.reject 403
-  if !okey and control.size-limit(req.user) => return aux.reject 402, 'exceed size limit'
-  # personal item count control
-  io.query "select count(key) as count from datasets where owner = $1", [req.user.key]
-    .then (r={}) ->
-      plan = req.user.{}payment.plan or 0
-      count = ((r.[]rows.0 or {}).count or 0)
-      if (plan == 0 and count >= 30) or (plan == 1 and count >= 300) =>
-        return aux.reject 402, 'exceed count limit'
   if typeof(req.body) != \object => return aux.r400 res
+  if !okey and control.size-limit(req.user) => return aux.r402 res, 'exceed size limit'
+  [cur,fields,data] = [null,null,{}]
+  # personal item count control
   data = req.body <<< {owner: req.user.key, modifiedtime: new Date!}
-  if Array.isArray(data.{}permission.switch) => data.{}permission.switch = \publish
+  plan = req.user.{}payment.plan or 0
+  if !(engine.config.mode % 2) =>
+    if plan < 1 => data.{}permission.list = [{"perm": "fork", "type": "global", "target": null}]
+  if Array.isArray(data.{}permission.switch) => data.{}permission.switch = \publish #legacy
   if !okey => data <<< {createdtime: new Date!}
-  cur = null
-  fields = null
-  promise = (if okey => io.query("select * from datasets where datasets.key = $1", [okey]) else bluebird.resolve(1))
+  promise = if okey => bluebird.resolve!
+  else
+    io.query "select count(key) as count from datasets where owner = $1", [req.user.key]
+      .then (r={}) ->
+        count = ((r.[]rows.0 or {}).count or 0)
+        if count >= 3000 => return aux.reject 402, 'exceed count limit' #hard limit
+        if !(engine.config.mode % 2) =>
+          if (plan == 0 and count >= 30) or (plan == 1 and count >= 300) =>
+            return aux.reject 402, 'exceed count limit'
   promise
+    .then ->
+      return (if okey => io.query("select * from datasets where datasets.key = $1", [okey]) else bluebird.resolve(1))
     .then (r) ->
       if r != 1 =>
         cur := r.[]rows.0

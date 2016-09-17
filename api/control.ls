@@ -4,6 +4,7 @@ require! <[../engine/aux bluebird]>
 size-limits = [1000000, 50000000, 1000000000]
 size-limit = (user) ->
   plan = user.{}payment.plan or 0
+  if (engine.config.mode % 2) => return user.datasize > size-limits.2
   return (user.datasize > (size-limits[plan] or size-limits.0))
 
 update-size = (req, user, delta) -> new bluebird (res, rej) ->

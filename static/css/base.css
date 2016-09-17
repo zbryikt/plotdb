@@ -716,6 +716,9 @@ width: 100%;
   width: 0;
   height: 0;
 }
+.sep.active {
+  border-top: 20px solid #ed1d78;
+}
 .sep {
   border-top: 1px solid rgba(0,0,0,0.2);
   width: 100%;
@@ -794,7 +797,7 @@ a.dropdown-toggle {
   z-index: 34;
   background: rgba(255,255,255,0.9);
 }
-.panel-lock div {
+.panel-lock > div {
   position: absolute;
   top: 50%;
   width: 100%;
@@ -1047,4 +1050,39 @@ ul.dropdown-menu li a.toggle-filepick input {
 #confirmbox .cover-modal-inner .panel-body .btn {
   margin-right: 10px;
   min-width: 80px;
+}
+#beta-ribbon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 80px;
+  height: 80px;
+  z-index: 33;
+  background: url("/assets/img/land/beta-ribbon.png") bottom right no-repeat;
+}
+@media (max-width: 1200px) {
+  #beta-ribbon {
+    width: 75px;
+    height: 70px;
+  }
+}
+@media (max-width: 800px) {
+  #beta-ribbon {
+    background: none;
+  }
+  #beta-ribbon:after {
+    content: "beta";
+    display: block;
+    color: #fff;
+    background: #ed1d78;
+    padding: 0 3px;
+    font-size: 12px;
+    font-weight: bold;
+    width: 34px;
+    height: 16px;
+    line-height: 12px;
+    border: 2px solid #000;
+    border-radius: 4px;
+    margin: 4px;
+  }
 }

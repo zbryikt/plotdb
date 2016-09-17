@@ -98,7 +98,7 @@ x$.service('plNotify', ['$rootScope', '$timeout'].concat(function($rootScope, $t
   };
   return this;
 }));
-x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', 'dataService', 'chartService', 'eventBus'].concat(function($scope, $http, $interval, global, plNotify, dataService, chartService, eventBus){
+x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', 'plConfig', 'dataService', 'chartService', 'eventBus'].concat(function($scope, $http, $interval, global, plNotify, plConfig, dataService, chartService, eventBus){
   var that, x$;
   $scope.trackEvent = function(cat, act, label, value){
     return ga('send', 'event', cat, act, label, value);
@@ -108,6 +108,7 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
   $scope.nexturl = (that = /nexturl=([^&]+)/.exec(window.location.search || ""))
     ? that[1]
     : window.location.href;
+  $scope.plConfig = plConfig;
   $scope.user = {
     data: global.user,
     authed: function(){

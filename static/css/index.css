@@ -855,7 +855,7 @@ a.dropdown-toggle {
   z-index: 34;
   background: rgba(255,255,255,0.9);
 }
-.panel-lock div {
+.panel-lock > div {
   position: absolute;
   top: 50%;
   width: 100%;

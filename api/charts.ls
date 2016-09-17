@@ -110,9 +110,13 @@ engine.router.api.post "/chart/", (req, res) ->
       # personal item count control
       plan = req.user.{}payment.plan or 0
       count = ((r.[]rows.0 or {}).count or 0)
-      if (plan == 0 and count >= 30) or (plan == 1 and count >= 300) =>
-        return aux.reject 402, 'exceed count limit'
+      if count >= 3000 => return aux.reject 402, 'exceed count limit' #hard limit
       data := req.body <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
+      if !(engine.config.mode % 2) =>
+        if (plan == 0 and count >= 30) or (plan == 1 and count >= 300) =>
+          return aux.reject 402, 'exceed count limit'
+        if plan < 1 => data.{}permission.list = [{"perm": "fork", "type": "global", "target": null}]
+
       ret = charttype.lint data
       if ret.0 => return aux.r400 res, ret
       data := charttype.clean data
@@ -154,6 +158,9 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
         owner: chart.owner
         key: id
         modifiedtime: new Date!toUTCString!
+      if !( engine.config.mode % 2 ) =>
+        plan = req.user.{}payment.plan or 0
+        if plan < 1 => data.{}permission.list = chart.permission.list
       ret = charttype.lint(data)
       if ret.0 => return aux.reject 400, ret
       data := charttype.clean data
