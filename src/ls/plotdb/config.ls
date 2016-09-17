@@ -23,13 +23,45 @@
 # Category
 # Color / Axis / Value / Layout / Label
 plotdb.config = do
+  # Global Configuration
+  fontFamily: do
+    name: "Font"
+    type: [plotdb.String]
+    default: "Arial"
+    category: "Global Settings"
+  fontSize: do
+    name: "Font Size"
+    type: [plotdb.Number]
+    default: 13
+    category: "Global Settings"
+  background: do
+    name: "Background"
+    type: [plotdb.Color]
+    default: '#ffffff'
+    category: "Global Settings"
+  textFill: do
+    name: "Text Color"
+    type: [plotdb.Color]
+    default: '#000000'
+    category: "Global Settings"
+  margin: do
+    name: "Margin"
+    type: [plotdb.Number]
+    default: 10
+    category: "Global Settings"
+  aspectRatio: do
+    name: "Aspect Ratio"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Layout"
+
   # Color Configuration
   palette: do
     name: "Palette"
     type: [plotdb.Palette]
     subtype: plotdb.Palette.subtype.Qualitative
-    default: plotdb.Palette.default
-    category: "Color"
+    default: {colors:[{hex:'#f4502a'},{hex:'#f1c227'},{hex:'#008a6d'},{hex:'#00acdb'},{hex:'#0064a8'}]}
+    category: "Global Settings"
 
   colorNegative: do
     name: "Negative"
@@ -37,7 +69,7 @@ plotdb.config = do
     desc: "Color for negative values"
     default: plotdb.Color.Negative
     subtype: plotdb.Color.subtype.Negative
-    category: "Color"
+    category: "Global Settings"
 
   colorPositive: do
     name: "Positive"
@@ -45,7 +77,7 @@ plotdb.config = do
     desc: "Color for positive values"
     default: plotdb.Color.Positive
     subtype: plotdb.Color.subtype.Positive
-    category: "Color"
+    category: "Global Settings"
 
   colorNeutral: do
     name: "Neutral"
@@ -53,7 +85,7 @@ plotdb.config = do
     desc: "Color for neutral values"
     default: plotdb.Color.Neutral
     subtype: plotdb.Color.subtype.Neutral
-    category: "Color"
+    category: "Global Settings"
 
   colorEmpty: do
     name: "Empty"
@@ -61,14 +93,14 @@ plotdb.config = do
     desc: "Color for 'no values'"
     default: plotdb.Color.Empty
     subtype: plotdb.Color.subtype.Empty
-    category: "Color"
+    category: "Global Settings"
 
   colorPast: do
     name: "Past"
     type: [plotdb.Color]
     desc: "Color for values in past"
     subtype: plotdb.Color.subtype.Fade
-    category: "Color"
+    category: "Global Settings"
 
   fill: do
     name: "Default Fill Color"
@@ -138,24 +170,12 @@ plotdb.config = do
     name: "Padding"
     type: [plotdb.Number]
     default: 10
-    category: "Layout"
+    category: "Global Settings"
 
   bubblePadding: do
     name: "Bubble Padding"
     type: [plotdb.Number]
     default: 5
-    category: "Layout"
-
-  margin: do
-    name: "Margin"
-    type: [plotdb.Number]
-    default: 10
-    category: "Layout"
-
-  aspectRatio: do
-    name: "Aspect Ratio"
-    type: [plotdb.Boolean]
-    default: true
     category: "Layout"
 
   #TBD
@@ -172,56 +192,28 @@ plotdb.config = do
     default: 10
     category: "Layout"
 
-  # Text
-  fontSize: do
-    name: "Font Size"
-    type: [plotdb.Number]
-    default: 13
-    category: "Text"
-
   labelShadowSize: do
     name: "Label Shadow Size"
     type: [plotdb.Number]
     default: 2
     category: "Text"
 
-  xAxisLabel: do
-    name: "X Axis Label"
-    type: [plotdb.String]
-    category: "Text"
-
-  yAxisLabel: do
-    name: "Y Axis Label"
-    type: [plotdb.String]
-    category: "Text"
-
-  radialAxisLabel: do
-    name: "Radial Axis Label"
-    type: [plotdb.String]
-    category: "Text"
-
-  angularAxisLabel: do
-    name: "Angular Axis Label"
-    type: [plotdb.String]
-    category: "Text"
+  legendShow: do
+    name: "Show Legend"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Legend"
 
   legendLabel: do
     name: "Legend Label"
     type: [plotdb.String]
-    category: "Text"
+    category: "Legend"
 
   otherLabel: do
     name: "Label for 'other'"
     type: [plotdb.String]
     default: "Other"
     category: "Text"
-
-  #Switch
-  showLegend: do
-    name: "Show Legend"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Switch"
 
   showLabel: do
     name: "Show Data Label"
@@ -234,6 +226,32 @@ plotdb.config = do
     type: [plotdb.Boolean]
     default: true
     category: "Switch"
+
+  nodeSize: do
+    name: "Dot Size"
+    type: [plotdb.Number]
+    default: 6
+    category: "Dot"
+
+  nodeFill: do
+    name: "Fill Color"
+    type: [plotdb.Color]
+    desc: "fill Dot with this color"
+    default: \#eee
+    category: "Dot"
+
+  nodeStroke: do
+    name: "Stroke Color"
+    type: [plotdb.Color]
+    desc: "draw Dot outline with this color"
+    default: \#919191
+    category: "Dot"
+
+  nodeStrokeWidth: do
+    name: "Stroke Width"
+    type: [plotdb.Number]
+    default: \1
+    category: "Dot"
 
   labelPosition: do
     name: "Label Position"
@@ -296,7 +314,7 @@ plotdb.config = do
     desc: "Data smaller than this value will be clustered into one set of data"
     default: 0
     category: "Value"
-
+  /*
   #Axis
   axisInnerPadding: do
     name: "Axis Inner Tick length"
@@ -311,66 +329,121 @@ plotdb.config = do
     category: "Axis"
 
   showXAxis: do
-    name: "Show X Axis"
+    name: "Show Axis"
     type: [plotdb.Boolean]
     default: true
-    category: "Axis"
+    category: "X Axis"
 
-  showYAxis: do
-    name: "Show Y Axis"
-    type: [plotdb.Boolean]
+  xAxisShowDomain: do
+    name: "Show Baseline"
     default: true
-    category: "Axis"
-
-  showRadialAxis: do
-    name: "Show Radial Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Axis"
-
-  showAngularAxis: do
-    name: "Show Angular Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Axis"
+    category: "X Axis"
 
   xAxisTickSizeInner: do
-    name: "X Axis Inner Tick Size"
+    name: "Inner Tick Size"
     type: [plotdb.Number]
     default: 6
-    category: "Axis"
+    category: "X Axis"
 
   xAxisTickSizeOuter: do
-    name: "X Axis Outer Tick Size"
+    name: "Outer Tick Size"
     type: [plotdb.Number]
     default: 6
-    category: "Axis"
+    category: "X Axis"
 
   xAxisTickPadding: do
-    name: "X Axis Tick Padding"
+    name: "Tick Padding"
     type: [plotdb.Number]
     default: 3
-    category: "Axis"
+    category: "X Axis"
+
+  showYAxis: do
+    name: "Show Axis"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Y Axis"
+
+  yAxisShowDomain: do
+    name: "Show Baseline"
+    default: true
+    category: "Y Axis"
 
   yAxisTickSizeInner: do
-    name: "Y Axis Inner Tick Size"
+    name: "Inner Tick Size"
     type: [plotdb.Number]
     default: 6
-    category: "Axis"
+    category: "Y Axis"
 
   yAxisTickSizeOuter: do
-    name: "Y Axis Outer Tick Size"
+    name: "Outer Tick Size"
     type: [plotdb.Number]
     default: 6
-    category: "Axis"
+    category: "Y Axis"
 
   yAxisTickPadding: do
-    name: "Y Axis Tick Padding"
+    name: "Tick Padding"
     type: [plotdb.Number]
     default: 3
-    category: "Axis"
+    category: "Y Axis"
 
+  showRadialAxis: do
+    name: "Show Axis"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Radial Axis"
 
+  rAxisShowDomain: do
+    name: "Show Baseline"
+    default: true
+    category: "Radial Axis"
+
+  rAxisTickSizeInner: do
+    name: "Inner Tick Size"
+    type: [plotdb.Number]
+    default: 6
+    category: "Radial Axis"
+
+  rAxisTickSizeOuter: do
+    name: "Outer Tick Size"
+    type: [plotdb.Number]
+    default: 6
+    category: "Radial Axis"
+
+  rAxisTickPadding: do
+    name: "Tick Padding"
+    type: [plotdb.Number]
+    default: 3
+    category: "Radial Axis"
+
+  showAngularAxis: do
+    name: "Show Axis"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Angular Axis"
+
+  aAxisShowDomain: do
+    name: "Show Baseline"
+    default: true
+    category: "Angular Axis"
+
+  aAxisTickSizeInner: do
+    name: "Inner Tick Size"
+    type: [plotdb.Number]
+    default: 6
+    category: "Angular Axis"
+
+  aAxisTickSizeOuter: do
+    name: "Outer Tick Size"
+    type: [plotdb.Number]
+    default: 6
+    category: "Angular Axis"
+
+  aAxisTickPadding: do
+    name: "Tick Padding"
+    type: [plotdb.Number]
+    default: 3
+    category: "Angular Axis"
+  */
   lineSmoothing: do
     name: "Line Smoothing"
     default: "linear"
@@ -379,7 +452,6 @@ plotdb.config = do
     ]>)]
     category: "Style"
 
-
   strokeWidth: do
     name: "Default Stroke Width"
     type: [plotdb.Number]
@@ -387,3 +459,17 @@ plotdb.config = do
     default: \2
     category: "Style"
 
+<[X Y Radial Angular]>.forEach (n) ->
+  p = "#{n.charAt(0).toLowerCase!}Axis"
+  console.log p
+  c = "#{n} Axis"
+  b = [plotdb.Boolean]
+  n = [plotdb.Number]
+  plotdb.config["#{p}Show"] = name: "Show Axis", type: b, default: true, category: c
+  plotdb.config["#{p}ShowDomain"] = name: "Show Basline", type: b, default: true, category: c
+  plotdb.config["#{p}TickSizeInner"] = name: "Inner Tick Size", type: n, default: 4, category: c
+  plotdb.config["#{p}TickSizeOuter"] = name: "Outer Tick Size", type: n, default: 0, category: c
+  plotdb.config["#{p}TickPadding"] = name: "Tick Padding", type: n, default: 4, category: c
+  plotdb.config["#{p}Label"] = name: "Label", type: [plotdb.String], default: "", category: c
+  plotdb.config["#{p}TickCount"] = name: "Tick Count", type: n, default: 6, category: c, desc: "Hint on number of tick. Actual number will be decided by program"
+  plotdb.config["#{p}LabelPosition"] = name: "Label Position", type: [plotdb.Choice(['in','center'])], default: "center", category: c
