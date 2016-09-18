@@ -112,9 +112,9 @@ x$.service('baseService', ['$rootScope', 'IOService', 'eventBus'].concat(functio
     cleanBackups: function(item){
       return IOService.cleanBackups(item);
     },
-    save: function(item){
+    save: function(item, param){
       var this$ = this;
-      return IOService.save(item).then(function(ret){
+      return IOService.save(item, param).then(function(ret){
         return new Promise(function(res, rej){
           return $rootScope.$applyAsync(function(){
             var idx;

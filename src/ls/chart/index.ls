@@ -26,6 +26,7 @@ angular.module \plotDB
         code: {name: 'code', type: 'javascript', content: service.sample.0.code.content}
         assets: []
         config: {}
+        dimlen: 1
         dimension: {}
         library: ["d3/3.5.12/min", "plotd3/0.1.0"]
         _type: {location: \server, name: \chart}
@@ -39,11 +40,11 @@ angular.module \plotDB
       @
 
     object.prototype = do
-      save: ->
+      save: (param) ->
         # we need to track used fields but not keep data.
         payload = JSON.parse(angular.toJson(@))
         for k,v of payload.dimension => (v.fields or []).forEach -> delete it.data
-        chart-service.save payload .then (ret) ~> @key = ret.key
+        chart-service.save payload, param .then (ret) ~> @key = ret.key
 
       like: (v) -> new Promise (res, rej) ~>
         @likes = @likes + (if v => 1 else -1) >? 0

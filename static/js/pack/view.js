@@ -1119,9 +1119,14 @@ plotdb.config = {
   fill: {
     name: "Default Fill Color",
     type: [plotdb.Color],
-    desc: "Default color for filling visual encoding",
     'default': '#e03f0e',
     category: "Color"
+  },
+  fillOpacity: {
+    name: "Fill Opacity",
+    type: [plotdb.Number],
+    'default': 0.6,
+    category: "Global Settings"
   },
   stroke: {
     name: "Default Stroke Color",

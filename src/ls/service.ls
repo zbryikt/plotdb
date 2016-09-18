@@ -53,8 +53,8 @@ angular.module \plotDB
       backup: (item) -> IOService.backup item
       backups: (item) -> IOService.backups item
       cleanBackups: (item) -> IOService.cleanBackups item
-      save: (item) ->
-        (ret) <~ IOService.save item .then
+      save: (item, param) ->
+        (ret) <~ IOService.save(item, param) .then
         (res, rej) <~ new Promise _
         <~ $rootScope.$apply-async
         item.key = ret.key

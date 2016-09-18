@@ -26,12 +26,40 @@ x$.service('teamService', ['$rootScope', '$http', 'plConfig', 'IOService', 'base
   teamService = baseService.derive('team', service, object);
   return teamService;
 }));
-x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamService', 'eventBus'].concat(function($scope, $http, $timeout, plNotify, teamService, eventBus){
+x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamService', 'chartService', 'eventBus'].concat(function($scope, $http, $timeout, plNotify, teamService, chartService, eventBus){
   $scope.team = new teamService.team(window.team || {});
   $scope.members = window.members || [];
   $scope.newMembers = [];
   $scope.charts = window.charts || [];
   $scope.newCharts = [];
+  $scope.tab = 'chart';
+  $scope.link = {
+    chart: function(it){
+      return chartService.link(it);
+    }
+  };
+  $scope.newChart = function(tid){
+    var chart;
+    eventBus.fire('loading.dimmer.on');
+    chart = new chartService.chart({}, true);
+    return chart.save({
+      team: tid
+    }).then(function(data){
+      return $scope.$apply(function(){
+        plNotify.send('success', "chart created");
+        $scope.charts = [chart].concat($scope.charts);
+        return $timeout(function(){
+          return window.location.href = $scope.link.chart(chart);
+        }, 1000);
+      });
+    })['catch'](function(e){
+      return $scope.$apply(function(){
+        console.log(e);
+        eventBus.fire('loading.dimmer.off');
+        return plNotify.send('danger', e[1]);
+      });
+    });
+  };
   $scope.removeChart = function(tid, cid){
     return $http({
       url: "/d/team/" + tid + "/chart/" + cid,

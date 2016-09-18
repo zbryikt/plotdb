@@ -15,13 +15,32 @@ angular.module \plotDB
     teamService = baseService.derive \team ,service, object
     teamService
   ..controller \teamEdit,
-  <[$scope $http $timeout plNotify teamService eventBus]> ++
-  ($scope, $http, $timeout, plNotify, teamService, eventBus) ->
+  <[$scope $http $timeout plNotify teamService chartService eventBus]> ++
+  ($scope, $http, $timeout, plNotify, teamService, chartService, eventBus) ->
     $scope.team = new teamService.team(window.team or {})
     $scope.members = window.members or []
     $scope.newMembers = []
     $scope.charts = window.charts or []
     $scope.newCharts = []
+    $scope.tab = \chart
+    $scope.link = do
+      chart: -> chart-service.link it
+
+    $scope.new-chart = (tid) ->
+      eventBus.fire 'loading.dimmer.on'
+      chart = new chart-service.chart {}, true
+      chart.save {team: tid}
+        .then (data) ->
+          <- $scope.$apply
+          plNotify.send \success, "chart created"
+          $scope.charts = [chart] ++ $scope.charts
+          $timeout (->
+            window.location.href = $scope.link.chart(chart)
+          ), 1000
+        .catch (e) -> $scope.$apply ->
+          console.log e
+          eventBus.fire 'loading.dimmer.off'
+          plNotify.send \danger, e.1
 
     $scope.remove-chart = (tid, cid) ->
       $http do

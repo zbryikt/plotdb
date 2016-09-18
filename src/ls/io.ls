@@ -3,7 +3,7 @@ angular.module \plotDB
     aux = do
       usedkey: {}
       localkey: -> "#{Math.random!.toString(36)}".substring(2)
-      save-locally: (item, res, rej) ->
+      save-locally: (item, res, rej, param) ->
         list = JSON.parse(localStorage.getItem("/db/list/#{item._type.name}")) or []
         if !item.key
           for i from 0 to 10 =>
@@ -17,11 +17,12 @@ angular.module \plotDB
         localStorage.setItem("/db/list/#{item._type.name}", angular.toJson(list))
         localStorage.setItem("/db/#{item._type.name}/#{item.key}", angular.toJson(item))
         res item
-      save-remotely: (item, res, rej) ->
+      save-remotely: (item, res, rej, params) ->
         item[if !item.createdtime => "createdtime" else "modifiedtime"] = new Date!getTime!
         config = {data: item} <<< if item.key => 
           {url: "/d/#{item._type.name}/#{item.key}", method: \PUT}
         else {url: "/d/#{item._type.name}", method: \POST}
+        if typeof(params) == \object => config <<< {params}
         $http config
           .success (ret) -> res ret
           .error (d, status) -> rej [true, d, status]
@@ -53,10 +54,10 @@ angular.module \plotDB
 
     ret = do
       aux: aux # one share not use this unless for dev purpose
-      save: (item) -> new Promise (res, rej) ~>
+      save: (item, param) -> new Promise (res, rej) ~>
         if aux.verify-type(item) => return rej [true, "type incorrect"]
-        if item._type.location == \local => return aux.save-locally item, res, rej
-        else if item._type.location == \server => return aux.save-remotely item, res, rej
+        if item._type.location == \local => return aux.save-locally item, res, rej, param
+        else if item._type.location == \server => return aux.save-remotely item, res, rej, param
         else return rej [true, "not support type"]
       load: (_type, key) -> new Promise (res, rej) ~>
         if aux.verify-type({_type}) => return rej [true, "type incorrect"]

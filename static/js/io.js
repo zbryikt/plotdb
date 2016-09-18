@@ -8,7 +8,7 @@ x$.service('IOService', ['$rootScope', '$http'].concat(function($rootScope, $htt
     localkey: function(){
       return (Math.random().toString(36) + "").substring(2);
     },
-    saveLocally: function(item, res, rej){
+    saveLocally: function(item, res, rej, param){
       var list, i$, i, key;
       list = JSON.parse(localStorage.getItem("/db/list/" + item._type.name)) || [];
       if (!item.key) {
@@ -33,7 +33,7 @@ x$.service('IOService', ['$rootScope', '$http'].concat(function($rootScope, $htt
       localStorage.setItem("/db/" + item._type.name + "/" + item.key, angular.toJson(item));
       return res(item);
     },
-    saveRemotely: function(item, res, rej){
+    saveRemotely: function(item, res, rej, params){
       var config;
       item[!item.createdtime ? "createdtime" : "modifiedtime"] = new Date().getTime();
       config = import$({
@@ -47,6 +47,9 @@ x$.service('IOService', ['$rootScope', '$http'].concat(function($rootScope, $htt
           url: "/d/" + item._type.name,
           method: 'POST'
         });
+      if (typeof params === 'object') {
+        config.params = params;
+      }
       return $http(config).success(function(ret){
         return res(ret);
       }).error(function(d, status){
@@ -112,16 +115,16 @@ x$.service('IOService', ['$rootScope', '$http'].concat(function($rootScope, $htt
   };
   return ret = {
     aux: aux,
-    save: function(item){
+    save: function(item, param){
       var this$ = this;
       return new Promise(function(res, rej){
         if (aux.verifyType(item)) {
           return rej([true, "type incorrect"]);
         }
         if (item._type.location === 'local') {
-          return aux.saveLocally(item, res, rej);
+          return aux.saveLocally(item, res, rej, param);
         } else if (item._type.location === 'server') {
-          return aux.saveRemotely(item, res, rej);
+          return aux.saveRemotely(item, res, rej, param);
         } else {
           return rej([true, "not support type"]);
         }

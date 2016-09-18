@@ -31,11 +31,12 @@ block body
         .container-fluid
           div
             ul.nav.navbar-nav
-              li(ng-class="{'active':tab=='member'}",ng-click="tab='member'"): a(href="#") Members #[small.grayed (7)]
-              li(ng-class="{'active':tab=='chart'}",ng-click="tab='chart'"): a(href="#") Charts #[small.grayed (20)]
-              li(ng-class="{'active':tab=='dataset'}",ng-click="tab='dataset'"): a(href="#") Datasets #[small.grayed (52)]
-              li(ng-class="{'active':tab=='theme'}",ng-click="tab='theme'"): a(href="#") Themes #[small.grayed (3)]
-            form.navbar-form.navbar-right
+              li(ng-class="{'active':tab=='member'}",ng-click="tab='member'"): a(href="#") Members #[small.grayed ({{members.length || 0}})]
+              li(ng-class="{'active':tab=='chart'}",ng-click="tab='chart'"): a(href="#") Charts #[small.grayed ({{charts.length || 0}})]
+              li(ng-class="{'active':tab=='dataset'}",ng-click="tab='dataset'"): a(href="#") Datasets #[small.grayed ({{datasets.length || 0}})]
+              li(ng-class="{'active':tab=='theme'}",ng-click="tab='theme'"): a(href="#") Themes #[small.grayed ({{themes.length || 0}})]
+            //- add back once we have time to implement keyword search in team
+            //-form.navbar-form.navbar-right
               .form-group
                 .btn.btn-default(
                 data-toggle="tooltip",data-placement="top",title="Show My Favorite",
@@ -62,56 +63,60 @@ block body
           small.grayed add more users
 
     .themes(ng-cloak,ng-show="tab=='theme'")
-      .text-center.chart(style="display:inline-block;flex:1 1 320px;padding:10px 40px;box-shadow:none;border:1px dashed #ccc;background:none;height:376px")
-        br
-        br
-        div
-          label under this team ...
+      if userPermission[1] == "admin" || userPermission[1] == "write"
+        .text-center.chart(style="display:inline-block;flex:1 1 320px;padding:10px 40px;box-shadow:none;border:1px dashed #ccc;background:none;height:376px")
           br
           br
-          .btn.btn-default.btn-block New Theme
-          br
-          span or
-          br
-          br
-          .input-group
-            input.form-control(placeholder="search theme by name or id..")
-            span.input-group-btn
-              .btn.btn-default.btn-block Add Theme
-          small.grayed * You can only add themes that are owned by you
+          div
+            label under this team ...
+            br
+            br
+            .btn.btn-default.btn-block New Theme
+            br
+            span or
+            br
+            br
+            .input-group
+              input.form-control(placeholder="search theme by name or id..")
+              span.input-group-btn
+                .btn.btn-default.btn-block Add Theme
+            small.grayed * You can only add themes that are owned by you
 
     .charts(ng-cloak,ng-show="tab=='chart'")
-      .text-center.chart(style="display:inline-block;flex:1 1 320px;padding:10px 40px;box-shadow:none;border:1px dashed #ccc;background:none;")
-        br
-        br
-        div
-          label under this team ...
+      if userPermission[1] == "admin" || userPermission[1] == "write"
+        .text-center.chart(style="display:inline-block;flex:1 1 320px;padding:10px 40px;box-shadow:none;border:2px dashed #ed1d78;background:none;")
           br
           br
-          .btn.btn-default.btn-block New Chart
-          br
-          span or
-          br
-          br
-          .input-group
-            input.form-control(placeholder="search chart by name or id..")
-            span.input-group-btn
-              .btn.btn-default.btn-block Add Chart
-          small.grayed * You can only add charts that are owned by you
+          div
+            label under this team ...
+            br
+            br
+            .btn.btn-default.btn-block(ng-click="newChart(" + team.key +")") New Chart
+            br
+            span or
+            br
+            br
+            .input-group
+              input.form-control(placeholder="search chart by name or id..")
+              span.input-group-btn
+                .btn.btn-default.btn-block Add Chart
+            small.grayed * You can only add charts that are owned by you
 
       .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1")
-        .dropdown.pull-right(style="margin:5px")
-          .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown"): i.fa.fa-chevron-down
-          ul.dropdown-menu
-            li: a(href="#") Set Team Readonly
-            li: a(href="#") Set Team Writable
-            li.divider
-            li: a(href="#") Remove from here
+        if userPermission[1] == "admin"
+          .dropdown.pull-right(style="margin:5px")
+            .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown"): i.fa.fa-chevron-down
+            ul.dropdown-menu
+              li: a(href="#") Set Team Readonly
+              li: a(href="#") Set Team Writable
+              li.divider
+              li: a(ng-click="removeChart(" + team.key + ",chart.key);$event.preventDefault()",
+              href="#") Remove from here
         //-.btn.btn-default.pull-right(style="margin:5px"): i.fa.fa-chevron-down
-        a.chart-img(ng-attr-href="{{link(chart)}}",style="display:block")
+        a.chart-img(ng-attr-href="{{link.chart(chart)}}",style="display:block")
           .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime|timestamp}})")
         .chart-desc
-          a.title(ng-attr-href="{{link(chart)}}")
+          a.title(ng-attr-href="{{link.chart(chart)}}")
             //-.pull-right.grayed #[i.fa.fa-dot-circle-o] 5
             span {{chart.name}}
             .label.label-success.pull-right(ng-show="chart.searchable && showPub") published

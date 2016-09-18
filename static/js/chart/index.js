@@ -48,6 +48,7 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
       },
       assets: [],
       config: {},
+      dimlen: 1,
       dimension: {},
       library: ["d3/3.5.12/min", "plotd3/0.1.0"],
       _type: {
@@ -72,14 +73,14 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
     }
   };
   object.prototype = {
-    save: function(){
+    save: function(param){
       var payload, k, ref$, v, this$ = this;
       payload = JSON.parse(angular.toJson(this));
       for (k in ref$ = payload.dimension) {
         v = ref$[k];
         (v.fields || []).forEach(fn$);
       }
-      return chartService.save(payload).then(function(ret){
+      return chartService.save(payload, param).then(function(ret){
         return this$.key = ret.key;
       });
       function fn$(it){
