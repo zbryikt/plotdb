@@ -57,7 +57,7 @@ angular.module \plotDB
       authed: -> return @data and @data.key
       storage: {}
     $scope.user.storage.used = (
-      100 * ($scope.user.{}data.datasize || 0) /
+      100 * (($scope.user.data or {}).datasize || 0) /
       plConfig.plan.sizeLimits[if (plConfig.mode % 2 ) => 2 else ($scope.user.data.payment.plan || 0)]
     )
     $scope.data-service = data-service
