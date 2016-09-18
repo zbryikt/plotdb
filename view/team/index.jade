@@ -9,77 +9,196 @@ block head
       window.charts = !{JSON.stringify(charts).replace(/<\//g, "<\\/")}
   link(rel="stylesheet",type='text/css',href='/css/dev/index.css')
 block body
+
   .spc1
-  .team-header: .inner
-    .avatar.xxl(style="background-image:url(/s/avatar/" + (team.avatar || 0) + ".jpg")
-    .title #[span= team.name]
-    div: small.grayed the team
-    if team.description
-      .desc= team.description
-    else
-      .desc.grayed ( no descriptiont... )
-  #root.narrow(ng-controller="teamBase"): div(ng-controller="teamEdit")
-    +cover-modal("teamPanel.create.toggled","teamPanel.create.toggle()")
-      include /team/widget/update.jade
-    .text-center(style="margin-top:-55px")
-      if userPermission[1] == "admin"
-        .btn.btn-default(ng-click="teamPanel.create.toggle()") #[i.fa.fa-pencil] Edit
-    br
-    br
-    .text-center
-      label members
-      br
-      br
-      a.team-member(ng-attr-href="/user/{{team.owner}}",ng-cloak)
-        .avatar.xl.owner(ng-attr-style="background-image:url(/s/avatar/{{team.owneravatar || 0}}.jpg)")
-        span {{team.ownername}}
-      a.team-member(ng-repeat="member in members",ng-attr-href="/user/{{member.key}}",ng-cloak)
-        .avatar.xl(ng-attr-style="background-image:url(/s/avatar/{{user.avatar || 0}}.jpg)")
-          if userPermission[1] == "admin"
-            .closebtn(ng-click="removeMember(" + team.key + ",member.key);$event.preventDefault()")
-        span {{member.displayname}}
-      .team-member(ng-cloak,ng-show="members.length == 0")
-        .avatar.xl.empty
-        small.grayed add more users
-      br
-      br
-      if userPermission[0] >= 5
-        .text-left(style="width:600px;margin:auto")
-          label Add members
-          .input-group.long
-            +selectbox("newMembers","user")
-            //-div: select.form-control(multiple="multiple",ngselect4,ng-data="newMembers",type="user")
-            .input-group-btn
-              .btn.btn-default(ng-click="addMembers("+team.key+")") #[i.fa.fa-plus] add
-      br
-      br
-      .sep.gap
-      br
-      br
-      label works
-      br
-      br
-
-      a.team-chart(ng-repeat="chart in charts",ng-attr-href="/chart/{{chart.key}}",ng-cloak)
+  #team-header.page-header(style="height: 200px;border-bottom:10px solid #ed1d78"): .inner
+    .avatar.xxl.pull-left(style="background-image:url(/s/avatar/" + (team.avatar || 0) + ".jpg);margin-right:30px;box-shadow:0 0 6px 1px rgba(0,0,0,0.5);border-radius:5px")
+    div(style="padding-top:30px;text-shadow:#000 0 0 2px,#000 0 0 2px,#000 0 0 2px,#000 0 0 2px;color:#fff")
+      .title
+        span= team.name
+        span &nbsp; &nbsp;
         if userPermission[1] == "admin"
-          .closebtn(ng-click="removeChart(" + team.key + ",chart.key);$event.preventDefault()",
-          style="margin:-2px 4px 0 0")
-        .avatar.xl(ng-attr-style="background-image:url(/s/chart/{{chart.key}}.png)")
-        span {{chart.name}}
+          .btn.btn-sm.btn-default(style="text-shadow:none") #[i.fa.fa-pencil-square-o] edit team
+      small the team
+      if team.description
+        div= team.description
+      else
+        div ( no description... )
 
-      .team-chart(ng-cloak,ng-show="charts.length==0")
-        .avatar.xl.empty
-        small.grayed no charts...
-      br
-      br
-      br
-      if userPermission[0] >= 5
-        .text-left(style="width:600px;margin:auto")
-          label Add charts
-          .input-group.long
-            +selectbox("newCharts",type="chart")
-            //-div: select.form-control.input-sm(multiple="multiple",ngselect4,ng-data="newCharts",type="chart")
-            .input-group-btn
-              .btn.btn-default(ng-click="addCharts("+team.key+")") #[i.fa.fa-plus] add
+  #root.narrow(ng-controller="teamBase"): div(ng-controller="teamEdit")
+    #team-submenu(style="margin-top:-66px")
+      #team-explore-bar.navbar.navbar-default(style="background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.1) border:1px solid #ccc;font-size:1.2em")
+        .container-fluid
+          div
+            ul.nav.navbar-nav
+              li(ng-class="{'active':tab=='member'}",ng-click="tab='member'"): a(href="#") Members #[small.grayed (7)]
+              li(ng-class="{'active':tab=='chart'}",ng-click="tab='chart'"): a(href="#") Charts #[small.grayed (20)]
+              li(ng-class="{'active':tab=='dataset'}",ng-click="tab='dataset'"): a(href="#") Datasets #[small.grayed (52)]
+              li(ng-class="{'active':tab=='theme'}",ng-click="tab='theme'"): a(href="#") Themes #[small.grayed (3)]
+            form.navbar-form.navbar-right
+              .form-group
+                .btn.btn-default(
+                data-toggle="tooltip",data-placement="top",title="Show My Favorite",
+                ng-class="{'active':q.fav}",ng-click="q.fav=!!!q.fav") #[i.fa.fa-heart]
+                | &nbsp;
+                .input-group.pull-right(style="max-width:200px")
+                  input.form-control(ng-class="{'active': qLazy.keyword}",
+                  type="text",placeholder="Search",ng-model="qLazy.keyword")
+                  .input-group-btn(ng-click="loadList()")
+                    .btn.btn-default #[i.fa.fa-search]
+
+    .members(ng-cloak,ng-show="tab=='member'")
+      .text-center
+        a.team-member(ng-attr-href="/user/{{team.owner}}",ng-cloak)
+          .avatar.xl.owner(ng-attr-style="background-image:url(/s/avatar/{{team.owneravatar || 0}}.jpg)")
+          span {{team.ownername}}
+        a.team-member(ng-repeat="member in members",ng-attr-href="/user/{{member.key}}",ng-cloak)
+          .avatar.xl(ng-attr-style="background-image:url(/s/avatar/{{user.avatar || 0}}.jpg)")
+            if userPermission[1] == "admin"
+              .closebtn(ng-click="removeMember(" + team.key + ",member.key);$event.preventDefault()")
+          span {{member.displayname}}
+        .team-member(ng-cloak,ng-show="members.length == 0")
+          .avatar.xl.empty
+          small.grayed add more users
+
+    .themes(ng-cloak,ng-show="tab=='theme'")
+      .text-center.chart(style="display:inline-block;flex:1 1 320px;padding:10px 40px;box-shadow:none;border:1px dashed #ccc;background:none;height:376px")
+        br
+        br
+        div
+          label under this team ...
+          br
+          br
+          .btn.btn-default.btn-block New Theme
+          br
+          span or
+          br
+          br
+          .input-group
+            input.form-control(placeholder="search theme by name or id..")
+            span.input-group-btn
+              .btn.btn-default.btn-block Add Theme
+          small.grayed * You can only add themes that are owned by you
+
+    .charts(ng-cloak,ng-show="tab=='chart'")
+      .text-center.chart(style="display:inline-block;flex:1 1 320px;padding:10px 40px;box-shadow:none;border:1px dashed #ccc;background:none;")
+        br
+        br
+        div
+          label under this team ...
+          br
+          br
+          .btn.btn-default.btn-block New Chart
+          br
+          span or
+          br
+          br
+          .input-group
+            input.form-control(placeholder="search chart by name or id..")
+            span.input-group-btn
+              .btn.btn-default.btn-block Add Chart
+          small.grayed * You can only add charts that are owned by you
+
+      .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1")
+        .dropdown.pull-right(style="margin:5px")
+          .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown"): i.fa.fa-chevron-down
+          ul.dropdown-menu
+            li: a(href="#") Set Team Readonly
+            li: a(href="#") Set Team Writable
+            li.divider
+            li: a(href="#") Remove from here
+        //-.btn.btn-default.pull-right(style="margin:5px"): i.fa.fa-chevron-down
+        a.chart-img(ng-attr-href="{{link(chart)}}",style="display:block")
+          .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime|timestamp}})")
+        .chart-desc
+          a.title(ng-attr-href="{{link(chart)}}")
+            //-.pull-right.grayed #[i.fa.fa-dot-circle-o] 5
+            span {{chart.name}}
+            .label.label-success.pull-right(ng-show="chart.searchable && showPub") published
+          .desc {{chart.description || 'check it yourself!'}}
+        .labels
+          a.label(ng-attr-href="/chart/explore/?keyword={{tag}}",ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
+          .flexend
+        .social
+          a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownername}}
+          .favorite(ng-click="like(chart)", ng-class="{'active':user.data && chart.liked}") #[i.fa.fa-heart] {{chart.likes || 0}}
+      .flexend
+      #list-end.text-center: span(ng-cloak,ng-show="paging.end") this is the end :)
+
 
   include /view/module/footer
+  //-
+    .spc1
+    .team-header: .inner
+      .avatar.xxl(style="background-image:url(/s/avatar/" + (team.avatar || 0) + ".jpg")
+      .title #[span= team.name]
+      div: small.grayed the team
+      if team.description
+        .desc= team.description
+      else
+        .desc.grayed ( no descriptiont... )
+    #root.narrow(ng-controller="teamBase"): div(ng-controller="teamEdit")
+      +cover-modal("teamPanel.create.toggled","teamPanel.create.toggle()")
+        include /team/widget/update.jade
+      .text-center(style="margin-top:-55px")
+        if userPermission[1] == "admin"
+          .btn.btn-default(ng-click="teamPanel.create.toggle()") #[i.fa.fa-pencil] Edit
+      br
+      br
+      .text-center
+        label members
+        br
+        br
+        a.team-member(ng-attr-href="/user/{{team.owner}}",ng-cloak)
+          .avatar.xl.owner(ng-attr-style="background-image:url(/s/avatar/{{team.owneravatar || 0}}.jpg)")
+          span {{team.ownername}}
+        a.team-member(ng-repeat="member in members",ng-attr-href="/user/{{member.key}}",ng-cloak)
+          .avatar.xl(ng-attr-style="background-image:url(/s/avatar/{{user.avatar || 0}}.jpg)")
+            if userPermission[1] == "admin"
+              .closebtn(ng-click="removeMember(" + team.key + ",member.key);$event.preventDefault()")
+          span {{member.displayname}}
+        .team-member(ng-cloak,ng-show="members.length == 0")
+          .avatar.xl.empty
+          small.grayed add more users
+        br
+        br
+        if userPermission[0] >= 5
+          .text-left(style="width:600px;margin:auto")
+            label Add members
+            .input-group.long
+              +selectbox("newMembers","user")
+              //-div: select.form-control(multiple="multiple",ngselect4,ng-data="newMembers",type="user")
+              .input-group-btn
+                .btn.btn-default(ng-click="addMembers("+team.key+")") #[i.fa.fa-plus] add
+        br
+        br
+        .sep.gap
+        br
+        br
+        label works
+        br
+        br
+
+        a.team-chart(ng-repeat="chart in charts",ng-attr-href="/chart/{{chart.key}}",ng-cloak)
+          if userPermission[1] == "admin"
+            .closebtn(ng-click="removeChart(" + team.key + ",chart.key);$event.preventDefault()",
+            style="margin:-2px 4px 0 0")
+          .avatar.xl(ng-attr-style="background-image:url(/s/chart/{{chart.key}}.png)")
+          span {{chart.name}}
+
+        .team-chart(ng-cloak,ng-show="charts.length==0")
+          .avatar.xl.empty
+          small.grayed no charts...
+        br
+        br
+        br
+        if userPermission[0] >= 5
+          .text-left(style="width:600px;margin:auto")
+            label Add charts
+            .input-group.long
+              +selectbox("newCharts",type="chart")
+              //-div: select.form-control.input-sm(multiple="multiple",ngselect4,ng-data="newCharts",type="chart")
+              .input-group-btn
+                .btn.btn-default(ng-click="addCharts("+team.key+")") #[i.fa.fa-plus] add
+
+    include /view/module/footer
