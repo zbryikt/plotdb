@@ -6405,7 +6405,9 @@ $(document).ready(function(){
           chart.local = local;
         }
         if (chart.sample) {
-          window.sampleData = plotdb.chart.getSampleData(chart, dimension);
+          if (!window.sampleData) {
+            window.sampleData = plotdb.chart.getSampleData(chart, data && data.length ? JSON.parse(JSON.stringify(dimension)) : dimension);
+          }
           if (!data || !data.length) {
             data = window.sampleData;
           }

@@ -216,7 +216,13 @@ render = (payload, rebind = true) ->
       chart = module.exports
       if !chart.local => chart.local = local
       if chart.sample =>
-        window.sample-data = plotdb.chart.get-sample-data chart, dimension
+        if !window.sample-data =>
+          window.sample-data = plotdb.chart.get-sample-data(
+            chart,
+            # get-sample-data will update dimension fieldName
+            # so we pass real dimension only if there is no user data
+            if data and data.length => JSON.parse(JSON.stringify(dimension)) else dimension
+          )
         if (!data or !data.length) => data := window.sample-data
       config-preset config
       for k,v of (config or {}) =>
