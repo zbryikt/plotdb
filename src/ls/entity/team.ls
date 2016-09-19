@@ -54,7 +54,10 @@ angular.module \plotDB
       .error (d) ->
         plNotify.send \error, "failed to remove chart, try again later?"
 
-    $scope.remove-member = (tid, mid) ->
+    $scope.remove-member = (tid, owner, mid) ->
+      if mid == owner =>
+        plNotify.send \error, "can't remove owner"
+        return
       $http do
         url: "/d/team/#tid/member/#mid"
         method: \DELETE
@@ -164,7 +167,7 @@ angular.module \plotDB
                 ), 1000
           .catch (err) ->
             $scope.$apply ->
-              plNotify.send \warning, "team created, but... "
+              plNotify.send \warning, "team #{if is-update => \updated else \created}, but... "
               plNotify.send \danger, err
               $scope.redirect 2000
       .error (d) ->

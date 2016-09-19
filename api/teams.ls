@@ -174,6 +174,7 @@ engine.router.api.post \/team/, (req, res) ->
       members := req.body.[]members
       if !Array.isArray(members) => members := []
       members := members.filter(-> typeof(it) == \number)
+      if members.indexOf(req.user.key) < 0 => members.push req.user.key
       team := team <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
       ret = teamtype.lint team
       if ret.0 => return aux.reject 400, ret
@@ -202,19 +203,20 @@ team-permission = (req, res, level = \admin, fetch-all = false) ->
       if !perm.test(req, team.{}permission, team.owner, \admin) => return aux.reject 403
       bluebird.resolve team
 
-engine.router.api.post(\/team/:tid/avatar,
-  engine.multi.parser, throttle.limit edit-limit, aux.numid false,
+engine.router.api.post(\/team/:tid/avatar/,
+  engine.multi.parser, throttle.limit edit-limit, aux.numids false <[tid]>,
   (req, res) ->
     avatar-key = null
     team-permission req, res, \admin
-      .then (team) -> avatar.upload(\team, +req.params.id)(req, res)
+      .then (team) -> avatar.upload(\team, +req.params.tid)(req, res)
       .then ->
         avatar-key := it
         io.query(
           "update teams set (avatar,modifiedtime) = ($2,$3) where key = $1",
-          [req.params.id, avatar-key, new Date!]
+          [+req.params.tid, avatar-key, new Date!]
         )
-      .then -> res.send {avatar: avatar-key}
+      .then ->
+        res.send {avatar: avatar-key}
       .catch aux.error-handler res
 )
 
@@ -295,7 +297,9 @@ engine.router.api.post \/team/:tid/member/:mid, aux.numids false, <[tid mid]>, (
 
 engine.router.api.delete \/team/:tid/member/:mid, aux.numids false, <[tid mid]>, (req, res) ->
   team-permission req, res
-    .then -> io.query "delete from teammembers where team=$1 and member=$2", [req.params.tid, req.params.mid]
+    .then (team = {})->
+      if team.owner == +req.params.mid => return aux.reject 400, "can't remove owner"
+      io.query "delete from teammembers where team=$1 and member=$2", [req.params.tid, req.params.mid]
     .then -> update-user-teams req, res, req.params.mid
     .then -> res.send!
     .catch aux.error-handler res

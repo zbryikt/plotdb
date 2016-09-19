@@ -10945,7 +10945,11 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
       return plNotify.send('error', "failed to remove chart, try again later?");
     });
   };
-  $scope.removeMember = function(tid, mid){
+  $scope.removeMember = function(tid, owner, mid){
+    if (mid === owner) {
+      plNotify.send('error', "can't remove owner");
+      return;
+    }
     return $http({
       url: "/d/team/" + tid + "/member/" + mid,
       method: 'DELETE'
@@ -11147,7 +11151,7 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
         });
       })['catch'](function(err){
         return $scope.$apply(function(){
-          plNotify.send('warning', "team created, but... ");
+          plNotify.send('warning', "team " + (isUpdate ? 'updated' : 'created') + ", but... ");
           plNotify.send('danger', err);
           return $scope.redirect(2000);
         });

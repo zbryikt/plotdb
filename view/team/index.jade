@@ -35,7 +35,7 @@ block body
           .container-fluid
             div
               ul.nav.navbar-nav
-                li(ng-class="{'active':teamtab=='member'}",ng-click="teamtab='member'"): a(href="#") Members #[small.grayed ({{(members.length || 0) + 1}})]
+                li(ng-class="{'active':teamtab=='member'}",ng-click="teamtab='member'"): a(href="#") Members #[small.grayed ({{(members.length || 0)}})]
                 li(ng-class="{'active':teamtab=='chart'}",ng-click="teamtab='chart'"): a(href="#") Charts #[small.grayed ({{charts.length || 0}})]
                 //-li(ng-class="{'active':teamtab=='dataset'}",ng-click="teamtab='dataset'"): a(href="#") Datasets #[small.grayed ({{datasets.length || 0}})]
                 //-li(ng-class="{'active':teamtab=='theme'}",ng-click="teamtab='theme'"): a(href="#") Themes #[small.grayed ({{themes.length || 0}})]
@@ -63,13 +63,14 @@ block body
                 .btn.btn-default(ng-click="addMembers("+team.key+")") #[i.fa.fa-plus] add
           .sep.gap
         .text-center
-          a.team-member(ng-attr-href="/user/{{team.owner}}",ng-cloak)
+          //-a.team-member(ng-attr-href="/user/{{team.owner}}",ng-cloak)
             .avatar.xl.owner(ng-attr-style="background-image:url(/s/avatar/{{team.owneravatar || 0}}.jpg)")
             span {{team.ownername}}
           a.team-member(ng-repeat="member in members",ng-attr-href="/user/{{member.key}}",ng-cloak)
-            .avatar.xl(ng-attr-style="background-image:url(/s/avatar/{{user.avatar || 0}}.jpg)")
+            .avatar.xl(ng-attr-style="background-image:url(/s/avatar/{{member.avatar || 0}}.jpg);box-shadow:0 1px 3px rgba(0,0,0,0.3)",
+            class="{'owner':member.key == "+team.owner+"}")
               if userPermission[1] == "admin"
-                .closebtn(ng-click="removeMember(" + team.key + ",member.key);$event.preventDefault()")
+                .closebtn(ng-hide="member.key==" + team.owner, ng-click="removeMember(" + team.key + "," + team.owner +",member.key);$event.preventDefault()")
             span {{member.displayname}}
           .team-member(ng-cloak,ng-show="members.length == 0")
             .avatar.xl.empty
