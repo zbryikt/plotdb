@@ -10,11 +10,15 @@ block body
     .title Teams
     .desc Let's check how's others doing.
   #root.narrow(ng-controller="teamBase"): div(ng-controller="teamList")
-    .team-ctrl-panel.text-right
-      .btn.btn-success(ng-click="teamPanel.create.toggle()") #[i.fa.fa-plus] Create Team
+    .team-ctrl-panel.text-right(ng-cloak)
+      .btn.btn-success(ng-show="user.data.payment.plan==2 || (plConfig.mode % 2)",
+      ng-click="teamPanel.create.toggle()") #[i.fa.fa-plus] Create Team
+      a.btn.btn-primary(ng-show="user.data.payment.plan<2 && !(plConfig.mode %2)",
+      href="/pricing/") Upgrade to Create Team
     .cover-modal(ng-cloak,ng-show="teamPanel.create.toggled")
     .cover-modal-inner(ng-cloak,ng-show="teamPanel.create.toggled",ng-controller="teamEdit")
       include widget/create.jade
+    br
     br
     .team-list
       .team-item(ng-repeat="team in teams",ng-cloak)

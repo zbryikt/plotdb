@@ -1171,12 +1171,23 @@ plotdb.config = {
     'default': '#aaa',
     category: "Color"
   },
+  gridShow: {
+    name: "Show Grid",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Grid"
+  },
   gridStroke: {
-    name: "Grid Stroke Color",
+    name: "Color",
     type: [plotdb.Color],
-    desc: "Stroke color for Grid Lines",
     'default': '#ccc',
-    category: "Color"
+    category: "Grid"
+  },
+  gridStrokeWidth: {
+    name: "Stroke Width",
+    type: [plotdb.Number],
+    'default': 1,
+    category: "Grid"
   },
   padding: {
     name: "Padding",

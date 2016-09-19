@@ -162,12 +162,23 @@ plotdb.config = do
     default: \#aaa
     category: "Color"
 
+  gridShow: do
+    name: "Show Grid"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Grid"
+
   gridStroke: do
-    name: "Grid Stroke Color"
+    name: "Color"
     type: [plotdb.Color]
-    desc: "Stroke color for Grid Lines"
     default: \#ccc
-    category: "Color"
+    category: "Grid"
+
+  gridStrokeWidth: do
+    name: "Stroke Width"
+    type: [plotdb.Number]
+    default: 1
+    category: "Grid"
 
   # Layout Configuration
   padding: do

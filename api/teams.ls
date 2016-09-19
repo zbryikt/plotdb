@@ -171,6 +171,8 @@ engine.router.api.post \/team/, (req, res) ->
       if typeof(req.body) != \object => return aux.reject 400
       team := req.body.team
       if !team => return aux.reject 400
+      plan = req.user.{}payment.plan or 0
+      if plan < 2 and !(engine.config.mode % 2) => return aux.reject 402
       members := req.body.[]members
       if !Array.isArray(members) => members := []
       members := members.filter(-> typeof(it) == \number)
