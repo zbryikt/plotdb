@@ -40,21 +40,24 @@ plotd3.html.tooltip = function(root, sel, cb){
       var pbox, left;
       pbox = popup[0][0].getBoundingClientRect();
       popup.style({
-        top: (box.top + box.height / 2 - pbox.height / 2) + "px",
+        top: (box.top + box.height / 2 - pbox.height / 2 - rbox.top) + "px",
         opacity: 1
       });
       left = isLeft
-        ? box.left - pbox.width - 10
-        : box.left + box.width + 10;
+        ? box.left - pbox.width - 10 - rbox.left
+        : box.left + box.width + 10 - rbox.left;
       if (left < 3) {
         left = 3;
       }
-      if (left + pbox.width >= rbox.width - 3) {
-        left = rbox.width - pbox.width - 3;
+      if (isLeft) {
+        return popup.style({
+          left: (box.left - pbox.width - 10 - rbox.left) + "px"
+        });
+      } else {
+        return popup.style({
+          left: (box.left + box.width + 10 - rbox.left) + "px"
+        });
       }
-      return popup.style({
-        left: left + "px"
-      });
     };
     if (popup.style("display") !== 'block') {
       popup.style({
@@ -175,6 +178,7 @@ plotd3.html.popup = function(root, sel, cb, store){
     pbox = popup[0][0].getBoundingClientRect();
     rbox = root.getBoundingClientRect();
     x = x - pbox.width / 2 - rbox.left;
+    y = y + 20 - rbox.top;
     if (y > rbox.height - pbox.height - 50) {
       y = y - pbox.height - 40;
     }
