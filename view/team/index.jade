@@ -125,11 +125,12 @@ block body
             .dropdown.pull-right(style="margin:5px")
               .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown"): i.fa.fa-chevron-down
               ul.dropdown-menu
-                li: a(href="#") Set Team Readonly
-                li: a(href="#") Set Team Writable
-                li.divider
+                //-
+                  li: a(href="#") Set Team Readonly
+                  li: a(href="#") Set Team Writable
+                  li.divider
                 li: a(ng-click="removeChart(" + team.key + ",chart.key);$event.preventDefault()",
-                href="#") Remove from here
+                href="#") Remove from team
           a.chart-img(ng-attr-href="{{link.chart(chart)}}",style="display:block")
             .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime|timestamp}})")
           .chart-desc
