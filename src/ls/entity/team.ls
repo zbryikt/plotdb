@@ -69,11 +69,10 @@ angular.module \plotDB
     $scope.add-charts = (tid) ->
       if !$scope.user.data => return plNotify.send \error, "permission denied"
       if !$scope.newCharts or !$scope.newCharts.length => return
-      $scope.newCharts.filter -> it.owner != $scope.user.data.key
       $http do
         url: "/d/team/#tid/chart/"
         method: \post
-        data: $scope.newCharts.map -> it.key
+        data: $scope.newCharts.filter(->it.owner == $scope.user.data.key).map -> it.key
       .success (d) ->
         $scope.charts ++= $scope.newCharts.filter(->$scope.charts.indexOf(it.key)<0)
         plNotify.send \success, "charts added"

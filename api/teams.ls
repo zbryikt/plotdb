@@ -127,13 +127,40 @@ batch-add-members = (req, res, tid, uids) ->
     .then -> bluebird.all [update-user-teams req, res, uid for uid in uids]
 
 
-batch-add-charts = (tid,cids) ->
+batch-add-charts = (req, res, tid, cids) ->
   if !Array.isArray(cids) or cids.length == 0 => return bluebird.resolve!
-  io.query([
-    "insert into teamcharts (team,chart) values"
-    ["($1,$#i)" for i from 2 to cids.length + 1].join(",")
-    "on conflict do nothing"
-  ].join(" "), [tid] ++ cids)
+  promises = [
+    io.query([
+      "insert into teamcharts (team,chart) values"
+      ["($1,$#i)" for i from 2 to cids.length + 1].join(",")
+      "on conflict do nothing"
+    ].join(" "), [tid] ++ cids),
+    io.query([
+      "select key,permission,owner from charts where key in ("
+      ["$#{i + 1}" for i from 0 til cids.length].join(\,)
+      ")"
+    ].join(" "), cids)
+      .then (r={})->
+        charts = r.[]rows.filter -> req.user and req.user.key == it.owner
+        params = []
+        charts.forEach (c) ->
+          item = c.permission.list.filter(-> it.type == \team and it.target = tid).0
+          if !item =>
+            item = {perm: \write, type: \team, target: tid}
+            c.{}permission.[]list.push item
+          item.perm = \write
+          params.push c.key
+          params.push c.permission
+        io.query(
+          [
+            "update charts set permission = c.permission::jsonb from (values"
+            ["($#{i*2 + 1},$#{i*2 + 2})" for i from 0 til params.length/2].join(\,)
+            ") as c(key,permission)"
+            "where c.key::integer = charts.key"
+          ].join(" "),
+          params
+        )
+  ]
 
 #TODO check user plan
 engine.router.api.post \/team/, (req, res) ->
@@ -256,7 +283,7 @@ engine.router.api.post \/team/:tid/chart/, aux.numids false, <[tid]>, (req, res)
     .then ->
       if !Array.isArray(req.body) => return aux.reject 400
       charts = req.body.map(->+it).filter(->it and !isNaN(it))
-      batch-add-charts req.params.tid, charts
+      batch-add-charts req, res, req.params.tid, charts
     .then -> res.send!
     .catch aux.error-handler res
 
@@ -275,7 +302,7 @@ engine.router.api.delete \/team/:tid/member/:mid, aux.numids false, <[tid mid]>,
 
 engine.router.api.post \/team/:tid/chart/:cid, aux.numids false, <[tid cid]>, (req, res) ->
   team-permission req, res, \write
-    .then -> batch-add-charts req.params.tid, [req.params.cid]
+    .then -> batch-add-charts req, res, req.params.tid, [req.params.cid]
     .then -> res.send!
     .catch aux.error-handler res
 

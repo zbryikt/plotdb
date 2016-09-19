@@ -44,7 +44,7 @@ search = (default-type=0) -> (req, res) ->
       if flags.chart and clen < limit =>
         params.1 = limit - clen
         return io.query([
-          "select charts.key,charts.name as displayname,users.displayname as ownername,charts.owner"
+          "select charts.key,charts.name as displayname,users.displayname as ownername,charts.owner,charts.description"
           "from charts,users where charts.owner = users.key"
           "and charts.name ~* $3" if keyword
           "and charts.owner = $#{if keyword=> 4 else 3}" if scope = \owner

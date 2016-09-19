@@ -134,7 +134,7 @@ block body
             .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime|timestamp}})")
           .chart-desc
             a.title(ng-attr-href="{{link.chart(chart)}}")
-              span {{chart.name}}
+              span {{chart.name || chart.displayname}}
               .label.label-success.pull-right(ng-show="chart.published=='publish'") published
             .desc {{chart.description || 'check it yourself!'}}
           .labels

@@ -103,13 +103,12 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
     if (!$scope.newCharts || !$scope.newCharts.length) {
       return;
     }
-    $scope.newCharts.filter(function(it){
-      return it.owner !== $scope.user.data.key;
-    });
     return $http({
       url: "/d/team/" + tid + "/chart/",
       method: 'post',
-      data: $scope.newCharts.map(function(it){
+      data: $scope.newCharts.filter(function(it){
+        return it.owner === $scope.user.data.key;
+      }).map(function(it){
         return it.key;
       })
     }).success(function(d){
