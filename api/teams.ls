@@ -62,11 +62,13 @@ get-team = (req, res) ->
           [
             'charts.key as key'
             'charts.name as name'
+            'charts.owner as owner'
+            'users.displayname as ownername'
             'charts.description as description'
             'charts.tags as tags'
           ].join(',')
-          'from teamcharts,charts'
-          'where teamcharts.team=$1 and teamcharts.chart=charts.key'
+          'from teamcharts,charts,users'
+          'where teamcharts.team=$1 and teamcharts.chart=charts.key and users.key=charts.owner'
         ].join(" "),[req.params.id])
           .then (r={}) ->
             payload.charts = r.[]rows
