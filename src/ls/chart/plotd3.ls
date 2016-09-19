@@ -88,7 +88,7 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
     pbox = popup.0.0.getBoundingClientRect!
     rbox = root.getBoundingClientRect!
     x = x - pbox.width / 2 - rbox.left
-    y = y + 20 - rbox.top
+    y = y + 30 - rbox.top
     if y > rbox.height - pbox.height - 50 => y = y - pbox.height - 40
     if x < 10 => x = 10
     if x > + rbox.width - pbox.width - 10 => x = rbox.width - pbox.width - 10
