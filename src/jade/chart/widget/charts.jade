@@ -8,7 +8,7 @@
       a.title(ng-attr-href="{{link(chart)}}")
         //-.pull-right.grayed #[i.fa.fa-dot-circle-o] 5
         span {{chart.name}}
-        .label.label-success.pull-right(ng-show="chart.searchable && showPub") published
+        .label.label-success.pull-right(ng-show="chart.published=='publish' && showPub") published
       .desc {{chart.description || 'check it yourself!'}}
     .labels
       a.label(ng-attr-href="/chart/explore/?keyword={{tag}}",ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}

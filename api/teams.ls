@@ -63,7 +63,7 @@ get-team = (req, res) ->
             'charts.key as key'
             'charts.name as name'
             'charts.owner as owner'
-            'charts.searchable as searchable'
+            "charts.permission->'switch' as published"
             'users.displayname as ownername'
             'charts.description as description'
             'charts.tags as tags'

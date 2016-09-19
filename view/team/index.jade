@@ -35,10 +35,10 @@ block body
           .container-fluid
             div
               ul.nav.navbar-nav
-                li(ng-class="{'active':teamtab=='member'}",ng-click="teamtab='member'"): a(href="#") Members #[small.grayed ({{members.length || 0}})]
+                li(ng-class="{'active':teamtab=='member'}",ng-click="teamtab='member'"): a(href="#") Members #[small.grayed ({{(members.length || 0) + 1}})]
                 li(ng-class="{'active':teamtab=='chart'}",ng-click="teamtab='chart'"): a(href="#") Charts #[small.grayed ({{charts.length || 0}})]
-                li(ng-class="{'active':teamtab=='dataset'}",ng-click="teamtab='dataset'"): a(href="#") Datasets #[small.grayed ({{datasets.length || 0}})]
-                li(ng-class="{'active':teamtab=='theme'}",ng-click="teamtab='theme'"): a(href="#") Themes #[small.grayed ({{themes.length || 0}})]
+                //-li(ng-class="{'active':teamtab=='dataset'}",ng-click="teamtab='dataset'"): a(href="#") Datasets #[small.grayed ({{datasets.length || 0}})]
+                //-li(ng-class="{'active':teamtab=='theme'}",ng-click="teamtab='theme'"): a(href="#") Themes #[small.grayed ({{themes.length || 0}})]
               //- add back once we have time to implement keyword search in team
               //-form.navbar-form.navbar-right
                 .form-group
@@ -52,7 +52,16 @@ block body
                     .input-group-btn(ng-click="loadList()")
                       .btn.btn-default #[i.fa.fa-search]
 
-      .members(ng-cloak,ng-show="teamtab=='member'")
+      .members(ng-cloak,ng-show="teamtab=='member'",style="min-height:300px")
+        if userPermission[0] >= 5
+          .text-left(style="width:600px;margin:auto")
+            label Add members
+            .input-group.long
+              +selectbox("newMembers","user")
+              //-div: select.form-control(multiple="multiple",ngselect4,ng-data="newMembers",type="user")
+              .input-group-btn
+                .btn.btn-default(ng-click="addMembers("+team.key+")") #[i.fa.fa-plus] add
+          .sep.gap
         .text-center
           a.team-member(ng-attr-href="/user/{{team.owner}}",ng-cloak)
             .avatar.xl.owner(ng-attr-style="background-image:url(/s/avatar/{{team.owneravatar || 0}}.jpg)")
@@ -126,7 +135,7 @@ block body
           .chart-desc
             a.title(ng-attr-href="{{link.chart(chart)}}")
               span {{chart.name}}
-              .label.label-success.pull-right(ng-show="chart.searchable") published
+              .label.label-success.pull-right(ng-show="chart.published=='publish'") published
             .desc {{chart.description || 'check it yourself!'}}
           .labels
             a.label(ng-attr-href="/chart/explore/?keyword={{tag}}",ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}

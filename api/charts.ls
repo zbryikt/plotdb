@@ -51,7 +51,7 @@ engine.router.api.get "/chart/", (req, res) ->
   io.query([
     "select users.displayname as ownername,"
     "charts.key, charts.name, charts.description, charts.basetype, charts.visualencoding, charts.category,"
-    " charts.tags, charts.likes, charts.searchable, charts.dimlen, charts.createdtime, charts.modifiedtime"
+    " charts.tags, charts.likes, charts->'switch' as published, charts.dimlen, charts.createdtime, charts.modifiedtime"
     "from charts,users" + (if fav => ",likes" else "")
     "where users.key = charts.owner and"
     (conditions.map(->it.0) ++ [
