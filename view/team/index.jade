@@ -121,14 +121,12 @@ block body
                 li.divider
                 li: a(ng-click="removeChart(" + team.key + ",chart.key);$event.preventDefault()",
                 href="#") Remove from here
-          //-.btn.btn-default.pull-right(style="margin:5px"): i.fa.fa-chevron-down
           a.chart-img(ng-attr-href="{{link.chart(chart)}}",style="display:block")
             .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime|timestamp}})")
           .chart-desc
             a.title(ng-attr-href="{{link.chart(chart)}}")
-              //-.pull-right.grayed #[i.fa.fa-dot-circle-o] 5
               span {{chart.name}}
-              .label.label-success.pull-right(ng-show="chart.searchable && showPub") published
+              .label.label-success.pull-right(ng-show="chart.searchable") published
             .desc {{chart.description || 'check it yourself!'}}
           .labels
             a.label(ng-attr-href="/chart/explore/?keyword={{tag}}",ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}
