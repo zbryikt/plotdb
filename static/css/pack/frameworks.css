@@ -5867,6 +5867,7 @@ span.select2-container--default .select2-selection--multiple {
 }
 .select-box .select-dropdown .select-option .avatar + .name {
   display: inline-block;
+  line-height: 16px;
 }
 .select-box .select-dropdown .select-option.active {
   background: #8cc63f;

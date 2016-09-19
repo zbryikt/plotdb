@@ -32,7 +32,7 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
   $scope.newMembers = [];
   $scope.charts = window.charts || [];
   $scope.newCharts = [];
-  $scope.tab = 'chart';
+  $scope.teamtab = 'chart';
   $scope.link = {
     chart: function(it){
       return chartService.link(it);
@@ -97,9 +97,15 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
     });
   };
   $scope.addCharts = function(tid){
+    if (!$scope.user.data) {
+      return plNotify.send('error', "permission denied");
+    }
     if (!$scope.newCharts || !$scope.newCharts.length) {
       return;
     }
+    $scope.newCharts.filter(function(it){
+      return it.owner !== $scope.user.data.key;
+    });
     return $http({
       url: "/d/team/" + tid + "/chart/",
       method: 'post',
@@ -282,7 +288,7 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
       });
     }).error(function(d){
       eventBus.fire('loading.dimmer.off');
-      return plNotify.send('error', "failed creating team. try again later?");
+      return plNotify.send('error', "failed " + (isUpdate ? 'updating' : 'creating') + " team. try again later?");
     });
   };
 }));

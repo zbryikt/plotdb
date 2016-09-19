@@ -8,7 +8,7 @@ angular.module \plotDB
           placeholder: "search by chart name or id ..."
           ajax: do
             url: \/d/entity/?type=4
-            param: (keyword, limit, offset) -> {simple: true, keyword, limit, offset}
+            param: (keyword, limit, offset, scope) -> {simple: true, keyword, limit, offset, scope}
         entity-chart: do
           placeholder: "search by user, chart, team name or email address..."
           ajax: do

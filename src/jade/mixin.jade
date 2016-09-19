@@ -8,9 +8,9 @@ mixin cover-modal(condition,toggle,className)
   .cover-modal-inner.ng-hide-animate.ng-hide(ng-cloak,ng-show=condition,class=className)
     block
 
-mixin selectbox(data,type)
-  div(ng-controller="plSelectController",ng-init="init("+data+",'"+type+"')")
-    .select-box(plselect,ng-portal="portal",ng-cloak,ng-type=type)
+mixin selectbox(data,type,scope)
+  div(ng-controller="plSelectController",ng-init="init("+data+",'"+type+"',"+scope+")")
+    .select-box(plselect,ng-portal="portal",ng-cloak,ng-type=type,ng-scope=scope)
       .select-input.form-control
         .select-option(ng-repeat="item in portal.data")
           i.fa.fa-close(ng-click="remove(item,$event)")
@@ -21,8 +21,6 @@ mixin selectbox(data,type)
               .avatar(ng-attr-style="background-image:url(/s/chart/{{item.key}}.png)")
               .name
                 span {{item.displayname}}
-                //-br
-                   small.grayed ({{item.key}}) by {{item.ownername}}
             span(ng-if="item.type!='chart'")
               .avatar(ng-attr-style="background-image:url(/s/avatar/{{item.avatar || 0}}.jpg)")
               .name {{item.displayname}} #[small.grayed (id:{{item.key}})]
@@ -34,12 +32,10 @@ mixin selectbox(data,type)
           if block
             block
           else
-
             span(ng-if="opt.type=='chart'")
               .avatar(ng-attr-style="background-image:url(/s/chart/{{opt.key}}.png);vertical-align:top")
               .name
-                span {{opt.displayname}}
-                br
+                div {{opt.displayname}}
                 small.grayed ({{opt.key}}) by {{opt.ownername}}
             span(ng-if="opt.type!='chart'")
               .avatar(ng-attr-style="background-image:url(/s/avatar/{{opt.avatar || 0}}.jpg)")

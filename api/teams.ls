@@ -196,7 +196,7 @@ engine.router.api.put \/team/:tid, (req, res) ->
   if !req.user => return aux.r403 res
   #io.query "select * from teams where key = $1", [id]
   #  .then (r = {}) ->
-  team-permission req, res, \admin, all
+  team-permission req, res, \admin, true
     .then (team) ->
       #team = r.[]rows.0
       #if !team => return aux.reject 404

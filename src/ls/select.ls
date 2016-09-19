@@ -1,9 +1,10 @@
 angular.module \plotDB
   ..controller \plSelectController, <[$scope]> ++ ($scope) ->
     $scope.portal = {data: [], options: []}
-    $scope.init = (data, type) ->
+    $scope.init = (data, type, scope) ->
       $scope.portal.data = data
       $scope.type = type
+      $scope.scope = scope
     $scope.get-idx = (item)->
       idx = $scope.portal.data.indexOf(item)
       return if idx < 0 =>
@@ -31,6 +32,7 @@ angular.module \plotDB
     scope: do
       portal: \=ngPortal
       type: \@ngType
+      scope: \@ngScope
     link: (s,e,a,c) ->
       dropdown-close-on-click = true
       auto-hide-input = false # set to true to prevent strange ui when input = one line height
@@ -56,7 +58,7 @@ angular.module \plotDB
           $http do
             url: config.ajax.url
             method: \GET
-            params: config.ajax.param keyword, paging.limit, paging.offset
+            params: config.ajax.param keyword, paging.limit, paging.offset, s.scope
           .success (d) ->
             if !d or d.length ==0 => s.portal.end = true
             if paging.offset == 0 => s.portal.options = d

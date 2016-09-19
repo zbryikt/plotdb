@@ -10899,7 +10899,7 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
   $scope.newMembers = [];
   $scope.charts = window.charts || [];
   $scope.newCharts = [];
-  $scope.tab = 'chart';
+  $scope.teamtab = 'chart';
   $scope.link = {
     chart: function(it){
       return chartService.link(it);
@@ -10964,9 +10964,15 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
     });
   };
   $scope.addCharts = function(tid){
+    if (!$scope.user.data) {
+      return plNotify.send('error', "permission denied");
+    }
     if (!$scope.newCharts || !$scope.newCharts.length) {
       return;
     }
+    $scope.newCharts.filter(function(it){
+      return it.owner !== $scope.user.data.key;
+    });
     return $http({
       url: "/d/team/" + tid + "/chart/",
       method: 'post',
@@ -11149,7 +11155,7 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
       });
     }).error(function(d){
       eventBus.fire('loading.dimmer.off');
-      return plNotify.send('error', "failed creating team. try again later?");
+      return plNotify.send('error', "failed " + (isUpdate ? 'updating' : 'creating') + " team. try again later?");
     });
   };
 }));
@@ -11228,12 +11234,13 @@ x$.service('entityService', ['$rootScope', '$http', 'plConfig', 'IOService', 'ba
           placeholder: "search by chart name or id ...",
           ajax: {
             url: '/d/entity/?type=4',
-            param: function(keyword, limit, offset){
+            param: function(keyword, limit, offset, scope){
               return {
                 simple: true,
                 keyword: keyword,
                 limit: limit,
-                offset: offset
+                offset: offset,
+                scope: scope
               };
             }
           }
@@ -11934,9 +11941,10 @@ x$.controller('plSelectController', ['$scope'].concat(function($scope){
     data: [],
     options: []
   };
-  $scope.init = function(data, type){
+  $scope.init = function(data, type, scope){
     $scope.portal.data = data;
-    return $scope.type = type;
+    $scope.type = type;
+    return $scope.scope = scope;
   };
   $scope.getIdx = function(item){
     var idx, ret;
@@ -11981,7 +11989,8 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
     restrict: 'A',
     scope: {
       portal: '=ngPortal',
-      type: '@ngType'
+      type: '@ngType',
+      scope: '@ngScope'
     },
     link: function(s, e, a, c){
       var dropdownCloseOnClick, autoHideInput, config, dropdown, input, paging, idmap, sync, fetch, repos, close;
@@ -12028,7 +12037,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
           return $http({
             url: config.ajax.url,
             method: 'GET',
-            params: config.ajax.param(keyword, paging.limit, paging.offset)
+            params: config.ajax.param(keyword, paging.limit, paging.offset, s.scope)
           }).success(function(d){
             if (!d || d.length === 0) {
               s.portal.end = true;

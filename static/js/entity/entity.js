@@ -10,12 +10,13 @@ x$.service('entityService', ['$rootScope', '$http', 'plConfig', 'IOService', 'ba
           placeholder: "search by chart name or id ...",
           ajax: {
             url: '/d/entity/?type=4',
-            param: function(keyword, limit, offset){
+            param: function(keyword, limit, offset, scope){
               return {
                 simple: true,
                 keyword: keyword,
                 limit: limit,
-                offset: offset
+                offset: offset,
+                scope: scope
               };
             }
           }

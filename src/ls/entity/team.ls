@@ -22,7 +22,7 @@ angular.module \plotDB
     $scope.newMembers = []
     $scope.charts = window.charts or []
     $scope.newCharts = []
-    $scope.tab = \chart
+    $scope.teamtab = \chart
     $scope.link = do
       chart: -> chart-service.link it
 
@@ -67,7 +67,9 @@ angular.module \plotDB
         plNotify.send \error, "failed to remove member, try again later?"
 
     $scope.add-charts = (tid) ->
+      if !$scope.user.data => return plNotify.send \error, "permission denied"
       if !$scope.newCharts or !$scope.newCharts.length => return
+      $scope.newCharts.filter -> it.owner != $scope.user.data.key
       $http do
         url: "/d/team/#tid/chart/"
         method: \post
@@ -168,7 +170,7 @@ angular.module \plotDB
               $scope.redirect 2000
       .error (d) ->
         eventBus.fire 'loading.dimmer.off'
-        plNotify.send \error, "failed creating team. try again later?"
+        plNotify.send \error, "failed #{if is-update => \updating else \creating} team. try again later?"
   ..controller \teamList,
   <[$scope IOService teamService Paging plNotify eventBus]> ++
   ($scope, IOService, team-service, Paging, plNotify, eventBus) ->

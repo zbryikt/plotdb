@@ -6,9 +6,10 @@ x$.controller('plSelectController', ['$scope'].concat(function($scope){
     data: [],
     options: []
   };
-  $scope.init = function(data, type){
+  $scope.init = function(data, type, scope){
     $scope.portal.data = data;
-    return $scope.type = type;
+    $scope.type = type;
+    return $scope.scope = scope;
   };
   $scope.getIdx = function(item){
     var idx, ret;
@@ -53,7 +54,8 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
     restrict: 'A',
     scope: {
       portal: '=ngPortal',
-      type: '@ngType'
+      type: '@ngType',
+      scope: '@ngScope'
     },
     link: function(s, e, a, c){
       var dropdownCloseOnClick, autoHideInput, config, dropdown, input, paging, idmap, sync, fetch, repos, close;
@@ -100,7 +102,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
           return $http({
             url: config.ajax.url,
             method: 'GET',
-            params: config.ajax.param(keyword, paging.limit, paging.offset)
+            params: config.ajax.param(keyword, paging.limit, paging.offset, s.scope)
           }).success(function(d){
             if (!d || d.length === 0) {
               s.portal.end = true;
