@@ -1111,10 +1111,10 @@ plotdb.config = {
     category: "Global Settings"
   },
   fill: {
-    name: "Default Fill Color",
+    name: "Fill",
     type: [plotdb.Color],
     'default': '#e03f0e',
-    category: "Color"
+    category: "Global Settings"
   },
   fillOpacity: {
     name: "Fill Opacity",
@@ -1123,11 +1123,11 @@ plotdb.config = {
     category: "Global Settings"
   },
   stroke: {
-    name: "Default Stroke Color",
+    name: "Stroke",
     type: [plotdb.Color],
-    desc: "Default color for outline of visual encoding",
+    desc: "Stroke Color",
     'default': '#999',
-    category: "Color"
+    category: "Global Settings"
   },
   geoFill: {
     name: "Geoblock Fill Color",
@@ -1146,14 +1146,14 @@ plotdb.config = {
   hoverFill: {
     name: "Hovering Fill Color",
     type: [plotdb.Color],
-    desc: "Fill color when hovering a visual encoding",
+    desc: "Fill color when hovering element",
     'default': '#aaa',
     category: "Color"
   },
   hoverStroke: {
     name: "Hovering Stroke Color",
     type: [plotdb.Color],
-    desc: "Stroke color when hovering a visual encoding",
+    desc: "Stroke color when hovering element",
     'default': '#fff',
     category: "Color"
   },
@@ -1472,11 +1472,11 @@ plotdb.config = {
     category: "Style"
   },
   strokeWidth: {
-    name: "Default Stroke Width",
+    name: "Stroke Width",
     type: [plotdb.Number],
-    desc: "Default width for stroke of visual encoding",
+    desc: "Default Stroke width",
     'default': '2',
-    category: "Style"
+    category: "Global Settings"
   }
 };
 ['X', 'Y', 'Radial', 'Angular'].forEach(function(n){

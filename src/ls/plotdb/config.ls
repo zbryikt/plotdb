@@ -103,10 +103,11 @@ plotdb.config = do
     category: "Global Settings"
 
   fill: do
-    name: "Default Fill Color"
+    name: "Fill"
     type: [plotdb.Color]
     default: \#e03f0e
-    category: "Color"
+    category: "Global Settings"
+
   fillOpacity: do
     name: "Fill Opacity"
     type: [plotdb.Number]
@@ -114,11 +115,11 @@ plotdb.config = do
     category: "Global Settings"
 
   stroke: do
-    name: "Default Stroke Color"
+    name: "Stroke"
     type: [plotdb.Color]
-    desc: "Default color for outline of visual encoding"
+    desc: "Stroke Color"
     default: \#999
-    category: "Color"
+    category: "Global Settings"
 
   geoFill: do
     name: "Geoblock Fill Color"
@@ -137,14 +138,14 @@ plotdb.config = do
   hoverFill: do
     name: "Hovering Fill Color"
     type: [plotdb.Color]
-    desc: "Fill color when hovering a visual encoding"
+    desc: "Fill color when hovering element"
     default: \#aaa
     category: "Color"
 
   hoverStroke: do
     name: "Hovering Stroke Color"
     type: [plotdb.Color]
-    desc: "Stroke color when hovering a visual encoding"
+    desc: "Stroke color when hovering element"
     default: \#fff
     category: "Color"
 
@@ -468,11 +469,11 @@ plotdb.config = do
     category: "Style"
 
   strokeWidth: do
-    name: "Default Stroke Width"
+    name: "Stroke Width"
     type: [plotdb.Number]
-    desc: "Default width for stroke of visual encoding"
+    desc: "Default Stroke width"
     default: \2
-    category: "Style"
+    category: "Global Settings"
 
 <[X Y Radial Angular]>.forEach (n) ->
   p = "#{n.charAt(0).toLowerCase!}Axis"
