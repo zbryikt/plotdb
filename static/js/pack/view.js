@@ -1056,6 +1056,12 @@ plotdb.config = {
     'default': true,
     category: "Layout"
   },
+  boxRoundness: {
+    name: "Block Roundness",
+    type: [plotdb.Number],
+    'default': 0,
+    category: "Global Settings"
+  },
   palette: {
     name: "Palette",
     type: [plotdb.Palette],
@@ -1195,6 +1201,13 @@ plotdb.config = {
     'default': 1,
     category: "Grid"
   },
+  gridDashArray: {
+    name: "Dash Style",
+    type: [plotdb.String],
+    'default': "2 4",
+    category: "Grid",
+    desc: "SVG style dash array. '2 4' means 2px line and 4px space."
+  },
   padding: {
     name: "Padding",
     type: [plotdb.Number],
@@ -1246,7 +1259,13 @@ plotdb.config = {
     name: "Show Data Label",
     type: [plotdb.Boolean],
     'default': false,
-    category: "Switch"
+    category: "Label"
+  },
+  labelShow: {
+    name: "Show Data Label",
+    type: [plotdb.Boolean],
+    'default': false,
+    category: "Label"
   },
   showNode: {
     name: "Show Data Dot",

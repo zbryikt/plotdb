@@ -55,6 +55,11 @@ plotdb.config = do
     default: true
     category: "Layout"
 
+  boxRoundness: do
+    name: "Block Roundness"
+    type: [plotdb.Number]
+    default: 0
+    category: "Global Settings"
   # Color Configuration
   palette: do
     name: "Palette"
@@ -181,6 +186,13 @@ plotdb.config = do
     default: 1
     category: "Grid"
 
+  gridDashArray: do
+    name: "Dash Style"
+    type: [plotdb.String]
+    default: "2 4"
+    category: "Grid"
+    desc: "SVG style dash array. '2 4' means 2px line and 4px space."
+
   # Layout Configuration
   padding: do
     name: "Padding"
@@ -231,11 +243,17 @@ plotdb.config = do
     default: "Other"
     category: "Text"
 
-  showLabel: do
+  showLabel: do #legacy. backward compatibility
     name: "Show Data Label"
     type: [plotdb.Boolean]
     default: false
-    category: "Switch"
+    category: "Label"
+
+  labelShow: do
+    name: "Show Data Label"
+    type: [plotdb.Boolean]
+    default: false
+    category: "Label"
 
   showNode: do
     name: "Show Data Dot"
