@@ -316,8 +316,8 @@ plotdb.config = {
   threshold: {
     name: "Threshold",
     type: [plotdb.Number],
-    desc: "Diverging value split threshold",
-    defaut: 0,
+    desc: "data larger than this value will be treated as positive, vice versa.",
+    'default': 0,
     category: "Value"
   },
   sort: {
@@ -481,6 +481,13 @@ plotdb.config = {
     type: [plotdb.Number],
     desc: "Default Stroke width",
     'default': '2',
+    category: "Global Settings"
+  },
+  strokeDashArray: {
+    name: "Stroke Dash Style",
+    type: [plotdb.Number],
+    'default': '2',
+    desc: "SVG style dash array. '2 4' means 2px line and 4px space.",
     category: "Global Settings"
   }
 };

@@ -325,8 +325,8 @@ plotdb.config = do
   threshold: do
     name: "Threshold"
     type: [plotdb.Number]
-    desc: "Diverging value split threshold"
-    defaut: 0
+    desc: "data larger than this value will be treated as positive, vice versa."
+    default: 0
     category: "Value"
 
   sort: do
@@ -491,6 +491,13 @@ plotdb.config = do
     type: [plotdb.Number]
     desc: "Default Stroke width"
     default: \2
+    category: "Global Settings"
+
+  strokeDashArray: do
+    name: "Stroke Dash Style"
+    type: [plotdb.Number]
+    default: \2
+    desc: "SVG style dash array. '2 4' means 2px line and 4px space."
     category: "Global Settings"
 
 <[X Y Radial Angular]>.forEach (n) ->
