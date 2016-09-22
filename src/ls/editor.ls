@@ -649,9 +649,10 @@ angular.module \plotDB
         */
         # END
       coloredit: do
-        config: (v, idx) -> do
+        idx: 0
+        config: (v) -> do
           class: "no-palette text-input"
-          context: "context-#idx"
+          context: "context-#{@idx++}"
           exclusive: true
           palette: [v.value]
       paledit: do #TODO should be moved to standalone controller

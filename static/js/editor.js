@@ -1149,10 +1149,11 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       */
     },
     coloredit: {
-      config: function(v, idx){
+      idx: 0,
+      config: function(v){
         return {
           'class': "no-palette text-input",
-          context: "context-" + idx,
+          context: "context-" + (this.idx++),
           exclusive: true,
           palette: [v.value]
         };
