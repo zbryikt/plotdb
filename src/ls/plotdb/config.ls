@@ -287,11 +287,17 @@ plotdb.config = do
     default: false
     category: "Label"
 
-  showNode: do
+  showNode: do #deprecated
     name: "Show Data Dot"
     type: [plotdb.Boolean]
     default: true
     category: "Switch"
+
+  nodeShow: do
+    name: "Show Data Dot"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Dot"
 
   nodeSize: do
     name: "Dot Size"
@@ -516,7 +522,7 @@ plotdb.config = do
     type: [plotdb.Choice(<[
       linear step step-before step-after basis bundle cardinal monotone
     ]>)]
-    category: "Style"
+    category: "Line"
 
   strokeWidth: do
     name: "Stroke Width"

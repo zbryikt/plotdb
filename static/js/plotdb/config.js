@@ -285,6 +285,12 @@ plotdb.config = {
     'default': true,
     category: "Switch"
   },
+  nodeShow: {
+    name: "Show Data Dot",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Dot"
+  },
   nodeSize: {
     name: "Dot Size",
     type: [plotdb.Number],
@@ -506,7 +512,7 @@ plotdb.config = {
     name: "Line Smoothing",
     'default': "linear",
     type: [plotdb.Choice(['linear', 'step', 'step-before', 'step-after', 'basis', 'bundle', 'cardinal', 'monotone'])],
-    category: "Style"
+    category: "Line"
   },
   strokeWidth: {
     name: "Stroke Width",

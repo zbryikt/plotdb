@@ -682,9 +682,9 @@ plotd3.rwd.axis = function(){
     ref$ = [axis.innerTickSize(), axis.outerTickSize(), axis.tickPadding()], its = ref$[0], ots = ref$[1], tp = ref$[2];
     offset = d3.max([its, ots]) + tp + 1;
     format = axis.tickFormat();
-    ticks = scale.ticks
-      ? axis.tickValues() || scale.ticks(axis.ticks())
-      : scale.domain();
+    ticks = axis.tickValues() || (scale.ticks
+      ? scale.ticks(axis.ticks())
+      : scale.domain());
     if (orient === 'left' || orient === 'right') {
       tickHeight = d3.max(group.selectAll('.tick text')[0].map(function(d, i){
         return d.getBBox().height;

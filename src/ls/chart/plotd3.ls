@@ -375,7 +375,7 @@ plotd3.rwd.axis = ->
     [its,ots,tp] = [axis.innerTickSize!, axis.outerTickSize!, axis.tickPadding!]
     offset = d3.max([its,ots]) + tp + 1
     format = axis.tickFormat!
-    ticks = (if scale.ticks => (axis.tickValues! or scale.ticks(axis.ticks!)) else scale.domain!)
+    ticks = axis.tickValues! or (if scale.ticks => (scale.ticks(axis.ticks!)) else scale.domain!)
     if orient == \left or orient == \right =>
       tickHeight = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.height)
       count = size / ((1.4 * tickHeight) || 14)
