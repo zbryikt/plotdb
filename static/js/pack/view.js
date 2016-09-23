@@ -1170,23 +1170,43 @@ plotdb.config = {
     category: "Color"
   },
   connectFill: {
-    name: "Line Fill Color",
+    name: "Fill Color",
     type: [plotdb.Color],
     desc: "Fill color between connection path of data node",
     'default': '#aaa',
-    category: "Color"
+    category: "Line"
   },
   connectStroke: {
-    name: "Line Stroke Color",
+    name: "Stroke Color",
     type: [plotdb.Color],
     desc: "Stroke color between connection path of data node",
     'default': '#aaa',
-    category: "Color"
+    category: "Line"
+  },
+  connectStrokeWidth: {
+    name: "Stroke width",
+    type: [plotdb.Number],
+    desc: "Stroke size between connection path of data node",
+    'default': 2,
+    category: "Line"
+  },
+  connectDashArray: {
+    name: "Dash Array",
+    type: [plotdb.String],
+    desc: "SVG style dash array. '2 4' means 2px line and 4px space.",
+    'default': "2 2",
+    category: "Line"
   },
   gridShow: {
     name: "Show Grid",
     type: [plotdb.Boolean],
     'default': true,
+    category: "Grid"
+  },
+  gridBackground: {
+    name: "Background",
+    type: [plotdb.Color],
+    'default': '#fff',
     category: "Grid"
   },
   gridStroke: {
@@ -1200,6 +1220,18 @@ plotdb.config = {
     type: [plotdb.Number],
     'default': 1,
     category: "Grid"
+  },
+  gridFrameStroke: {
+    name: "Frame Color",
+    type: [plotdb.Color],
+    'default': '#ccc',
+    category: 'Grid'
+  },
+  gridFrameStrokeWidth: {
+    name: "Frame Width",
+    type: [plotdb.Number],
+    'default': 3,
+    category: 'Grid'
   },
   gridDashArray: {
     name: "Dash Style",

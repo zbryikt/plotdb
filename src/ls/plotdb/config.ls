@@ -155,23 +155,43 @@ plotdb.config = do
     category: "Color"
 
   connectFill: do
-    name: "Line Fill Color"
+    name: "Fill Color"
     type: [plotdb.Color]
     desc: "Fill color between connection path of data node"
     default: \#aaa
-    category: "Color"
+    category: "Line"
 
   connectStroke: do
-    name: "Line Stroke Color"
+    name: "Stroke Color"
     type: [plotdb.Color]
     desc: "Stroke color between connection path of data node"
     default: \#aaa
-    category: "Color"
+    category: "Line"
+
+  connectStrokeWidth: do
+    name: "Stroke width"
+    type: [plotdb.Number]
+    desc: "Stroke size between connection path of data node"
+    default: 2
+    category: "Line"
+
+  connectDashArray: do
+    name: "Dash Array"
+    type: [plotdb.String]
+    desc: "SVG style dash array. '2 4' means 2px line and 4px space."
+    default: "2 2"
+    category: "Line"
 
   gridShow: do
     name: "Show Grid"
     type: [plotdb.Boolean]
     default: true
+    category: "Grid"
+
+  gridBackground: do
+    name: "Background"
+    type: [plotdb.Color]
+    default: \#fff
     category: "Grid"
 
   gridStroke: do
@@ -185,6 +205,18 @@ plotdb.config = do
     type: [plotdb.Number]
     default: 1
     category: "Grid"
+
+  gridFrameStroke: do
+    name: "Frame Color"
+    type: [plotdb.Color]
+    default: \#ccc
+    category: \Grid
+
+  gridFrameStrokeWidth: do
+    name: "Frame Width"
+    type: [plotdb.Number]
+    default: 3
+    category: \Grid
 
   gridDashArray: do
     name: "Dash Style"
