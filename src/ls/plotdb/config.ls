@@ -287,12 +287,6 @@ plotdb.config = do
     default: false
     category: "Label"
 
-  showNode: do #deprecated
-    name: "Show Data Dot"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Switch"
-
   nodeShow: do
     name: "Show Data Dot"
     type: [plotdb.Boolean]

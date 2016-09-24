@@ -5768,12 +5768,6 @@ plotdb.config = {
     'default': false,
     category: "Label"
   },
-  showNode: {
-    name: "Show Data Dot",
-    type: [plotdb.Boolean],
-    'default': true,
-    category: "Switch"
-  },
   nodeShow: {
     name: "Show Data Dot",
     type: [plotdb.Boolean],
