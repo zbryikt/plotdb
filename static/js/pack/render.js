@@ -6082,13 +6082,13 @@ plotdb.config = {
     urlschema: "http://",
     name: 'plotdb',
     debug: true,
-    mode: 1,
     facebook: {
       clientID: '1546734828988373'
     },
     google: {
       clientID: '1003996266757-4gv30no8ije0sd8d8qsd709dluav0676.apps.googleusercontent.com'
     },
+    mode: 1,
     plan: {
       sizeLimits: [1000000, 50000000, 1000000000]
     }
