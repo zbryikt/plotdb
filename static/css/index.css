@@ -2523,6 +2523,11 @@ small.hint {
   display: inline-block;
   font-size: 12px;
 }
+@media (max-width: 1300px) {
+  #nav-top .navbar-header {
+    margin-left: 30px;
+  }
+}
 @media (min-width: 800px) {
   #subnav-top.dim {
     top: 50px;
