@@ -123,7 +123,7 @@ include /widget/palette-edit-modal.jade
               .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
         .chart-config.chart-config-end
   .col-sm-9(style="padding-left:0;position:relative"): .ib(style="position:relative")
-    include annotate.jade
+    //-include annotate.jade
     #code-error(ng-cloak,ng-show="error.msg",ng-class="{'fullscreen':editor.fullscreen.toggled}") {{error.msg}}
     #code-editor(ng-class="editor.class",style="background:#fff url(/assets/img/loading.gif) center center no-repeat")
       .closebtn.inner(ng-cloak,ng-click="editor.fullscreen.toggle()",ng-show="editor.fullscreen.toggled")

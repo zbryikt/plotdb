@@ -297,6 +297,7 @@ window.parent.postMessage {type: \loaded}, plotdb-domain
 
 # dont enable it for now
 
+/*
 selection-box = document.createElement("div")
 selection-box.setAttribute("class", "selection-box")
 document.body.appendChild(selection-box)
@@ -418,4 +419,4 @@ window.addEventListener \click, (e) ->
     ..left   = "#{rect.left + scroll.left - margin.left}px"
     ..height = "#{rect.height + margin.top + margin.bottom}px"
     ..width  = "#{rect.width + margin.left + margin.right}px"
-
+*/
