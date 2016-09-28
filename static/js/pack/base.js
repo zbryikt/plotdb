@@ -8018,8 +8018,10 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
             return $scope.parser.gsheet.list();
           }, $('#gsheet-list-end'), $('#gsheet-files'));
         }
-        return $scope.$watch('parser.gsheet.title', function(){
-          return this$.list(true);
+        return $scope.$watch('parser.gsheet.title', function(it){
+          if (it) {
+            return this$.list(true);
+          }
         });
       });
     },
