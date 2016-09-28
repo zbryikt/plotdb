@@ -3691,25 +3691,37 @@ x$.directive('readby', ['$compile'].concat(function($compile){
   return {
     scope: {
       readby: '&readby',
-      encoding: '@encoding'
+      encoding: '@encoding',
+      askencoding: '&askencoding'
     },
     link: function(s, e, a, c){
-      var handler;
+      var handler, askencoding;
       handler = s.readby();
+      askencoding = s.askencoding();
       return e.bind('change', function(event){
-        var fr;
-        fr = new FileReader();
-        fr.onload = function(){
-          s.$apply(function(){
-            return handler(fr.result, event.target.files[0]);
-          });
-          return e.val("");
+        var reader;
+        reader = function(){
+          var fr;
+          fr = new FileReader();
+          fr.onload = function(){
+            s.$apply(function(){
+              return handler(fr.result, event.target.files[0]);
+            });
+            return e.val("");
+          };
+          if (s.encoding) {
+            return fr.readAsText(event.target.files[0], s.encoding);
+          } else {
+            return fr.readAsBinaryString(event.target.files[0]);
+          }
         };
-        if (s.encoding) {
-          return fr.readAsText(event.target.files[0], s.encoding);
-        } else {
-          return fr.readAsBinaryString(event.target.files[0]);
-        }
+        return s.$apply(function(){
+          if (askencoding) {
+            return askencoding(reader);
+          } else {
+            return reader();
+          }
+        });
       });
     }
   };
@@ -7920,6 +7932,13 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         : !this.toggled;
     },
     toggled: false,
+    askencoding: function(it){
+      $scope.parser.csv.callback = it;
+      return $scope.parser.csv.toggle(true);
+    },
+    gotencoding: function(){
+      return this.callback();
+    },
     'import': function(buf, file){
       var node;
       file == null && (file = {});
@@ -7930,7 +7949,8 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       node = document.getElementById('dataset-import-dropdown');
       node.className = node.className.replace(/open/, '');
       $scope.parser.csv.buf = buf;
-      return $scope.parser.csv.toggle(true);
+      $scope.parser.csv.toggle(false);
+      return $scope.parser.csv.read();
     },
     read: function(_buf, verbose){
       var this$ = this;

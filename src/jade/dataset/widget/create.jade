@@ -6,7 +6,8 @@ include panel.jade
       p If you have no idea what this is, just click OK.
       select.form-control(ng-model="parser.csv.encoding",ng-options="option for option in parser.csv.encodings")
     .panel-footer.text-right
-      .btn.btn-primary(ng-click="parser.csv.read()") OK
+      //-.btn.btn-primary(ng-click="parser.csv.read()") OK
+      .btn.btn-primary(ng-click="parser.csv.gotencoding()") OK
       span &nbsp;
       .btn.btn-default(ng-click="parser.csv.toggle()") Cancel
 
@@ -77,6 +78,7 @@ include panel.jade
                 li.dropdown
                   a.toggle-filepick(href="#")
                     input#dataset-edit-csv-file(type="file",
+                    askencoding="parser.csv.askencoding",
                     readby="parser.csv.import",encoding="{{parser.csv.encoding}}")
                     span #[i.fa.fa-file-text-o.align16] upload CSV file ...
                 li: a.toggle-filepick(href="#")

@@ -202,6 +202,10 @@ angular.module \plotDB
       worker: null
       toggle: (v) -> @toggled = (if v? => v else !!!@toggled)
       toggled: false
+      askencoding: ->
+        $scope.parser.csv.callback = it
+        $scope.parser.csv.toggle true
+      gotencoding: -> @callback!
       import: (buf,file={}) ->
         if file.name and !/\.csv$/.exec(file.name) =>
           alert("it's not a CSV file")
@@ -209,7 +213,8 @@ angular.module \plotDB
         node = document.getElementById(\dataset-import-dropdown)
         node.className = node.className.replace /open/, ''
         $scope.parser.csv.buf = buf
-        $scope.parser.csv.toggle true
+        $scope.parser.csv.toggle false
+        $scope.parser.csv.read!
       read: (_buf,verbose = true) -> new Promise (res, rej) ~>
         buf = _buf
         if !(buf?) => buf = @buf

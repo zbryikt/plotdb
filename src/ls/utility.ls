@@ -71,12 +71,18 @@ angular.module \plotDB
       scope: do
         readby: \&readby
         encoding: \@encoding
+        askencoding: \&askencoding
       link: (s,e,a,c) ->
         handler = s.readby!
+        askencoding = s.askencoding!
         e.bind \change, (event) ->
-          fr = new FileReader!
-          fr.onload = ->
-            s.$apply -> handler fr.result, event.target.files.0
-            e.val("")
-          if s.encoding => fr.readAsText event.target.files.0, s.encoding
-          else fr.readAsBinaryString event.target.files.0
+          reader = ->
+            fr = new FileReader!
+            fr.onload = ->
+              s.$apply -> handler fr.result, event.target.files.0
+              e.val("")
+            if s.encoding => fr.readAsText event.target.files.0, s.encoding
+            else fr.readAsBinaryString event.target.files.0
+          s.$apply ->
+            if askencoding => askencoding reader
+            else reader!

@@ -326,6 +326,13 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         : !this.toggled;
     },
     toggled: false,
+    askencoding: function(it){
+      $scope.parser.csv.callback = it;
+      return $scope.parser.csv.toggle(true);
+    },
+    gotencoding: function(){
+      return this.callback();
+    },
     'import': function(buf, file){
       var node;
       file == null && (file = {});
@@ -336,7 +343,8 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       node = document.getElementById('dataset-import-dropdown');
       node.className = node.className.replace(/open/, '');
       $scope.parser.csv.buf = buf;
-      return $scope.parser.csv.toggle(true);
+      $scope.parser.csv.toggle(false);
+      return $scope.parser.csv.read();
     },
     read: function(_buf, verbose){
       var this$ = this;

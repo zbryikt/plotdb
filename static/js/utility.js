@@ -161,25 +161,37 @@ x$.directive('readby', ['$compile'].concat(function($compile){
   return {
     scope: {
       readby: '&readby',
-      encoding: '@encoding'
+      encoding: '@encoding',
+      askencoding: '&askencoding'
     },
     link: function(s, e, a, c){
-      var handler;
+      var handler, askencoding;
       handler = s.readby();
+      askencoding = s.askencoding();
       return e.bind('change', function(event){
-        var fr;
-        fr = new FileReader();
-        fr.onload = function(){
-          s.$apply(function(){
-            return handler(fr.result, event.target.files[0]);
-          });
-          return e.val("");
+        var reader;
+        reader = function(){
+          var fr;
+          fr = new FileReader();
+          fr.onload = function(){
+            s.$apply(function(){
+              return handler(fr.result, event.target.files[0]);
+            });
+            return e.val("");
+          };
+          if (s.encoding) {
+            return fr.readAsText(event.target.files[0], s.encoding);
+          } else {
+            return fr.readAsBinaryString(event.target.files[0]);
+          }
         };
-        if (s.encoding) {
-          return fr.readAsText(event.target.files[0], s.encoding);
-        } else {
-          return fr.readAsBinaryString(event.target.files[0]);
-        }
+        return s.$apply(function(){
+          if (askencoding) {
+            return askencoding(reader);
+          } else {
+            return reader();
+          }
+        });
       });
     }
   };
