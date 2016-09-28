@@ -326,8 +326,13 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         : !this.toggled;
     },
     toggled: false,
-    'import': function(buf){
+    'import': function(buf, file){
       var node;
+      file == null && (file = {});
+      if (file.name && !/\.csv$/.exec(file.name)) {
+        alert("it's not a CSV file");
+        return;
+      }
       node = document.getElementById('dataset-import-dropdown');
       node.className = node.className.replace(/open/, '');
       $scope.parser.csv.buf = buf;
@@ -385,8 +390,12 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
   };
   $scope.parser.xls = {
     worker: null,
-    read: function(buf){
+    read: function(buf, file){
       var sec, node, this$ = this;
+      if (file.name && !/\.xlsx?/.exec(file.name)) {
+        alert("it's not a Microsoft Excel file");
+        return;
+      }
       eventBus.fire('loading.dimmer.on', 1);
       sec = buf.length * 2.5 / 1000;
       $scope.parser.progress(sec);
@@ -435,10 +444,13 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           scope: this$.scopes
         });
         if ($('#gsheet-list-end')) {
-          return Paging.loadOnScroll(function(){
+          Paging.loadOnScroll(function(){
             return $scope.parser.gsheet.list();
           }, $('#gsheet-list-end'), $('#gsheet-files'));
         }
+        return $scope.$watch('parser.gsheet.title', function(){
+          return this$.list(true);
+        });
       });
     },
     files: [],
@@ -452,8 +464,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         return auth.signIn();
       }
     },
-    list: function(){
+    list: function(flush){
       var this$ = this;
+      flush == null && (flush = false);
       if (this.loading) {
         return;
       }
@@ -464,16 +477,23 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         config = {
           pageSize: 40,
           fields: "nextPageToken, files(id, name)",
-          q: "mimeType='application/vnd.google-apps.spreadsheet'"
+          q: "mimeType='application/vnd.google-apps.spreadsheet'" + (this$.title ? " and name contains '" + this$.title + "'" : '')
         };
         if (this$.pageToken) {
           config.pageToken = this$.pageToken;
         }
         request = gapi.client.drive.files.list(config);
         return request.execute(function(ret){
+          if (flush) {
+            this$.files = [];
+          }
           this$.pageToken = ret.nextPageToken;
           return $scope.$apply(function(){
-            this$.files = this$.files.concat(ret.files);
+            this$.files = this$.files.concat((ret.files || (ret.files = [])).map(function(it){
+              return {
+                file: it
+              };
+            }));
             return this$.loading = false;
           });
         });

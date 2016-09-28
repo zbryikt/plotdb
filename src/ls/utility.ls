@@ -75,8 +75,8 @@ angular.module \plotDB
         handler = s.readby!
         e.bind \change, (event) ->
           fr = new FileReader!
-          fr.onload = (event) ->
-            s.$apply -> handler fr.result
+          fr.onload = ->
+            s.$apply -> handler fr.result, event.target.files.0
             e.val("")
           if s.encoding => fr.readAsText event.target.files.0, s.encoding
           else fr.readAsBinaryString event.target.files.0

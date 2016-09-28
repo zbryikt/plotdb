@@ -16,13 +16,17 @@ include panel.jade
       h3 Import from Google sheets
       .sep
       br
+      .input-group
+        input.form-control(placeholder="search for spreadsheet title...",ng-model="parser.gsheet.title")
+        span.input-group-btn
+          .btn.btn-default: i.fa.fa-search
       #gsheet-files.gsheet-files
-        .gsheet-file(ng-repeat="file in parser.gsheet.files",ng-click="parser.gsheet.load(file)")
+        .gsheet-file(ng-repeat="f in parser.gsheet.files",ng-click="parser.gsheet.load(f)")
           a.pull-right(target="_blank",
-          ng-attr-href="https://docs.google.com/spreadsheets/d/{{file.id}}") 
+          ng-attr-href="https://docs.google.com/spreadsheets/d/{{f.file.id}}")
             span open in new window 
             i.fa.fa-external-link
-          span {{file.name}}
+          span {{f.file.name}}
         .gsheet-file.empty(ng-show="!parser.gsheet.files.length") no file
         .text-center(ng-show="parser.gsheet.loading"): .loader.loading.alone.sm(style="display:inline-block")
         #gsheet-list-end

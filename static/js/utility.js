@@ -169,9 +169,9 @@ x$.directive('readby', ['$compile'].concat(function($compile){
       return e.bind('change', function(event){
         var fr;
         fr = new FileReader();
-        fr.onload = function(event){
+        fr.onload = function(){
           s.$apply(function(){
-            return handler(fr.result);
+            return handler(fr.result, event.target.files[0]);
           });
           return e.val("");
         };

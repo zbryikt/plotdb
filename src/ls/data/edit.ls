@@ -202,7 +202,10 @@ angular.module \plotDB
       worker: null
       toggle: (v) -> @toggled = (if v? => v else !!!@toggled)
       toggled: false
-      import: (buf) ->
+      import: (buf,file={}) ->
+        if file.name and !/\.csv$/.exec(file.name) =>
+          alert("it's not a CSV file")
+          return
         node = document.getElementById(\dataset-import-dropdown)
         node.className = node.className.replace /open/, ''
         $scope.parser.csv.buf = buf
@@ -233,7 +236,10 @@ angular.module \plotDB
 
     $scope.parser.xls = do
       worker: null
-      read: (buf) ->
+      read: (buf,file) ->
+        if file.name and !/\.xlsx?/.exec(file.name) =>
+          alert("it's not a Microsoft Excel file")
+          return
         eventBus.fire \loading.dimmer.on, 1
         sec = buf.length * 2.5 / 1000
         $scope.parser.progress sec
@@ -269,6 +275,7 @@ angular.module \plotDB
             scope: @scopes
           if $(\#gsheet-list-end) =>
             Paging.load-on-scroll (-> $scope.parser.gsheet.list!), $(\#gsheet-list-end), $(\#gsheet-files)
+          $scope.$watch 'parser.gsheet.title', ~> @list true
       files: []
       auth: ->
         auth = gapi.auth2.get-auth-instance!
@@ -276,7 +283,7 @@ angular.module \plotDB
         else
           eventBus.fire \loading.dimmer.on
           return auth.sign-in!
-      list: ->
+      list: (flush = false)->
         if @loading => return
         @loading = true
         <~ @auth!then
@@ -284,13 +291,14 @@ angular.module \plotDB
         config = do
           pageSize: 40,
           fields: "nextPageToken, files(id, name)"
-          q: "mimeType='application/vnd.google-apps.spreadsheet'"
+          q: "mimeType='application/vnd.google-apps.spreadsheet'" + (if @title => " and name contains '#{@title}'" else '')
         if @pageToken => config.pageToken = @pageToken
         request = gapi.client.drive.files.list config
         request.execute (ret) ~>
+          if flush => @files = []
           @pageToken = ret.nextPageToken
           $scope.$apply ~>
-            @files ++= ret.files
+            @files ++= ret.[]files.map -> {file: it}
             @loading = false
       toggle: ->
         @toggled = !!!@toggled
