@@ -448,8 +448,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
             return $scope.parser.gsheet.list();
           }, $('#gsheet-list-end'), $('#gsheet-files'));
         }
-        return $scope.$watch('parser.gsheet.title', function(it){
-          if (it) {
+        return $scope.$watch('parser.gsheet.title', function(n, o){
+          console.log(">", n, o);
+          if (n !== o) {
             return this$.list(true);
           }
         });
