@@ -14,8 +14,7 @@ angular.module \plotDB
         doc: content: ""
         style: content: ""
         code: content: '''
-var module = {};
-module.exports = plotdb.chart.create({
+{
   sample: function() {
     return {
       value: [{name: "Value", data: [1,2,3,4,5]}]
@@ -28,8 +27,8 @@ module.exports = plotdb.chart.create({
     /* you can write with a complete spec */
     padding: { name: "Padding", type: [plotdb.Number], default: 10, rebindOnChange: false },
     /* .. or leave fields empty to inherit from default values */
-    margin: { },
-    fontSize: { }
+    margin: {},
+    fontSize: {}
   },
   init: function() {
     var that = this;
@@ -55,7 +54,7 @@ module.exports = plotdb.chart.create({
   render: function() {
     var that = this;
   }
-});
+}
 '''
 
       },
@@ -103,8 +102,7 @@ h3 {
 '''
       code: do
         content: '''
-var module = {};
-module.exports = plotdb.chart.create({
+{
   sample: [
     {value: 3, name: "Allen"},
     {value: 1, name: "Bob"},
@@ -163,8 +161,7 @@ module.exports = plotdb.chart.create({
       y: function(it) { return it.y; }
     }).text(function(it) { return it.name; });
   }
-});
-
+}
 '''
       }
     ]
