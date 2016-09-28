@@ -1221,7 +1221,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         });
       },
       init: function(){
-        var x$, iconPalSelectConfig, this$ = this;
+        var x$, this$ = this;
         this.ldcp = new ldColorPicker(null, {}, $('#palette-editor .editor .ldColorPicker')[0]);
         this.ldcp.on('change-palette', function(){
           return setTimeout(function(){
@@ -1230,14 +1230,49 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             });
           }, 0);
         });
-        this.list = [{
-          text: 'Default',
-          id: 'default',
-          children: this.convert(paletteService.sample)
-        }];
+        this.sample = paletteService.sample;
+        this.list = [];
         x$ = $('#pal-select');
-        x$.select2(iconPalSelectConfig = {
+        x$.select2({
+          ajax: {
+            url: '/d/palette',
+            dataType: 'json',
+            delay: 250,
+            data: function(params){
+              return {
+                offset: (params.page || 0) * 20,
+                limit: 20
+              };
+            },
+            processResults: function(data, params){
+              params.page = params.page || 0;
+              if (params.page === 0) {
+                this$.list = data = this$.sample.concat(data);
+              } else {
+                this$.list = this$.list.concat(data);
+              }
+              return {
+                results: data.map(function(it){
+                  return {
+                    id: it.key,
+                    text: it.name,
+                    data: it.colors
+                  };
+                }),
+                pagination: {
+                  more: data.length >= 20
+                }
+              };
+            }
+          },
           allowedMethods: ['updateResults'],
+          escapeMarkup: function(it){
+            return it;
+          },
+          minimumInputLength: 0,
+          templateSelection: function(it){
+            return it.text + "<small class='grayed'> (" + it.id + ")</small>";
+          },
           templateResult: function(state){
             var color, c;
             if (!state.data) {
@@ -1251,31 +1286,20 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               }
               return results$;
             }()).join("");
-            return $(("<div class='palette select'><div class='name'>" + state.text + "</div>") + ("<div class='palette-color'>" + color + "</div></div>"));
-          },
-          data: this.list
+            $(("<div class='palette select'><div class='name'>" + state.text + "</div>") + ("<div class='palette-color'>" + color + "</div></div>"));
+            return ("<div class='palette select'><div class='name'>" + state.text + "</div>") + ("<div class='palette-color'>" + color + "</div></div>");
+          }
         });
         x$.on('select2:closing', function(e){
-          var i$, ref$, len$, item, ret;
-          for (i$ = 0, len$ = (ref$ = this$.list).length; i$ < len$; ++i$) {
-            item = ref$[i$];
-            ret = item.children.filter(fn$)[0];
-            if (ret) {
-              break;
-            }
-          }
-          if (!ret) {
-            return;
-          }
+          var key, ret;
+          key = $(e.target).val();
+          ret = this$.list.filter(function(it){
+            return it.key == key;
+          })[0];
           $scope.$apply(function(){
-            return this$.item.value = JSON.parse(JSON.stringify({
-              colors: ret.data
-            }));
+            return this$.item.value = JSON.parse(JSON.stringify(ret));
           });
           return this$.ldcp.setPalette(this$.item.value);
-          function fn$(it){
-            return it.id === $(e.target).val();
-          }
         });
         return $scope.$watch('paledit.paste', function(d){
           var result, e;

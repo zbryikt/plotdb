@@ -683,10 +683,28 @@ angular.module \plotDB
         init: ->
           @ldcp = new ldColorPicker null, {}, $('#palette-editor .editor .ldColorPicker').0
           @ldcp.on \change-palette, ~> setTimeout ( ~> $scope.$apply ~> @update! ), 0
-          @list = [{ text: 'Default', id: 'default', children: @convert paletteService.sample }]
+          #@list = [{ text: 'Default', id: 'default', children: @convert paletteService.sample }]
+          @sample = paletteService.sample
+          @list = []
           $(\#pal-select)
-            ..select2 icon-pal-select-config = do
+            ..select2 do
+              ajax: do
+                url: \/d/palette
+                dataType: \json
+                delay: 250
+                data: (params) -> {offset: (params.page or 0)* 20, limit: 20}
+                processResults: (data, params) ~>
+                  params.page = params.page or 0
+                  if params.page == 0 => @list = data = @sample ++ data
+                  else @list = @list ++ data
+                  return {
+                    results: data.map(->{id: it.key, text: it.name, data: it.colors})
+                    pagination: { more: data.length >= 20}
+                  }
               allowedMethods: <[updateResults]>
+              escapeMarkup: -> it
+              minimumInputLength: 0
+              templateSelection: -> return it.text + "<small class='grayed'> (" + it.id + ")</small>"
               templateResult: (state) ->
                 if !state.data => return state.text
                 color = [("<div class='color' "+
@@ -695,13 +713,19 @@ angular.module \plotDB
                 ].join("")
                 $("<div class='palette select'><div class='name'>#{state.text}</div>"+
                   "<div class='palette-color'>#color</div></div>")
-              data: @list
+                return "<div class='palette select'><div class='name'>#{state.text}</div>"+
+                  "<div class='palette-color'>#color</div></div>"
+              #data: @list
+
             ..on \select2:closing, (e) ~>
-              for item in @list =>
-                ret = item.children.filter(~>it.id == $(e.target)val!).0
-                if ret => break
-              if !ret => return
-              $scope.$apply ~> @item.value = JSON.parse(JSON.stringify({colors: ret.data}))
+              key = $(e.target)val!
+              ret = @list.filter(-> it.key ~= key).0
+              #for item in @list =>
+              #  ret = item.children.filter(~>it.id == $(e.target)val!).0
+              #  if ret => break
+              #if !ret => return
+              #$scope.$apply ~> @item.value = JSON.parse(JSON.stringify({colors: ret.data}))
+              $scope.$apply ~> @item.value = JSON.parse(JSON.stringify(ret))
               @ldcp.set-palette @item.value
           $scope.$watch 'paledit.paste', (d) ~>
             try
