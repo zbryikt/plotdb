@@ -375,7 +375,15 @@ plotd3.rwd.axis = ->
     [its,ots,tp] = [axis.innerTickSize!, axis.outerTickSize!, axis.tickPadding!]
     offset = d3.max([its,ots]) + tp + 1
     format = axis.tickFormat!
-    ticks = axis.tickValues! or (if scale.ticks => (scale.ticks(axis.ticks!)) else scale.domain!)
+    ticks = axis.tickValues! or (
+      if scale.ticks => scale.ticks (if axis.ticks!0 => that else 10)
+      else
+        if axis.ticks!0 => 
+          count = axis.ticks!0
+          domain = scale.domain!
+          domain.filter (d,i) -> !(i % Math.round(domain.length / ( count or 1)))
+        else scale.domain!
+    )
     if orient == \left or orient == \right =>
       tickHeight = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.height)
       count = size / ((1.4 * tickHeight) || 14)
@@ -407,8 +415,9 @@ plotd3.rwd.axis = ->
       else if orient in <[bottom top]> =>
         group.select 'g.tick:first-of-type text' .style "text-anchor": \start
         group.select 'g.tick:last-of-type text' .style "text-anchor": \end
+    group.selectAll "path,line" .attr {stroke: \black, fill: \none}
 
-  <[fontSize label labelPosition multiLine boundaryTickInside angle showGrid]>.map (k) ->
+  <[tickCount fontSize label labelPosition multiLine boundaryTickInside angle showGrid]>.map (k) ->
     ret[k] = ((k)-> ->
       if !arguments.length => return store[k]
       store[k] = it

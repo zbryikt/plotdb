@@ -2,6 +2,9 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus'].concat(function($scope, $http, $timeout, plNotify, eventBus){
+  if (!(typeof Stripe != 'undefined' && Stripe !== null)) {
+    return;
+  }
   Stripe.setPublishableKey('pk_test_DE53QFrgknntLkCNsVr1MqrV');
   $scope.payinfo = {
     cvc: null,

@@ -660,7 +660,7 @@ plotd3.rwd.axis = function(){
     }
   };
   ret.autotick = function(group, args){
-    var ref$, scale, orient, sizes, size, its, ots, tp, offset, format, ticks, tickHeight, count, step, gbox, pbox;
+    var ref$, scale, orient, sizes, size, its, ots, tp, offset, format, ticks, that, count, domain, tickHeight, step, gbox, pbox;
     args == null && (args = []);
     axis.apply(group, args);
     ref$ = [axis.scale(), store.orient], scale = ref$[0], orient = ref$[1];
@@ -678,8 +678,12 @@ plotd3.rwd.axis = function(){
     offset = d3.max([its, ots]) + tp + 1;
     format = axis.tickFormat();
     ticks = axis.tickValues() || (scale.ticks
-      ? scale.ticks(axis.ticks())
-      : scale.domain());
+      ? scale.ticks((that = axis.ticks()[0]) ? that : 10)
+      : axis.ticks()[0]
+        ? (count = axis.ticks()[0], domain = scale.domain(), domain.filter(function(d, i){
+          return !(i % Math.round(domain.length / (count || 1)));
+        }))
+        : scale.domain());
     if (orient === 'left' || orient === 'right') {
       tickHeight = d3.max(group.selectAll('.tick text')[0].map(function(d, i){
         return d.getBBox().height;
@@ -721,20 +725,24 @@ plotd3.rwd.axis = function(){
         group.select('g.tick:first-of-type text').attr({
           dy: -store.fontSize / 2
         });
-        return group.select('g.tick:last-of-type text').attr({
+        group.select('g.tick:last-of-type text').attr({
           dy: store.fontSize
         });
       } else if (orient === 'bottom' || orient === 'top') {
         group.select('g.tick:first-of-type text').style({
           "text-anchor": 'start'
         });
-        return group.select('g.tick:last-of-type text').style({
+        group.select('g.tick:last-of-type text').style({
           "text-anchor": 'end'
         });
       }
     }
+    return group.selectAll("path,line").attr({
+      stroke: 'black',
+      fill: 'none'
+    });
   };
-  ['fontSize', 'label', 'labelPosition', 'multiLine', 'boundaryTickInside', 'angle', 'showGrid'].map(function(k){
+  ['tickCount', 'fontSize', 'label', 'labelPosition', 'multiLine', 'boundaryTickInside', 'angle', 'showGrid'].map(function(k){
     return ret[k] = function(k){
       return function(it){
         if (!arguments.length) {

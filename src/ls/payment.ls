@@ -2,6 +2,7 @@ angular.module \plotDB
   ..controller \payment,
   <[$scope $http $timeout plNotify eventBus]> ++
   ($scope, $http, $timeout, plNotify, eventBus) ->
+    if !(Stripe?) => return
     Stripe.setPublishableKey \pk_test_DE53QFrgknntLkCNsVr1MqrV
     $scope.payinfo = {cvc:null,exp_month:null,exp_year:null,number:null}
     #$scope.payinfo = {cvc:'123',exp_month:'02',exp_year:'18',number:'4242424242424242'}

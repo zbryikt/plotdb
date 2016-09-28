@@ -226,11 +226,35 @@ plotdb.config = {
     'default': 10,
     category: "Global Settings"
   },
+  bubbleSizeMin: {
+    name: "Min Size",
+    type: [plotdb.Number],
+    'default': 0,
+    category: "Bubble"
+  },
+  bubbleSizeMax: {
+    name: "Max Size",
+    type: [plotdb.Number],
+    'default': 20,
+    category: "Bubble"
+  },
+  bubbleStroke: {
+    name: "Stroke Color",
+    type: [plotdb.Color],
+    'default': '#919191',
+    category: "Bubble"
+  },
+  bubbleStrokeWidth: {
+    name: "Stroke Width",
+    type: [plotdb.Number],
+    'default': '1',
+    category: "Bubble"
+  },
   bubblePadding: {
     name: "Bubble Padding",
     type: [plotdb.Number],
     'default': 5,
-    category: "Layout"
+    category: "Bubble"
   },
   barThick: {
     name: "Bar Thickness",
@@ -243,12 +267,6 @@ plotdb.config = {
     type: [plotdb.Number],
     'default': 10,
     category: "Layout"
-  },
-  labelShadowSize: {
-    name: "Label Shadow Size",
-    type: [plotdb.Number],
-    'default': 2,
-    category: "Text"
   },
   legendShow: {
     name: "Show Legend",
@@ -271,6 +289,12 @@ plotdb.config = {
     name: "Show Data Label",
     type: [plotdb.Boolean],
     'default': false,
+    category: "Label"
+  },
+  labelShadowSize: {
+    name: "Label Shadow Size",
+    type: [plotdb.Number],
+    'default': 2,
     category: "Label"
   },
   labelShow: {
@@ -524,11 +548,12 @@ plotdb.config = {
   }
 };
 ['X', 'Y', 'Radial', 'Angular'].forEach(function(n){
-  var p, c, b;
+  var p, c, b, v;
   p = n.charAt(0).toLowerCase() + "Axis";
   c = n + " Axis";
   b = [plotdb.Boolean];
   n = [plotdb.Number];
+  v = [plotdb.Color];
   plotdb.config[p + "Show"] = {
     name: "Show Axis",
     type: b,
@@ -557,6 +582,12 @@ plotdb.config = {
     name: "Tick Padding",
     type: n,
     'default': 4,
+    category: c
+  };
+  plotdb.config[p + "Stroke"] = {
+    name: "Stroke Color",
+    type: v,
+    'default': "#000",
     category: c
   };
   plotdb.config[p + "Label"] = {

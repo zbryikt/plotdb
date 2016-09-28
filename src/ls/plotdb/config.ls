@@ -232,11 +232,35 @@ plotdb.config = do
     default: 10
     category: "Global Settings"
 
+  bubbleSizeMin: do
+    name: "Min Size"
+    type: [plotdb.Number]
+    default: 0
+    category: "Bubble"
+
+  bubbleSizeMax: do
+    name: "Max Size"
+    type: [plotdb.Number]
+    default: 20
+    category: "Bubble"
+
+  bubbleStroke: do
+    name: "Stroke Color"
+    type: [plotdb.Color]
+    default: \#919191
+    category: "Bubble"
+
+  bubbleStrokeWidth: do
+    name: "Stroke Width"
+    type: [plotdb.Number]
+    default: \1
+    category: "Bubble"
+
   bubblePadding: do
     name: "Bubble Padding"
     type: [plotdb.Number]
     default: 5
-    category: "Layout"
+    category: "Bubble"
 
   #TBD
   barThick: do
@@ -251,12 +275,6 @@ plotdb.config = do
     type: [plotdb.Number]
     default: 10
     category: "Layout"
-
-  labelShadowSize: do
-    name: "Label Shadow Size"
-    type: [plotdb.Number]
-    default: 2
-    category: "Text"
 
   legendShow: do
     name: "Show Legend"
@@ -279,6 +297,12 @@ plotdb.config = do
     name: "Show Data Label"
     type: [plotdb.Boolean]
     default: false
+    category: "Label"
+
+  labelShadowSize: do
+    name: "Label Shadow Size"
+    type: [plotdb.Number]
+    default: 2
     category: "Label"
 
   labelShow: do
@@ -537,11 +561,13 @@ plotdb.config = do
   c = "#{n} Axis"
   b = [plotdb.Boolean]
   n = [plotdb.Number]
+  v = [plotdb.Color]
   plotdb.config["#{p}Show"] = name: "Show Axis", type: b, default: true, category: c
   plotdb.config["#{p}ShowDomain"] = name: "Show Basline", type: b, default: true, category: c
   plotdb.config["#{p}TickSizeInner"] = name: "Inner Tick Size", type: n, default: 4, category: c
   plotdb.config["#{p}TickSizeOuter"] = name: "Outer Tick Size", type: n, default: 0, category: c
   plotdb.config["#{p}TickPadding"] = name: "Tick Padding", type: n, default: 4, category: c
+  plotdb.config["#{p}Stroke"] = name: "Stroke Color", type: v, default: "#000", category: c
   plotdb.config["#{p}Label"] = name: "Label", type: [plotdb.String], default: "", category: c
   plotdb.config["#{p}TickCount"] = name: "Tick Count", type: n, default: 6, category: c, desc: "Hint on number of tick. Actual number will be decided by program"
   plotdb.config["#{p}LabelPosition"] = name: "Label Position", type: [plotdb.Choice(['in','center'])], default: "center", category: c
