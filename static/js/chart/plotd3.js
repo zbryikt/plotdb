@@ -684,7 +684,7 @@ plotd3.rwd.axis = function(){
           return !(i % Math.round(domain.length / (count || 1)));
         }))
         : scale.domain());
-    if (ticks.length > count) {
+    if (ticks.length > count && count) {
       ticks = ticks.filter(function(d, i){
         return !(i % Math.round(ticks.length / (count || 1)));
       });

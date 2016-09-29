@@ -426,7 +426,7 @@ plotd3.rwd.legend = function(){
       }
       return node.select('text').attr({
         "text-anchor": "start",
-        dy: '0.75em',
+        dy: '0.76em',
         dx: size + 3 + dx,
         "font-size": store.fontSize != null ? store.fontSize : void 8
       });
@@ -441,7 +441,7 @@ plotd3.rwd.legend = function(){
       label.attr({
         "font-size": store.fontSize != null ? store.fontSize * 1.1 : void 8,
         "font-weight": 'bold',
-        dy: '0.7em'
+        dy: '0.76em'
       });
       if ((ref$ = store.orient) === 'bottom' || ref$ === 'top') {
         offset[0] += label[0][0].getBBox().width + store.padding[0] || 10;
@@ -684,7 +684,7 @@ plotd3.rwd.axis = function(){
           return !(i % Math.round(domain.length / (count || 1)));
         }))
         : scale.domain());
-    if (ticks.length > count) {
+    if (ticks.length > count && count) {
       ticks = ticks.filter(function(d, i){
         return !(i % Math.round(ticks.length / (count || 1)));
       });

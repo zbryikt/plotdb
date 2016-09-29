@@ -383,7 +383,7 @@ plotd3.rwd.axis = ->
           domain.filter (d,i) -> !(i % Math.round(domain.length / ( count or 1)))
         else scale.domain!
     )
-    if ticks.length > count =>
+    if ticks.length > count and count =>
       ticks = ticks.filter (d,i) -> !(i % Math.round(ticks.length / ( count or 1)))
 
     if orient == \left or orient == \right =>
