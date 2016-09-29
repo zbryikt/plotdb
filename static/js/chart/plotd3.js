@@ -591,6 +591,7 @@ plotd3.rwd.axis = function(){
         });
       }
       group.select('.domain').attr({
+        fill: 'none',
         d: function(){
           var domain, x1, y1, x2, y2;
           domain = scale.domain();

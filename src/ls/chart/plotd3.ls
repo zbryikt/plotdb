@@ -326,6 +326,7 @@ plotd3.rwd.axis = ->
           ..text d
 
       group.select \.domain .attr do
+        fill: \none
         d: ->
           domain = scale.domain!
           x1 = scale(domain[0]) * Math.sin(store.angle or 0)
