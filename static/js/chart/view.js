@@ -101,7 +101,7 @@ import$(plotdb.view.chart.prototype, {
     return libs = this._.chart.library || [];
   },
   attach: function(root){
-    var ref$, chart, theme, resize;
+    var ref$, chart, theme, resize, newClass, e;
     this._.root = root;
     ref$ = {
       chart: (ref$ = this._).chart,
@@ -126,16 +126,22 @@ import$(plotdb.view.chart.prototype, {
     window.addEventListener('resize', function(){
       return resize();
     });
-    chart.init();
-    if (chart.parse) {
-      chart.parse();
-    }
-    chart.resize();
-    chart.bind();
-    chart.render();
-    root.setAttribute('class', (root.getAttribute('class') || "").split(' ').filter(function(it){
+    newClass = (root.getAttribute('class') || "").split(' ').filter(function(it){
       return it !== 'loading';
-    }).join(" ").trim());
+    }).join(" ").trim();
+    try {
+      chart.init();
+      if (chart.parse) {
+        chart.parse();
+      }
+      chart.resize();
+      chart.bind();
+      chart.render();
+    } catch (e$) {
+      e = e$;
+      newClass += ' error';
+    }
+    root.setAttribute('class', newClass);
     return this.inited = true;
   },
   config: function(config){

@@ -66,15 +66,16 @@ plotdb.view.chart.prototype <<< do
         chart.render!
       ), 500
     window.addEventListener \resize, (-> resize! )
-    chart.init!
-    if chart.parse => chart.parse!
-    chart.resize!
-    chart.bind!
-    chart.render!
-    root.setAttribute(
-      \class
-      (root.getAttribute(\class) or "").split(' ').filter(->it!='loading').join(" ").trim!
-    )
+    newClass = (root.getAttribute(\class) or "").split(' ').filter(->it!='loading').join(" ").trim!
+    try
+      chart.init!
+      if chart.parse => chart.parse!
+      chart.resize!
+      chart.bind!
+      chart.render!
+    catch
+      newClass += ' error'
+    root.setAttribute \class, newClass
     @inited = true
 
   #auto call update ? check rebindOnChange?
