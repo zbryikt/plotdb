@@ -204,9 +204,11 @@ angular.module \plotDB
         if @parse.theme.pending or @parse.chart.pending => return
         if !@chart => return
         if @render-async.handler => $timeout.cancel @render-async.handler
+        @render-async.rebind = @render-async.rebind or rebind
         @render-async.handler = $timeout (~>
           @render-async.handler = null
-          @render rebind
+          @render @render-async.rebind
+          @render-async.rebind = false
         ), delay
       parse: do
         send: (name) ->
@@ -483,9 +485,7 @@ angular.module \plotDB
           library: null
       edit-panel: do
         attr: {}
-        set-style: (data)->
-          @attr <<< data.style
-          console.log @attr
+        set-style: (data)-> @attr <<< data.style
         test: ->
           $scope.canvas.window.postMessage {type: \edit, payload: @attr}, $scope.plotdb-domain
         init: ->

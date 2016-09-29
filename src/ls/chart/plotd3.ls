@@ -369,21 +369,24 @@ plotd3.rwd.axis = ->
     if scale.rangeExtent => sizes = scale.rangeExtent!
     else
       sizes = scale.range!
-      sizes = [sizes[0], sizes[1]]
+      sizes = [sizes[0], sizes[sizes.length - 1]]
       sizes.sort (a,b) -> a - b
     size = Math.abs(sizes.1 - sizes.0)
     [its,ots,tp] = [axis.innerTickSize!, axis.outerTickSize!, axis.tickPadding!]
     offset = d3.max([its,ots]) + tp + 1
     format = axis.tickFormat!
+    count = axis.ticks!0
     ticks = axis.tickValues! or (
-      if scale.ticks => scale.ticks (if axis.ticks!0 => that else 10)
+      if scale.ticks => scale.ticks (if count => count else 10)
       else
-        if axis.ticks!0 => 
-          count = axis.ticks!0
+        if count =>
           domain = scale.domain!
           domain.filter (d,i) -> !(i % Math.round(domain.length / ( count or 1)))
         else scale.domain!
     )
+    if ticks.length > count =>
+      ticks = ticks.filter (d,i) -> !(i % Math.round(ticks.length / ( count or 1)))
+
     if orient == \left or orient == \right =>
       tickHeight = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.height)
       count = size / ((1.4 * tickHeight) || 14)

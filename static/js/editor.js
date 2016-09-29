@@ -404,9 +404,11 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       if (this.renderAsync.handler) {
         $timeout.cancel(this.renderAsync.handler);
       }
+      this.renderAsync.rebind = this.renderAsync.rebind || rebind;
       return this.renderAsync.handler = $timeout(function(){
         this$.renderAsync.handler = null;
-        return this$.render(rebind);
+        this$.render(this$.renderAsync.rebind);
+        return this$.renderAsync.rebind = false;
       }, delay);
     },
     parse: {
@@ -906,8 +908,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     editPanel: {
       attr: {},
       setStyle: function(data){
-        import$(this.attr, data.style);
-        return console.log(this.attr);
+        return import$(this.attr, data.style);
       },
       test: function(){
         return $scope.canvas.window.postMessage({

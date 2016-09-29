@@ -660,7 +660,7 @@ plotd3.rwd.axis = function(){
     }
   };
   ret.autotick = function(group, args){
-    var ref$, scale, orient, sizes, size, its, ots, tp, offset, format, ticks, that, count, domain, tickHeight, step, gbox, pbox;
+    var ref$, scale, orient, sizes, size, its, ots, tp, offset, format, count, ticks, domain, tickHeight, step, gbox, pbox;
     args == null && (args = []);
     axis.apply(group, args);
     ref$ = [axis.scale(), store.orient], scale = ref$[0], orient = ref$[1];
@@ -668,7 +668,7 @@ plotd3.rwd.axis = function(){
       sizes = scale.rangeExtent();
     } else {
       sizes = scale.range();
-      sizes = [sizes[0], sizes[1]];
+      sizes = [sizes[0], sizes[sizes.length - 1]];
       sizes.sort(function(a, b){
         return a - b;
       });
@@ -677,13 +677,19 @@ plotd3.rwd.axis = function(){
     ref$ = [axis.innerTickSize(), axis.outerTickSize(), axis.tickPadding()], its = ref$[0], ots = ref$[1], tp = ref$[2];
     offset = d3.max([its, ots]) + tp + 1;
     format = axis.tickFormat();
+    count = axis.ticks()[0];
     ticks = axis.tickValues() || (scale.ticks
-      ? scale.ticks((that = axis.ticks()[0]) ? that : 10)
-      : axis.ticks()[0]
-        ? (count = axis.ticks()[0], domain = scale.domain(), domain.filter(function(d, i){
+      ? scale.ticks(count ? count : 10)
+      : count
+        ? (domain = scale.domain(), domain.filter(function(d, i){
           return !(i % Math.round(domain.length / (count || 1)));
         }))
         : scale.domain());
+    if (ticks.length > count) {
+      ticks = ticks.filter(function(d, i){
+        return !(i % Math.round(ticks.length / (count || 1)));
+      });
+    }
     if (orient === 'left' || orient === 'right') {
       tickHeight = d3.max(group.selectAll('.tick text')[0].map(function(d, i){
         return d.getBBox().height;
