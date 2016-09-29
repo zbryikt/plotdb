@@ -16,7 +16,10 @@ plotdb.view = do
   chart: (chart, {theme, fields, root, data}={}) ->
     @_ = {handler: {}, _chart: JSON.stringify(chart), fields, root, inited: false}
     if chart =>
-      @_.chart = chart = eval(chart.code.content) <<< chart
+      code = chart.code.content
+      if code.0 == \{ => code = "(function() { return #code; })();"
+      else code = "(function() { #code; return module.exports; })();"
+      @_.chart = chart = eval(code) <<< chart
     plotdb.chart.update-dimension chart
     plotdb.chart.update-config chart, chart.config
     plotdb.chart.update-assets chart, chart.assets

@@ -88,7 +88,6 @@ svg, body, text {
 }
 text {
   text-anchor: middle;
-  dominant-baseline: central;
 }
 circle, rect, path {
   fill: #eee;
@@ -158,7 +157,8 @@ h3 {
     });
     this.texts.attr({
       x: function(it) { return it.x; },
-      y: function(it) { return it.y; }
+      y: function(it) { return it.y; },
+      dy: "0.76em"
     }).text(function(it) { return it.name; });
   }
 }

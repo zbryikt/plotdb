@@ -425,9 +425,8 @@ plotd3.rwd.legend = function(){
         dx = store.scale(data[data.length - 1]);
       }
       return node.select('text').attr({
-        "dominant-baseline": "hanging",
         "text-anchor": "start",
-        dy: 1,
+        dy: '0.75em',
         dx: size + 3 + dx,
         "font-size": store.fontSize != null ? store.fontSize : void 8
       });
@@ -442,7 +441,7 @@ plotd3.rwd.legend = function(){
       label.attr({
         "font-size": store.fontSize != null ? store.fontSize * 1.1 : void 8,
         "font-weight": 'bold',
-        "dominant-baseline": 'hanging'
+        dy: '0.7em'
       });
       if ((ref$ = store.orient) === 'bottom' || ref$ === 'top') {
         offset[0] += label[0][0].getBBox().width + store.padding[0] || 10;

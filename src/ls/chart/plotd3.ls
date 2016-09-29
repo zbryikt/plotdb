@@ -220,9 +220,8 @@ plotd3.rwd.legend = ->
       dx = 0
       if store.type == \radius => dx = store.scale data[* - 1]
       node.select \text .attr do
-        "dominant-baseline": "hanging"
         "text-anchor": "start"
-        dy: 1
+        dy: \0.76em
         dx: size + 3 + dx
         "font-size": store.font-size if store.font-size?
     offset = [0,0]
@@ -233,7 +232,7 @@ plotd3.rwd.legend = ->
       label.attr do
         "font-size": (store.font-size * 1.1) if store.font-size?
         "font-weight": \bold
-        "dominant-baseline": \hanging
+        dy: \0.76em
       if store.orient in <[bottom top]> => offset.0 += label.0.0.getBBox!width + store.padding.0 or 10
       else =>
         offset.1 += label.0.0.getBBox!height + store.padding.1 or 5

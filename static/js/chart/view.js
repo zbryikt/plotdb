@@ -29,7 +29,7 @@ plotdb.view = {
     return req.send();
   },
   chart: function(chart, arg$){
-    var ref$, theme, fields, root, data;
+    var ref$, theme, fields, root, data, code;
     ref$ = arg$ != null
       ? arg$
       : {}, theme = ref$.theme, fields = ref$.fields, root = ref$.root, data = ref$.data;
@@ -41,7 +41,13 @@ plotdb.view = {
       inited: false
     };
     if (chart) {
-      this._.chart = chart = import$(eval(chart.code.content), chart);
+      code = chart.code.content;
+      if (code[0] === '{') {
+        code = "(function() { return " + code + "; })();";
+      } else {
+        code = "(function() { " + code + "; return module.exports; })();";
+      }
+      this._.chart = chart = import$(eval(code), chart);
     }
     plotdb.chart.updateDimension(chart);
     plotdb.chart.updateConfig(chart, chart.config);
