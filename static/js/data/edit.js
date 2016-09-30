@@ -517,6 +517,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
     },
     load: function(file){
       var this$ = this;
+      file = file.file;
       eventBus.fire('loading.dimmer.on', 1);
       $scope.parser.progress(3000);
       return gapi.client.load('https://sheets.googleapis.com/$discovery/rest?version=v4').then(function(){

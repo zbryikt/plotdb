@@ -309,6 +309,7 @@ angular.module \plotDB
         @toggled = !!!@toggled
         if @toggled and !@files.length => @list!
       load: (file) ->
+        file = file.file
         eventBus.fire \loading.dimmer.on, 1
         $scope.parser.progress 3000
         gapi.client.load 'https://sheets.googleapis.com/$discovery/rest?version=v4'
