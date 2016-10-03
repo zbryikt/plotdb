@@ -34,6 +34,12 @@ plotdb.config = do
     type: [plotdb.Number]
     default: 13
     category: "Global Settings"
+  duration: do
+    name: "Animation Duration"
+    type: [plotdb.Number]
+    default: 1.5
+    desc: "Animation Duration, in second (e.g., 1.5)"
+    category: "Global Settings"
   background: do
     name: "Background"
     type: [plotdb.Color]
