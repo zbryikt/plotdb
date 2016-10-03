@@ -47,7 +47,7 @@ search = (default-type=0) -> (req, res) ->
           "select charts.key,charts.name as displayname,users.displayname as ownername,charts.owner,charts.description"
           "from charts,users where charts.owner = users.key"
           "and charts.name ~* $3" if keyword
-          "and charts.owner = $#{if keyword=> 4 else 3}" if scope = \owner
+          "and charts.owner = $#{if keyword=> 4 else 3}" if scope == \owner
           "offset $1 limit $2"
         ].filter(->it).join(" "),params)
       else return bluebird.resolve {}
