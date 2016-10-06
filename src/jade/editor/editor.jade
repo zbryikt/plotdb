@@ -34,6 +34,10 @@ include /widget/palette-edit-modal.jade
       .desc
         span(ng-cloak,ng-if="!target().assets.length") no file
         span(ng-cloak,ng-if="target().assets.length") {{target().assets.length}} files, {{target().assets.size|size}}
+    //-.tab.src(ng-class="{'active':vis=='writer','shown':showsrc}",ng-click="vis='writer'",ng-cloak)
+      div #[span writer] #[small]
+      .desc
+        span WYSIWYG
 .row
   .col-sm-3
     #config-panel.plpanel
@@ -134,6 +138,7 @@ include /widget/palette-edit-modal.jade
           span(ng-class="{'active':vis=='stylesheet'}",ng-click="vis='stylesheet'") #[i.fa.fa-paint-brush] Stylesheet
           span(ng-class="{'active':vis=='document'}",ng-click="vis='document'") #[i.fa.fa-code] Document
           span(ng-class="{'active':vis=='assets'}",ng-click="vis='assets'") #[i.fa.fa-files-o] Assets
+          //-span(ng-class="{'active':vis=='writer'}",ng-click="vis='writer'") #[i.fa.fa-files-o] Writer
       #code-editor-code.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",
       ng-model="target().code.content",ui-refresh="vis",ng-class="{'active':vis=='code'}")
       #code-editor-style.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",
@@ -159,7 +164,7 @@ include /widget/palette-edit-modal.jade
               i.fa.fa-compress(ng-show="editor.fullscreen.toggled")
           .btn.btn-default(ng-click="vis='preview'") Preview #[small.hint Alt-Enter]
     #visualization-canvas2.plpanel(ng-show="inited",
-    ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview'}")
+    ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview' || vis=='writer'}")
       .closebtn.inner(ng-click="editor.fullscreen.toggle()")
       .dropup(style="position:absolute",ng-show="editor.fullscreen.toggled")
         .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
@@ -238,7 +243,7 @@ include /widget/palette-edit-modal.jade
               a(href="#",ng-click="rwdtest.set('HVGA')") HVGA #[small.grayed (320x480)]
             li(ng-class="{'active':rwdtest.val=='Thumb'}")
               a(href="#",ng-click="rwdtest.set('Thumb')") Thumb#[small.grayed (308x229)]
-      //-iframe#chart-renderer(ng-attr-src="{{plotdbRenderer}}",
-      iframe#chart-renderer(
+      #chart-writer(ng-show="vis=='writer'",style="background:#fff;width:100%;height:100%;overflow:scroll"): .editable
+      iframe#chart-renderer(ng-show="vis=='preview'",
       style="width:100%;height:100%;border:none;background:url(/assets/img/loading-sm.svg) center center no-repeat")
 

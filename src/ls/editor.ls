@@ -795,6 +795,35 @@ angular.module \plotDB
         key = ret.2
         [location, key]= [(if ret.1 == \s => \server else \local), ret.2]
         $scope.load {name: $scope.type, location}, key
+      writer: do
+        handle: ->
+          if @handler => $timeout.cancel @handler
+          @handler = $timeout (->
+            $scope.target!doc.content = $('#chart-writer .editable').html!
+          ), 500
+        init: ->
+          editor = new MediumEditor $('#chart-writer .editable').0, do
+            toolbar: buttons: <[bold italic underline strikethrough list-extension h2 h3 h4 h5 orderedlist unorderedlist quote pre image subscript superscript justifyLeft justifyCenter justifyRight justifyFull]>
+            extensions: 'list-extension': new MediumEditorList!
+            placeholder: text: '<input>'
+            mediumEditorList: do
+              newParagraphTemplate: '<li>...</li>'
+              buttonTemplate: '<b>List</b>'
+              addParagraphTemplate: 'Add new paragraph'
+              isEditable: true
+          $('#chart-writer .editable').on \input, ~> @handle!
+
+          /*$('#chart-writer .editable').mediumInsert do
+            editor: editor
+            addons: do
+              images: do
+                fileUploadOptions: do
+                  url: \/d/comment/image
+                  acceptFileTypes: /(.|\/)(gif|jpe?g|png)$/i
+                #TODO need CSRF
+                deleteScript: \/d/comment/image
+                deleteMethod: \DELETE
+          */
       assets: do
         measure: ->
           $scope.target!.[]assets.size = $scope.target!.assets.map(-> it.content.length ).reduce(((a,b)->a+b),0)
@@ -1000,6 +1029,7 @@ angular.module \plotDB
         @share-panel.init!
         @data-panel.init!
         @edit-panel.init!
+        @writer.init!
         if @type == \theme => @charts.init!
         if @type == \chart => @themes.init!
 

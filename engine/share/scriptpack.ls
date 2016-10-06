@@ -8,6 +8,9 @@
           /assets/ldcolorpicker/0.1.1/ldcp.css
           /assets/codemirror/5.10/lib/codemirror.css
           /assets/clusterize/0.16.1/clusterize.css
+          /assets/medium-editor/5.15.1/css/medium-editor.min.css
+          /assets/medium-insert/2.2.4/css/base.min.css
+          /assets/medium-insert/2.2.4/css/frontend.min.css
           /css/index.css
         ]>
     js: do
@@ -69,6 +72,10 @@
           /assets/base64/0.1.0/base64.js
           /assets/select2/4.0.3/js/select2.full.min.js
           /assets/clusterize/0.16.1/clusterize.min.js
+          /assets/handlebars/4.0.5/handlebars.runtime.min.js
+          /assets/medium-editor/5.15.1/js/medium-editor.min.js
+          /assets/medium-insert/2.2.4/js/index.min.js
+          /assets/medium-list/1.0.5/medium-editor-list-min.js
           /js/plotdb.js
           /js/share/config.js
           /js/io.js

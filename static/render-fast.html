@@ -5631,6 +5631,13 @@ plotdb.config = {
     'default': '#919191',
     category: "Color"
   },
+  geoStrokeWidth: {
+    name: "Geoblock Stroke Width",
+    type: [plotdb.Number],
+    desc: "geographic path outline width",
+    'default': '1',
+    category: "Color"
+  },
   hoverFill: {
     name: "Hovering Fill Color",
     type: [plotdb.Color],

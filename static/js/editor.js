@@ -1455,6 +1455,39 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         location: location
       }, key);
     },
+    writer: {
+      handle: function(){
+        if (this.handler) {
+          $timeout.cancel(this.handler);
+        }
+        return this.handler = $timeout(function(){
+          return $scope.target().doc.content = $('#chart-writer .editable').html();
+        }, 500);
+      },
+      init: function(){
+        var editor, this$ = this;
+        editor = new MediumEditor($('#chart-writer .editable')[0], {
+          toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'strikethrough', 'list-extension', 'h2', 'h3', 'h4', 'h5', 'orderedlist', 'unorderedlist', 'quote', 'pre', 'image', 'subscript', 'superscript', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull']
+          },
+          extensions: {
+            'list-extension': new MediumEditorList()
+          },
+          placeholder: {
+            text: '<input>'
+          },
+          mediumEditorList: {
+            newParagraphTemplate: '<li>...</li>',
+            buttonTemplate: '<b>List</b>',
+            addParagraphTemplate: 'Add new paragraph',
+            isEditable: true
+          }
+        });
+        return $('#chart-writer .editable').on('input', function(){
+          return this$.handle();
+        });
+      }
+    },
     assets: {
       measure: function(){
         var ref$;
@@ -1878,6 +1911,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       this.sharePanel.init();
       this.dataPanel.init();
       this.editPanel.init();
+      this.writer.init();
       if (this.type === 'theme') {
         this.charts.init();
       }

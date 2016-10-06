@@ -431,3 +431,40 @@ plotd3.rwd.axis = ->
     axis.orient it
     return ret
   ret
+
+plotd3.rwd.grid = ->
+  store = {orient: "horizontal", length: 0}
+  ret = (group)->
+    scale = store.scale
+    ticks = if store.tickValues => that else if store.ticks => scale.ticks(that) else scale.ticks!
+    if <[horizontal vertical angle]>.indexOf(store.orient) >= 0 =>
+      len = store.size
+      group.selectAll "line.grid.#{store.orient}" .data ticks
+        ..exit!remove!
+        ..enter!append \line .attr class: "grid #{store.orient}"
+      if store.orient == \angle =>
+        group.selectAll "line.grid.angle" .attr do
+          x1: 0, y1: 0
+          x2: -> Math.cos(scale(it)) * len
+          y2: -> Math.sin(scale(it)) * len
+      if store.orient == \horizontal =>
+        group.selectAll "line.grid.horizontal" .attr x1: 0, x2: len,  y1: scale, y2: scale
+      if store.orient == \vertical =>
+        group.selectAll "line.grid.vertical" .attr x1: scale, x2: scale, y1: 0, y2: len
+    else if store.orient == \radial =>
+      group.selectAll "circle.grid.radial" .data ticks
+        ..exit!remove!
+        ..enter!append \circle .attr class: "grid radial"
+    group.selectAll \.grid .attr do
+      stroke: store.stroke if store.stroke
+      "stroke-width": store.strokeWidth if store.strokeWidth
+      "stroke-dasharray": store.strokeDashArray if store.strokeDashArray
+      fill: \none
+
+  <[orient tickValues size ticks scale stroke strokeWidth strokeDashArray]>.map (k) ->
+    ret[k] = ((k)-> ->
+      if !arguments.length => return store[k]
+      store[k] = it
+      return ret
+    ) k
+  ret
