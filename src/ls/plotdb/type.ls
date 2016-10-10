@@ -273,13 +273,17 @@ plotdb.Palette = do
     ordinal: (pal, domain, scale) ->
       c = pal.colors
       range = (c.filter(->it.keyword).map(->it.hex) ++ c.filter(->!it.keyword).map(->it.hex))
-      if !domain => domain = c.map(-> it.keyword).filter(-> it)
+      if !domain =>
+        if scale => domain = scale.domain!
+        else domain = c.map(-> it.keyword).filter(-> it)
       if !scale => scale = d3.scale.ordinal!
       scale.domain domain .range range
     linear: (pal, domain, scale) ->
       c = pal.colors
       range = (c.filter(->it.keyword).map(->it.hex) ++ c.filter(->!it.keyword).map(->it.hex))
-      if !domain => domain = c.map(->it.keyword).filter(->it?)
+      if !domain =>
+        if scale => domain = scale.domain!
+        else domain = c.map(->it.keyword).filter(->it?)
       if !scale => scale = d3.scale.lienar!
       scale.domain domain .range range
 

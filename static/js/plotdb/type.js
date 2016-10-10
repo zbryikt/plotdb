@@ -555,11 +555,15 @@ plotdb.Palette = {
         return it.hex;
       }));
       if (!domain) {
-        domain = c.map(function(it){
-          return it.keyword;
-        }).filter(function(it){
-          return it;
-        });
+        if (scale) {
+          domain = scale.domain();
+        } else {
+          domain = c.map(function(it){
+            return it.keyword;
+          }).filter(function(it){
+            return it;
+          });
+        }
       }
       if (!scale) {
         scale = d3.scale.ordinal();
@@ -579,11 +583,15 @@ plotdb.Palette = {
         return it.hex;
       }));
       if (!domain) {
-        domain = c.map(function(it){
-          return it.keyword;
-        }).filter(function(it){
-          return it != null;
-        });
+        if (scale) {
+          domain = scale.domain();
+        } else {
+          domain = c.map(function(it){
+            return it.keyword;
+          }).filter(function(it){
+            return it != null;
+          });
+        }
       }
       if (!scale) {
         scale = d3.scale.lienar();
