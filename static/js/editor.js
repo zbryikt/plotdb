@@ -19,6 +19,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     showsrc: window.innerWidth < 800 ? false : true,
     vis: 'preview',
     lastvis: null,
+    plotdbIO: plConfig.urlschema + "" + plConfig.domainIO,
     plotdbDomain: plConfig.urlschema + "" + plConfig.domain,
     plotdbRenderer: plConfig.urlschema + "" + plConfig.domain + "/render.html",
     error: {
@@ -1607,6 +1608,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       this.$watch('chart', function(chart){
         if (!chart) {
           return;
+        }
+        if ($scope.type === 'chart') {
+          $scope.viewUrl = $scope.plotdbIO + "/v/chart/" + chart.key;
         }
         return this$.renderAsync();
       });

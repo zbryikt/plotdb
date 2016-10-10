@@ -270,16 +270,18 @@ plotdb.Palette = do
     sequential: "sequential"
     diverging: "diverging"
   scale: do
-    ordinal: (pal) ->
+    ordinal: (pal, domain, scale) ->
       c = pal.colors
       range = (c.filter(->it.keyword).map(->it.hex) ++ c.filter(->!it.keyword).map(->it.hex))
-      domain = c.map(-> it.keyword).filter(-> it)
-      d3.scale.ordinal!domain domain .range range
-    linear: (pal, domain) ->
+      if !domain => domain = c.map(-> it.keyword).filter(-> it)
+      if !scale => scale = d3.scale.ordinal!
+      scale.domain domain .range range
+    linear: (pal, domain, scale) ->
       c = pal.colors
       range = (c.filter(->it.keyword).map(->it.hex) ++ c.filter(->!it.keyword).map(->it.hex))
       if !domain => domain = c.map(->it.keyword).filter(->it?)
-      d3.scale.linear!domain domain .range range
+      if !scale => scale = d3.scale.lienar!
+      scale.domain domain .range range
 
 plotdb.OrderTypes = [
   plotdb.Number, plotdb.Date, plotdb.Numstring, plotdb.Month, plotdb.Weekday, plotdb.Boolean, plotdb.Bit

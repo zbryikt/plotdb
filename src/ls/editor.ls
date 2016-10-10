@@ -10,6 +10,7 @@ angular.module \plotDB
       showsrc: (if window.innerWidth < 800 => false else true)
       vis: \preview
       lastvis: null
+      plotdbIO: "#{plConfig.urlschema}#{plConfig.domainIO}"
       plotdb-domain: "#{plConfig.urlschema}#{plConfig.domain}" #"#{plConfig.urlschema}#{plConfig.domainIO}"
       #plotdb-renderer: $sce.trustAsResourceUrl("#{plConfig.urlschema}#{plConfig.domainIO}/render.html")
       plotdb-renderer: "#{plConfig.urlschema}#{plConfig.domain}/render.html"
@@ -876,6 +877,7 @@ angular.module \plotDB
           if @chart => @chart.theme = if theme => theme.key else null
         @$watch 'chart', (chart) ~>
           if !chart => return
+          if $scope.type == \chart => $scope.viewUrl = "#{$scope.plotdbIO}/v/chart/#{chart.key}"
           @render-async!
         @$watch 'chart.theme', (key) ~>
           if @type == \chart => @theme = @themes.list.filter(-> it.key == key).0

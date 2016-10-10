@@ -40,7 +40,9 @@ mixin permPanel(type)
         .info
           .name
             span {{perm.displayname}}
-            small(ng-cloak): a(ng-show="perm.type=='token'",ng-attr-href="?token={{perm.target}}",target="_blank") #[i.fa.fa-link] 
+            small(ng-cloak): a(ng-show="perm.type=='token'",ng-attr-href="?token={{perm.target}}",target="_blank") #[i.fa.fa-link] edit link
+            span  &nbsp; 
+            small(ng-cloak,ng-show="viewUrl"): a(ng-show="perm.type=='token'",ng-attr-href="{{viewUrl}}?token={{perm.target}}",target="_blank") #[i.fa.fa-link] shareble link
           .type
             span {{perm.type}} 
             span / id: {{perm.target}}

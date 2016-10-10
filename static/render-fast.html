@@ -5019,8 +5019,8 @@ plotdb.Palette = {
     diverging: "diverging"
   },
   scale: {
-    ordinal: function(pal){
-      var c, range, domain;
+    ordinal: function(pal, domain, scale){
+      var c, range;
       c = pal.colors;
       range = c.filter(function(it){
         return it.keyword;
@@ -5031,14 +5031,19 @@ plotdb.Palette = {
       }).map(function(it){
         return it.hex;
       }));
-      domain = c.map(function(it){
-        return it.keyword;
-      }).filter(function(it){
-        return it;
-      });
-      return d3.scale.ordinal().domain(domain).range(range);
+      if (!domain) {
+        domain = c.map(function(it){
+          return it.keyword;
+        }).filter(function(it){
+          return it;
+        });
+      }
+      if (!scale) {
+        scale = d3.scale.ordinal();
+      }
+      return scale.domain(domain).range(range);
     },
-    linear: function(pal, domain){
+    linear: function(pal, domain, scale){
       var c, range;
       c = pal.colors;
       range = c.filter(function(it){
@@ -5057,7 +5062,10 @@ plotdb.Palette = {
           return it != null;
         });
       }
-      return d3.scale.linear().domain(domain).range(range);
+      if (!scale) {
+        scale = d3.scale.lienar();
+      }
+      return scale.domain(domain).range(range);
     }
   }
 };
