@@ -23,7 +23,9 @@ dataToRaw = function(e){
     if (!it) {
       return it;
     }
-    it = it.replace(/"/g, '""');
+    if (it.replace) {
+      it = it.replace(/"/g, '""');
+    }
     if (/[ ,\n\t]/.exec(it)) {
       it = "\"" + it + "\"";
     }
