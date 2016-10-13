@@ -400,7 +400,7 @@ plotdb.config = do
 
   sort: do
     name: "Sort data"
-    type: [plotdb.Choice("Ascending","Descending","None")]
+    type: [plotdb.Choice(<[Ascending Descending None]>)]
     default: "Descending"
     category: "Value"
     

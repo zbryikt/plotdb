@@ -1422,7 +1422,7 @@ plotdb.config = {
   },
   sort: {
     name: "Sort data",
-    type: [plotdb.Choice("Ascending", "Descending", "None")],
+    type: [plotdb.Choice(['Ascending', 'Descending', 'None'])],
     'default': "Descending",
     category: "Value"
   },
