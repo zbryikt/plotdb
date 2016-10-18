@@ -139,6 +139,13 @@ include /widget/palette-edit-modal.jade
           span(ng-class="{'active':vis=='document'}",ng-click="vis='document'") #[i.fa.fa-code] Document
           span(ng-class="{'active':vis=='assets'}",ng-click="vis='assets'") #[i.fa.fa-files-o] Assets
           //-span(ng-class="{'active':vis=='writer'}",ng-click="vis='writer'") #[i.fa.fa-files-o] Writer
+      #code-inherit.box.text-center(ng-class="{'active':chart.inherit.indexOf(vis)>=0}")
+        br
+        br
+        span code inherited from parent chart.
+        br
+        br
+        .btn.btn-default(ng-click="inheritHandle.toggle(vis)") make a copy
       #code-editor-code.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",
       ng-model="target().code.content",ui-refresh="vis",ng-class="{'active':vis=='code'}")
       #code-editor-style.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",

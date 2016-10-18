@@ -313,6 +313,14 @@ base = function(model){
       code: {
         type: base.file
       },
+      inherit: {
+        max: 10,
+        required: false,
+        type: model.type.array({
+          max: 20,
+          type: model.type.string
+        })
+      },
       assets: {
         required: false,
         type: model.type.array({

@@ -58,7 +58,7 @@ angular.module \plotDB
             s.model = $(e)val!
             if a.$attr["ngDetail"] => s.detail = $(e).select2('data')
         ),0
-      s.$watch 'model', (vals) ~>
+      s.$watch 'model', ((vals) ~>
         # escaped html from jquery.
         # jquery.val won't help select2 build option tags so we have to do this by ourselves
         if config.tags =>
@@ -66,6 +66,7 @@ angular.module \plotDB
           for val in (vals or []) => html += $("<option></option>").val(val).text(val).0.outerHTML
           $(e).html(html)
         if changed! => setTimeout (-> $(e).val(vals).trigger(\change) ),0
+      ), true
   ..directive \readby, <[$compile]> ++ ($compile) ->
     do
       scope: do

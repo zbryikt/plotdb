@@ -74,7 +74,11 @@ angular.module \plotDB
       _save: (nothumb = false)->
         if !$scope.writable and @target!.owner != @user.data.key =>
           key = (if @target!._type.location == \server => @target!.key else null)
-          @target! <<< {key: null, owner: null} #, permission: {switch: <[public]>, value: []}}
+          @target! <<< do
+            key: null
+            owner: null
+            inherit: <[code document stylesheet assets]>
+            #permission: {switch: <[public]>, value: []}}
           if !@target!permission => @target!permission = {switch: \publish, list: []}
           # clone will set parent beforehand. so we only set it if necessary.
           if key => @target! <<< {parent: key}
@@ -448,6 +452,11 @@ angular.module \plotDB
           toggle: ->
             @idx = (@idx + 1) % (@modes.length)
             $scope.editor.update!
+      inherit-handle: do
+        toggle: ->
+          idx = $scope.chart.inherit.indexOf(it)
+          if idx >= 0 => $scope.chart.inherit.splice idx, 1
+          else $scope.chart.inherit.push it
       setting-panel: do
         tab: \publish
         /*permcheck: ->
@@ -469,6 +478,7 @@ angular.module \plotDB
               if !v and !old[k] => continue
               $scope.chart[k] = v
           ), true
+          $scope.$watch 'chart.inherit', (~> @chart.inherit = it), true
           $scope.$watch 'chart.basetype', ~> @chart.basetype = it
           $scope.$watch 'chart.visualencoding', ~> @chart.visualencoding = it
           $scope.$watch 'chart.category', ~> @chart.category = it
@@ -484,6 +494,7 @@ angular.module \plotDB
           category: null
           tags: null
           library: null
+          inherit: null
       edit-panel: do
         attr: {}
         set-style: (data)-> @attr <<< data.style

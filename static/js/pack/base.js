@@ -3721,7 +3721,7 @@ x$.directive('ngselect2', ['$compile', 'entityService'].concat(function($compile
             return $(e).val(vals).trigger('change');
           }, 0);
         }
-      });
+      }, true);
     }
   };
 }));
@@ -3894,13 +3894,15 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     },
     _save: function(nothumb){
-      var key, ref$, refresh, k, this$ = this;
+      var key, refresh, k, this$ = this;
       nothumb == null && (nothumb = false);
       if (!$scope.writable && this.target().owner !== this.user.data.key) {
         key = this.target()._type.location === 'server' ? this.target().key : null;
-        ref$ = this.target();
-        ref$.key = null;
-        ref$.owner = null;
+        import$(this.target(), {
+          key: null,
+          owner: null,
+          inherit: ['code', 'document', 'stylesheet', 'assets']
+        });
         if (!this.target().permission) {
           this.target().permission = {
             'switch': 'publish',
@@ -4614,6 +4616,17 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }
       }
     },
+    inheritHandle: {
+      toggle: function(it){
+        var idx;
+        idx = $scope.chart.inherit.indexOf(it);
+        if (idx >= 0) {
+          return $scope.chart.inherit.splice(idx, 1);
+        } else {
+          return $scope.chart.inherit.push(it);
+        }
+      }
+    },
     settingPanel: {
       tab: 'publish'
       /*permcheck: ->
@@ -4639,6 +4652,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             results$.push($scope.chart[k] = v);
           }
           return results$;
+        }, true);
+        $scope.$watch('chart.inherit', function(it){
+          return this$.chart.inherit = it;
         }, true);
         $scope.$watch('chart.basetype', function(it){
           return this$.chart.basetype = it;
@@ -4668,7 +4684,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         visualencoding: null,
         category: null,
         tags: null,
-        library: null
+        library: null,
+        inherit: null
       }
     },
     editPanel: {

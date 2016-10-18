@@ -14,6 +14,36 @@ if true =>
     res.header('Access-Control-Allow-Headers', 'Content-Type')
     next!
 
+get-chart = (req, id, permcheck = true) ->
+  chart = null
+  io.query([
+    'select users.displayname as ownername, charts.*'
+    'from users,charts where users.key = owner and'
+    "charts.key=$1"
+  ].join(" "), [id])
+    .then (it={}) ->
+      chart := it.[]rows.0
+      if !chart => return aux.reject 404
+      if chart.inherit and chart.inherit.length and chart.parent =>
+        io.query(
+          'select charts.doc, charts.style, charts.code, charts.assets from charts where key = $1',
+          [chart.parent]
+        )
+      else return bluebird.resolve {}
+    .then (it={}) ->
+      parent = it.[]rows.0
+      if !parent => return {}
+      chart.doc = parent.doc if 'document' in chart.inherit
+      chart.style = parent.style if 'stylesheet' in chart.inherit
+      chart.assets = parent.assets if 'assets' in chart.inherit
+      chart.code = parent.code if 'code' in chart.inherit
+    .then ->
+      permission = chart.permission
+      if !perm.test(req, chart.{}permission, chart.owner, \admin) => delete chart.permission
+      if permcheck =>
+        if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.reject 403
+      return {chart, permission}
+
 engine.router.api.get "/chart/", (req, res) ->
   offset = req.query.offset or 0
   limit = (req.query.limit or 20) <? 100
@@ -85,20 +115,9 @@ engine.router.api.get "/chart/", (req, res) ->
       res.send []
 
 engine.router.api.get "/chart/:id", aux.numid false, (req, res) ->
-  io.query([
-    'select users.displayname as ownername, charts.*'
-    'from users,charts where users.key = owner and'
-    "charts.key=$1"
-  ].join(" "), [req.params.id])
-    .then (it={}) ->
-      chart = it.[]rows.0
-      if !chart => return aux.r404 res
-      if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.r403 res, "forbidden"
-      if !perm.test(req, chart.{}permission, chart.owner, \admin) => delete chart.permission
-      return res.json chart
-    .catch ->
-      console.error it.stack
-      return aux.r403 res
+  get-chart req, req.params.id
+    .then ({chart, permission}) -> return res.json it
+    .catch aux.error-handler res
 
 engine.router.api.post "/chart/", (req, res) ->
   data = []
@@ -220,27 +239,15 @@ engine.app.get \/chart/, (req, res) ->
   return res.render 'view/chart/index.jade', {chart: {}}
 
 engine.app.get \/chart/:id, aux.numid true, (req, res) ->
-  io.query(
-    [
-      "select charts.*,users.displayname as ownername"
-      "from charts,users where charts.key = $1 and charts.owner=users.key"
-    ].join(" "),
-    [req.params.id]
-  )
-    .then (r = {}) ->
-      chart = r.[]rows.0
-      if !chart => return aux.r404 res, "", true
-      if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.r403 res, "forbidden", true
-      permtype = perm.caltype req, chart.{}permission, chart.owner
-      if !perm.test(req, chart.{}permission, chart.owner, \admin) => delete chart.permission
+  get-chart req, req.params.id
+    .then ({chart,permission}) ->
+      permtype = perm.caltype req, permission, chart.owner
       res.render 'view/chart/index.jade', {chart,permtype}, (err, html) ->
         # size
         # console.log html.length
         res.send html
       return null
-    .catch ->
-      console.error it.stack
-      return aux.r403 res, "no luck.", true
+    .catch aux.error-handler res, true
 
 engine.router.api.put \/chart/:id/like, aux.numid false, (req, res) ->
   if !req.user => return aux.r403 res
@@ -272,23 +279,23 @@ engine.router.api.put \/chart/:id/like, aux.numid false, (req, res) ->
 
 
 engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
-  [chart,theme] = [null,null]
-  io.query([
-    'select users.displayname as ownername, users.payment as payment, charts.* from users,charts'
-    'where users.key = owner and charts.key=$1'
-  ].join(" "), [req.params.id])
-    .then (it={}) ->
-      chart := it.[]rows.0
+  [chart,theme,permission] = [null,null,null]
+  get-chart req, req.params.id, false
+    .then ({chart: c, permission: p}) ->
+      chart := c
+      permission := p
+      io.query "select users.payment from users where users.key = $1", [chart.owner]
+    .then (r = {})->
+      payment = r.[]rows.0 or {}
       token = req.query.token or null
-      if !chart => return bluebird.reject new Error(404)
-      if (chart.{}permission.switch != \publish)
+      if !chart => return aux.reject 404
+      if (permission.switch != \publish)
       and (!req.user or chart.owner != req.user.key)
-      and (!token or chart.{}permission.list.filter(->
+      and (!token or permission.list.filter(->
         it.type==\token and it.target == token and perm.type.indexOf(it.perm) >= perm.type.indexOf(\read)
-      ).length == 0)
-        => return bluebird.reject new Error(403)
-      delete chart.permission
-      chart.plan = chart.{}payment.plan or 0
+      ).length == 0) =>
+        return aux.reject 403
+      chart.plan = payment.plan or 0
       if !chart.theme => return bluebird.resolve!
       io.query "select * from themes where key = chart.theme"
     .then (r={}) ->
@@ -322,8 +329,4 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
         # console.log html.length
         res.send html
       return null
-    .catch ->
-      if it.message == \404 => return res.render 'view/chart/404.jade'
-      if it.message == \403 => return res.render 'view/chart/403.jade'
-      console.error it.stack
-      return aux.r403 res
+    .catch aux.error-handler res, true

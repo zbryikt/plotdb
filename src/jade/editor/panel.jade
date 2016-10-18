@@ -71,6 +71,14 @@ mixin searchable
           h3(style="margin:0") Library
           small.grayed pick libraries you want to use from this dropdown box.
         include /widget/library.jade
+        .sep
+        label Inherit Content from Source Chart
+        select.form-control(multiple,ngselect2,ng-data="settingPanel.chart.inherit")
+          option(value="code") code
+          option(value="stylesheet") stylesheet
+          option(value="document") document
+          option(value="assets") assets
+          option(value="config") config
 
     .panel-footer.text-right(style="padding-left: 5px")
       .btn.btn-default.btn-sm.pull-left.loader(ng-click="clone()",

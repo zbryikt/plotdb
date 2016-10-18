@@ -87,6 +87,7 @@ base = (model) ->
       doc: {type: base.file}
       style: {type: base.file}
       code: {type: base.file}
+      inherit: {max: 10, required: false, type: model.type.array({max: 20, type: model.type.string})}
       assets: {required: false, type: model.type.array({type: base.file})}
       permission: {required: false, type: model.type.permission}
       library: { required: false, type: model.type.array({type: model.type.string})}

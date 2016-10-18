@@ -153,7 +153,7 @@ x$.directive('ngselect2', ['$compile', 'entityService'].concat(function($compile
             return $(e).val(vals).trigger('change');
           }, 0);
         }
-      });
+      }, true);
     }
   };
 }));

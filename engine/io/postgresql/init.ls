@@ -122,7 +122,7 @@ alter-charts-table = """
 do $$
   begin
     begin
-      alter table charts add column local jsonb;
+      alter table charts add column inherit text[];
     exception
       when duplicate_column then raise notice '';
     end;
