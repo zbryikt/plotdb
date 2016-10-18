@@ -196,7 +196,7 @@ engine.router.api.post \/team/, (req, res) ->
     .catch aux.error-handler res
 
 team-permission = (req, res, level = \admin, fetch-all = false) ->
-  <- Promise.resolve!then
+  <- bluebird.resolve!then
   if !req.user => return aux.reject 403
   io.query "select #{if fetch-all => '*' else 'owner,permission'} from teams where key=$1", [req.params.tid]
     .then (r={})->
