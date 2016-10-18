@@ -60,6 +60,19 @@ plotdb.config = do
     type: [plotdb.Boolean]
     default: true
     category: "Layout"
+  zeroBaseline: do
+    name: "Zero Baseline"
+    desc: "y Axis starts with zero"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Global Settings"
+  popupShow: do
+    name: "show Popup"
+    desc: "show Popup when user hovers over elements"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Popup"
+    rebindOnChange: true
 
   boxRoundness: do
     name: "Block Roundness"

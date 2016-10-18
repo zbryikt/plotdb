@@ -1073,6 +1073,21 @@ plotdb.config = {
     'default': true,
     category: "Layout"
   },
+  zeroBaseline: {
+    name: "Zero Baseline",
+    desc: "y Axis starts with zero",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Global Settings"
+  },
+  popupShow: {
+    name: "show Popup",
+    desc: "show Popup when user hovers over elements",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Popup",
+    rebindOnChange: true
+  },
   boxRoundness: {
     name: "Block Roundness",
     type: [plotdb.Number],
