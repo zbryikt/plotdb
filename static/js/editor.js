@@ -136,7 +136,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         import$(this.target(), {
           key: null,
           owner: null,
-          inherit: ['code', 'document', 'stylesheet', 'assets']
+          inherit: []
         });
         if (!this.target().permission) {
           this.target().permission = {

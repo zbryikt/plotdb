@@ -77,7 +77,7 @@ angular.module \plotDB
           @target! <<< do
             key: null
             owner: null
-            inherit: <[code document stylesheet assets]>
+            inherit: <[]> # could be : <[code document stylesheet assets]>. config -> TBD
             #permission: {switch: <[public]>, value: []}}
           if !@target!permission => @target!permission = {switch: \publish, list: []}
           # clone will set parent beforehand. so we only set it if necessary.
