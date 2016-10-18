@@ -40,8 +40,7 @@ get-chart = (req, id, permcheck = true) ->
     .then ->
       permission = chart.permission
       if !perm.test(req, chart.{}permission, chart.owner, \admin) => delete chart.permission
-      if permcheck =>
-        if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.reject 403
+      if permcheck => if !perm.test(req, permission, chart.owner, \read) => return aux.reject 403
       return {chart, permission}
 
 engine.router.api.get "/chart/", (req, res) ->
