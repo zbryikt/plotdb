@@ -737,9 +737,11 @@ plotd3.rwd.axis = function(){
         group.select('g.tick:first-of-type text').style({
           "text-anchor": 'start'
         });
-        group.select('g.tick:last-of-type text').style({
-          "text-anchor": 'end'
-        });
+        if (group.selectAll('g.tick')[0].length > 1) {
+          group.select('g.tick:last-of-type text').style({
+            "text-anchor": 'end'
+          });
+        }
       }
     }
     return group.selectAll("path,line").attr({
