@@ -58,7 +58,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
       scope: '@ngScope'
     },
     link: function(s, e, a, c){
-      var dropdownCloseOnClick, autoHideInput, config, dropdown, input, paging, handler, idmap, sync, fetch, repos, close;
+      var dropdownCloseOnClick, autoHideInput, config, dropdown, input, paging, handler, idmap, sync, fetch, repos, close, inputHandler;
       dropdownCloseOnClick = true;
       autoHideInput = false;
       config = entityService.config.plselect[s.type || 'entity'];
@@ -210,19 +210,13 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
           return repos();
         }
       });
-      input.on('blur', function(){
-        return close(100);
-      });
-      input.on('keydown', function(ev){
-        var keycode, lastValue;
-        keycode = ev.keyCode;
-        if (keycode === 27) {
-          return input.blur();
-        }
+      inputHandler = function(ev){
+        var lastValue;
+        ev == null && (ev = {});
         e.addClass('open');
         dropdown.show();
         s.portal.options = [];
-        lastValue = input.val();
+        lastValue = input.val().trim();
         return $timeout(function(){
           paging = {
             limit: 20,
@@ -239,6 +233,20 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
             });
           }
         }, 0);
+      };
+      input[0].addEventListener('paste', function(){
+        return inputHandler();
+      });
+      input.on('blur', function(){
+        return close(100);
+      });
+      input.on('keydown', function(ev){
+        var keycode;
+        keycode = ev.keyCode;
+        if (keycode === 27) {
+          return input.blur();
+        }
+        return inputHandler(ev);
       });
       return dropdown.on('scroll', function(ev){
         var base, last, y;

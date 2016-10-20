@@ -125,15 +125,11 @@ angular.module \plotDB
           dropdown.show!
           e.addClass \open
           repos!
-
-      input.on \blur, -> close 100
-      input.on \keydown, (ev) ->
-        keycode = ev.keyCode
-        if keycode == 27 => return input.blur!
+      input-handler = (ev={}) ->
         e.addClass \open
         dropdown.show!
         s.portal.options = []
-        last-value = input.val!
+        last-value = input.val!trim!
         $timeout (-> # for correct input.val!
           paging := limit: 20, offset: 0
           s.portal.needchar = 3 - input.val!length
@@ -142,6 +138,13 @@ angular.module \plotDB
             s.portal.data.splice s.portal.data.length - 1, 1
             repos!
         ), 0
+
+      input.0.addEventListener \paste, -> input-handler!
+      input.on \blur, -> close 100
+      input.on \keydown, (ev) ->
+        keycode = ev.keyCode
+        if keycode == 27 => return input.blur!
+        input-handler ev
       dropdown.on \scroll, (ev) ->
         base = dropdown.0.getBoundingClientRect!
         last = dropdown.find '.select-option'
