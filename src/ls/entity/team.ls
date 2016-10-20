@@ -84,17 +84,25 @@ angular.module \plotDB
         data: $scope.newCharts.filter(->it.owner == $scope.user.data.key).map -> it.key
       .success (d) ->
         $scope.charts ++= $scope.newCharts.filter(->ckeys.indexOf(it.key)<0)
+        $scope.newCharts.splice 0
         plNotify.send \success, "charts added"
       .error (d) ->
         plNotify.send \error, "failed to add charts. try again later?"
     $scope.add-members = (tid) ->
       if !$scope.newMembers or !$scope.newMembers.length => return
+      ckey = $scope.members.map -> it.key
+      nkey = $scope.newMembers.map -> it.key
+      nkey = nkey.filter -> ckey.indexOf(it)<0
+      if nkey.length < $scope.newMembers.length =>
+        plNotify.send \warning, "some users are already in this team"
+      if nkey.length == 0 => return
       $http do
         url: "/d/team/#tid/member/"
         method: \POST
-        data: $scope.newMembers.map -> it.key
+        data: nkey
       .success (d) ->
-        $scope.members ++= $scope.newMembers.filter(->$scope.members.indexOf(it.key)<0)
+        $scope.members ++= $scope.newMembers.filter(->ckey.indexOf(it.key)<0)
+        $scope.newMembers.splice 0
         plNotify.send \success, "members added"
       .error (d) ->
         plNotify.send \error, "failed to add members. try again later?"

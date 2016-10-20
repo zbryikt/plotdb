@@ -11314,25 +11314,41 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
       $scope.charts = $scope.charts.concat($scope.newCharts.filter(function(it){
         return ckeys.indexOf(it.key) < 0;
       }));
+      $scope.newCharts.splice(0);
       return plNotify.send('success', "charts added");
     }).error(function(d){
       return plNotify.send('error', "failed to add charts. try again later?");
     });
   };
   $scope.addMembers = function(tid){
+    var ckey, nkey;
     if (!$scope.newMembers || !$scope.newMembers.length) {
+      return;
+    }
+    ckey = $scope.members.map(function(it){
+      return it.key;
+    });
+    nkey = $scope.newMembers.map(function(it){
+      return it.key;
+    });
+    nkey = nkey.filter(function(it){
+      return ckey.indexOf(it) < 0;
+    });
+    if (nkey.length < $scope.newMembers.length) {
+      plNotify.send('warning', "some users are already in this team");
+    }
+    if (nkey.length === 0) {
       return;
     }
     return $http({
       url: "/d/team/" + tid + "/member/",
       method: 'POST',
-      data: $scope.newMembers.map(function(it){
-        return it.key;
-      })
+      data: nkey
     }).success(function(d){
       $scope.members = $scope.members.concat($scope.newMembers.filter(function(it){
-        return $scope.members.indexOf(it.key) < 0;
+        return ckey.indexOf(it.key) < 0;
       }));
+      $scope.newMembers.splice(0);
       return plNotify.send('success', "members added");
     }).error(function(d){
       return plNotify.send('error', "failed to add members. try again later?");
