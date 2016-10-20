@@ -13,16 +13,18 @@ perm-handler = do
   calc: (req, perm, owner) ->
     maxlv = -> Math.max.apply null, it.map(->it._idx)
     [user,token,teams] = [(req.user or null), (req.{}query.token or null),(req.{}user.teams or null)]
+    teams = (teams or []).map -> it.team or it
     if user and +owner and user.key == +owner => return @type.indexOf(\admin)
     if !perm or !perm.[]list.length => return @none-idx
     max = 0
     perm.list.map(~>
       it._idx = @type.indexOf(it.perm)
-      val = if it.type == \global => it._idx
-      else if it.type == \user and user and user.key == +it.target => it._idx
-      else if it.type == \token and token == it.target => it._idx
-      else if it.type == \team and teams and teams.indexOf(+it.target)>=0 => it._idx
-      else 0
+      val = Math.max(
+        if it.type == \global => it._idx else 0
+        if it.type == \user and user and user.key == +it.target => it._idx else 0
+        if it.type == \token and token == it.target => it._idx else 0
+        if it.type == \team and teams and teams.indexOf(+it.target)>=0 => it._idx else 0
+      )
       if max < val => max := val
     )
     return max

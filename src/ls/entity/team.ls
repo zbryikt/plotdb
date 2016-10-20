@@ -72,12 +72,18 @@ angular.module \plotDB
     $scope.add-charts = (tid) ->
       if !$scope.user.data => return plNotify.send \error, "permission denied"
       if !$scope.newCharts or !$scope.newCharts.length => return
+      keys = $scope.newCharts.filter(->it.owner == $scope.user.data.key).map -> it.key
+      ckeys = $scope.charts.map -> it.key
+      keys = keys.filter -> ckeys.indexOf(it) < 0
+      if keys.length < $scope.newCharts.length =>
+        plNotify.send \warning, "some charts are already in this team"
+      if keys.length == 0 => return
       $http do
         url: "/d/team/#tid/chart/"
         method: \post
         data: $scope.newCharts.filter(->it.owner == $scope.user.data.key).map -> it.key
       .success (d) ->
-        $scope.charts ++= $scope.newCharts.filter(->$scope.charts.indexOf(it.key)<0)
+        $scope.charts ++= $scope.newCharts.filter(->ckeys.indexOf(it.key)<0)
         plNotify.send \success, "charts added"
       .error (d) ->
         plNotify.send \error, "failed to add charts. try again later?"

@@ -127,14 +127,14 @@ batch-add-members = (req, res, tid, uids) ->
     .then -> bluebird.all [update-user-teams req, res, uid for uid in uids]
 
 
-batch-add-charts = (req, res, tid, cids) ->
+batch-add-charts = (req, res, team, cids) ->
   if !Array.isArray(cids) or cids.length == 0 => return bluebird.resolve!
   promises = [
     io.query([
       "insert into teamcharts (team,chart) values"
       ["($1,$#i)" for i from 2 to cids.length + 1].join(",")
       "on conflict do nothing"
-    ].join(" "), [tid] ++ cids),
+    ].join(" "), [team.key] ++ cids),
     io.query([
       "select key,permission,owner from charts where key in ("
       ["$#{i + 1}" for i from 0 til cids.length].join(\,)
@@ -144,9 +144,14 @@ batch-add-charts = (req, res, tid, cids) ->
         charts = r.[]rows.filter -> req.user and req.user.key == it.owner
         params = []
         charts.forEach (c) ->
-          item = c.permission.list.filter(-> it.type == \team and it.target = tid).0
+          item = c.permission.list.filter(-> it.type == \team and it.target = team.key).0
           if !item =>
-            item = {perm: \write, type: \team, target: tid}
+            item = do
+              perm: \write
+              type: \team
+              target: team.key
+              avatar: team.avatar
+              displayname: team.name
             c.{}permission.[]list.push item
           item.perm = \write
           params.push c.key
@@ -198,7 +203,7 @@ engine.router.api.post \/team/, (req, res) ->
 team-permission = (req, res, level = \admin, fetch-all = false) ->
   <- bluebird.resolve!then
   if !req.user => return aux.reject 403
-  io.query "select #{if fetch-all => '*' else 'owner,permission'} from teams where key=$1", [req.params.tid]
+  io.query "select #{if fetch-all => '*' else 'name,avatar,key,owner,permission'} from teams where key=$1", [req.params.tid]
     .then (r={})->
       team = r.[]rows.0
       if !team => return aux.reject 404
@@ -284,10 +289,10 @@ engine.router.api.post \/team/:tid/member/, aux.numids false, <[tid]>, (req, res
 #TODO length limit, according plan
 engine.router.api.post \/team/:tid/chart/, aux.numids false, <[tid]>, (req, res) ->
   team-permission req, res, \write
-    .then ->
+    .then (team) ->
       if !Array.isArray(req.body) => return aux.reject 400
       charts = req.body.map(->+it).filter(->it and !isNaN(it))
-      batch-add-charts req, res, req.params.tid, charts
+      batch-add-charts req, res, team, charts
     .then -> res.send!
     .catch aux.error-handler res
 
@@ -308,13 +313,20 @@ engine.router.api.delete \/team/:tid/member/:mid, aux.numids false, <[tid mid]>,
 
 engine.router.api.post \/team/:tid/chart/:cid, aux.numids false, <[tid cid]>, (req, res) ->
   team-permission req, res, \write
-    .then -> batch-add-charts req, res, req.params.tid, [req.params.cid]
+    .then -> batch-add-charts req, res, team, [req.params.cid]
     .then -> res.send!
     .catch aux.error-handler res
 
 engine.router.api.delete \/team/:tid/chart/:cid, aux.numids false, <[tid cid]>, (req, res) ->
   team-permission req, res, \write
     .then -> io.query "delete from teamcharts where team=$1 and chart=$2", [req.params.tid, req.params.cid]
+    .then -> io.query "select permission from charts where key = $1", [req.params.cid]
+    .then (r={}) ->
+      chart = r.[]rows.0
+      if chart =>
+        chart.permission.list = chart.permission.list.filter -> !(it.type == \team and it.target == +req.params.tid)
+        io.query "update charts set (permission) = ($2) where key = $1", [req.params.cid, chart.permission]
+      else bluebird.resolve!
     .then -> res.send!
     .catch aux.error-handler res
 

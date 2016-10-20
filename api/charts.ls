@@ -123,21 +123,28 @@ engine.router.api.post "/chart/", (req, res) ->
   if !req.user => return aux.r403 res
   if typeof(req.body) != \object => return aux.r400 res
   if control.size-limit req.user => return aux.r402 res, 'exceed size limit'
-  team = null
-  io.query "select count(key) as count from charts where owner = $1", [req.user.key]
+  team = +req.query.team
+  promise = if team =>
+    io.query "select teams.key, teams.avatar, teams.name from teams where key = $1", [team]
+  else bluebird.resolve!
+  promise
+    .then (r={}) ->
+      team := r.[]rows.0
+      io.query "select count(key) as count from charts where owner = $1", [req.user.key]
     .then (r={}) ->
       # personal item count control
       plan = req.user.{}payment.plan or 0
       count = ((r.[]rows.0 or {}).count or 0)
       if count >= 3000 => return aux.reject 402, 'exceed count limit' #hard limit
       data := req.body <<< {owner: req.user.key, createdtime: new Date!, modifiedtime: new Date!}
-      team := +req.query.team
-      if !team or !typeof(team) == \number => team := null
+      if !team or !team.key or !typeof(team.key) == \number => team := null
       if !(engine.config.mode % 2) =>
         if (plan == 0 and count >= 30) or (plan == 1 and count >= 300) =>
           return aux.reject 402, 'exceed count limit'
         if plan < 1 => data.{}permission.list = [{"perm": "fork", "type": "global", "target": null}]
-      if team => data.{}permission.list = [{"perm": "write", "type": "team", "target": team}]
+      if team => data.{}permission.list = [{
+        "perm": "write", "type": "team", "target": team.key, avatar: team.avatar, displayname: team.name
+      }]
       ret = charttype.lint data
       if ret.0 => return aux.reject 400, ret
       data := charttype.clean data
@@ -153,7 +160,7 @@ engine.router.api.post "/chart/", (req, res) ->
     .then (size) ->
       control.update-size req, req.user, size
       if team =>
-        io.query "select permission,owner from teams where key = $1", [team]
+        io.query "select permission,owner from teams where key = $1", [team.key]
           .then (r={}) ->
             r = r.[]rows.0 or {}
             permission = r.permission or {}
@@ -163,7 +170,7 @@ engine.router.api.post "/chart/", (req, res) ->
           .then ->
             io.query(
               "insert into teamcharts (team,chart) values ($1,$2) on conflict do nothing"
-              [team,data.key]
+              [team.key,data.key]
             )
       else bluebird.resolve!
     .then -> res.send data

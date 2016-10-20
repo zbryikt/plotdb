@@ -11278,10 +11278,28 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
     });
   };
   $scope.addCharts = function(tid){
+    var keys, ckeys;
     if (!$scope.user.data) {
       return plNotify.send('error', "permission denied");
     }
     if (!$scope.newCharts || !$scope.newCharts.length) {
+      return;
+    }
+    keys = $scope.newCharts.filter(function(it){
+      return it.owner === $scope.user.data.key;
+    }).map(function(it){
+      return it.key;
+    });
+    ckeys = $scope.charts.map(function(it){
+      return it.key;
+    });
+    keys = keys.filter(function(it){
+      return ckeys.indexOf(it) < 0;
+    });
+    if (keys.length < $scope.newCharts.length) {
+      plNotify.send('warning', "some charts are already in this team");
+    }
+    if (keys.length === 0) {
       return;
     }
     return $http({
@@ -11294,7 +11312,7 @@ x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamServi
       })
     }).success(function(d){
       $scope.charts = $scope.charts.concat($scope.newCharts.filter(function(it){
-        return $scope.charts.indexOf(it.key) < 0;
+        return ckeys.indexOf(it.key) < 0;
       }));
       return plNotify.send('success', "charts added");
     }).error(function(d){
