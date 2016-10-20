@@ -4944,6 +4944,9 @@ span.select2-container--default .select2-selection--multiple {
   background: #f29;
   color: #fff;
 }
+.select-box .select-dropdown .select-option {
+  position: relative;
+}
 .select-box .select-dropdown .select-option i.fa {
   display: none;
 }
@@ -4953,10 +4956,16 @@ span.select2-container--default .select2-selection--multiple {
   margin-right: 5px;
   width: 32px;
   height: 32px;
+  position: absolute;
 }
 .select-box .select-dropdown .select-option .avatar + .name {
   display: inline-block;
   line-height: 16px;
+  padding-left: 37px;
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .select-box .select-dropdown .select-option.active {
   background: #8cc63f;

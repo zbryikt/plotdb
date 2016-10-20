@@ -70,6 +70,7 @@
       background: #f29
       color: #fff
     .select-option
+      position: relative
       i.fa
         display: none
       .avatar
@@ -78,9 +79,15 @@
         margin-right: 5px
         width: 32px
         height: 32px
+        position: absolute
       .avatar + .name
         display: inline-block
         line-height: 16px
+        padding-left: 37px
+        width: 100%
+        text-overflow: ellipsis
+        overflow: hidden
+        white-space: nowrap
       &.active
         background: #8cc63f
         color: #fff

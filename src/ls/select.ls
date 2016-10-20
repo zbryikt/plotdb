@@ -41,6 +41,7 @@ angular.module \plotDB
       input = e.find \input
       input.attr \placeholder, config.placeholder or 'search...'
       paging = limit: 20, offset: 0
+      handler = null
       idmap = {}
       sync = ->
         s.portal.options.map -> idmap[it.key] = it
@@ -50,8 +51,10 @@ angular.module \plotDB
       s.$watch 'portal.data', (-> sync!), true
       s.$watch 'portal.options', (-> sync!), true
       fetch = (keyword,reset = false) ->
-        s.portal.loading = ((s.portal.loading or 0) + 1) or 1
-        $timeout (->
+        if handler =>
+          $timeout.cancel handler
+        else s.portal.loading = ((s.portal.loading or 0) + 1) or 1
+        handler := $timeout (->
           if reset =>
             paging <<< offset: 0
             s.portal.end = false
@@ -60,6 +63,7 @@ angular.module \plotDB
             method: \GET
             params: config.ajax.param keyword, paging.limit, paging.offset, s.scope
           .success (d) ->
+            handler := null
             if !d or d.length ==0 => s.portal.end = true
             if paging.offset == 0 => s.portal.options = d
             else s.portal.options = (s.portal.options or []) ++ d

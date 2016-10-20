@@ -12340,7 +12340,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
       scope: '@ngScope'
     },
     link: function(s, e, a, c){
-      var dropdownCloseOnClick, autoHideInput, config, dropdown, input, paging, idmap, sync, fetch, repos, close;
+      var dropdownCloseOnClick, autoHideInput, config, dropdown, input, paging, handler, idmap, sync, fetch, repos, close;
       dropdownCloseOnClick = true;
       autoHideInput = false;
       config = entityService.config.plselect[s.type || 'entity'];
@@ -12351,6 +12351,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
         limit: 20,
         offset: 0
       };
+      handler = null;
       idmap = {};
       sync = function(){
         var k, ref$, v;
@@ -12375,8 +12376,12 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
       }, true);
       fetch = function(keyword, reset){
         reset == null && (reset = false);
-        s.portal.loading = (s.portal.loading || 0) + 1 || 1;
-        return $timeout(function(){
+        if (handler) {
+          $timeout.cancel(handler);
+        } else {
+          s.portal.loading = (s.portal.loading || 0) + 1 || 1;
+        }
+        return handler = $timeout(function(){
           if (reset) {
             paging.offset = 0;
             s.portal.end = false;
@@ -12386,6 +12391,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
             method: 'GET',
             params: config.ajax.param(keyword, paging.limit, paging.offset, s.scope)
           }).success(function(d){
+            handler = null;
             if (!d || d.length === 0) {
               s.portal.end = true;
             }
