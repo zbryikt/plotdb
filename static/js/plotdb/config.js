@@ -638,10 +638,17 @@ plotdb.config = {
     'default': "center",
     category: c
   };
-  return plotdb.config[p + "TickDirection"] = {
+  plotdb.config[p + "TickDirection"] = {
     name: "Tick Direction",
     type: [plotdb.Choice(['vertical', 'horizontal'])],
     'default': "horizontal",
     category: c
+  };
+  return plotdb.config[p + "HandleOverlap"] = {
+    name: "Overlap Ticks",
+    type: [plotdb.Choice(['none', 'hidden'])],
+    'default': "hidden",
+    category: c,
+    desc: "How should overlapped ticks be taken care?"
   };
 });

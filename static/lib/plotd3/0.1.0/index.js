@@ -724,11 +724,14 @@ plotd3.rwd.axis = function(){
       tickHeight = d3.max(group.selectAll('.tick text')[0].map(function(d, i){
         return d.getBBox().height;
       }));
-      count = Math.ceil(ticks.length / (size / step));
-      ticks = ticks.filter(function(d, i){
-        return !(i % count);
-      });
-      axis.tickValues(ticks);
+      console.log(store.handleOverlap);
+      if (store.handleOverlap === 'hidden') {
+        count = Math.ceil(ticks.length / (size / step));
+        ticks = ticks.filter(function(d, i){
+          return !(i % count);
+        });
+        axis.tickValues(ticks);
+      } else if (store.handleOverlap === 'none') {}
       this._offset = tickHeight + offset;
     }
     render(group, sizes, this._offset, orient);
@@ -761,7 +764,7 @@ plotd3.rwd.axis = function(){
       fill: 'none'
     });
   };
-  ['tickCount', 'fontSize', 'label', 'labelPosition', 'multiLine', 'boundaryTickInside', 'tickDirection', 'angle', 'showGrid'].map(function(k){
+  ['tickCount', 'fontSize', 'label', 'labelPosition', 'multiLine', 'boundaryTickInside', 'tickDirection', 'angle', 'showGrid', 'handleOverlap'].map(function(k){
     return ret[k] = function(k){
       return function(it){
         if (!arguments.length) {

@@ -405,15 +405,14 @@ plotd3.rwd.axis = ->
       @_offset = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.width)
       @_offset += offset
     else
-      #TODO implement multiLine ticks
-      # if store.handleOverlap == \hidden =>
-      # else if store.handleOverlap == \none =>
       render group, sizes, offset, orient
       step = 1.15 * d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.width)
       tickHeight = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.height)
-      count = Math.ceil(ticks.length / (size / step))
-      ticks = ticks.filter((d,i) -> !(i % count))
-      axis.tickValues ticks
+      if store.handleOverlap == \hidden =>
+        count = Math.ceil(ticks.length / (size / step))
+        ticks = ticks.filter((d,i) -> !(i % count))
+        axis.tickValues ticks
+      else if store.handleOverlap == \none => # do nothing
       @_offset = tickHeight + offset
     render group, sizes, @_offset, orient
     if store.label and store.labelPosition != 'in' =>
@@ -433,7 +432,7 @@ plotd3.rwd.axis = ->
 
   <[
     tickCount fontSize label labelPosition multiLine boundaryTickInside
-    tickDirection angle showGrid
+    tickDirection angle showGrid handleOverlap
   ]>.map (k) ->
     ret[k] = ((k)-> ->
       if !arguments.length => return store[k]
