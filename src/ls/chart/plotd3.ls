@@ -288,6 +288,7 @@ plotd3.rwd.axis = ->
     group.call axis
     group.selectAll \text .attr do
       "font-size": store.font-size if store.font-size?
+      "writing-mode": \tb-rl if store.tick-direction == \vertical
     if orient == \radius =>
       scale = axis.scale!
       ticks = (if scale.ticks => (axis.tickValues! or scale.ticks(axis.ticks!)) else scale.domain!)
@@ -397,6 +398,8 @@ plotd3.rwd.axis = ->
       @_offset += offset
     else
       #TODO implement multiLine ticks
+      # if store.handleOverlap == \hidden =>
+      # else if store.handleOverlap == \none =>
       render group, sizes, offset, orient
       step = 1.15 * d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.width)
       tickHeight = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.height)
@@ -420,7 +423,10 @@ plotd3.rwd.axis = ->
           group.select 'g.tick:last-of-type text' .style "text-anchor": \end
     group.selectAll "path,line" .attr {stroke: \black, fill: \none}
 
-  <[tickCount fontSize label labelPosition multiLine boundaryTickInside angle showGrid]>.map (k) ->
+  <[
+    tickCount fontSize label labelPosition multiLine boundaryTickInside
+    tickDirection angle showGrid
+  ]>.map (k) ->
     ret[k] = ((k)-> ->
       if !arguments.length => return store[k]
       store[k] = it

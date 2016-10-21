@@ -597,3 +597,4 @@ plotdb.config = do
   plotdb.config["#{p}Label"] = name: "Label", type: [plotdb.String], default: "", category: c
   plotdb.config["#{p}TickCount"] = name: "Tick Count", type: n, default: 6, category: c, desc: "Hint on number of tick. Actual number will be decided by program"
   plotdb.config["#{p}LabelPosition"] = name: "Label Position", type: [plotdb.Choice(['in','center'])], default: "center", category: c
+  plotdb.config["#{p}TickDirection"] = name: "Tick Direction", type: [plotdb.Choice(<[vertical horizontal]>)], default: "vertical", category: c

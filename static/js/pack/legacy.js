@@ -530,7 +530,8 @@ plotd3.rwd.axis = function(){
     group.select('text.label').remove();
     group.call(axis);
     group.selectAll('text').attr({
-      "font-size": store.fontSize != null ? store.fontSize : void 8
+      "font-size": store.fontSize != null ? store.fontSize : void 8,
+      "writing-mode": store.tickDirection === 'vertical' ? 'tb-rl' : void 8
     });
     if (orient === 'radius') {
       scale = axis.scale();
@@ -754,7 +755,7 @@ plotd3.rwd.axis = function(){
       fill: 'none'
     });
   };
-  ['tickCount', 'fontSize', 'label', 'labelPosition', 'multiLine', 'boundaryTickInside', 'angle', 'showGrid'].map(function(k){
+  ['tickCount', 'fontSize', 'label', 'labelPosition', 'multiLine', 'boundaryTickInside', 'tickDirection', 'angle', 'showGrid'].map(function(k){
     return ret[k] = function(k){
       return function(it){
         if (!arguments.length) {
