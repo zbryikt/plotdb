@@ -641,7 +641,7 @@ plotdb.config = {
   return plotdb.config[p + "TickDirection"] = {
     name: "Tick Direction",
     type: [plotdb.Choice(['vertical', 'horizontal'])],
-    'default': "vertical",
+    'default': "horizontal",
     category: c
   };
 });
