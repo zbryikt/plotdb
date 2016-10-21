@@ -507,7 +507,7 @@ plotd3.rwd.legend = function(){
   return ret;
 };
 plotd3.rwd.axis = function(){
-  var store, axis, ret, k, v, render;
+  var store, axis, ret, k, v, setStyle, render;
   store = {
     orient: "bottom"
   };
@@ -523,6 +523,22 @@ plotd3.rwd.axis = function(){
   }
   ret.offset = function(){
     return this._offset;
+  };
+  setStyle = function(group, orient){
+    if (orient === 'bottom' && store.tickDirection !== 'vertical') {
+      group.selectAll('.tick text').attr({
+        "dy": '0.71em'
+      });
+    }
+    if (store.tickDirection === 'vertical') {
+      return group.selectAll('.tick text').style({
+        'text-anchor': orient === 'bottom'
+          ? 'start'
+          : orient === 'top' ? 'end' : 'middle'
+      }).attr({
+        dy: 0
+      });
+    }
   };
   render = function(group, sizes, offset, orient){
     var mid, scale, ticks, x$, node, dy, dx;
@@ -608,13 +624,7 @@ plotd3.rwd.axis = function(){
         }
       });
     }
-    if (orient === 'bottom') {
-      setTimeout(function(){
-        return group.selectAll('.tick text').attr({
-          "dy": "0.71em"
-        });
-      }, 0);
-    }
+    setStyle(group, orient);
     if (store.label) {
       node = group.append('text').attr({
         'class': 'label'
@@ -669,6 +679,7 @@ plotd3.rwd.axis = function(){
     args == null && (args = []);
     axis.apply(group, args);
     ref$ = [axis.scale(), store.orient], scale = ref$[0], orient = ref$[1];
+    setStyle(group, orient);
     if (scale.rangeExtent) {
       sizes = scale.rangeExtent();
     } else {

@@ -282,6 +282,14 @@ plotd3.rwd.axis = ->
         return if r == axis => ret else r
       ) k
   ret.offset = -> @_offset
+  set-style = (group, orient) ->
+    if orient == \bottom and store.tick-direction != \vertical =>
+      group.selectAll '.tick text' .attr "dy": \0.71em
+    if store.tick-direction == \vertical =>
+      group.selectAll '.tick text'
+        .style do
+          'text-anchor': (if orient == \bottom => \start else if orient == \top => \end else \middle)
+        .attr dy: 0
   render = (group, sizes, offset, orient) ->
     mid = (sizes.0 + sizes.1)/2
     group.select \text.label .remove!
@@ -334,8 +342,7 @@ plotd3.rwd.axis = ->
           x2 = scale(domain[* - 1]) * Math.sin(store.angle or 0)
           y2 = scale(domain[* - 1]) * -Math.cos(store.angle or 0)
           "M#x1 #y1 L#x2 #y2"
-    if orient == \bottom =>
-      setTimeout (->group.selectAll '.tick text' .attr "dy": "0.71em"), 0
+    set-style group, orient
     if store.label =>
       node = group.append \text .attr class: \label .text store.label
       node.attr "font-size": store.font-size if store.font-size?
@@ -366,6 +373,7 @@ plotd3.rwd.axis = ->
   ret.autotick = (group, args = []) ->
     axis.apply group, args
     [scale,orient] = [axis.scale!, store.orient]
+    set-style group, orient
     if scale.rangeExtent => sizes = scale.rangeExtent!
     else
       sizes = scale.range!
