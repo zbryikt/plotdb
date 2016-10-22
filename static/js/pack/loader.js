@@ -1676,7 +1676,7 @@ plotdb.config = {
   };
   return plotdb.config[p + "HandleOverlap"] = {
     name: "Overlap Ticks",
-    type: [plotdb.Choice(['none', 'hidden'])],
+    type: [plotdb.Choice(['none', 'hidden', 'offset'])],
     'default': "hidden",
     category: c,
     desc: "How should overlapped ticks be taken care?"

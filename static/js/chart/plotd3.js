@@ -717,6 +717,7 @@ plotd3.rwd.axis = function(){
       }));
       this._offset += offset;
     } else {
+      axis.tickValues(ticks);
       render(group, sizes, offset, orient);
       step = 1.15 * d3.max(group.selectAll('.tick text')[0].map(function(d, i){
         return d.getBBox().width;
@@ -724,13 +725,26 @@ plotd3.rwd.axis = function(){
       tickHeight = d3.max(group.selectAll('.tick text')[0].map(function(d, i){
         return d.getBBox().height;
       }));
+      count = Math.ceil(ticks.length / (size / step));
       if (store.handleOverlap === 'hidden') {
-        count = Math.ceil(ticks.length / (size / step));
         ticks = ticks.filter(function(d, i){
           return !(i % count);
         });
-        axis.tickValues(ticks);
+      } else if (store.handleOverlap === 'offset') {
+        group.selectAll('.tick text').attr({
+          transform: function(d, i){
+            if (!(i % count)) {
+              return "translate(0 " + (store.fontSize || 14) + ")";
+            }
+            return "";
+          }
+        });
       } else if (store.handleOverlap === 'none') {}
+      axis.tickValues(ticks);
+      render(group, sizes, offset, orient);
+      tickHeight = d3.max(group.selectAll('.tick text')[0].map(function(d, i){
+        return d.getBBox().height;
+      }));
       this._offset = tickHeight + offset;
     }
     render(group, sizes, this._offset, orient);

@@ -405,14 +405,22 @@ plotd3.rwd.axis = ->
       @_offset = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.width)
       @_offset += offset
     else
+      axis.tickValues ticks
       render group, sizes, offset, orient
       step = 1.15 * d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.width)
       tickHeight = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.height)
+      count = Math.ceil(ticks.length / (size / step))
       if store.handleOverlap == \hidden =>
-        count = Math.ceil(ticks.length / (size / step))
         ticks = ticks.filter((d,i) -> !(i % count))
-        axis.tickValues ticks
+      else if store.handleOverlap == \offset =>
+        group.selectAll('.tick text').attr do
+          transform: (d,i) ->
+            if !(i % count) => return "translate(0 #{store.fontSize or 14})"
+            return ""
       else if store.handleOverlap == \none => # do nothing
+      axis.tickValues ticks
+      render group, sizes, offset, orient
+      tickHeight = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.height)
       @_offset = tickHeight + offset
     render group, sizes, @_offset, orient
     if store.label and store.labelPosition != 'in' =>
