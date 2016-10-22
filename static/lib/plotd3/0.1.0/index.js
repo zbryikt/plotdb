@@ -724,7 +724,7 @@ plotd3.rwd.axis = function(){
       tickHeight = d3.max(group.selectAll('.tick text')[0].map(function(d, i){
         return d.getBBox().height;
       }));
-      console.log(store.handleOverlap);
+      console.log(group.selectAll('.tick text')[0]);
       if (store.handleOverlap === 'hidden') {
         count = Math.ceil(ticks.length / (size / step));
         ticks = ticks.filter(function(d, i){
