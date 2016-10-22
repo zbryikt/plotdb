@@ -731,7 +731,7 @@ plotd3.rwd.axis = function(){
         return d.getBBox().height;
       }));
       count = Math.ceil(ticks.length / (size / step));
-      if (store.handleOverlap === 'hidden') {
+      if (!store.handleOverlap || store.handleOverlap === 'hidden') {
         ticks = ticks.filter(function(d, i){
           return !(i % count);
         });

@@ -410,7 +410,7 @@ plotd3.rwd.axis = ->
       step = 1.15 * d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.width)
       tickHeight = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.height)
       count = Math.ceil(ticks.length / (size / step))
-      if store.handleOverlap == \hidden =>
+      if !store.handleOverlap or store.handleOverlap == \hidden =>
         ticks = ticks.filter((d,i) -> !(i % count))
       else if store.handleOverlap == \offset =>
         group.selectAll('.tick text').attr do
