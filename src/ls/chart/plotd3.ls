@@ -415,7 +415,7 @@ plotd3.rwd.axis = ->
       else if store.handleOverlap == \offset =>
         group.selectAll('.tick text').attr do
           transform: (d,i) ->
-            if !(i % count) => return "translate(0 #{store.fontSize or 14})"
+            if count > 1 and !(i % count) => return "translate(0 #{store.fontSize or 14})"
             return ""
       else if store.handleOverlap == \none => # do nothing
       axis.tickValues ticks

@@ -738,7 +738,7 @@ plotd3.rwd.axis = function(){
       } else if (store.handleOverlap === 'offset') {
         group.selectAll('.tick text').attr({
           transform: function(d, i){
-            if (!(i % count)) {
+            if (count > 1 && !(i % count)) {
               return "translate(0 " + (store.fontSize || 14) + ")";
             }
             return "";
