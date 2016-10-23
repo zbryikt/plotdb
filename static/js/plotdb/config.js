@@ -304,8 +304,14 @@ plotdb.config = {
     category: "Legend"
   },
   legendLabel: {
-    name: "Legend Label",
+    name: "Label",
     type: [plotdb.String],
+    category: "Legend"
+  },
+  legendPosition: {
+    name: "Position",
+    type: [plotdb.Choice(['top', 'left', 'right', 'bottom'])],
+    'default': "right",
     category: "Legend"
   },
   otherLabel: {
