@@ -4257,12 +4257,23 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     },
     rwdtest: {
       val: 'default',
-      vals: ['default', 'QVGA', 'HVGA', 'Thumb'],
+      vals: ['default', 'QVGA', 'HVGA', 'Thumb', 'Custom'],
       map: {
         'default': [0, 0],
         QVGA: [240, 320],
         HVGA: [320, 480],
         Thumb: [308, 229]
+      },
+      custom: {
+        width: 640,
+        height: 480
+      },
+      init: function(){
+        var this$ = this;
+        return $scope.$watch('rwdtest.custom', function(){
+          console.log('blah');
+          return this$.set();
+        }, true);
       },
       set: function(it){
         var node, parent, ref$, width, height, w, h;
@@ -4282,7 +4293,11 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           ref$.marginTop = 0;
           ref$.marginLeft = 0;
         } else {
-          ref$ = this.map[this.val], w = ref$[0], h = ref$[1];
+          if (this.val === 'Custom') {
+            ref$ = [this.custom.width, this.custom.height], w = ref$[0], h = ref$[1];
+          } else {
+            ref$ = this.map[this.val], w = ref$[0], h = ref$[1];
+          }
           ref$ = node.style;
           ref$.marginTop = (height - h) / 2 + "px";
           ref$.marginLeft = (width - w) / 2 + "px";
@@ -5698,6 +5713,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       this.dataPanel.init();
       this.editPanel.init();
       this.writer.init();
+      this.rwdtest.init();
       if (this.type === 'theme') {
         this.charts.init();
       }

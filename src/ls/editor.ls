@@ -250,12 +250,14 @@ angular.module \plotDB
           @queue.2.state = 2
       rwdtest: do
         val: \default
-        vals: <[default QVGA HVGA Thumb]>
+        vals: <[default QVGA HVGA Thumb Custom]>
         map: do
           default: [0,0]
           QVGA: [240, 320]
           HVGA: [320, 480]
           Thumb: [308, 229]
+        custom: width: 640, height: 480
+        init: -> $scope.$watch 'rwdtest.custom', (~> console.log('blah'); @set!), true
         set: ->
           if !(it in @vals) => it = @val
           @val = it
@@ -267,7 +269,9 @@ angular.module \plotDB
             [w,h] = <[100% 100%]>
             node.style <<< marginTop: 0, marginLeft: 0
           else
-            [w,h] = @map[@val]
+            if @val == \Custom =>
+              [w,h] = [@custom.width, @custom.height]
+            else [w,h] = @map[@val]
             node.style <<< marginTop: ((height - h)/2) + "px", marginLeft: ((width - w)/2) + "px"
             [w,h] = [w,h].map(->"#{it}px")
           node.style <<< width: w, height: h
@@ -1043,6 +1047,7 @@ angular.module \plotDB
         @data-panel.init!
         @edit-panel.init!
         @writer.init!
+        @rwdtest.init!
         if @type == \theme => @charts.init!
         if @type == \chart => @themes.init!
 

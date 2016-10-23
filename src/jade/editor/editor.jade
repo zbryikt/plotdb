@@ -250,6 +250,14 @@ include /widget/palette-edit-modal.jade
               a(href="#",ng-click="rwdtest.set('HVGA')") HVGA #[small.grayed (320x480)]
             li(ng-class="{'active':rwdtest.val=='Thumb'}")
               a(href="#",ng-click="rwdtest.set('Thumb')") Thumb#[small.grayed (308x229)]
+            li(ng-class="{'active':rwdtest.val=='Custom'}")
+              a(href="#",ng-click="rwdtest.set('Custom')")
+                div Custom
+                input.form-control-inline.input-xs.dimension(ng-model="rwdtest.custom.width",
+                type="text",placeholder="width")
+                span &nbsp;&times;&nbsp;
+                input.form-control-inline.input-xs.dimension(ng-model="rwdtest.custom.height",
+                type="text",placeholder="height")
       #chart-writer(ng-show="vis=='writer'",style="background:#fff;width:100%;height:100%;overflow:scroll"): .editable
       iframe#chart-renderer(ng-show="vis=='preview'",
       style="width:100%;height:100%;border:none;background:url(/assets/img/loading-sm.svg) center center no-repeat")

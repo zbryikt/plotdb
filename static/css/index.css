@@ -139,6 +139,16 @@ li.disabled a:hover {
   background: #ed1d78;
   color: #fff;
 }
+.dropdown-menu > li > a:focus input,
+.dropdown-menu > li > a:hover input {
+  color: initial;
+}
+.dropdown-menu > li > a input.dimension {
+  width: 55px;
+  height: 20px;
+  font-size: 12px;
+  text-align: center;
+}
 @-webkit-keyframes jump {
   0% {
     -ms-transform: translate(0, 0);
@@ -2162,6 +2172,9 @@ small.hint {
 .dropdown-menu > .active > a {
   color: #fff;
   background: #ed1d78;
+}
+.dropdown-menu > .active > a input {
+  color: initial;
 }
 .chart-config {
   background: #fafafa;
