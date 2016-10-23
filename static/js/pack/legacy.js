@@ -29,6 +29,8 @@ plotd3.html.tooltip = function(root, sel, cb){
     box = this.getBoundingClientRect();
     if (store.coord) {
       ref$ = store.coord.call(this, d, i), left = ref$[0], top = ref$[1], width = ref$[2], height = ref$[3];
+      left += rbox.left;
+      top += rbox.top;
       box = {
         left: left,
         top: top,
@@ -164,7 +166,8 @@ plotd3.html.popup = function(root, sel, cb, store){
     return popup;
   };
   setblock = function(d, i){
-    var ref$, x, y, width, height, pbox, rbox;
+    var rbox, ref$, x, y, width, height, pbox;
+    rbox = root.getBoundingClientRect();
     if (typeof store.active === 'function') {
       if (!store.active(d, i)) {
         return;
@@ -175,13 +178,14 @@ plotd3.html.popup = function(root, sel, cb, store){
     ref$ = [d3.event.clientX, d3.event.clientY], x = ref$[0], y = ref$[1];
     if (store.coord) {
       ref$ = store.coord.call(this, d, i), x = ref$[0], y = ref$[1], width = ref$[2], height = ref$[3];
+      x += rbox.left;
+      y += rbox.top;
     }
     ret.fire('mousemove', d, i, this);
     popup.style({
       display: 'block'
     });
     pbox = popup[0][0].getBoundingClientRect();
-    rbox = root.getBoundingClientRect();
     x = x - pbox.width / 2 - rbox.left;
     y = y + 30 - rbox.top;
     if (y > rbox.height - pbox.height - 50) {

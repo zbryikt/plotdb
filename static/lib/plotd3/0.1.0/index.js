@@ -22,8 +22,11 @@ plotd3.html.tooltip = function(root, sel, cb){
     }
     rbox = root.getBoundingClientRect();
     box = this.getBoundingClientRect();
+    console.log(")", box.top, rbox.top);
     if (store.coord) {
       ref$ = store.coord.call(this, d, i), left = ref$[0], top = ref$[1], width = ref$[2], height = ref$[3];
+      left += rbox.left;
+      top += rbox.top;
       box = {
         left: left,
         top: top,
@@ -36,9 +39,11 @@ plotd3.html.tooltip = function(root, sel, cb){
     popup.attr({
       'class': "pdb-popup pdb-tooltip " + (isLeft ? 'left' : 'right')
     });
+    console.log(">", box.top, rbox.top);
     update = function(){
       var pbox, left;
       pbox = popup[0][0].getBoundingClientRect();
+      console.log("]", box.top, rbox.top, box.top + box.height / 2 - pbox.height / 2 - rbox.top);
       popup.style({
         top: (box.top + box.height / 2 - pbox.height / 2 - rbox.top) + "px",
         opacity: 1
