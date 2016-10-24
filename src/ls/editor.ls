@@ -257,7 +257,7 @@ angular.module \plotDB
           HVGA: [320, 480]
           Thumb: [308, 229]
         custom: width: 640, height: 480
-        init: -> $scope.$watch 'rwdtest.custom', (~> console.log('blah'); @set!), true
+        init: -> $scope.$watch 'rwdtest.custom', (~>@set!), true
         set: ->
           if !(it in @vals) => it = @val
           @val = it

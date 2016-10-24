@@ -284,7 +284,10 @@ plotdb.Palette = do
       if !domain =>
         if scale => domain = scale.domain!
         else domain = c.map(->it.keyword).filter(->it?)
-      if !scale => scale = d3.scale.lienar!
+      if !scale => scale = d3.scale.linear!
+      if range.length == 1 => range.push range.0
+      if domain.length == 2 and range.length > 2 =>
+        domain = d3.range(range.length).map(->(domain.1 - domain.0 ) * it/((range.length - 1) or 1) + domain.0)
       scale.domain domain .range range
 
 plotdb.OrderTypes = [

@@ -506,7 +506,6 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       init: function(){
         var this$ = this;
         return $scope.$watch('rwdtest.custom', function(){
-          console.log('blah');
           return this$.set();
         }, true);
       },

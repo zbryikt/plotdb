@@ -594,7 +594,15 @@ plotdb.Palette = {
         }
       }
       if (!scale) {
-        scale = d3.scale.lienar();
+        scale = d3.scale.linear();
+      }
+      if (range.length === 1) {
+        range.push(range[0]);
+      }
+      if (domain.length === 2 && range.length > 2) {
+        domain = d3.range(range.length).map(function(it){
+          return (domain[1] - domain[0]) * it / (range.length - 1 || 1) + domain[0];
+        });
       }
       return scale.domain(domain).range(range);
     }
