@@ -81,7 +81,7 @@ block body
           i.fa.fa-close.clickable(ng-click="blindtest='normal'")
         #pal-editor-preview-wrap.pdb-root(ng-class="{'loading':loading}",style="padding-bottom:5px")
           svg#pal-editor-preview(width="100%",height="407px",viewBox="0 0 800 407",
-          preserveAspectRatio="xMidYMin",ng-attr-style="filter:url(#{{blindtest}})")
+          preserveAspectRatio="xMidYMin",ng-attr-style="filter:url(\#{{blindtest}})")
           div(style="position:absolute;bottom:10px;left:20px")
             .btn-group(style="display:inline-block")
               .btn.btn-default.btn-sm(ng-class="{'active':preview.type=='map'}",ng-click="preview.type='map'") US Map
