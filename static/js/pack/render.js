@@ -5780,10 +5780,16 @@ plotdb.config = {
     'default': 20,
     category: "Bubble"
   },
+  bubbleFill: {
+    name: "Fill Color",
+    type: [plotdb.Color],
+    'default': '#ffaaaa',
+    category: "Bubble"
+  },
   bubbleStroke: {
     name: "Stroke Color",
     type: [plotdb.Color],
-    'default': '#919191',
+    'default': '#c01d1d',
     category: "Bubble"
   },
   bubbleStrokeWidth: {

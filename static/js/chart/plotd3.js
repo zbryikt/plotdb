@@ -711,9 +711,11 @@ plotd3.rwd.axis = function(){
       }));
       count = size / (1.4 * tickHeight || 14);
       count = Math.ceil(ticks.length / count);
-      ticks = ticks.filter(function(d, i){
-        return !(i % count);
-      });
+      if (!store.handleOverlap || store.handleOverlap === 'hidden') {
+        ticks = ticks.filter(function(d, i){
+          return !(i % count);
+        });
+      }
       axis.tickValues(ticks);
       render(group, sizes, offset, orient);
       this._offset = d3.max(group.selectAll('.tick text')[0].map(function(d, i){

@@ -403,7 +403,8 @@ plotd3.rwd.axis = ->
       tickHeight = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.height)
       count = size / ((1.4 * tickHeight) || 14)
       count = Math.ceil(ticks.length / count)
-      ticks = ticks.filter((d,i) -> !(i % count))
+      if !store.handleOverlap or store.handleOverlap == \hidden =>
+        ticks = ticks.filter((d,i) -> !(i % count))
       axis.tickValues ticks
       render group, sizes, offset, orient
       @_offset = d3.max(group.selectAll('.tick text')[0].map (d,i) -> d.getBBox!.width)
