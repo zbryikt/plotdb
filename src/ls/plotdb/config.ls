@@ -401,6 +401,12 @@ plotdb.config = do
     category: "Switch"
 
   #Value
+  Unit: do
+    name: "Unit"
+    type: [plotdb.String]
+    default: ""
+    desc: "Unit of value"
+    category: "Value"
   xScaleRange: do
     name: "Data Range in X axis"
     type: [plotdb.Range]

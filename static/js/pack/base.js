@@ -10134,6 +10134,13 @@ plotdb.config = {
     'default': true,
     category: "Switch"
   },
+  Unit: {
+    name: "Unit",
+    type: [plotdb.String],
+    'default': "",
+    desc: "Unit of value",
+    category: "Value"
+  },
   xScaleRange: {
     name: "Data Range in X axis",
     type: [plotdb.Range],
