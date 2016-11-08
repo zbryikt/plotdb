@@ -152,7 +152,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 18;
+  z-index: 19;
   background: rgba(0,0,0,0.8);
   padding: 20px 20px 80px 20px;
 }
@@ -172,7 +172,7 @@
   margin: 5px;
   cursor: move;
   color: #421;
-  z-index: 12;
+  z-index: 13;
   position: relative;
 }
 .data-field span {
@@ -213,7 +213,7 @@
   display: block;
   margin: 0.66%;
   padding: 10px;
-  z-index: 10;
+  z-index: 11;
   position: relative;
 }
 .dimensions .dimension .require {
@@ -253,7 +253,7 @@
 #code-panel #code-tabs {
   border-bottom: 1px solid #ddd;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  z-index: 7;
+  z-index: 8;
   position: relative;
   overflow: hidden;
 }
@@ -329,7 +329,7 @@
   width: 45px;
 }
 #code-panel #code-tabs .tab {
-  z-index: 9;
+  z-index: 10;
   position: relative;
 }
 #code-panel #code-tabs .tab.action {
@@ -353,7 +353,7 @@
   -webkit-transition: all 0.5s ease-in-out;
   -o-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out;
-  z-index: 8;
+  z-index: 9;
   position: absolute;
 }
 #code-panel #code-tabs .tab.src.shown {
@@ -362,7 +362,7 @@
 }
 #code-header {
   position: absolute;
-  z-index: 6;
+  z-index: 7;
   top: 0;
   left: 0;
   width: 100%;
@@ -415,7 +415,7 @@
 }
 #code-ctrl {
   position: absolute;
-  z-index: 6;
+  z-index: 7;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -509,7 +509,7 @@
   position: relative;
   background: #fff;
   padding: 10px;
-  z-index: 23;
+  z-index: 24;
   border-bottom: 1px solid #ccc;
   padding-bottom: 10px;
 }
@@ -570,23 +570,23 @@
   display: block;
 }
 #code-editor.active {
-  z-index: 21;
+  z-index: 22;
 }
 #visualization-canvas2.active {
-  z-index: 21;
+  z-index: 22;
   opacity: 1;
 }
 #code-editor.fullscreen {
-  z-index: 29;
+  z-index: 31;
 }
 #visualization-canvas2.fullscreen {
-  z-index: 29;
+  z-index: 31;
 }
 #code-editor.fullscreen.active {
-  z-index: 30;
+  z-index: 32;
 }
 #visualization-canvas2.fullscreen.active {
-  z-index: 30;
+  z-index: 32;
 }
 #fullscreen-dimmer {
   display: none;
@@ -598,7 +598,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 20;
+  z-index: 21;
   background: rgba(0,0,0,0.5);
 }
 #code-error {
@@ -613,12 +613,12 @@
   border-radius: 3px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   color: #900;
-  z-index: 22;
+  z-index: 23;
   overflow: scroll;
   width: 50%;
 }
 #code-error.fullscreen {
-  z-index: 31;
+  z-index: 33;
   position: fixed;
   bottom: 10px;
   left: 10px;
@@ -693,7 +693,7 @@ small.hint {
   border-radius: 2px;
 }
 .ldColorPicker.bubble {
-  z-index: 28;
+  z-index: 29;
 }
 .file {
   position: relative;
@@ -753,7 +753,7 @@ small.hint {
 }
 #assets-preview {
   position: fixed;
-  z-index: 35;
+  z-index: 37;
   top: 0;
   left: 0;
   width: 100%;
@@ -819,7 +819,7 @@ small.hint {
   display: flex;
   justify-content: flex-start;
   font-size: 24px;
-  z-index: 13;
+  z-index: 14;
 }
 #datamap-hint p {
   margin-top: 70px;
@@ -845,6 +845,9 @@ small.hint {
   color: #fff;
   background: #ed1d78;
 }
+.dropdown-menu > .active > a input {
+  color: initial;
+}
 .chart-config {
   background: #fafafa;
   position: relative;
@@ -855,7 +858,7 @@ small.hint {
   position: absolute;
   top: 8px;
   left: 102px;
-  z-index: 15;
+  z-index: 16;
   background: #fff;
   border-radius: 50%;
   box-shadow: 0 0 2px rgba(0,0,0,0.5);
@@ -874,7 +877,7 @@ small.hint {
   width: 120px;
   margin-left: -60px;
   font-family: calibri, latino, arial;
-  z-index: 16;
+  z-index: 17;
   display: none;
 }
 .chart-config i.fa.fa-question-circle:hover + .hint-popup {
@@ -981,7 +984,7 @@ small.hint {
 }
 #user-feedback {
   position: fixed;
-  z-index: 34;
+  z-index: 36;
   bottom: 0;
   right: 20px;
   width: 180px;
