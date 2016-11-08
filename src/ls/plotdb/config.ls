@@ -24,6 +24,12 @@
 # Color / Axis / Value / Layout / Label
 plotdb.config = do
   # Global Configuration
+  language: do
+    name: "Language"
+    type: [plotdb.Choice(["Chinese(Traditional)","English"])]
+    default: "English"
+    category: "Global Settings"
+    rebindOnChange: true
   fontFamily: do
     name: "Font"
     type: [plotdb.String]
