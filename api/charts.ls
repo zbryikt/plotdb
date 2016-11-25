@@ -115,7 +115,7 @@ engine.router.api.get "/chart/", (req, res) ->
 
 engine.router.api.get "/chart/:id", aux.numid false, (req, res) ->
   get-chart req, req.params.id
-    .then ({chart, permission}) -> return res.json it
+    .then ({chart, permission}) -> return res.json chart
     .catch aux.error-handler res
 
 engine.router.api.post "/chart/", (req, res) ->
