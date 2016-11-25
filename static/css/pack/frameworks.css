@@ -972,7 +972,7 @@ body {
   width: 100%;
   height: 100%;
   background: url("/assets/img/loading-lg-white.svg") rgba(0,0,0,0.5) center center no-repeat;
-  z-index: 38;
+  z-index: 39;
 }
 #loading-dimmer.active {
   display: block;
@@ -1009,7 +1009,7 @@ select[ngselect2] {
   position: fixed;
   bottom: 10px;
   left: 10px;
-  z-index: 39;
+  z-index: 40;
 }
 .notify {
   border-radius: 2px;
@@ -1618,7 +1618,7 @@ li.disabled a:hover {
   top: 0;
   left: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 38;
+  z-index: 39;
 }
 #alertbox .ib {
   position: relative;
@@ -1658,12 +1658,12 @@ li.disabled a:hover {
 .loader.floating {
   position: absolute;
   left: 50%;
-  z-index: 40;
+  z-index: 41;
 }
 .loader.fixed.scrolling {
   position: fixed;
   left: 50%;
-  z-index: 40;
+  z-index: 41;
   bottom: 20px;
 }
 .loader.floating.lg,
@@ -1804,7 +1804,7 @@ a.dropdown-toggle {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 36;
+  z-index: 37;
   background: rgba(255,255,255,0.9);
 }
 .panel-lock > div {
@@ -1834,10 +1834,10 @@ a.dropdown-toggle {
   text-align: center;
 }
 .modal-backdrop {
-  z-index: 34 !important;
+  z-index: 35 !important;
 }
 .high-modal {
-  z-index: 35 !important;
+  z-index: 36 !important;
 }
 .form-control-feedback.with-text {
   width: auto;
@@ -2066,7 +2066,7 @@ ul.dropdown-menu li a.toggle-filepick input {
   left: 0;
   width: 80px;
   height: 80px;
-  z-index: 35;
+  z-index: 36;
   background: url("/assets/img/land/beta-ribbon.png") bottom right no-repeat;
 }
 @media (max-width: 1200px) {
@@ -2096,7 +2096,7 @@ ul.dropdown-menu li a.toggle-filepick input {
   }
 }
 ul.dropdown-menu {
-  z-index: 30;
+  z-index: 31;
 }
 .cover-modal,
 #permission-modal,
@@ -2108,7 +2108,7 @@ ul.dropdown-menu {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
-  z-index: 35;
+  z-index: 36;
 }
 .cover-modal-inner.ng-hide-animate,
 .cover-modal.ng-hide-animate {
@@ -2133,7 +2133,7 @@ ul.dropdown-menu {
   left: 50%;
   width: 640px;
   margin: 70px 0 0 -320px;
-  z-index: 36;
+  z-index: 37;
 }
 .cover-modal-inner.narrow {
   width: 500px;
@@ -2188,7 +2188,7 @@ ul.dropdown-menu {
 }
 #setting-modal-inner .ib {
   height: auto;
-  z-index: 36;
+  z-index: 37;
   position: absolute;
   left: 50%;
   margin-left: -320px;
@@ -2847,16 +2847,16 @@ ul.dropdown-menu {
   opacity: 1;
 }
 #code-editor.fullscreen {
-  z-index: 31;
+  z-index: 32;
 }
 #visualization-canvas2.fullscreen {
-  z-index: 31;
+  z-index: 32;
 }
 #code-editor.fullscreen.active {
-  z-index: 32;
+  z-index: 33;
 }
 #visualization-canvas2.fullscreen.active {
-  z-index: 32;
+  z-index: 33;
 }
 #fullscreen-dimmer {
   display: none;
@@ -2888,7 +2888,7 @@ ul.dropdown-menu {
   width: 50%;
 }
 #code-error.fullscreen {
-  z-index: 33;
+  z-index: 34;
   position: fixed;
   bottom: 10px;
   left: 10px;
@@ -2963,7 +2963,7 @@ small.hint {
   border-radius: 2px;
 }
 .ldColorPicker.bubble {
-  z-index: 29;
+  z-index: 30;
 }
 .file {
   position: relative;
@@ -3023,7 +3023,7 @@ small.hint {
 }
 #assets-preview {
   position: fixed;
-  z-index: 37;
+  z-index: 38;
   top: 0;
   left: 0;
   width: 100%;
@@ -3254,7 +3254,7 @@ small.hint {
 }
 #user-feedback {
   position: fixed;
-  z-index: 36;
+  z-index: 37;
   bottom: 0;
   right: 20px;
   width: 180px;
@@ -3298,7 +3298,7 @@ small.hint {
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   background: #fff;
   color: #444;
-  z-index: 27;
+  z-index: 28;
 }
 #nav-top nav.navbar-default {
   -ms-transition: all 0.3s ease-out;
@@ -3461,7 +3461,7 @@ small.hint {
   height: 26px;
   position: fixed;
   top: 60px;
-  z-index: 26;
+  z-index: 27;
   -ms-transition: all 0.3s ease-out;
   -moz-transition: all 0.3s ease-out;
   -webkit-transition: all 0.3s ease-out;
@@ -3932,6 +3932,7 @@ small.hint {
 }
 #footer {
   position: fixed;
+  z-index: 25;
   bottom: 0;
   left: 0;
   letter-spacing: 0.6px;
@@ -4279,7 +4280,7 @@ small.hint {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 28;
+  z-index: 29;
   padding: 70px 20px;
   display: none;
   opacity: 0;
@@ -4569,7 +4570,7 @@ small.hint {
   position: absolute;
   left: -24px;
   top: 8px;
-  z-index: 29;
+  z-index: 30;
 }
 .chart-dim.panel .panel-heading {
   padding: 3px 8px;
@@ -5027,7 +5028,7 @@ small.hint {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 29;
+  z-index: 30;
   background: #fff;
   box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   border-radius: 3px;

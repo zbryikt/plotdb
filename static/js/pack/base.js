@@ -5483,6 +5483,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             return;
           }
           if (data.type === 'error') {
+            document.getElementById('chart-renderer').style.background = '#fff';
             $('#code-editor-code .CodeMirror-code > .error').removeClass('error');
             $scope.error.msg = (data.payload || (data.payload = {})).msg || "";
             $scope.error.lineno = (data.payload || (data.payload = {})).lineno || 0;
@@ -8159,6 +8160,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
     scopes: ['profile', 'https://www.googleapis.com/auth/drive.metadata.readonly', 'https://www.googleapis.com/auth/spreadsheets.readonly'].join(' '),
     init: function(){
       var this$ = this;
+      if (typeof gapi == 'undefined' || gapi === null) {
+        return;
+      }
       return gapi.load('client:auth2', function(){
         gapi.client.load('drive', 'v3');
         gapi.client.setApiKey(this$.apiKey);
@@ -8181,6 +8185,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
     files: [],
     auth: function(){
       var auth;
+      if (typeof gapi == 'undefined' || gapi === null) {
+        return;
+      }
       auth = gapi.auth2.getAuthInstance();
       if (auth.isSignedIn.get()) {
         return auth;

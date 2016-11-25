@@ -1718,6 +1718,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             return;
           }
           if (data.type === 'error') {
+            document.getElementById('chart-renderer').style.background = '#fff';
             $('#code-editor-code .CodeMirror-code > .error').removeClass('error');
             $scope.error.msg = (data.payload || (data.payload = {})).msg || "";
             $scope.error.lineno = (data.payload || (data.payload = {})).lineno || 0;

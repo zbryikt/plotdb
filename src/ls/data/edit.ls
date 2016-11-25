@@ -272,6 +272,7 @@ angular.module \plotDB
         https://www.googleapis.com/auth/spreadsheets.readonly
       ]>.join(' ')
       init: ->
+        if !gapi? => return
         gapi.load 'client:auth2', ~>
           gapi.client.load 'drive', 'v3'
           gapi.client.set-api-key @api-key
@@ -283,6 +284,7 @@ angular.module \plotDB
           $scope.$watch 'parser.gsheet.title', (n,o) ~> if n != o => @list true
       files: []
       auth: ->
+        if !gapi? => return
         auth = gapi.auth2.get-auth-instance!
         if auth.is-signed-in.get! => return auth
         else

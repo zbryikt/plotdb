@@ -925,6 +925,7 @@ angular.module \plotDB
         <~ $scope.$apply
         if !data or typeof(data) != \object => return
         if data.type == \error =>
+          document.getElementById(\chart-renderer).style.background = \#fff
           $('#code-editor-code .CodeMirror-code > .error').removeClass \error
           $scope.error.msg = data.{}payload.msg or ""
           $scope.error.lineno = data.{}payload.lineno or 0
