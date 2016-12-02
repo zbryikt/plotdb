@@ -50,13 +50,6 @@ plotdb.config = {
     'default': true,
     category: "Layout"
   },
-  zeroBaseline: {
-    name: "Zero Baseline",
-    desc: "y Axis starts with zero",
-    type: [plotdb.Boolean],
-    'default': true,
-    category: "Global Settings"
-  },
   popupShow: {
     name: "show Popup",
     desc: "show Popup when user hovers over elements",
@@ -600,6 +593,22 @@ plotdb.config = {
     'default': '2',
     desc: "SVG style dash array. '2 4' means 2px line and 4px space.",
     category: "Global Settings"
+  },
+  zeroBaseline: {
+    name: "Zero Baseline",
+    desc: "y Axis starts with zero",
+    type: [plotdb.Boolean],
+    'default': true,
+    rebindOnChange: true,
+    category: "Y Axis"
+  },
+  yAxisZeroBaseline: {
+    name: "Zero Baseline",
+    desc: "y Axis starts with zero",
+    type: [plotdb.Boolean],
+    'default': true,
+    rebindOnChange: true,
+    category: "Y Axis"
   }
 };
 ['X', 'Y', 'Radial', 'Angular'].forEach(function(n){

@@ -66,12 +66,7 @@ plotdb.config = do
     type: [plotdb.Boolean]
     default: true
     category: "Layout"
-  zeroBaseline: do
-    name: "Zero Baseline"
-    desc: "y Axis starts with zero"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Global Settings"
+
   popupShow: do
     name: "show Popup"
     desc: "show Popup when user hovers over elements"
@@ -605,6 +600,22 @@ plotdb.config = do
     default: \2
     desc: "SVG style dash array. '2 4' means 2px line and 4px space."
     category: "Global Settings"
+
+  zeroBaseline: do # legacy
+    name: "Zero Baseline"
+    desc: "y Axis starts with zero"
+    type: [plotdb.Boolean]
+    default: true
+    rebindOnChange: true
+    category: "Y Axis"
+
+  yAxisZeroBaseline: do
+    name: "Zero Baseline"
+    desc: "y Axis starts with zero"
+    type: [plotdb.Boolean]
+    default: true
+    rebindOnChange: true
+    category: "Y Axis"
 
 <[X Y Radial Angular]>.forEach (n) ->
   p = "#{n.charAt(0).toLowerCase!}Axis"

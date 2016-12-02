@@ -5563,13 +5563,6 @@ plotdb.config = {
     'default': true,
     category: "Layout"
   },
-  zeroBaseline: {
-    name: "Zero Baseline",
-    desc: "y Axis starts with zero",
-    type: [plotdb.Boolean],
-    'default': true,
-    category: "Global Settings"
-  },
   popupShow: {
     name: "show Popup",
     desc: "show Popup when user hovers over elements",
@@ -6113,6 +6106,22 @@ plotdb.config = {
     'default': '2',
     desc: "SVG style dash array. '2 4' means 2px line and 4px space.",
     category: "Global Settings"
+  },
+  zeroBaseline: {
+    name: "Zero Baseline",
+    desc: "y Axis starts with zero",
+    type: [plotdb.Boolean],
+    'default': true,
+    rebindOnChange: true,
+    category: "Y Axis"
+  },
+  yAxisZeroBaseline: {
+    name: "Zero Baseline",
+    desc: "y Axis starts with zero",
+    type: [plotdb.Boolean],
+    'default': true,
+    rebindOnChange: true,
+    category: "Y Axis"
   }
 };
 ['X', 'Y', 'Radial', 'Angular'].forEach(function(n){
@@ -6584,7 +6593,7 @@ $(document).ready(function(){
           node.setAttribute("class", "pdb-root");
           document.body.appendChild(node);
         }
-        $(node).html(["<style type='text/css'>/* <![CDATA[ */" + style + "/* ]]> */</style>", (theme.style || (theme.style = {})).content ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div id='container' style='position:relative;width:100%;min-height:100%;'>", "<div style='height:0'>&nbsp;</div>", doc, (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8, "</div>"].join(""));
+        $(node).html(["<style type='text/css'>/* <![CDATA[ */" + style + "/* ]]> */</style>", (theme.style || (theme.style = {})).content ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div id='container' style='position:relative;width:100%;height:100%'>", "<div style='height:0'>&nbsp;</div>", doc, (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8, "</div>"].join(""));
         promise = loadlib(payload).then(function(){
           return properEval(code);
         });
