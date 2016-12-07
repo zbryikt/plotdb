@@ -56,7 +56,7 @@ engine.router.api.post \/me/passwd/, throttle.limit auth-limit,  (req, res) ->
       {oldpasswd,newpasswd} = req.body{oldpasswd, newpasswd}
       if user.password != (crypto.createHash(\md5).update(oldpasswd).digest(\hex) or "") => return aux.r403 res
       user.password = (crypto.createHash(\md5).update(newpasswd).digest(\hex) or "")
-      io.query "update users set password = $1", [user.password]
+      io.query "update users set password = $2 where key = $1", [req.user.key, user.password]
         .then ->
           req.login user, -> res.send!
           return null
