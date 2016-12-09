@@ -1,0 +1,13 @@
+extends ../../../base.jade
+block vars
+  - var rootid = "errorview"
+block head
+block body
+  .spc1
+  #root.narrow
+    br
+    h1.text-center Reset Link Expired.
+    p.text-center.grayed Take too long to receive reset link email? try #[a(href="/auth/reset/") reset] again.
+    p.text-center #[br] #[a(href="/") back to home]
+    br
+

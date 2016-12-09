@@ -1,0 +1,15 @@
+extends ../../../base.jade
+block vars
+  - var rootid = "errorview"
+block head
+block body
+  .spc1
+  #root.narrow
+    br
+    h1.text-center Reset Link Sent.
+    p.text-center.grayed check your email inbox for the password reset email.
+    .text-center: img(src="/assets/img/plotdb-mail-sent.png")
+
+    p.text-center #[br] #[a(href="/") back to home]
+    br
+

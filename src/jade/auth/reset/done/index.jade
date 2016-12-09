@@ -1,0 +1,23 @@
+extends ../../../base.jade
+block vars
+  - var rootid = "errorview"
+block head
+block body
+  .spc1
+  #root.narrow
+    br
+    h1.text-center Password Reset Done.
+    p.text-center.grayed Now let's try if you can login with your brand new password
+    #static-login-panel
+    script(type="text/javascript").
+      var node = document.getElementById("authpanel");
+      node.setAttribute("class", "modal static");
+      node.parentNode.removeChild(node);
+      document.getElementById("static-login-panel").appendChild(node);
+      node = document.getElementById("nav-login");
+      node.parentNode.removeChild(node);
+    p.text-center #[br] #[a(href="/") back to home]
+    br
+    script.
+      if(!window.location.search) { window.location.search = "?nexturl=/" }
+  include ../../../footer.jade

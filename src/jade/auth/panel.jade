@@ -18,7 +18,7 @@
           ng-class="{'loading':auth.loading}")
             span(ng-show="!auth.isSignIn") SIGNUP
             span(ng-show="auth.isSignIn") LOGIN
-          a.pull-right(href="#",style="margin-top:12px;font-size:12px;") forget password? &#xbb;
+          a.pull-right(href="/auth/reset/",style="margin-top:12px;font-size:12px;") forgot password? &#xbb;
           .checkbox: label #[input(type="checkbox")] remember me
         div(style="position:relative")
           hr

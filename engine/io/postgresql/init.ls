@@ -206,6 +206,12 @@ do $$
 $$
 """
 
+init-pwresettoken-table = """create table if not exists pwresettoken (
+  owner int references users(key),
+  token text,
+  time timestamp
+)"""
+
 client = new pg.Client secret.io-pg.uri
 (e) <- client.connect
 if e => return console.log e
@@ -234,6 +240,7 @@ query init-users-table
   .then -> query init-team-datasets-table
   .then -> query init-team-themes-table
   .then -> query init-payment-history-table
+  .then -> query init-pwresettoken-table
   .then ->
     query alter-themes-table
       .catch ->

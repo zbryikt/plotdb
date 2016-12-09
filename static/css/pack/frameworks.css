@@ -4029,6 +4029,9 @@ small.hint {
 #authpanel.static .closebtn {
   display: none;
 }
+#authpanel form .checkbox {
+  width: 200px;
+}
 .dataset-entry {
   background: #fdfdfc;
   padding: 0;
