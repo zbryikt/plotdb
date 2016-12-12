@@ -1,9 +1,10 @@
-require! <[nodemailer crypto bluebird]>
+require! <[nodemailer crypto bluebird nodemailer-mailgun-transport]>
+require! <[../engine/aux]>
 require! <[../secret]>
 
-m = secret.mail
-
-transport = nodemailer.createTransport("smtps://#{m.auth.user}:#{m.auth.pass}@#{m.host}")
+#m = secret.mail
+#transport = nodemailer.createTransport("smtps://#{m.auth.user}:#{m.auth.pass}@#{m.host}")
+mailgun = nodemailer.createTransport(nodemailer-mailgun-transport(secret.mailgun))
 
 reset-password = (email, token) -> new bluebird (res, rej) ->
   option = do
@@ -23,8 +24,9 @@ To reset your password, click following link:
 &nbsp; &nbsp;<a href="https://plotdb.com/me/passwd/reset/#token">https://plotdb.com/me/passwd/reset/#token</a>
 </p>
 """
-  (e,i) <- transport.sendMail option, _
-  if e => return rej! else res!
+  (e,i) <- mailgun.sendMail option, _
+  if e => console.log e
+  if e => return rej(aux.error 500, "failed to send reset password link.. try later?") else res!
 
 module.exports = do
   reset-password: reset-password

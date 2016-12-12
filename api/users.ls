@@ -1,4 +1,4 @@
-require! <[bluebird crypto fs fs-extra read-chunk image-type crypto nodemailer]>
+require! <[bluebird crypto fs fs-extra read-chunk image-type crypto]>
 require! <[../engine/aux ../engine/share/model/ ../engine/throttle]>
 require! <[./entity ./avatar ./mail]>
 (engine,io) <- (->module.exports = it)  _

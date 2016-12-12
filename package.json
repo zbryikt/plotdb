@@ -38,6 +38,7 @@
     "moment": "=2.14.1",
     "mongodb": "=2.0.33",
     "nodemailer": ">=2.7.0",
+    "nodemailer-mailgun-transport": "=1.2.2",
     "nodemailer-smtp-transport": ">=0.1.12",
     "passport": ">=0.2.1",
     "passport-facebook": ">=1.0.3",
