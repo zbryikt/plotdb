@@ -227,8 +227,7 @@ engine.router.api.delete "/dataset/:id", aux.numid false, (req, res) ->
       if !dataset => return aux.reject 404
       if !perm.test(req, dataset.{}permission, dataset.owner, \admin) => return aux.reject 403
       control.update-size req, dataset.owner, -( dataset.size or 0)
-      bluebird.all [
-        io.query "delete from datafields where dataset = $1", [req.params.id]
-        io.query "delete from datasets where key = $1", [req.params.id]
-      ] .then -> res.send!
+      io.query "delete from datafields where dataset = $1", [req.params.id]
+    .then (r) -> io.query "delete from datasets where key = $1", [req.params.id]
+    .then -> res.send!
     .catch aux.error-handler res
