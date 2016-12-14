@@ -37,6 +37,8 @@ angular.module \plotDB
     plotdb.load 953, (chart) ->
       data = JSON.parse(JSON.stringify(newchart.filter -> it.date))
       data.map (d,i) -> d.date = moment(d.date).format("YYYY/MM")
+      data = d3.nest!key(->it.date).entries(data)
+      data.map -> it <<< {date: it.key, count: it.values.reduce(((a,b) -> a + +b.count),0)}
       fields2 = data-to-fields data, <[count date]>, <[value order]>
       chart.config {margin: 20, nodeSize: 4, nodeStrokeWidth: 0, legendShow: false}
       chart.data fields2

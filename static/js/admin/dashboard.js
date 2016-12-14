@@ -97,6 +97,14 @@ x$.controller('adminDashboard', ['$scope'].concat(function($scope){
     data.map(function(d, i){
       return d.date = moment(d.date).format("YYYY/MM");
     });
+    data = d3.nest().key(function(it){
+      return it.date;
+    }).entries(data);
+    data.map(function(it){
+      return it.date = it.key, it.count = it.values.reduce(function(a, b){
+        return a + +b.count;
+      }, 0), it;
+    });
     fields2 = dataToFields(data, ['count', 'date'], ['value', 'order']);
     chart.config({
       margin: 20,
