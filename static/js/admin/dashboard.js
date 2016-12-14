@@ -28,38 +28,84 @@ x$.controller('adminDashboard', ['$scope'].concat(function($scope){
     return ret;
   };
   plotdb.load(953, function(chart){
-    var signup2, fields;
-    signup2 = signup.filter(function(it){
+    var data, fields;
+    data = JSON.parse(JSON.stringify(signup.filter(function(it){
       return it.date;
-    });
-    signup2.map(function(d, i){
+    })));
+    data.map(function(d, i){
       return d.date = moment(d.date).format("YY/MM/DD");
     });
-    fields = dataToFields(signup2, ['count', 'date'], ['value', 'order']);
+    fields = dataToFields(data, ['count', 'date'], ['value', 'order']);
     chart.config({
-      margin: 30,
+      margin: 20,
       nodeSize: 4,
-      nodeStrokeWidth: 0
+      nodeStrokeWidth: 0,
+      legendShow: false
     });
     chart.data(fields);
     return chart.attach(document.getElementById('adm-user-registration'));
   });
   plotdb.load(953, function(chart){
-    var newchart2, fields2;
-    newchart2 = newchart.filter(function(it){
+    var data, fields2;
+    data = JSON.parse(JSON.stringify(newchart.filter(function(it){
       return it.date;
-    });
-    newchart2.map(function(d, i){
+    })));
+    data.map(function(d, i){
       return d.date = moment(d.date).format("YY/MM/DD");
     });
-    fields2 = dataToFields(newchart2, ['count', 'date'], ['value', 'order']);
+    fields2 = dataToFields(data, ['count', 'date'], ['value', 'order']);
     chart.config({
-      margin: 30,
+      margin: 20,
       nodeSize: 4,
-      nodeStrokeWidth: 0
+      nodeStrokeWidth: 0,
+      legendShow: false
     });
     chart.data(fields2);
     return chart.attach(document.getElementById('adm-chart-creation'));
+  });
+  plotdb.load(953, function(chart){
+    var data, fields;
+    data = JSON.parse(JSON.stringify(signup.filter(function(it){
+      return it.date;
+    })));
+    data.map(function(d, i){
+      return d.date = moment(d.date).format("YY/MM");
+    });
+    data = d3.nest().key(function(it){
+      return it.date;
+    }).entries(data);
+    data.map(function(it){
+      return it.date = it.key, it.count = it.values.reduce(function(a, b){
+        return a + +b.count;
+      }, 0), it;
+    });
+    fields = dataToFields(data, ['count', 'date'], ['value', 'order']);
+    chart.config({
+      margin: 20,
+      nodeSize: 4,
+      nodeStrokeWidth: 0,
+      legendShow: false
+    });
+    chart.data(fields);
+    return chart.attach(document.getElementById('adm-user-registration-month'));
+  });
+  plotdb.load(953, function(chart){
+    var data, fields2;
+    data = JSON.parse(JSON.stringify(newchart.filter(function(it){
+      return it.date;
+    })));
+    data.map(function(d, i){
+      return d.date = moment(d.date).format("YYYY/MM");
+    });
+    fields2 = dataToFields(data, ['count', 'date'], ['value', 'order']);
+    chart.config({
+      margin: 20,
+      nodeSize: 4,
+      nodeStrokeWidth: 0,
+      legendShow: false
+    });
+    chart.data(fields2);
+    return chart.attach(document.getElementById('adm-chart-creation-month'));
   });
   return plotdb.load(1073, function(chart){
     var ur, fields;
@@ -68,9 +114,8 @@ x$.controller('adminDashboard', ['$scope'].concat(function($scope){
       return it;
     });
     fields = dataToFields(ur, ['count', 'owner'], ['value', 'order']);
-    console.log(fields);
     chart.config({
-      margin: 30,
+      margin: 20,
       sort: "Descending"
     });
     chart.data(fields);
