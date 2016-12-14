@@ -1,5 +1,5 @@
 plotdb.view = do
-  host: "#{plConfig.urlschema}#{plConfig.domainIO}"
+  host: "#{plConfig.urlschema}#{plConfig.domain}"
   loader: (key, cb) ->
     req = new XMLHttpRequest!
     req.onload = ->

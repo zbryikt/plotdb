@@ -1,0 +1,30 @@
+extends /view/module/base.jade
+block vars
+block head
+  script(type="text/javascript",src="/js/admin/dashboard.js")
+  link(rel="stylesheet",type="text/css",href="/css/render/pdb.css")
+  script(type="text/javascript",src="/js/pack/loader.js")
+  script(type="text/javascript",src="/lib/plotd3/0.1.0/index.js")
+  script(type="text/javascript",src="/lib/d3/3.5.12/index.min.js")
+  script(type="text/javascript",src="/lib/moment/2.14.1/index.js")
+  style(type="text/css").
+    .pdb-root { padding-bottom:0;border-radius:3px;border:1px solid #ccc;box-shadow:0 2px 3px rgba(0,0,0,0.1);overflow:hidden;}
+block body
+  #root
+    .spc1
+    script.
+      var signup = !{JSON.stringify(signup).replace(/<\//g, "<\\/")};
+      var newchart = !{JSON.stringify(newchart).replace(/<\//g, "<\\/")};
+      var userrank = !{JSON.stringify(userrank).replace(/<\//g, "<\\/")};
+    div(ng-controller="adminDashboard")
+      .row
+        .col-sm-4.text-center
+          h3 Registration
+          #adm-user-registration(style="width:100%;height:400px;background:#eee")
+        .col-sm-4.text-center
+          h3 Chart creation
+          #adm-chart-creation(style="width:100%;height:400px;background:#eee")
+        .col-sm-4.text-center
+          h3 User rank
+          #adm-userrank(style="width:100%;height:400px;background:#eee")
+

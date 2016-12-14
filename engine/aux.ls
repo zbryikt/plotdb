@@ -63,7 +63,7 @@ base = do
     cb req, res
 
   authorized: (cb) -> (req, res) ->
-    if not (req.user and req.user.isStaff) =>
+    if not (req.user and req.user.isstaff) =>
       return res.status(403).render('403', {url: req.originalUrl})
     cb req, res
 

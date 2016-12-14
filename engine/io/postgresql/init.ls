@@ -212,6 +212,7 @@ init-pwresettoken-table = """create table if not exists pwresettoken (
   time timestamp
 )"""
 
+
 client = new pg.Client secret.io-pg.uri
 (e) <- client.connect
 if e => return console.log e
@@ -241,6 +242,17 @@ query init-users-table
   .then -> query init-team-themes-table
   .then -> query init-payment-history-table
   .then -> query init-pwresettoken-table
+  .then -> query """
+    do $$
+      begin
+        begin
+          alter table users add column isstaff int;
+        exception
+          when duplicate_column then raise notice '';
+        end;
+      end;
+    $$
+    """
   .then ->
     query alter-themes-table
       .catch ->
