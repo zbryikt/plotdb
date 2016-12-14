@@ -44,7 +44,6 @@ angular.module \plotDB
       chart.data fields2
       chart.attach document.getElementById \adm-chart-creation-month
 
-
     plotdb.load 1073, (chart) ->
       ur = userrank.map ->
         it.count = +it.count
@@ -53,3 +52,12 @@ angular.module \plotDB
       chart.config {margin: 20, sort: "Descending"}
       chart.data fields
       chart.attach document.getElementById \adm-userrank
+
+    plotdb.load 1073, (chart) ->
+      data = JSON.parse(JSON.stringify(parents))
+      data.map -> it.count = +it.count
+      console.log ">", data
+      fields = data-to-fields data, <[count name]>, <[value order]>
+      chart.config {margin: 20, sort: "Descending", xAxisTickDirection: "vertical"}
+      chart.data fields
+      chart.attach document.getElementById \adm-chart-parents

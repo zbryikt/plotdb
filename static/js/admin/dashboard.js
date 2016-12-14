@@ -115,7 +115,7 @@ x$.controller('adminDashboard', ['$scope'].concat(function($scope){
     chart.data(fields2);
     return chart.attach(document.getElementById('adm-chart-creation-month'));
   });
-  return plotdb.load(1073, function(chart){
+  plotdb.load(1073, function(chart){
     var ur, fields;
     ur = userrank.map(function(it){
       it.count = +it.count;
@@ -128,5 +128,21 @@ x$.controller('adminDashboard', ['$scope'].concat(function($scope){
     });
     chart.data(fields);
     return chart.attach(document.getElementById('adm-userrank'));
+  });
+  return plotdb.load(1073, function(chart){
+    var data, fields;
+    data = JSON.parse(JSON.stringify(parents));
+    data.map(function(it){
+      return it.count = +it.count;
+    });
+    console.log(">", data);
+    fields = dataToFields(data, ['count', 'name'], ['value', 'order']);
+    chart.config({
+      margin: 20,
+      sort: "Descending",
+      xAxisTickDirection: "vertical"
+    });
+    chart.data(fields);
+    return chart.attach(document.getElementById('adm-chart-parents'));
   });
 }));

@@ -16,6 +16,7 @@ block body
       var signup = !{JSON.stringify(signup).replace(/<\//g, "<\\/")};
       var newchart = !{JSON.stringify(newchart).replace(/<\//g, "<\\/")};
       var userrank = !{JSON.stringify(userrank).replace(/<\//g, "<\\/")};
+      var parents = !{JSON.stringify(parents).replace(/<\//g, "<\\/")};
     div(ng-controller="adminDashboard")
       .row
         .col-sm-4.text-center
@@ -36,3 +37,5 @@ block body
           h3 Chart creation (Monthly)
           #adm-chart-creation-month(style="width:100%;height:200px;background:#eee")
         .col-sm-4.text-center
+          h3 Derived from
+          #adm-chart-parents(style="width:100%;height:400px;background:#eee")
