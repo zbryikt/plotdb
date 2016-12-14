@@ -11884,6 +11884,9 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     },
     storage: {}
   };
+  if ($scope.user && $scope.user.data) {
+    ga("set", "userId", $scope.user.data.key);
+  }
   $scope.user.storage.used = 100 * (($scope.user.data || {}).datasize || 0) / plConfig.plan.sizeLimits[plConfig.mode % 2
     ? 2
     : $scope.user.data.payment.plan || 0];

@@ -56,6 +56,7 @@ angular.module \plotDB
       data: global.user
       authed: -> return @data and @data.key
       storage: {}
+    if $scope.user and $scope.user.data => ga("set","userId", $scope.user.data.key)
     $scope.user.storage.used = (
       100 * (($scope.user.data or {}).datasize || 0) /
       plConfig.plan.sizeLimits[if (plConfig.mode % 2 ) => 2 else ($scope.user.data.payment.plan || 0)]
