@@ -18,7 +18,7 @@
   .map-panel(style="position:absolute;top:5px;left:245px;border-left:1px solid #ccc;width:240px;height:280px;padding-left:10px")
     label Color Mapping
     div(style="height:100%;overflow-y:scroll;height:90%")
-      div(style="margin:0 0 10px 0;",ng-repeat="v in paledit.item.value.colors")
-        div(ng-attr-style="width:29px;height:29px;background:{{v.hex}};border-radius:2px;margin-right:5px;display:inline-block;vertical-align:middle;")
-        input.form-control(style="display:inline-block;width:180px;height:29px;vertical-align:middle;",placeholder="keyword, e.g., America",ng-model="v.keyword")
+      div(style="margin:0 0 10px 0;padding-left:37px",ng-repeat="v in paledit.item.value.colors")
+        div(ng-attr-style="width:29px;height:29px;background:{{v.hex}};border-radius:2px;margin-right:5px;display:inline-block;vertical-align:middle;margin-left:-37px")
+        input.form-control(style="display:inline-block;width:100%;height:29px;vertical-align:middle;",placeholder="keyword, e.g., America",ng-model="v.keyword")
   .closebtn(ng-click="paledit.toggle()")
