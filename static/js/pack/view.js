@@ -1433,7 +1433,7 @@ plotdb.config = {
     'default': true,
     category: "Switch"
   },
-  Unit: {
+  unit: {
     name: "Unit",
     type: [plotdb.String],
     'default': "",

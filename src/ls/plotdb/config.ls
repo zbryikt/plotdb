@@ -396,7 +396,7 @@ plotdb.config = do
     category: "Switch"
 
   #Value
-  Unit: do
+  unit: do
     name: "Unit"
     type: [plotdb.String]
     default: ""
