@@ -16,7 +16,7 @@ block body
       var signup = !{JSON.stringify(signup).replace(/<\//g, "<\\/")};
       var newchart = !{JSON.stringify(newchart).replace(/<\//g, "<\\/")};
       var userrank = !{JSON.stringify(userrank).replace(/<\//g, "<\\/")};
-      var newchart = !{JSON.stringify(newchart).replace(/<\//g, "<\\/")};
+      var recentchart = !{JSON.stringify(recentchart).replace(/<\//g, "<\\/")};
       var parents = !{JSON.stringify(parents).replace(/<\//g, "<\\/")};
     div(ng-controller="adminDashboard")
       .row
@@ -52,7 +52,7 @@ block body
               #adm-heavyuser(style="width:100%;height:200px;background:#eee")
           .row
             .col-sm-12.text-center
-              h3 -
+              h3 top 10 used charts
               #adm-hotchart(style="width:100%;height:200px;background:#eee")
         .col-sm-4.text-center
           h3 Derived from
@@ -62,7 +62,7 @@ block body
         .col-sm-12
           .panel.panel-default
             .panel-body
-              table#adm-newchart(style="width:100%")
+              table#adm-recentchart(style="width:100%")
                 tr
                   th name
                   th owner

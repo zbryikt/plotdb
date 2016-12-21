@@ -95,6 +95,7 @@ angular.module \plotDB
       chart.data fields
       console.log data
       chart.attach document.getElementById \adm-hotchart
+
     plotdb.load 1073, (chart) ->
       data = JSON.parse(JSON.stringify(parents))
       data.map -> it.count = +it.count
@@ -102,11 +103,11 @@ angular.module \plotDB
       chart.config {margin: 20, sort: "Descending", xAxisTickDirection: "vertical"}
       chart.data fields
       chart.attach document.getElementById \adm-chart-parents
-    console.log newchart
-    sel = d3.select \#adm-newchart .selectAll \tr.data .data newchart
+
+    sel = d3.select \#adm-recentchart .selectAll \tr.data .data recentchart
     sel.exit!remove!
     sel.enter!append \tr .attr class: \data
-    d3.select \#adm-newchart .selectAll \tr.data .html((d,i) ->
+    d3.select \#adm-recentchart .selectAll \tr.data .html((d,i) ->
       [
         "<td>#{d.name}</td>"
         "<td><a href='/user/#{d.owner}' target='_blank'>#{d.owner}</a></td>"

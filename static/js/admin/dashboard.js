@@ -241,13 +241,12 @@ x$.controller('adminDashboard', ['$scope'].concat(function($scope){
     chart.data(fields);
     return chart.attach(document.getElementById('adm-chart-parents'));
   });
-  console.log(newchart);
-  sel = d3.select('#adm-newchart').selectAll('tr.data').data(newchart);
+  sel = d3.select('#adm-recentchart').selectAll('tr.data').data(recentchart);
   sel.exit().remove();
   sel.enter().append('tr').attr({
     'class': 'data'
   });
-  return d3.select('#adm-newchart').selectAll('tr.data').html(function(d, i){
+  return d3.select('#adm-recentchart').selectAll('tr.data').html(function(d, i){
     return ["<td>" + d.name + "</td>", "<td><a href='/user/" + d.owner + "' target='_blank'>" + d.owner + "</a></td>", "<td><a href='/chart/" + d.parent + "' target='_blank'>" + d.parent + "</a></td>", "<td>" + d.createdtime + "</td>"].join("");
   });
 }));

@@ -44,7 +44,7 @@ engine.app.get \/admin/dashboard, aux.authorized (req, res) ->
       ].join(" ")
     .then (r={}) ->
       ret = r.[]rows
-      payload.newchart = ret
+      payload.recentchart = ret
       res.render \view/admin/dashboard.jade, payload
       return null
     .catch aux.error-handler res, true
