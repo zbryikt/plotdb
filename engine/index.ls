@@ -37,11 +37,13 @@ content-security-policy = [
     static.xx.fbcdn.net
     csi.gstatic.com
     *.stripe.com
+    *
   ]>
   <[font-src
     'self'
     data:
     fonts.gstatic.com
+    themes.googleusercontent.com
   ]>
   <[frame-src
     'self'
