@@ -55,7 +55,7 @@ content-security-policy = [
     accounts.google.com
   ]>
   <[connect-src
-    'self' data: blob:
+    'self' data: blob: plotdb.com
   ]>
 ]
 
