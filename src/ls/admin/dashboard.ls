@@ -109,7 +109,7 @@ angular.module \plotDB
     sel.enter!append \tr .attr class: \data
     d3.select \#adm-recentchart .selectAll \tr.data .html((d,i) ->
       [
-        "<td><a href='/chart/#{d.key}' target='_blank'>#{d.name}</a></td>"
+        "<td><a href='https://plotdb.io/v/chart/#{d.key}' target='_blank'>#{d.name}</a></td>"
         "<td><a href='/user/#{d.owner}' target='_blank'>#{d.owner}</a></td>"
         "<td><a href='/chart/#{d.parent}' target='_blank'>#{d.parent}</a></td>"
         "<td>#{d.createdtime}</td>"
