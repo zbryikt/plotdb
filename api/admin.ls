@@ -39,7 +39,7 @@ engine.app.get \/admin/dashboard, aux.authorized (req, res) ->
       ret = r.[]rows
       payload.parents = ret
       io.query [
-        "select name,owner,parent,createdtime from charts"
+        "select key,name,owner,parent,createdtime from charts"
         "where createdtime > current_date - interval '7' day order by createdtime desc"
       ].join(" ")
     .then (r={}) ->
