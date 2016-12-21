@@ -38,6 +38,13 @@ engine.app.get \/admin/dashboard, aux.authorized (req, res) ->
     .then (r={}) ->
       ret = r.[]rows
       payload.parents = ret
+      io.query [
+        "select name,owner,parent,createdtime from charts"
+        "where createdtime > current_date - interval '7' day order by createdtime desc"
+      ].join(" ")
+    .then (r={}) ->
+      ret = r.[]rows
+      payload.newchart = ret
       res.render \view/admin/dashboard.jade, payload
       return null
     .catch aux.error-handler res, true

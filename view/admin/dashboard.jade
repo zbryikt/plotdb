@@ -16,6 +16,7 @@ block body
       var signup = !{JSON.stringify(signup).replace(/<\//g, "<\\/")};
       var newchart = !{JSON.stringify(newchart).replace(/<\//g, "<\\/")};
       var userrank = !{JSON.stringify(userrank).replace(/<\//g, "<\\/")};
+      var newchart = !{JSON.stringify(newchart).replace(/<\//g, "<\\/")};
       var parents = !{JSON.stringify(parents).replace(/<\//g, "<\\/")};
     div(ng-controller="adminDashboard")
       .row
@@ -23,19 +24,47 @@ block body
           h3 Registration
           #adm-user-registration(style="width:100%;height:200px;background:#eee")
         .col-sm-4.text-center
-          h3 Chart creation
-          #adm-chart-creation(style="width:100%;height:200px;background:#eee")
-        .col-sm-4.text-center
-          h3 User rank
-          #adm-userrank(style="width:100%;height:200px;background:#eee")
-
-      .row
-        .col-sm-4.text-center
           h3 Registration (Monthly)
           #adm-user-registration-month(style="width:100%;height:200px;background:#eee")
+        .col-sm-4.text-center
+          h3 Registration (last 7 days)
+          #adm-user-registration-7days(style="width:100%;height:200px;background:#eee")
+      .row
+        .col-sm-4.text-center
+          h3 Chart creation
+          #adm-chart-creation(style="width:100%;height:200px;background:#eee")
         .col-sm-4.text-center
           h3 Chart creation (Monthly)
           #adm-chart-creation-month(style="width:100%;height:200px;background:#eee")
         .col-sm-4.text-center
+          h3 Chart creation (last 7 days)
+          #adm-chart-creation-7days(style="width:100%;height:200px;background:#eee")
+
+
+      .row
+        .col-sm-8
+          .row
+            .col-sm-6.text-center
+              h3 User Rank
+              #adm-userrank(style="width:100%;height:200px;background:#eee")
+            .col-sm-6.text-center
+              h3 Heavy Users (>5 charts)
+              #adm-heavyuser(style="width:100%;height:200px;background:#eee")
+          .row
+            .col-sm-12.text-center
+              h3 -
+              #adm-hotchart(style="width:100%;height:200px;background:#eee")
+        .col-sm-4.text-center
           h3 Derived from
-          #adm-chart-parents(style="width:100%;height:400px;background:#eee")
+          #adm-chart-parents(style="width:100%;height:455px;background:#eee")
+      br
+      .row
+        .col-sm-12
+          .panel.panel-default
+            .panel-body
+              table#adm-newchart(style="width:100%")
+                tr
+                  th name
+                  th owner
+                  th parent
+                  th createdtime
