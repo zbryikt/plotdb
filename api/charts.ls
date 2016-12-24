@@ -50,7 +50,12 @@ engine.router.api.get "/chart/", (req, res) ->
   simple = !!req.query.simple
   if simple =>
     return io.query(
-      "select key, name from charts where owner = $1 and (name ~ ANY($2) or key::text ~ ANY($2)) limit $3 offset $4",
+      [
+        "select key, name from charts"
+        "where owner = $1 and (name ~ ANY($2) or key::text ~ ANY($2))"
+        "order by createdtime desc" if req.{}user.key
+        "limit $3 offset $4"
+      ].join(" "),
       [(req.{}user.key or 0), keyword, limit, offset]
     )
       .then (r={}) -> res.send(r.[]rows or [])
@@ -87,6 +92,8 @@ engine.router.api.get "/chart/", (req, res) ->
       "(charts.tags && $#tagidx or lower(charts.name) ~ ANY($#tagidx) or lower(charts.description) ~ ANY($#tagidx))" if keyword.length
     ]).filter(->it).join(" and ")
     (if fav => "and likes.type='chart' and likes.uid=charts.key and likes.owner=$#{tagidx + (if keyword.length => 1 else 0)}" else "")
+
+    "order by createdtime desc" if req.query.owner
     "offset #{paging.0.0} limit #{paging.0.1}"
   ].join(" "), (
     conditions.map(->it.1) ++
