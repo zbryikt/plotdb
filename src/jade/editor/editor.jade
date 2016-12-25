@@ -101,9 +101,9 @@ include /widget/palette-edit-modal.jade
               .dropdown
                 .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
                   i.fa.fa-caret-down.pull-right
-                  span {{v.value}}
+                  span {{v.value.name || v.value}}
                 ul.dropdown-menu
-                  li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice}}
+                  li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice.name || choice}}
             //- Color
             .btn-group(ng-if="v.type[0].name=='Color'")
               span.input-group-addon: div {{v.name || name}}

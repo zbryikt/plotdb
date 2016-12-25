@@ -26,8 +26,8 @@ plotdb.config = do
   # Global Configuration
   language: do
     name: "Language"
-    type: [plotdb.Choice(["Chinese(Traditional)","English"])]
-    default: "English"
+    type: [plotdb.Choice([{name: "正體中文", value: "zh-tw"}, {name: "English", value: "en"}])]
+    default: {name: "English", value: "en"}
     category: "Global Settings"
     rebindOnChange: true
   fontFamily: do

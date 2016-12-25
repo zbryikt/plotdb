@@ -5,6 +5,12 @@ var zhalpha2 = {"阿爾巴尼亞":"AL","阿爾及利亞":"DZ","安哥拉":"AO","
 var json = {zhalpha2: zhalpha2, codemap: codemap, country: country};
 var ret = {};
 var keys = ["name","alpha2","alpha3","gapminder","num","shortname"];
+var i18n = {}, hash;
+for(var i=0;i<codemap.alpha2.length;i++) i18n[codemap.alpha2[i]] = {};
+for(key in zhalpha2) {
+  hash = i18n[zhalpha2[key].toLowerCase()];
+  if(hash) hash["zh-tw"] = key;
+}
 /* begin of code */
 ret.getIdx = function(val) {
   if(!val) return -1;
@@ -16,9 +22,11 @@ ret.getIdx = function(val) {
   return matched[0] || -1;
 };
 
-ret.getName = function(val) {
+ret.getName = function(val, lang) {
   var idx = this.getIdx(val);
   if(idx < 0) return null;
+  var translate = i18n[json.codemap.alpha2[idx]];
+  if(translate && translate[lang]) return translate[lang];
   return json.codemap.shortname[idx];
 };
 
