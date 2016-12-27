@@ -131,6 +131,11 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     _save: function(nothumb){
       var key, refresh, k, this$ = this;
       nothumb == null && (nothumb = false);
+      this.save.handle = null;
+      if (this.save.pending) {
+        return;
+      }
+      this.save.pending = true;
       if (!$scope.writable && this.target().owner !== this.user.data.key) {
         key = this.target()._type.location === 'server' ? this.target().key : null;
         import$(this.target(), {
@@ -196,6 +201,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             $timeout.cancel(this$.save.handle);
           }
           return this$.save.handle = null;
+        }).then(function(){
+          return this.save.pending = false;
         });
       });
     },
@@ -208,7 +215,6 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         return;
       }
       this.save.handle = $timeout(function(){
-        this$.save.handle = null;
         return this$._save(true);
       }, 3000);
       return this.canvas.window.postMessage({

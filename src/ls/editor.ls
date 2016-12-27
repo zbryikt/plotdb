@@ -72,6 +72,9 @@ angular.module \plotDB
             @promise = {res, rej}
             $scope.canvas.window.postMessage {type: \get-local}, $scope.plotdb-domain
       _save: (nothumb = false)->
+        @save.handle = null
+        if @save.pending => return
+        @save.pending = true
         if !$scope.writable and @target!.owner != @user.data.key =>
           key = (if @target!._type.location == \server => @target!.key else null)
           @target! <<< do
@@ -109,13 +112,11 @@ angular.module \plotDB
               console.error "[save #name]", err
             if @save.handle => $timeout.cancel @save.handle
             @save.handle = null
+          .then -> @save.pending = false
       save: ->
         if !$scope.user.authed! => return $scope.auth.toggle true
         if @save.handle => return
-        @save.handle = $timeout (~>
-          @save.handle = null
-          @_save true
-        ), 3000
+        @save.handle = $timeout (~> @_save true), 3000
         @canvas.window.postMessage {type: \snapshot}, @plotdb-domain
       clone: -> # clone forcely. same as save() when user is not the chart's owner
         @target!.name = "#{@target!.name} - Copy"
