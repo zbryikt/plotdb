@@ -13,7 +13,7 @@ include /mixin.jade
           input.form-control(type="text",ng-model="target().name",
           placeholder="Project Name",style="margin-bottom:5px")
           .btn.btn-default.btn-block.loader(ng-disabled="!target().name",ng-click="save()",
-          ng-class="{'loading':save.handle}")
+          ng-class="{'loading':save.handle || save.pending}")
             +SaveFork
   div(ng-cloak,ng-show="target()._type.location=='local' && target().key",
   style="position:absolute;top:0;left:0;width:100%;height:100%;")

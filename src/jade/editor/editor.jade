@@ -47,7 +47,7 @@ include /widget/palette-edit-modal.jade
           span name
         #chart-action.btn-group(style="width:100%")
           .btn.btn-default.loader(ng-disabled="!target().name",ng-click="save()",
-          ng-class="{'loading':save.handle}")
+          ng-class="{'loading':save.handle || save.pending}")
             +SaveFork
           .dropdown
             .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
