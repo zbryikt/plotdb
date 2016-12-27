@@ -149,7 +149,12 @@ snapshot = (type='snapshot') ->
       style.generated = true
       svgnode.insertBefore style, svgnode.childNodes.0
     {width, height} = svgnode.getBoundingClientRect!
+    inline-style = svgnode.getAttribute(\style)
+    svgnode.setAttribute(\style,
+      inline-style + ";" + document.getElementById(\container).getAttribute(\style)
+    )
     svg = svgnode.outerHTML
+    svgnode.setAttribute(\style, inline-style)
     if type == \getsvg =>
       return window.parent.postMessage {type: \getsvg, payload: svg}, plotdb-domain
     img = new Image!

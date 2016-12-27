@@ -252,7 +252,7 @@ $(document).ready(function(){
     });
   };
   snapshot = function(type){
-    var svgnode, styles, i$, to$, idx, style, ref$, width, height, svg, img, encoded, e;
+    var svgnode, styles, i$, to$, idx, style, ref$, width, height, inlineStyle, svg, img, encoded, e;
     type == null && (type = 'snapshot');
     try {
       d3.selectAll('#container svg').each(function(){
@@ -283,7 +283,10 @@ $(document).ready(function(){
         svgnode.insertBefore(style, svgnode.childNodes[0]);
       }
       ref$ = svgnode.getBoundingClientRect(), width = ref$.width, height = ref$.height;
+      inlineStyle = svgnode.getAttribute('style');
+      svgnode.setAttribute('style', inlineStyle + ";" + document.getElementById('container').getAttribute('style'));
       svg = svgnode.outerHTML;
+      svgnode.setAttribute('style', inlineStyle);
       if (type === 'getsvg') {
         return window.parent.postMessage({
           type: 'getsvg',
