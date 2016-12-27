@@ -3896,6 +3896,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     _save: function(nothumb){
       var key, refresh, k, this$ = this;
       nothumb == null && (nothumb = false);
+      $timeout.cancel(this.save.handle);
       this.save.handle = null;
       if (this.save.pending) {
         return;
@@ -3951,7 +3952,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           }
           this$.save.handle = null;
           this$.backup.unguard(3000);
-          return this$.sharePanel.saveHint = false;
+          this$.sharePanel.saveHint = false;
+          return this$.save.pending = false;
         });
       })['catch'](function(err){
         return this$.$apply(function(){
@@ -3965,9 +3967,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           if (this$.save.handle) {
             $timeout.cancel(this$.save.handle);
           }
-          return this$.save.handle = null;
-        }).then(function(){
-          return this.save.pending = false;
+          this$.save.handle = null;
+          return this$.save.pending = false;
         });
       });
     },

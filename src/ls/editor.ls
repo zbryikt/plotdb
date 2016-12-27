@@ -72,6 +72,7 @@ angular.module \plotDB
             @promise = {res, rej}
             $scope.canvas.window.postMessage {type: \get-local}, $scope.plotdb-domain
       _save: (nothumb = false)->
+        $timeout.cancel @save.handle
         @save.handle = null
         if @save.pending => return
         @save.pending = true
@@ -103,6 +104,7 @@ angular.module \plotDB
             @save.handle = null
             @backup.unguard 3000
             @share-panel.save-hint = false
+            @save.pending = false
           .catch (err) ~> @$apply ~>
             if err.2 == 402 =>
               eventBus.fire \quota.widget.on
@@ -112,7 +114,7 @@ angular.module \plotDB
               console.error "[save #name]", err
             if @save.handle => $timeout.cancel @save.handle
             @save.handle = null
-          .then -> @save.pending = false
+            @save.pending = false
       save: ->
         if !$scope.user.authed! => return $scope.auth.toggle true
         if @save.handle => return
