@@ -39,7 +39,7 @@ plotdb.view = do
     eventbus = {in: {}, out: {}}
     chart.fire = (name, payload) -> eventbus.out[][name].forEach -> it(payload)
     @fire = (name, payload) -> eventbus.in[][name].forEach -> it(payload)
-    @handle = (name, cb) -> eventbus[][name].push cb
+    @handle = (name, cb) -> eventbus.out[][name].push cb
     chart.handle = (name, cb) -> eventbus.in[][name].push cb
 
     @

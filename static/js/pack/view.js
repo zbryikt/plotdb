@@ -1879,7 +1879,8 @@ plotdb.view = {
       });
     };
     this.handle = function(name, cb){
-      return (eventbus[name] || (eventbus[name] = [])).push(cb);
+      var ref$;
+      return ((ref$ = eventbus.out)[name] || (ref$[name] = [])).push(cb);
     };
     chart.handle = function(name, cb){
       var ref$;
