@@ -1801,7 +1801,7 @@ plotdb.view = {
     return req.send();
   },
   chart: function(chart, arg$){
-    var ref$, theme, fields, root, data, code;
+    var ref$, theme, fields, root, data, code, eventbus;
     ref$ = arg$ != null
       ? arg$
       : {}, theme = ref$.theme, fields = ref$.fields, root = ref$.root, data = ref$.data;
@@ -1856,6 +1856,29 @@ plotdb.view = {
         return req.send(JSON.stringify(chart.local));
       };
     }(chart, chart.key);
+    eventbus = {
+      'in': {},
+      out: {}
+    };
+    chart.fire = function(name, payload){
+      var ref$;
+      return ((ref$ = eventbus.out)[name] || (ref$[name] = [])).forEach(function(it){
+        return it(payload);
+      });
+    };
+    this.fire = function(name, payload){
+      var ref$;
+      return ((ref$ = eventbus['in'])[name] || (ref$[name] = [])).forEach(function(it){
+        return it(payload);
+      });
+    };
+    this.handle = function(name, cb){
+      return (eventbus[name] || (eventbus[name] = [])).push(cb);
+    };
+    chart.handle = function(name, cb){
+      var ref$;
+      return ((ref$ = eventbus['in'])[name] || (ref$[name] = [])).push(cb);
+    };
     return this;
   }
 };
@@ -1948,12 +1971,22 @@ import$(plotdb.view.chart.prototype, {
   theme: function(theme){
     return this._.theme = import$(eval(theme.code.content), theme);
   },
-  data: function(data){
+  refresh: function(){
+    this._.chart.parse();
+    this._.chart.resize();
+    this._.chart.bind();
+    return this._.chart.render();
+  },
+  data: function(data, refresh){
+    refresh == null && (refresh = false);
     if (data == null) {
       return this._.data;
     }
     this._.data = data;
-    return this.sync();
+    this.sync();
+    if (this.inited && refresh) {
+      return this.refresh();
+    }
   },
   sync: function(fields){
     var hash, i$, len$, item, k, ref$, v;

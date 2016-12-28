@@ -256,6 +256,8 @@ render = (payload, rebind = true) ->
         assetsmap[file.name] = file
       chart <<< {config}
       chart.save-local = save-local chart, key
+      chart.fire = -> # no need to handle in editor since no one is listening
+      chart.handle = (name, cb) -> # no need to handle too
       if rebind or reboot or !(chart.root and chart.data) => chart <<< {root, data, dimension}
       promise = Promise.resolve!
       if reboot => promise = promise.then ->

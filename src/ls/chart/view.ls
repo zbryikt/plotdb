@@ -36,6 +36,11 @@ plotdb.view = do
       req.setRequestHeader \Content-Type, "application/json;charset=UTF-8"
       req.send JSON.stringify(chart.local)
     ) chart, chart.key
+    eventbus = {in: {}, out: {}}
+    chart.fire = (name, payload) -> eventbus.out[][name].forEach -> it(payload)
+    @fire = (name, payload) -> eventbus.in[][name].forEach -> it(payload)
+    @handle = (name, cb) -> eventbus[][name].push cb
+    chart.handle = (name, cb) -> eventbus.in[][name].push cb
 
     @
 
@@ -89,11 +94,16 @@ plotdb.view.chart.prototype <<< do
     new plotdb.view.chart(JSON.parse(@_._chart), @_{theme, fields})
   on: (event, cb) -> @_.handler[][event].push cb
   theme: (theme) -> @_.theme = eval(theme.code.content) <<< theme
-
-  data: (data) ->
+  refresh: ->
+    @_.chart.parse!
+    @_.chart.resize!
+    @_.chart.bind!
+    @_.chart.render!
+  data: (data, refresh = false) ->
     if !data? => return @_.data
     @_.data = data
     @sync!
+    if @inited and refresh => @refresh!
   sync: (fields = []) ->
     if @_.data => return @_.chart.data = plotdb.chart.data-from-hash @_.chart.dimension, @_.data
     hash = {}

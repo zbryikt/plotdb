@@ -6678,6 +6678,8 @@ $(document).ready(function(){
         }
         chart.config = config;
         chart.saveLocal = saveLocal(chart, key);
+        chart.fire = function(){};
+        chart.handle = function(name, cb){};
         if (rebind || reboot || !(chart.root && chart.data)) {
           chart.root = root;
           chart.data = data;
