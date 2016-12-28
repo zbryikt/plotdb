@@ -201,6 +201,36 @@ render = (payload, rebind = true) ->
         node.setAttribute("id", "wrapper")
         node.setAttribute("class", "pdb-root")
         document.body.appendChild(node)
+
+      if payload.chart.metashow =>
+        [head,foot,iroot,iiroot] = [0,0,0,0].map(->document.createElement("div"))
+        iroot.appendChild(iiroot)
+        iroot.style <<< {position:"absolute",left:"0",right:"0"}
+        iiroot.style <<< {width: "100%",height: "100%"}
+        foot.style <<< {position:"absolute",bottom: "0"}
+        [head, iroot, foot].map -> node.appendChild(it)
+        #TODO - merge with view.ls
+        margin =( payload.chart.config.margin or {value: 10}).value
+        margin-vertical = if margin - 10 > 10 => margin - 10 else margin/2
+        head.style <<< do
+          position: "relative"
+          "z-index": 999
+          "text-align": \center
+          margin: "#{margin-vertical}px 0 0"
+          "font-family": (payload.chart.config.fontFamily or {value: "initial"}).value
+        foot.style <<< do
+          left: "#{margin}px"
+          bottom: "#{margin-vertical}px"
+        head.innerHTML = [
+          "<h2 style='margin:0'>#{payload.chart.name}</h2>"
+          "<p style='margin:0'>#{payload.chart.description}</p>"
+        ].join("")
+        if payload.chart.footer => foot.innerHTML = "<small>#{payload.chart.footer}</small>"
+        iroot.style <<< do
+          top: head.getBoundingClientRect!height + "px"
+          bottom: foot.getBoundingClientRect!height + "px"
+        node = iiroot
+
       $(node).html([
         "<style type='text/css'>/* <![CDATA[ */#style/* ]]> */</style>"
         "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme.{}style.content

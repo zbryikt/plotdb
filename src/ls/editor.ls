@@ -890,6 +890,12 @@ angular.module \plotDB
         @$watch "#{$scope.type}.doc.content", ~> @render-async!
         @$watch "#{$scope.type}.style.content", ~> @render-async!
         @$watch "#{$scope.type}.assets.length", ~> @render-async!
+
+        @$watch 'chart.metashow', ~> $scope.render-async!
+        @$watch 'chart.name', ~> if $scope.chart.metashow => $scope.render-async!
+        @$watch 'chart.footer', ~> if $scope.chart.metashow => $scope.render-async!
+        @$watch 'chart.description', ~> if $scope.chart.metashow => $scope.render-async!
+
         @$watch 'theme', (theme) ~>
           @render-async!
           if @chart => @chart.theme = if theme => theme.key else null

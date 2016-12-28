@@ -245,6 +245,15 @@ base = function(model){
         required: false,
         type: model.type.string
       },
+      footer: {
+        max: 500,
+        required: false,
+        type: model.type.string
+      },
+      metashow: {
+        required: false,
+        type: model.type.boolean
+      },
       basetype: {
         max: 20,
         required: false,

@@ -73,6 +73,8 @@ base = (model) ->
       theme: {required: false, type: model.type.key({type:base.theme})}
       parent: { required: false, type: model.type.key({type: base.chart})}
       description: {max: 500, required: false, type: model.type.string}
+      footer: {max: 500, required: false, type: model.type.string}
+      metashow: { required: false, type: model.type.boolean }
       basetype: {max: 20, required: false, type: model.type.array({max: 20, type: model.type.string})}
       visualencoding: { max: 10, required: false, type: model.type.array({max: 20, type: model.type.string})}
       category: { max: 10, required: false, type: model.type.array({max: 20, type: model.type.string})}

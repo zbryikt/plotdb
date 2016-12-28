@@ -33,20 +33,28 @@ br
 .row
   .col-sm-6
     label Title
+    .pull-right
+      .checkbox(style="margin:0"): label
+        input(type="checkbox",ng-model="target().metashow")
+        small(style="vertical-align:text-top") Show in Chart
     input.form-control.input-sm(placeholder="title shown in social media",ng-model="target().name")
     br
-    label Share
-    #share-buttons(ng-class="{'disabled':target().permission.switch!='publish'}")
-      a(ng-attr-href="{{sharePanel.social.facebook}}",target="_blank")
-        i.fa.fa-facebook-square(style="color:#3b5998")
-      a(ng-attr-href="{{sharePanel.social.twitter}}", target="_blank")
-        i.fa.fa-twitter-square(style="color:#00a0dc")
-      a(ng-attr-href="{{sharePanel.social.pinterest}}",target="_blank")
-        i.fa.fa-pinterest-square(style="color:#bd081c")
-      a(ng-attr-href="{{sharePanel.social.linkedin}}", target="_blank")
-        i.fa.fa-linkedin-square(style="color:#00a0dc")
-      a(ng-attr-href="{{sharePanel.social.email}}",target="_blank")
-        i.fa.fa-envelope-square(style="color:#444")
+    label Footer
+    input.form-control.input-sm(placeholder="e.g., data source",ng-model="target().footer")
+    //-
+      label Share
+      #share-buttons(ng-class="{'disabled':target().permission.switch!='publish'}")
+        a(ng-attr-href="{{sharePanel.social.facebook}}",target="_blank")
+          i.fa.fa-facebook-square(style="color:#3b5998")
+        a(ng-attr-href="{{sharePanel.social.twitter}}", target="_blank")
+          i.fa.fa-twitter-square(style="color:#00a0dc")
+        a(ng-attr-href="{{sharePanel.social.pinterest}}",target="_blank")
+          i.fa.fa-pinterest-square(style="color:#bd081c")
+        a(ng-attr-href="{{sharePanel.social.linkedin}}", target="_blank")
+          i.fa.fa-linkedin-square(style="color:#00a0dc")
+        a(ng-attr-href="{{sharePanel.social.email}}",target="_blank")
+          i.fa.fa-envelope-square(style="color:#444")
+
   .col-sm-6
     label Description
     textarea.form-control.input-sm(rows="5",placeholder="summary shown in social media",ng-model="target().description")

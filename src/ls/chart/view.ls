@@ -54,6 +54,34 @@ plotdb.view.chart.prototype <<< do
     {chart, theme} = @_.{chart,theme}
     root.setAttribute("class", ((root.getAttribute("class") or "")
       .split(" ").filter(->it!=\pdb-root) ++ <[pdb-root]>).join(" "))
+    if chart.metashow =>
+      [head,foot,iroot,iiroot] = [0,0,0,0].map(->document.createElement("div"))
+      iroot.appendChild(iiroot)
+      iroot.style <<< {position:"absolute",left:"0",right:"0"}
+      iiroot.style <<< {width: "100%",height: "100%"}
+      foot.style <<< {position:"absolute",bottom: "0"}
+      [head, iroot, foot].map -> root.appendChild(it)
+      margin =( chart.config.margin or 10 )
+      margin-vertical = if margin - 10 > 10 => margin - 10 else margin/2
+      head.style <<< do
+        position: "relative"
+        "z-index": 999
+        "text-align": \center
+        margin: "#{margin-vertical}px 0 0"
+        "font-family": (chart.config.fontFamily or "initial")
+      foot.style <<< do
+        left: "#{margin}px"
+        bottom: "#{margin-vertical}px"
+      head.innerHTML = [
+        "<h2 style='margin:0'>#{chart.name}</h2>"
+        "<p style='margin:0'>#{chart.description}</p>"
+      ].join("")
+      if chart.footer => foot.innerHTML = "<small>#{chart.footer}</small>"
+      iroot.style <<< do
+        top: head.getBoundingClientRect!height + "px"
+        bottom: foot.getBoundingClientRect!height + "px"
+      root = iiroot
+
     root.innerHTML = [
       "<style type='text/css'>/* <![CDATA[ */#{chart.style.content}/* ]]> */</style>" if chart and chart.style
       "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme and theme.style

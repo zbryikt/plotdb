@@ -125,7 +125,7 @@ import$(plotdb.view.chart.prototype, {
     return libs = this._.chart.library || [];
   },
   attach: function(root){
-    var ref$, chart, theme, resize, newClass, e;
+    var ref$, chart, theme, head, foot, iroot, iiroot, margin, marginVertical, resize, newClass, e;
     this._.root = root;
     ref$ = {
       chart: (ref$ = this._).chart,
@@ -134,6 +134,49 @@ import$(plotdb.view.chart.prototype, {
     root.setAttribute("class", ((root.getAttribute("class") || "").split(" ").filter(function(it){
       return it !== 'pdb-root';
     }).concat(['pdb-root'])).join(" "));
+    if (chart.metashow) {
+      ref$ = [0, 0, 0, 0].map(function(){
+        return document.createElement("div");
+      }), head = ref$[0], foot = ref$[1], iroot = ref$[2], iiroot = ref$[3];
+      iroot.appendChild(iiroot);
+      ref$ = iroot.style;
+      ref$.position = "absolute";
+      ref$.left = "0";
+      ref$.right = "0";
+      ref$ = iiroot.style;
+      ref$.width = "100%";
+      ref$.height = "100%";
+      ref$ = foot.style;
+      ref$.position = "absolute";
+      ref$.bottom = "0";
+      [head, iroot, foot].map(function(it){
+        return root.appendChild(it);
+      });
+      margin = chart.config.margin || 10;
+      marginVertical = margin - 10 > 10
+        ? margin - 10
+        : margin / 2;
+      import$(head.style, {
+        position: "relative",
+        "z-index": 999,
+        "text-align": 'center',
+        margin: marginVertical + "px 0 0",
+        "font-family": chart.config.fontFamily || "initial"
+      });
+      import$(foot.style, {
+        left: margin + "px",
+        bottom: marginVertical + "px"
+      });
+      head.innerHTML = ["<h2 style='margin:0'>" + chart.name + "</h2>", "<p style='margin:0'>" + chart.description + "</p>"].join("");
+      if (chart.footer) {
+        foot.innerHTML = "<small>" + chart.footer + "</small>";
+      }
+      import$(iroot.style, {
+        top: head.getBoundingClientRect().height + "px",
+        bottom: foot.getBoundingClientRect().height + "px"
+      });
+      root = iiroot;
+    }
     root.innerHTML = [chart && chart.style ? "<style type='text/css'>/* <![CDATA[ */" + chart.style.content + "/* ]]> */</style>" : void 8, theme && theme.style ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div style='position:relative;width:100%;height:100%;'><div style='height:0;'>&nbsp;</div>", chart.doc.content, "</div>", theme && (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8].join("");
     chart.root = root.querySelector("div:first-of-type");
     resize = function(){

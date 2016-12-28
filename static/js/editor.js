@@ -1637,6 +1637,24 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       this.$watch($scope.type + ".assets.length", function(){
         return this$.renderAsync();
       });
+      this.$watch('chart.metashow', function(){
+        return $scope.renderAsync();
+      });
+      this.$watch('chart.name', function(){
+        if ($scope.chart.metashow) {
+          return $scope.renderAsync();
+        }
+      });
+      this.$watch('chart.footer', function(){
+        if ($scope.chart.metashow) {
+          return $scope.renderAsync();
+        }
+      });
+      this.$watch('chart.description', function(){
+        if ($scope.chart.metashow) {
+          return $scope.renderAsync();
+        }
+      });
       this.$watch('theme', function(theme){
         this$.renderAsync();
         if (this$.chart) {

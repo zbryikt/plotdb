@@ -130,6 +130,21 @@ do $$
 $$
 """
 
+alter-wrap = (query) -> """
+do $$
+  begin
+    begin
+      #query
+    exception
+      when duplicate_column then raise notice '';
+    end;
+  end;
+$$
+"""
+
+alter-charts2-table = alter-wrap("alter table charts add column metaShow boolean;")
+alter-charts3-table = alter-wrap("alter table charts add column footer text;")
+
 
 init-likes-table = """create table if not exists likes (
   key serial primary key,
@@ -230,6 +245,8 @@ query init-users-table
   .then -> query init-themes-table
   .then -> query init-charts-table
   .then -> query alter-charts-table
+  .then -> query alter-charts2-table
+  .then -> query alter-charts3-table
   .then -> query init-palettes-table
   .then -> query init-requests-table
   .then -> query init-comments-table
