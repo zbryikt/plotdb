@@ -342,4 +342,7 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
         # console.log html.length
         res.send html
       return null
-    .catch aux.error-handler res, true
+    .catch (e) ->
+      if e and e.code == 404 => res.status(404).render 'v/404.jade'
+      else => res.status(403).render 'v/403.jade'
+      return null
