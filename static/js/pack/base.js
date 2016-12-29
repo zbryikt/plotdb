@@ -3377,7 +3377,11 @@ x$.service('IOService', ['$rootScope', '$http'].concat(function($rootScope, $htt
           localStorage.setItem(path + "/timestamp", angular.toJson(new Date().getTime()));
         } catch (e$) {
           e = e$;
-          console.log(e);
+          if (/exceeded the quota/.exec(e.toString())) {
+            console.log("failed backing up chart (local storage quota exceeded)");
+          } else {
+            console.log(e);
+          }
         }
         return res();
       });

@@ -119,7 +119,9 @@ angular.module \plotDB
           localStorage.setItem("#path", angular.toJson(item))
           localStorage.setItem("#path/timestamp", angular.toJson(new Date!getTime!))
         catch e
-          console.log e
+          if /exceeded the quota/.exec(e.toString!) =>
+            console.log "failed backing up chart (local storage quota exceeded)"
+          else console.log e
         res!
       backups: (item) -> new Promise (res, rej) ~>
         path = "/db/backup/#{item._type.name}/#{item.key}"
