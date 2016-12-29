@@ -19,6 +19,7 @@ html(lang="en")
     link(rel="stylesheet",type="text/css",
     href="//fonts.googleapis.com/css?family=Lato:300,400,700|Open+Sans+Condensed:300,700")
     link(rel="stylesheet",type="text/css",href="/css/pack/frameworks.css?" + version)
+    include /ga.jade
     script(src="/js/pack/frameworks.js?" + version)
 
     script(type="text/javascript",src="/global")
@@ -48,10 +49,9 @@ html(lang="en")
       .notify(ng-repeat="n in notifications",ng-class="'notify-'+n.type",ng-cloak) {{n.message}}
     #alertbox(ng-cloak,ng-show="alert.toggled"): .ib
       br
-      .text-center {{alert.msg}}
+      .text-center(ng-cloak) {{alert.msg}}
       .footer
         .btn.btn-default.btn-sm(ng-click="alert.toggled=false") OK
     block body
     include /feedback.jade
-    include /ga.jade
     include /fb.jade
