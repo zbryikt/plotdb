@@ -192,6 +192,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         });
       })['catch'](function(err){
         return this$.$apply(function(){
+          eventBus.fire('loading.dimmer.off');
           if (err[2] === 402) {
             eventBus.fire('quota.widget.on');
             plNotify.send('danger', "Failed: Quota exceeded");
@@ -214,6 +215,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
       if (this.save.handle) {
         return;
+      }
+      if (!this.target().key) {
+        eventBus.fire('loading.dimmer.on');
       }
       this.save.handle = $timeout(function(){
         return this$._save(true);

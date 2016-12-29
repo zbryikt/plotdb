@@ -106,6 +106,7 @@ angular.module \plotDB
             @share-panel.save-hint = false
             @save.pending = false
           .catch (err) ~> @$apply ~>
+            eventBus.fire \loading.dimmer.off
             if err.2 == 402 =>
               eventBus.fire \quota.widget.on
               plNotify.send \danger, "Failed: Quota exceeded"
@@ -118,6 +119,7 @@ angular.module \plotDB
       save: ->
         if !$scope.user.authed! => return $scope.auth.toggle true
         if @save.handle => return
+        if !@target!.key => eventBus.fire \loading.dimmer.on
         @save.handle = $timeout (~> @_save true), 3000
         @canvas.window.postMessage {type: \snapshot}, @plotdb-domain
       clone: -> # clone forcely. same as save() when user is not the chart's owner
