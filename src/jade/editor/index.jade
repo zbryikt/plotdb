@@ -10,8 +10,8 @@ block vars
     - var url = "https://plotdb.com/"
   else
     - var rootid = "chartview"
-    - var title = chart.name + ' / Visualize with PlotDB'
-    - var description = chart.description
+    - var title = (chart.name || 'New Chart') + ' / Visualize with PlotDB'
+    - var description = chart.description || 'share your visualization via PlotDB.'
     - var thumbnail = "https://plotdb.com/s/chart/" + chart.key + ".png"
     - var thumbtype = "image/png"
     - var rootpath = "/module"
