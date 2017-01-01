@@ -2,6 +2,7 @@ angular.module \plotDB
   ..controller \plEditor,
   <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify eventBus permService]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify,eventBus,permService) ->
     #########  Variables  ################################################################
+    $scope.isIE = /MSIE |Trident\/|Edge\//.exec(window.navigator.userAgent)
     $scope <<< do
       plConfig: plConfig
       #TODO defer create. consider theme and chart
@@ -27,15 +28,20 @@ angular.module \plotDB
       type: null     # chart or theme
       service: null  # chart-service or theme-service
     (->
-      $http do
-        url: '/render-fast.html',
-        method: \GET
-      .success (html) ->
-        urlhtml = URL.createObjectURL new Blob [html], {type: \text/html}
-        $timeout (->
-          $scope.plotdb-renderer = $sce.trustAsResourceUrl(urlhtml)
-          $(\#chart-renderer)[0].setAttribute("src", urlhtml)
-        ), 10
+      if $scope.isIE =>
+        $scope.plotdb-renderer = urlhtml = \/render-fast.html
+        $(\#chart-renderer)[0].setAttribute("src", urlhtml)
+      else
+        $http do
+          url: '/render-fast.html',
+          method: \GET
+        .success (html) ->
+          urlhtml = URL.createObjectURL new Blob [html], {type: \text/html}
+          $timeout (->
+            $scope.plotdb-renderer = $sce.trustAsResourceUrl(urlhtml)
+            $(\#chart-renderer)[0].setAttribute("src", urlhtml)
+          ), 10
+
     )!
     /*
     $http url: $scope.plotdb-renderer, method: \GET

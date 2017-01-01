@@ -2,6 +2,7 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', 'plConfig', 'IOService', 'dataService', 'chartService', 'paletteService', 'themeService', 'plNotify', 'eventBus', 'permService'].concat(function($scope, $http, $timeout, $interval, $sce, plConfig, IOService, dataService, chartService, paletteService, themeService, plNotify, eventBus, permService){
+  $scope.isIE = /MSIE |Trident\/|Edge\//.exec(window.navigator.userAgent);
   import$($scope, {
     plConfig: plConfig,
     theme: new themeService.theme({
@@ -55,19 +56,25 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     service: null
   });
   (function(){
-    return $http({
-      url: '/render-fast.html',
-      method: 'GET'
-    }).success(function(html){
-      var urlhtml;
-      urlhtml = URL.createObjectURL(new Blob([html], {
-        type: 'text/html'
-      }));
-      return $timeout(function(){
-        $scope.plotdbRenderer = $sce.trustAsResourceUrl(urlhtml);
-        return $('#chart-renderer')[0].setAttribute("src", urlhtml);
-      }, 10);
-    });
+    var urlhtml;
+    if ($scope.isIE) {
+      $scope.plotdbRenderer = urlhtml = '/render-fast.html';
+      return $('#chart-renderer')[0].setAttribute("src", urlhtml);
+    } else {
+      return $http({
+        url: '/render-fast.html',
+        method: 'GET'
+      }).success(function(html){
+        var urlhtml;
+        urlhtml = URL.createObjectURL(new Blob([html], {
+          type: 'text/html'
+        }));
+        return $timeout(function(){
+          $scope.plotdbRenderer = $sce.trustAsResourceUrl(urlhtml);
+          return $('#chart-renderer')[0].setAttribute("src", urlhtml);
+        }, 10);
+      });
+    }
   })();
   /*
   $http url: $scope.plotdb-renderer, method: \GET
