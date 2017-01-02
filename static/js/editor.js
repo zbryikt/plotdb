@@ -578,7 +578,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     },
     applyTheme: function(){
-      var k, ref$, v, preset, ref1$, u, that;
+      var k, ref$, v, preset, ref1$, u, that, results$ = [];
       if (this.chart && this.theme && this.chart.config) {
         for (k in ref$ = this.chart.config) {
           v = ref$[k];
@@ -609,12 +609,10 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           if (v.type && u.type && u.type[0] && u.type[0].name !== v.type[0].name) {
             continue;
           } else {
-            u.value = v['default'] || v;
+            results$.push(u.value = v['default'] || v);
           }
         }
-      }
-      if (this.theme) {
-        return this.paledit.fromTheme(this.theme);
+        return results$;
       }
     }
   });
@@ -770,17 +768,48 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           if ($scope.theme) {
             $scope.theme.chart = $scope.chart.key;
           }
-          $scope.resetConfig();
-          $scope.parse.chart();
-          return $scope.parse.theme();
+          return $scope.resetConfig();
         })['catch'](function(ret){
           console.error(ret);
           return plNotify.send('error', "failed to load chart. please try reloading");
         });
       },
+      configToCode: function(code, config){
+        var ref$, prepend, ast, right, list, ret, configString, final;
+        if (code.trim()[0] === '{') {
+          ref$ = ["_ = " + code, true], code = ref$[0], prepend = ref$[1];
+        }
+        ast = acorn.parse(code, {
+          ecmaVersion: 3,
+          sourceType: "script",
+          allowReserved: true
+        });
+        right = ast.body[0].expression.right;
+        list = right.properties;
+        ret = list.filter(function(it){
+          return it.key.name === 'config';
+        })[0];
+        configString = JSON.stringify(config, null, 2).split('\n').map(function(d, i){
+          if (i) {
+            return "  " + d;
+          } else {
+            return d;
+          }
+        }).join('\n');
+        configString = "config: " + configString;
+        if (ret) {
+          final = code.substring(0, ret.start) + configString + code.substring(ret.end);
+        } else {
+          final = code.substring(0, right.start + 1) + configString + "," + code.substring(right.start + 1);
+        }
+        if (prepend) {
+          final = final.replace(/^_ = /, "");
+        }
+        return final;
+      },
       init: function(){
         var this$ = this;
-        return $scope.$watch('charts.list', function(){
+        $scope.$watch('charts.list', function(){
           if (this$.list.length && this$.list[0].key) {
             return chartService.load({
               name: 'chart',
@@ -788,6 +817,26 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             }, this$.list[0].key).then(function(it){
               return this$.set(it);
             });
+          }
+        }, true);
+        return $scope.$watch('chart.config', function(c, o){
+          var config, k, ref$, v;
+          if ($scope.chart && $scope.theme) {
+            config = {};
+            for (k in ref$ = $scope.chart.config) {
+              v = ref$[k];
+              config[k] = v.value;
+            }
+            config = JSON.parse(angular.toJson(config));
+            if ($scope.blah) {
+              $timeout.cancel($scope.blah);
+            }
+            return $scope.blah = $timeout(function(){
+              var code;
+              $scope.blah = null;
+              code = this$.configToCode($scope.theme.code.content, config);
+              return $scope.theme.code.content = code;
+            }, 1500);
           }
         }, true);
       }
@@ -1208,55 +1257,30 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       },
       ldcp: null,
       item: null,
-      paste: null,
-      fromTheme: function(theme){
-        var themepal, k, v;
-        if (!theme || !theme.config || !theme.config.palette) {
-          return this.list = this.list.filter(function(it){
-            return it.text !== 'Theme';
-          });
-        }
-        themepal = this.list.filter(function(it){
-          return it.text === 'Theme';
-        })[0];
-        if (!themepal) {
-          themepal = {
-            text: 'Theme',
-            id: '456',
-            children: null
-          };
-          this.list = [themepal].concat(this.list);
-        }
-        themepal.children = this.convert((function(){
-          var ref$, results$ = [];
-          for (k in ref$ = theme.config.palette) {
-            v = ref$[k];
-            results$.push((v.name = k, v));
-          }
-          return results$;
-        }()));
-        $('#pal-select option').remove();
-        $('#pal-select optgroup').remove();
-        return $('#pal-select').select2({
-          allowedMethods: ['updateResults'],
-          templateResult: function(state){
-            var color, c;
-            if (!state.data) {
-              return state.text;
-            }
-            color = (function(){
-              var i$, ref$, len$, results$ = [];
-              for (i$ = 0, len$ = (ref$ = state.data).length; i$ < len$; ++i$) {
-                c = ref$[i$];
-                results$.push("<div class='color' " + ("style='background:" + c.hex + ";width:" + 100 / state.data.length + "%'") + "></div>");
-              }
-              return results$;
-            }()).join("");
-            return $(("<div class='palette select'><div class='name'>" + state.text + "</div>") + ("<div class='palette-color'>" + color + "</div></div>"));
-          },
-          data: this.list
-        });
-      },
+      paste: null
+      /* TODO disabled for now. may seek a better way for theming palettes
+      from-theme: (theme) ->
+        return
+        if !theme or !theme.config or !theme.config.palette => return @list = @list.filter -> it.text != \Theme
+        themepal = @list.filter(-> it.text == \Theme).0
+        if !themepal =>
+          themepal = {text: 'Theme', id: '456', children: null}
+          @list = [themepal] ++ @list
+        themepal.children = @convert [v <<< {name:k} for k,v of theme.config.palette]
+        $('#pal-select option').remove!
+        $('#pal-select optgroup').remove!
+        $(\#pal-select).select2 do
+          allowedMethods: <[updateResults]>
+          templateResult: (state) ->
+            if !state.data => return state.text
+            color = [("<div class='color' "+
+              "style='background:#{c.hex};width:#{100/state.data.length}%'"+
+              "></div>") for c in state.data
+            ].join("")
+            $("<div class='palette select'><div class='name'>#{state.text}</div>"+
+              "<div class='palette-color'>#color</div></div>")
+          data: @list
+      */,
       init: function(){
         var x$, this$ = this;
         this.ldcp = new ldColorPicker(null, {}, $('#palette-editor .editor .ldColorPicker')[0]);
@@ -1638,17 +1662,17 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         return $scope.renderAsync();
       });
       this.$watch('chart.name', function(){
-        if ($scope.chart.metashow) {
+        if ($scope.chart && $scope.chart.metashow) {
           return $scope.renderAsync();
         }
       });
       this.$watch('chart.footer', function(){
-        if ($scope.chart.metashow) {
+        if ($scope.chart && $scope.chart.metashow) {
           return $scope.renderAsync();
         }
       });
       this.$watch('chart.description', function(){
-        if ($scope.chart.metashow) {
+        if ($scope.chart && $scope.chart.metashow) {
           return $scope.renderAsync();
         }
       });

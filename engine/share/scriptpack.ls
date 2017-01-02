@@ -76,6 +76,7 @@
           /assets/medium-editor/5.15.1/js/medium-editor.min.js
           /assets/medium-insert/2.2.4/js/index.min.js
           /assets/medium-list/1.0.5/medium-editor-list-min.js
+          /assets/acorn/4.0.4/acorn.min.js
           /js/plotdb.js
           /js/share/config.js
           /js/io.js

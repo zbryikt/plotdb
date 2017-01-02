@@ -310,7 +310,8 @@ angular.module \plotDB
             u = if @chart.config[k] => that else @chart.config[k] = {_bytheme: true} <<< v
             if v.type and u.type and u.type.0 and u.type.0.name != v.type.0.name => continue
             else => u.value = v.default or v
-        if @theme => @paledit.from-theme @theme
+        #TODO disabled for now. may seek a better way for theming palette
+        #if @theme => @paledit.from-theme @theme
 
     #########  Behaviors  ################################################################
     $scope <<< do
@@ -394,31 +395,52 @@ angular.module \plotDB
               $scope.chart.theme = $scope.theme
               if $scope.theme => $scope.theme.chart = $scope.chart.key
               $scope.reset-config!
-              $scope.parse.chart!
-              $scope.parse.theme!
+              # TBR: setting chart already trigger chart reparsing
+              # theme is not changed for no reparse needed
+              #$scope.parse.chart!
+              #$scope.parse.theme!
             .catch (ret) ~>
               console.error ret
               plNotify.send \error, "failed to load chart. please try reloading"
+
+        config-to-code: (code, config) ->
+          if code.trim!0 == \{ => [code,prepend] = ["_ = #code", true]
+          ast = acorn.parse code, {ecmaVersion: 3, sourceType: "script", allowReserved: true}
+          right = ast.body.0.expression.right
+          list = right.properties
+          ret = list.filter(-> it.key.name == \config).0
+          config-string = JSON.stringify(config, null, 2)
+            .split(\\n).map((d,i) -> if i => "  #d" else d).join(\\n)
+          config-string = "config: " + config-string
+          if ret => final = code.substring(0, ret.start) + config-string + code.substring(ret.end)
+          else => final = code.substring(0, right.start + 1) + config-string + "," + code.substring(right.start+1)
+          if prepend => final = final.replace /^_ = /, ""
+          return final
+
         init: ->
           $scope.$watch 'charts.list', (~>
             if @list.length and @list.0.key =>
               chartService.load {name: \chart, location: \server}, @list.0.key
                 .then ~> @set it
           ), true
-          /*
-          IO-service.list-remotely(
-            {name: \chart}
-            {owner: (if $scope.user.data => $scope.user.data.key else -1)}
-          )
-            .then (ret) ~>
-              <~ $scope.$apply
-              @list = (chart-service.sample ++ ret).map -> new chartService.chart it, true
-              if $scope.theme and $scope.theme.chart =>
-                @set @list.filter(-> it.key == $scope.theme.chart).0
-            .catch ->
-              console.error e
-              plNotify.send \error, "failed to load chart list. use sample chart instead"
-          */
+          $scope.$watch 'chart.config', ((c,o)~>
+            #[cc,oc] = [{},{}]
+            #for k,v of c => cc[k] = v.value
+            #for k,v of o => oc[k] = v.value
+            #if JSON.stringify(cc) != JSON.stringify(oc) =>
+            #  console.log JSON.parse(JSON.stringify(cc)), JSON.parse(JSON.stringify(oc))
+            #if false and $scope.chart and $scope.theme =>
+            if $scope.chart and $scope.theme =>
+              config = {}
+              for k,v of $scope.chart.config => config[k] = v.value
+              config = JSON.parse(angular.toJson(config))
+              if $scope.blah => $timeout.cancel $scope.blah
+              $scope.blah = $timeout (~>
+                $scope.blah = null
+                code = @config-to-code $scope.theme.code.content, config
+                $scope.theme.code.content = code
+              ), 1500
+          ), true
       themes:
         list: theme-service.sample
         set: -> $scope.theme = it
@@ -692,7 +714,9 @@ angular.module \plotDB
         convert: -> it.map(->{id: it.key or "#{Math.random!}", text: it.name, data: it.colors})
         ldcp: null, item: null
         paste: null
+        /* TODO disabled for now. may seek a better way for theming palettes
         from-theme: (theme) ->
+          return
           if !theme or !theme.config or !theme.config.palette => return @list = @list.filter -> it.text != \Theme
           themepal = @list.filter(-> it.text == \Theme).0
           if !themepal =>
@@ -712,7 +736,7 @@ angular.module \plotDB
               $("<div class='palette select'><div class='name'>#{state.text}</div>"+
                 "<div class='palette-color'>#color</div></div>")
             data: @list
-
+        */
         init: ->
           @ldcp = new ldColorPicker null, {}, $('#palette-editor .editor .ldColorPicker').0
           @ldcp.on \change-palette, ~> setTimeout ( ~> $scope.$apply ~> @update! ), 0
@@ -906,9 +930,9 @@ angular.module \plotDB
         @$watch "#{$scope.type}.assets.length", ~> @render-async!
 
         @$watch 'chart.metashow', ~> $scope.render-async!
-        @$watch 'chart.name', ~> if $scope.chart.metashow => $scope.render-async!
-        @$watch 'chart.footer', ~> if $scope.chart.metashow => $scope.render-async!
-        @$watch 'chart.description', ~> if $scope.chart.metashow => $scope.render-async!
+        @$watch 'chart.name', ~> if $scope.chart and $scope.chart.metashow => $scope.render-async!
+        @$watch 'chart.footer', ~> if $scope.chart and $scope.chart.metashow => $scope.render-async!
+        @$watch 'chart.description', ~> if $scope.chart and $scope.chart.metashow => $scope.render-async!
 
         @$watch 'theme', (theme) ~>
           @render-async!

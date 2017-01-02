@@ -1,0 +1,26 @@
+require! <[fs acorn]>
+# use acorn: https://github.com/ternjs/acorn
+
+# this function works both in server-side and client-side
+replace-config = (code, config) ->
+  if code.trim!0 == \{ => [code,prepend] = ["_ = #code", true]
+  ast = acorn.parse code, {ecmaVersion: 3, sourceType: "script", allowReserved: true}
+  list = ast.body.0.expression.right.properties
+  ret = list.filter(-> it.key.name == \config).0
+  config-string = JSON.stringify(my-new-config, null, 2).split(\\n).map((d,i) -> if i => "  #d" else d).join(\\n)
+  config-string = "config: " + config-string
+  final = code.substring(0, ret.start) + config-string + code.substring(ret.end)
+  if prepend => final = final.replace /^_ = /, ""
+  return final
+
+code = fs.read-file-sync \code .toString!
+my-new-config = do
+  blah: 123
+  test: 456
+  some-config: do
+    a: 1
+    b: 2
+    c: "123"
+
+result = replace-config code, my-new-config
+console.log result
