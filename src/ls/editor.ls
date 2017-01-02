@@ -302,16 +302,14 @@ angular.module \plotDB
         if @chart and @theme and @chart.config =>
           for k,v of @chart.config => if v._bytheme => delete @chart.config[k]
           for k,v of @chart.config =>
-            if !@chart.config[k].subtype => continue
-            preset = @theme.{}typedef[@chart.config[k].type.0.name]
+            if !v.subtype or !v.type or !v.type.0 => continue
+            preset = @theme.{}typedef[v.type.0.name]
             if !preset => continue
-            if preset[@chart.config[k].subtype]? =>
-              @chart.config[k].value = preset[@chart.config[k].subtype]
+            if preset[v.subtype]? => v.value = preset[v.subtype]
           for k,v of @theme.config =>
-            if !@chart.config[k] => @chart.config[k] = {_bytheme: true} <<< v
-            else if v.type and @chart.config[k].type.0.name != v.type.0.name => continue
-            else if v.default => @chart.config[k].value = v.default
-            else @chart.config[k].value = v
+            u = if @chart.config[k] => that else @chart.config[k] = {_bytheme: true} <<< v
+            if v.type and u.type and u.type.0 and u.type.0.name != v.type.0.name => continue
+            else => u.value = v.default or v
         if @theme => @paledit.from-theme @theme
 
     #########  Behaviors  ################################################################

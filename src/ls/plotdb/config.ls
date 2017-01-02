@@ -350,6 +350,21 @@ plotdb.config = do
     default: false
     category: "Label"
 
+  labelShowValue: do
+    name: "Show Value"
+    type: [plotdb.Boolean]
+    desc: "Show value labels in chart"
+    default: false
+    rebindOnChange: true
+    category: "Label"
+
+  labelShowOverflow: do
+    name: "Show Overflow Label"
+    type: [plotdb.Boolean]
+    desc: "Show all label, even if they are too long."
+    default: false
+    category: "Label"
+
   nodeShow: do
     name: "Show Data Dot"
     type: [plotdb.Boolean]

@@ -12,7 +12,7 @@ if (!(typeof plotdb != 'undefined' && plotdb !== null)) {
       name: 'theme'
     },
     code: {
-      content: 'var module = {};\nmodule.exports = plotdb.theme.create({\n  typedef: {\n    Color: {\n      "default": "#222",\n      "positive": "#391",\n      "negative": "#b41"\n    },\n    Palette: {\n      "default": { colors: [ {hex: "#ae4948"}, {hex: "#256b9e"} ] },\n      "binary": { colors: [ {hex: "#ae4948"}, {hex: "#256b9e"} ] },\n      "diverging": {\n        colors: [\n          {hex: "#b81673"}, {hex: "#eb7696"}, {hex: "#e0e0a0"},\n          {hex: "#83b365"}, {hex: "#368239"}\n        ]\n      },\n      "qualitative": {\n        colors: [\n          {hex: "#b43743"}, {hex: "#e68061"}, {hex: "#f9cb48"},\n          {hex: "#3c6a9c"}, {hex: "#0c2a54"}, {hex: "#405067"},\n          {hex: "#5a5e84"}\n        ]\n      },\n    }\n  }\n});'
+      content: '{\n  typedef: {\n    Color: {\n      "default": "#222",\n      "positive": "#391",\n      "negative": "#b41"\n    },\n    Palette: {\n      "default": { colors: [ {hex: "#ae4948"}, {hex: "#256b9e"} ] },\n      "binary": { colors: [ {hex: "#ae4948"}, {hex: "#256b9e"} ] },\n      "diverging": {\n        colors: [\n          {hex: "#b81673"}, {hex: "#eb7696"}, {hex: "#e0e0a0"},\n          {hex: "#83b365"}, {hex: "#368239"}\n        ]\n      },\n      "qualitative": {\n        colors: [\n          {hex: "#b43743"}, {hex: "#e68061"}, {hex: "#f9cb48"},\n          {hex: "#3c6a9c"}, {hex: "#0c2a54"}, {hex: "#405067"},\n          {hex: "#5a5e84"}\n        ]\n      },\n    }\n  }\n}'
     },
     style: {
       content: "circle { fill: #f00; stroke: #000; stroke-width: 1; }"

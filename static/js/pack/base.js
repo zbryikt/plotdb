@@ -4347,7 +4347,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     },
     applyTheme: function(){
-      var k, ref$, v, preset, ref1$;
+      var k, ref$, v, preset, ref1$, u, that;
       if (this.chart && this.theme && this.chart.config) {
         for (k in ref$ = this.chart.config) {
           v = ref$[k];
@@ -4357,29 +4357,28 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }
         for (k in ref$ = this.chart.config) {
           v = ref$[k];
-          if (!this.chart.config[k].subtype) {
+          if (!v.subtype || !v.type || !v.type[0]) {
             continue;
           }
-          preset = ((ref1$ = this.theme).typedef || (ref1$.typedef = {}))[this.chart.config[k].type[0].name];
+          preset = ((ref1$ = this.theme).typedef || (ref1$.typedef = {}))[v.type[0].name];
           if (!preset) {
             continue;
           }
-          if (preset[this.chart.config[k].subtype] != null) {
-            this.chart.config[k].value = preset[this.chart.config[k].subtype];
+          if (preset[v.subtype] != null) {
+            v.value = preset[v.subtype];
           }
         }
         for (k in ref$ = this.theme.config) {
           v = ref$[k];
-          if (!this.chart.config[k]) {
-            this.chart.config[k] = import$({
+          u = (that = this.chart.config[k])
+            ? that
+            : this.chart.config[k] = import$({
               _bytheme: true
             }, v);
-          } else if (v.type && this.chart.config[k].type[0].name !== v.type[0].name) {
+          if (v.type && u.type && u.type[0] && u.type[0].name !== v.type[0].name) {
             continue;
-          } else if (v['default']) {
-            this.chart.config[k].value = v['default'];
           } else {
-            this.chart.config[k].value = v;
+            u.value = v['default'] || v;
           }
         }
       }
@@ -10140,6 +10139,21 @@ plotdb.config = {
     'default': false,
     category: "Label"
   },
+  labelShowValue: {
+    name: "Show Value",
+    type: [plotdb.Boolean],
+    desc: "Show value labels in chart",
+    'default': false,
+    rebindOnChange: true,
+    category: "Label"
+  },
+  labelShowOverflow: {
+    name: "Show Overflow Label",
+    type: [plotdb.Boolean],
+    desc: "Show all label, even if they are too long.",
+    'default': false,
+    category: "Label"
+  },
   nodeShow: {
     name: "Show Data Dot",
     type: [plotdb.Boolean],
@@ -11052,7 +11066,7 @@ if (!(typeof plotdb != 'undefined' && plotdb !== null)) {
       name: 'theme'
     },
     code: {
-      content: 'var module = {};\nmodule.exports = plotdb.theme.create({\n  typedef: {\n    Color: {\n      "default": "#222",\n      "positive": "#391",\n      "negative": "#b41"\n    },\n    Palette: {\n      "default": { colors: [ {hex: "#ae4948"}, {hex: "#256b9e"} ] },\n      "binary": { colors: [ {hex: "#ae4948"}, {hex: "#256b9e"} ] },\n      "diverging": {\n        colors: [\n          {hex: "#b81673"}, {hex: "#eb7696"}, {hex: "#e0e0a0"},\n          {hex: "#83b365"}, {hex: "#368239"}\n        ]\n      },\n      "qualitative": {\n        colors: [\n          {hex: "#b43743"}, {hex: "#e68061"}, {hex: "#f9cb48"},\n          {hex: "#3c6a9c"}, {hex: "#0c2a54"}, {hex: "#405067"},\n          {hex: "#5a5e84"}\n        ]\n      },\n    }\n  }\n});'
+      content: '{\n  typedef: {\n    Color: {\n      "default": "#222",\n      "positive": "#391",\n      "negative": "#b41"\n    },\n    Palette: {\n      "default": { colors: [ {hex: "#ae4948"}, {hex: "#256b9e"} ] },\n      "binary": { colors: [ {hex: "#ae4948"}, {hex: "#256b9e"} ] },\n      "diverging": {\n        colors: [\n          {hex: "#b81673"}, {hex: "#eb7696"}, {hex: "#e0e0a0"},\n          {hex: "#83b365"}, {hex: "#368239"}\n        ]\n      },\n      "qualitative": {\n        colors: [\n          {hex: "#b43743"}, {hex: "#e68061"}, {hex: "#f9cb48"},\n          {hex: "#3c6a9c"}, {hex: "#0c2a54"}, {hex: "#405067"},\n          {hex: "#5a5e84"}\n        ]\n      },\n    }\n  }\n}'
     },
     style: {
       content: "circle { fill: #f00; stroke: #000; stroke-width: 1; }"

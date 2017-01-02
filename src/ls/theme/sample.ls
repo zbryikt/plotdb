@@ -7,8 +7,7 @@ plotdb.{}theme.sample = do
       name: "Default"
       _type: location: \sample, name: \theme
       code: content: '''
-var module = {};
-module.exports = plotdb.theme.create({
+{
   typedef: {
     Color: {
       "default": "#222",
@@ -33,7 +32,7 @@ module.exports = plotdb.theme.create({
       },
     }
   }
-});
+}
 '''
       style: content: """
       circle { fill: \#f00; stroke: #000; stroke-width: 1; }

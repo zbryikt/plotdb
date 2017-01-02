@@ -578,7 +578,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     },
     applyTheme: function(){
-      var k, ref$, v, preset, ref1$;
+      var k, ref$, v, preset, ref1$, u, that;
       if (this.chart && this.theme && this.chart.config) {
         for (k in ref$ = this.chart.config) {
           v = ref$[k];
@@ -588,29 +588,28 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         }
         for (k in ref$ = this.chart.config) {
           v = ref$[k];
-          if (!this.chart.config[k].subtype) {
+          if (!v.subtype || !v.type || !v.type[0]) {
             continue;
           }
-          preset = ((ref1$ = this.theme).typedef || (ref1$.typedef = {}))[this.chart.config[k].type[0].name];
+          preset = ((ref1$ = this.theme).typedef || (ref1$.typedef = {}))[v.type[0].name];
           if (!preset) {
             continue;
           }
-          if (preset[this.chart.config[k].subtype] != null) {
-            this.chart.config[k].value = preset[this.chart.config[k].subtype];
+          if (preset[v.subtype] != null) {
+            v.value = preset[v.subtype];
           }
         }
         for (k in ref$ = this.theme.config) {
           v = ref$[k];
-          if (!this.chart.config[k]) {
-            this.chart.config[k] = import$({
+          u = (that = this.chart.config[k])
+            ? that
+            : this.chart.config[k] = import$({
               _bytheme: true
             }, v);
-          } else if (v.type && this.chart.config[k].type[0].name !== v.type[0].name) {
+          if (v.type && u.type && u.type[0] && u.type[0].name !== v.type[0].name) {
             continue;
-          } else if (v['default']) {
-            this.chart.config[k].value = v['default'];
           } else {
-            this.chart.config[k].value = v;
+            u.value = v['default'] || v;
           }
         }
       }
