@@ -738,9 +738,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       }
     },
     charts: {
-      list: chartService.sample.map(function(it){
-        return new chartService.chart(it);
-      }),
+      list: [],
       set: function(it){
         var this$ = this;
         if (it && $scope.chart && ($scope.chart.key === it.key || $scope.chart.key === it)) {
@@ -782,27 +780,16 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       },
       init: function(){
         var this$ = this;
-        return IOService.listRemotely({
-          name: 'chart'
-        }, {
-          owner: $scope.user.data
-            ? $scope.user.data.key
-            : -1
-        }).then(function(ret){
-          return $scope.$apply(function(){
-            this$.list = (chartService.sample.concat(ret)).map(function(it){
-              return new chartService.chart(it, true);
+        return $scope.$watch('charts.list', function(){
+          if (this$.list.length && this$.list[0].key) {
+            return chartService.load({
+              name: 'chart',
+              location: 'server'
+            }, this$.list[0].key).then(function(it){
+              return this$.set(it);
             });
-            if ($scope.theme && $scope.theme.chart) {
-              return this$.set(this$.list.filter(function(it){
-                return it.key === $scope.theme.chart;
-              })[0]);
-            }
-          });
-        })['catch'](function(){
-          console.error(e);
-          return plNotify.send('error', "failed to load chart list. use sample chart instead");
-        });
+          }
+        }, true);
       }
     },
     themes: {

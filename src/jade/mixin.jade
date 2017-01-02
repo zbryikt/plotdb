@@ -8,9 +8,11 @@ mixin cover-modal(condition,toggle,className)
   .cover-modal-inner.ng-hide-animate.ng-hide(ng-cloak,ng-show=condition,class=className)
     block
 
-mixin selectbox(data,type,scope)
-  div(ng-controller="plSelectController",ng-init="init("+data+",'"+type+"',"+scope+")")
-    .select-box(plselect,ng-portal="portal",ng-cloak,ng-type=type,ng-scope=scope)
+mixin selectbox(data,type,scope,config)
+  div(ng-controller="plSelectController",
+  ng-init="init("+data+",'"+type+"',"+scope+"," + JSON.stringify(config || {}) +")")
+    div(class="select-box" + ((config || {}).multiple==false?" single":"") + ((config || {}).alone?" alone":""),
+    plselect,ng-portal="portal",ng-cloak,ng-type=type,ng-scope=scope)
       .select-input.form-control
         .select-option(ng-repeat="item in portal.data")
           i.fa.fa-close(ng-click="remove(item,$event)")

@@ -78,7 +78,7 @@ include /widget/palette-edit-modal.jade
               ul.dropdown-menu
                 li: a(ng-click="themes.set(null)") No Theme
                 li(ng-repeat="item in themes.list"): a(ng-click="themes.set(item)") {{item.name}}
-          .btn-group(ng-show="type=='theme'")
+          //-.btn-group(ng-show="type=='theme'")
             span.input-group-addon Chart
             .dropdown
               .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
@@ -87,6 +87,14 @@ include /widget/palette-edit-modal.jade
               ul.dropdown-menu.charts-dropdown-menu
                 li: a(ng-click="charts.set(null)") No Chart
                 li(ng-repeat="item in charts.list"): a(ng-click="charts.set(item)") {{item.name}}
+
+          .input-group(ng-show="type=='theme'",ng-cloak)
+            //-(ng-class="{'long':permEdit.list.length>0,'sm':permEdit.list.length==0}")
+            span.input-group-addon Chart
+            +selectbox("charts.list","chart",null,{multiple: false, alone: true})
+            //-div: select.form-control.input-sm(ngselect2,ng-data="permEdit.list",ng-detail="permEdit.detail",
+               type="entity",multiple="multiple")
+
         .chart-config-group(ng-cloak,ng-repeat="(category,list) in configHash",ng-show="!v._bytheme")
           .chart-config-category {{category}}
           .chart-config(ng-cloak,ng-repeat="(name,v) in list",ng-show="!v._bytheme")

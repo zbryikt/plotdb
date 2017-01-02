@@ -1,10 +1,11 @@
 angular.module \plotDB
   ..controller \plSelectController, <[$scope]> ++ ($scope) ->
-    $scope.portal = {data: [], options: []}
-    $scope.init = (data, type, scope) ->
+    $scope.portal = {data: [], options: [], config: {multiple: true}}
+    $scope.init = (data, type, scope, config) ->
       $scope.portal.data = data
       $scope.type = type
       $scope.scope = scope
+      $scope.portal.config = $scope.config = {multiple: true} <<< (config or {})
     $scope.get-idx = (item)->
       idx = $scope.portal.data.indexOf(item)
       return if idx < 0 =>
@@ -21,7 +22,11 @@ angular.module \plotDB
       $scope.portal.data.push item
     $scope.toggle = (item,$event) ->
       idx = $scope.get-idx item
-      if idx < 0 => $scope.portal.data.push item
+      if idx < 0 =>
+        if !$scope.config.multiple =>
+          $scope.portal.data.splice 0, $scope.portal.data.length
+          $scope.portal.data.push item
+        else $scope.portal.data.push item
       else $scope.portal.data.splice idx, 1
 
   ..directive \plselect,
@@ -36,6 +41,7 @@ angular.module \plotDB
     link: (s,e,a,c) ->
       dropdown-close-on-click = true
       auto-hide-input = false # set to true to prevent strange ui when input = one line height
+      if s.portal.config.multiple == false => auto-hide-input = true
       config = entityService.config.plselect[s.type or 'entity']
       dropdown = e.find \.select-dropdown
       input = e.find \input
@@ -72,7 +78,7 @@ angular.module \plotDB
             paging.offset += paging.limit
         ), 1000
       repos = ->
-        if !e.0 => return
+        if !e.0 or !s.portal.config.multiple => return
         last = e.find '.select-input div.select-option:last-of-type' .0
         scrolltop = e.find '.select-input' .0.scrollTop
         base = e.0.getBoundingClientRect!
@@ -92,13 +98,15 @@ angular.module \plotDB
         input.css \width, (if (w > 10) => "#{w}px" else "100%")
         input.css \position, \absolute
 
+      hide-input = -> input.0.style.display = "none"
       close = (delay) ->
         if close.closing => $timeout.cancel close.closing
         close.closing = $timeout (->
           close.closing = 0
           dropdown.hide!
           e.removeClass \open
-          if auto-hide-input and repos.newline => input.hide!
+          #if auto-hide-input and repos.newline => hide-input!
+          if auto-hide-input => hide-input!
         ), delay
       close.closing = 0
       close.cancel = ->

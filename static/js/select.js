@@ -4,12 +4,18 @@ x$ = angular.module('plotDB');
 x$.controller('plSelectController', ['$scope'].concat(function($scope){
   $scope.portal = {
     data: [],
-    options: []
+    options: [],
+    config: {
+      multiple: true
+    }
   };
-  $scope.init = function(data, type, scope){
+  $scope.init = function(data, type, scope, config){
     $scope.portal.data = data;
     $scope.type = type;
-    return $scope.scope = scope;
+    $scope.scope = scope;
+    return $scope.portal.config = $scope.config = import$({
+      multiple: true
+    }, config || {});
   };
   $scope.getIdx = function(item){
     var idx, ret;
@@ -42,7 +48,12 @@ x$.controller('plSelectController', ['$scope'].concat(function($scope){
     var idx;
     idx = $scope.getIdx(item);
     if (idx < 0) {
-      return $scope.portal.data.push(item);
+      if (!$scope.config.multiple) {
+        $scope.portal.data.splice(0, $scope.portal.data.length);
+        return $scope.portal.data.push(item);
+      } else {
+        return $scope.portal.data.push(item);
+      }
     } else {
       return $scope.portal.data.splice(idx, 1);
     }
@@ -58,9 +69,12 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
       scope: '@ngScope'
     },
     link: function(s, e, a, c){
-      var dropdownCloseOnClick, autoHideInput, config, dropdown, input, paging, handler, idmap, sync, fetch, repos, close, inputHandler;
+      var dropdownCloseOnClick, autoHideInput, config, dropdown, input, paging, handler, idmap, sync, fetch, repos, hideInput, close, inputHandler;
       dropdownCloseOnClick = true;
       autoHideInput = false;
+      if (s.portal.config.multiple === false) {
+        autoHideInput = true;
+      }
       config = entityService.config.plselect[s.type || 'entity'];
       dropdown = e.find('.select-dropdown');
       input = e.find('input');
@@ -128,7 +142,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
       };
       repos = function(){
         var last, scrolltop, base, x, y, w;
-        if (!e[0]) {
+        if (!e[0] || !s.portal.config.multiple) {
           return;
         }
         last = e.find('.select-input div.select-option:last-of-type')[0];
@@ -159,6 +173,9 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
         input.css('width', w > 10 ? w + "px" : "100%");
         return input.css('position', 'absolute');
       };
+      hideInput = function(){
+        return input[0].style.display = "none";
+      };
       close = function(delay){
         if (close.closing) {
           $timeout.cancel(close.closing);
@@ -167,8 +184,8 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
           close.closing = 0;
           dropdown.hide();
           e.removeClass('open');
-          if (autoHideInput && repos.newline) {
-            return input.hide();
+          if (autoHideInput) {
+            return hideInput();
           }
         }, delay);
       };
@@ -295,3 +312,8 @@ x$.controller('selecttest', ['$scope'].concat(function($scope){
     }];
   };
 }));
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}

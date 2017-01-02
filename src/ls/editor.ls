@@ -375,7 +375,8 @@ angular.module \plotDB
               $timeout (~> @enabled = true), 4000
             .catch (err) ~> console.error 'fecth backup failed: #', err
       charts:
-        list: chart-service.sample.map -> new chart-service.chart it
+        list: []
+        #list: chart-service.sample.map -> new chart-service.chart it
         set: ->
           if it and $scope.chart and ($scope.chart.key == it.key || $scope.chart.key == it) => return
           if typeof(it) == \number => it = {_type: {location: \server, name: \chart}, key: it}
@@ -399,6 +400,12 @@ angular.module \plotDB
               console.error ret
               plNotify.send \error, "failed to load chart. please try reloading"
         init: ->
+          $scope.$watch 'charts.list', (~>
+            if @list.length and @list.0.key =>
+              chartService.load {name: \chart, location: \server}, @list.0.key
+                .then ~> @set it
+          ), true
+          /*
           IO-service.list-remotely(
             {name: \chart}
             {owner: (if $scope.user.data => $scope.user.data.key else -1)}
@@ -411,6 +418,7 @@ angular.module \plotDB
             .catch ->
               console.error e
               plNotify.send \error, "failed to load chart list. use sample chart instead"
+          */
       themes:
         list: theme-service.sample
         set: -> $scope.theme = it
