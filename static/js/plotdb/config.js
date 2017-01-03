@@ -713,3 +713,4 @@ plotdb.config = {
     desc: "How should overlapped ticks be taken care?"
   };
 });
+plotdb.config["yAxisHandleOverlap"].type = [plotdb.Choice(['none', 'hidden'])];
