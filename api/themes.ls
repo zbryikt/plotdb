@@ -30,7 +30,8 @@ engine.router.api.get "/theme/:id", aux.numid false, (req, res) ->
       'from users,themes where users.key = owner and'
       'themes.key=$1'
     ].join(" "),[req.params.id]
-  ).then (it={}) ->
+  )
+    .then (it={}) ->
       theme = it.[]rows.0
       if !theme => return aux.r404 res
       if !perm.test(req, chart.{}permission, chart.owner, \read) => return aux.r403 res, "forbidden"
