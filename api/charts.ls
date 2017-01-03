@@ -116,9 +116,7 @@ engine.router.api.get "/chart/", (req, res) ->
       for item in r.rows => hash[item.uid] = 1
       for item in charts => if hash[item.key] => item.liked = true
       res.send charts
-    .catch (e) ->
-      console.log e.stack
-      res.send []
+    .catch (e) -> res.send [] # note: input might have RE. syntax error will have exception.
 
 engine.router.api.get "/chart/:id", aux.numid false, (req, res) ->
   get-chart req, req.params.id
