@@ -41,7 +41,7 @@ base = (model) ->
     name: \file
     base: do
       name: {max: 100, min: 1, required: false, type: model.type.string}
-      type: {max: 20, min: 1, required: false, type: model.type.string}
+      type: {max: 20, min: 0, required: false, type: model.type.string}
       content: {required: false, type: model.type.string}
 
   base.theme = new model do

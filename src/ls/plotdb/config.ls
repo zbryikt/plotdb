@@ -651,3 +651,14 @@ plotdb.config = do
   plotdb.config["#{p}HandleOverlap"] = name: "Overlap Ticks", type: [plotdb.Choice(<[none hidden offset]>)], default: "hidden", category: c, desc: "How should overlapped ticks be taken care?"
 
 plotdb.config["yAxisHandleOverlap"].type = [plotdb.Choice(<[none hidden]>)]
+plotdb.config <<< do
+  yAxisPosition: do
+    name: "Axis Position"
+    type: [plotdb.Choice(["left", "right"])]
+    default: \left
+    category: "Y Axis"
+  xAxisPosition: do
+    name: "Axis Position"
+    type: [plotdb.Choice(["top", "bottom"])]
+    default: \bottom
+    category: "X Axis"

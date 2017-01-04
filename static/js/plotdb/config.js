@@ -714,3 +714,22 @@ plotdb.config = {
   };
 });
 plotdb.config["yAxisHandleOverlap"].type = [plotdb.Choice(['none', 'hidden'])];
+import$(plotdb.config, {
+  yAxisPosition: {
+    name: "Axis Position",
+    type: [plotdb.Choice(["left", "right"])],
+    'default': 'left',
+    category: "Y Axis"
+  },
+  xAxisPosition: {
+    name: "Axis Position",
+    type: [plotdb.Choice(["top", "bottom"])],
+    'default': 'bottom',
+    category: "X Axis"
+  }
+});
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}

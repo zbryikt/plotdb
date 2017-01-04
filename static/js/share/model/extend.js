@@ -127,7 +127,7 @@ base = function(model){
       },
       type: {
         max: 20,
-        min: 1,
+        min: 0,
         required: false,
         type: model.type.string
       },
