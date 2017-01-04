@@ -426,11 +426,12 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         $timeout.cancel(this.renderAsync.handler);
       }
       this.renderAsync.rebind = this.renderAsync.rebind || rebind;
-      return this.renderAsync.handler = $timeout(function(){
+      this.renderAsync.handler = $timeout(function(){
         this$.renderAsync.handler = null;
         this$.render(this$.renderAsync.rebind);
         return this$.renderAsync.rebind = false;
       }, delay);
+      return null;
     },
     parse: {
       send: function(name){
@@ -1596,6 +1597,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               $scope.$apply(function(){
                 plNotify.alert("Assets size limit (3MB) exceeded. won't upload.");
                 $scope.target().removeFile(file);
+                return rej();
               });
             }
             file.type = type;
@@ -1619,6 +1621,8 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return results$;
         }.call(this))).then(function(){
           return $scope.renderAsync();
+        })['catch'](function(it){
+          return console.log(it);
         });
       },
       node: null,

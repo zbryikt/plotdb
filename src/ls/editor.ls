@@ -226,6 +226,7 @@ angular.module \plotDB
           @render @render-async.rebind
           @render-async.rebind = false
         ), delay
+        return null
       parse: do
         send: (name) ->
           if !$scope[name] => return
@@ -907,13 +908,15 @@ angular.module \plotDB
             if size > 3000000 => $scope.$apply ->
               plNotify.alert "Assets size limit (3MB) exceeded. won't upload."
               $scope.target!.remove-file file
-              return
+              return rej!
             file <<< {type, content}
             $scope.$apply-async -> file <<< {type, content}
             res file
           fr.readAsDataURL fobj
         handle: (files) ->
-          Promise.all [@read(file) for file in files] .then -> $scope.render-async!
+          Promise.all [@read(file) for file in files]
+            .then -> $scope.render-async!
+            .catch -> console.log it
         node: null
         init: ->
           @node = $('#code-editor-assets input')
