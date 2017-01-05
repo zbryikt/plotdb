@@ -79,17 +79,32 @@ plotd3.html.tooltip = function(root, sel, cb){
       display: 'none'
     });
   });
+  popup.on('click', function(){
+    var event;
+    if (store.curnode) {
+      if (store.curnode.click) {
+        return store.curnode.click();
+      }
+      event = document.createEvent('SVGEvents');
+      event.initEvent('click', true, true);
+      if (store.curnode) {
+        return store.curnode.dispatchEvent(event);
+      }
+    }
+  });
   ret.nodes = function(sel){
     var x$;
     x$ = sel;
     x$.on('mouseover', function(d, i){
       clearTimeout(store.mouseoutHandler);
+      store.curnode = this;
       return ret.fire('mouseover', d, i, this);
     });
     x$.on('mousemove', setblock);
     x$.on('mouseleave', function(d, i){
       return store.mouseoutHandler = setTimeout(function(){
         ret.fire('mouseout', d, i, this);
+        ret.fire('mouseleave', d, i, this);
         return popup.style({
           display: 'none'
         });

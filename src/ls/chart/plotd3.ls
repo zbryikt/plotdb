@@ -38,15 +38,23 @@ plotd3.html.tooltip = (root, sel, cb) ->
     else update!
   popup.on \mouseover, -> clearTimeout store.mouseoutHandler
   popup.on \mouseleave, -> popup.style display: \none
+  popup.on \click, -> if store.curnode =>
+    if store.curnode.click => return store.curnode.click!
+    event = document.createEvent \SVGEvents
+    event.initEvent \click, true, true
+    if store.curnode => store.curnode.dispatchEvent event
   ret.nodes = (sel) ->
     sel
       ..on \mouseover, (d,i) ->
         clearTimeout store.mouseoutHandler
+        store.curnode = @
         ret.fire \mouseover, d, i, @
       ..on \mousemove, setblock
       ..on \mouseleave, (d,i) ->
-        store.mouseoutHandler = setTimeout (->
-          ret.fire \mouseout, d, i, @
+        store.mouseoutHandler = setTimeout (~>
+          if store.curnode == @ => store.curnode = null
+          ret.fire \mouseout, d, i, @ # TODO this should be removed after fixing all charts to use mouseleave!
+          ret.fire \mouseleave, d, i, @
           popup.style display: \none
         ), 0
     ret
