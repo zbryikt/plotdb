@@ -167,7 +167,7 @@ include /widget/palette-edit-modal.jade
           .title {{f.name}}
           .type #[i {{f.type}}] #[small.pull-right {{(f.content || "").length|size}}]
       #code-ctrl(ng-cloak,ng-show="inited")
-        .btn.btn-default(ng-click="scrollto('#binding-panel')",ng-show="!editor.fullscreen.toggled") Bind Data
+        .btn.btn-default(ng-click="scrollto('#binding-panel')",ng-show="!editor.fullscreen.toggled",style="margin-right:10px") #[i.fa.fa-table] use my data
         .btn-group
           .btn.btn-default(ng-click="editor.color.toggle()") Editor Style
           .btn.btn-default(ng-click="reset()") Reload
@@ -197,7 +197,7 @@ include /widget/palette-edit-modal.jade
             ng-attr-href="{{item.url}}") {{item.name}} #[small {{item.size|size}}]
 
       .btn.btn-default(style="position:absolute;bottom:5px;left:5px;",ng-show="!editor.fullscreen.toggled",
-      ng-click="scrollto('#binding-panel')") Bind Data
+        ng-click="scrollto('#binding-panel')") #[i.fa.fa-table] use my data
       .btn-group
         .btn.btn-default(ng-click="reset()") Reload
         .btn.btn-default(ng-click="editor.fullscreen.toggle()")
@@ -207,7 +207,7 @@ include /widget/palette-edit-modal.jade
             i.fa.fa-arrows-alt(ng-show="!editor.fullscreen.toggled")
             i.fa.fa-compress(ng-show="editor.fullscreen.toggled")
         .btn.btn-default(ng-click="vis='code'") Edit Code #[small.hint Alt-Enter]
-      .btn-group(style="right:auto;left:90px;bottom:0")
+      .btn-group(style="right:auto;left:120px;bottom:0")
         #editor-colorblind-dropup.dropup.btn-group
           .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
             span(ng-show="colorblind.val=='normal'")
