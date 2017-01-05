@@ -330,7 +330,7 @@ plotdb.config = do
     name: "Label for 'other'"
     type: [plotdb.String]
     default: "Other"
-    category: "Text"
+    category: "Label"
 
   showLabel: do #legacy. backward compatibility
     name: "Show Data Label"
@@ -401,14 +401,14 @@ plotdb.config = do
     name: "Label Position"
     type: [plotdb.Choice(["in","out"])]
     default: "out"
-    category: "Switch"
+    category: "Label"
 
   showPercent: do
     name: "Percentage in Label"
     type: [plotdb.Boolean]
     desc: "Show percentage in data label"
     default: true
-    category: "Switch"
+    category: "Label"
 
   #Value
   unit: do

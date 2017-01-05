@@ -71,6 +71,14 @@ plotd3.html.tooltip = function(root, sel, cb){
       return update();
     }
   };
+  popup.on('mouseover', function(){
+    return clearTimeout(store.mouseoutHandler);
+  });
+  popup.on('mouseleave', function(){
+    return popup.style({
+      display: 'none'
+    });
+  });
   ret.nodes = function(sel){
     var x$;
     x$ = sel;
@@ -78,11 +86,13 @@ plotd3.html.tooltip = function(root, sel, cb){
       return ret.fire('mouseover', d, i, this);
     });
     x$.on('mousemove', setblock);
-    x$.on('mouseout', function(d, i){
-      ret.fire('mouseout', d, i, this);
-      return popup.style({
-        display: 'none'
-      });
+    x$.on('mouseleave', function(d, i){
+      return store.mouseoutHandler = setTimeout(function(){
+        ret.fire('mouseout', d, i, this);
+        return popup.style({
+          display: 'none'
+        });
+      }, 0);
     });
     return ret;
   };

@@ -36,15 +36,17 @@ plotd3.html.tooltip = (root, sel, cb) ->
       popup.style display: \block, opacity: 0.01
       setTimeout update, 0
     else update!
-
+  popup.on \mouseover, -> clearTimeout store.mouseoutHandler
+  popup.on \mouseleave, -> popup.style display: \none
   ret.nodes = (sel) ->
     sel
       ..on \mouseover, (d,i) -> ret.fire \mouseover, d, i, @
       ..on \mousemove, setblock
-
-      ..on \mouseout, (d,i) ->
-        ret.fire \mouseout, d, i, @
-        popup.style display: \none
+      ..on \mouseleave, (d,i) ->
+        store.mouseoutHandler = setTimeout (->
+          ret.fire \mouseout, d, i, @
+          popup.style display: \none
+        ), 0
     ret
   ret.direction = ->
     store.direction = if it == \left => \left else \right

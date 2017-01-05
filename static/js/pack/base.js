@@ -5367,7 +5367,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               $scope.$apply(function(){
                 plNotify.alert("Assets size limit (3MB) exceeded. won't upload.");
                 $scope.target().removeFile(file);
-                rej();
+                return rej();
               });
             }
             file.type = type;
@@ -10135,7 +10135,7 @@ plotdb.config = {
     name: "Label for 'other'",
     type: [plotdb.String],
     'default': "Other",
-    category: "Text"
+    category: "Label"
   },
   showLabel: {
     name: "Show Data Label",
@@ -10206,14 +10206,14 @@ plotdb.config = {
     name: "Label Position",
     type: [plotdb.Choice(["in", "out"])],
     'default': "out",
-    category: "Switch"
+    category: "Label"
   },
   showPercent: {
     name: "Percentage in Label",
     type: [plotdb.Boolean],
     desc: "Show percentage in data label",
     'default': true,
-    category: "Switch"
+    category: "Label"
   },
   unit: {
     name: "Unit",

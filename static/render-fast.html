@@ -5848,7 +5848,7 @@ plotdb.config = {
     name: "Label for 'other'",
     type: [plotdb.String],
     'default': "Other",
-    category: "Text"
+    category: "Label"
   },
   showLabel: {
     name: "Show Data Label",
@@ -5919,14 +5919,14 @@ plotdb.config = {
     name: "Label Position",
     type: [plotdb.Choice(["in", "out"])],
     'default': "out",
-    category: "Switch"
+    category: "Label"
   },
   showPercent: {
     name: "Percentage in Label",
     type: [plotdb.Boolean],
     desc: "Show percentage in data label",
     'default': true,
-    category: "Switch"
+    category: "Label"
   },
   unit: {
     name: "Unit",
@@ -6843,7 +6843,10 @@ function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
   return obj;
-}</script><style type="text/css">html,body{width:100%;height:100%;margin:0}body{font-family:'Helvetica Neue',Arial,sans;}</style><style type="text/css">.pdb-root {
+}</script><style type="text/css">html,body{width:100%;height:100%;margin:0}body{font-family:'Helvetica Neue',Arial,sans;}</style><style type="text/css">text {
+  stroke-linejoin: round;
+}
+.pdb-root {
   width: 100%;
   height: 100%;
   margin: 0;

@@ -335,7 +335,7 @@ plotdb.config = {
     name: "Label for 'other'",
     type: [plotdb.String],
     'default': "Other",
-    category: "Text"
+    category: "Label"
   },
   showLabel: {
     name: "Show Data Label",
@@ -406,14 +406,14 @@ plotdb.config = {
     name: "Label Position",
     type: [plotdb.Choice(["in", "out"])],
     'default': "out",
-    category: "Switch"
+    category: "Label"
   },
   showPercent: {
     name: "Percentage in Label",
     type: [plotdb.Boolean],
     desc: "Show percentage in data label",
     'default': true,
-    category: "Switch"
+    category: "Label"
   },
   unit: {
     name: "Unit",
