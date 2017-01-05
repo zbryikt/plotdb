@@ -88,6 +88,7 @@ plotd3.html.tooltip = function(root, sel, cb){
     var x$;
     x$ = sel;
     x$.on('mouseover', function(d, i){
+      clearTimeout(store.mouseoutHandler);
       return ret.fire('mouseover', d, i, this);
     });
     x$.on('mousemove', setblock);

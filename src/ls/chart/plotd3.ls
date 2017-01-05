@@ -40,7 +40,9 @@ plotd3.html.tooltip = (root, sel, cb) ->
   popup.on \mouseleave, -> popup.style display: \none
   ret.nodes = (sel) ->
     sel
-      ..on \mouseover, (d,i) -> ret.fire \mouseover, d, i, @
+      ..on \mouseover, (d,i) ->
+        clearTimeout store.mouseoutHandler
+        ret.fire \mouseover, d, i, @
       ..on \mousemove, setblock
       ..on \mouseleave, (d,i) ->
         store.mouseoutHandler = setTimeout (->
