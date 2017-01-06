@@ -21,7 +21,9 @@ engine.init config, pgsql.authio, (-> ext engine, pgsql)
     engine.app.get \/, (req, res) -> res.render 'index.jade'
     api engine, pgsql
     # 404 fallback
-    engine.app.use (req, res, next) ~> aux.r404 res, "", true
+    engine.app.use (req, res, next) ~>
+      if /\.io$/.exec(req.get("host")) => res.status(404).render 'v/404.jade'
+      else aux.r404 res, "", true
     engine.start!
   .catch ->
     console.log "[Exception] ", it.stack
