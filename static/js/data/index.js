@@ -13,13 +13,16 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
     },
     cache: {},
     cachedLoad: function(_type, key){
+      var this$ = this;
       if (_type.location === 'local') {
         return this.load(_type, key);
       }
       if (this.cache[key]) {
-        Promise.resolve(this.cache[key]);
+        return Promise.resolve(this.cache[key]);
       }
-      return this.load(_type, key);
+      return this.load(_type, key).then(function(it){
+        return this$.cache[key] = it;
+      });
     },
     list: function(){
       return IOService.listRemotely({

@@ -10,8 +10,8 @@ angular.module \plotDB
       cache: {}
       cachedLoad: (_type, key) ->
         if _type.location == \local => return @load _type, key
-        if @cache[key] => Promise.resolve(@cache[key])
-        @load _type, key
+        if @cache[key] => return Promise.resolve(@cache[key])
+        @load _type, key .then ~> @cache[key] = it
       list: ->
         IOService.list-remotely {name: \dataset, location: \server}
           .then (r) -> r.map -> new Dataset it
