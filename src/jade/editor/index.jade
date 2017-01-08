@@ -16,6 +16,7 @@ block vars
     - var thumbtype = "image/png"
     - var rootpath = "/module"
     - var url = "https://plotdb.com/chart/" + chart.key
+  - use.stripe = true;
 block head
   script(src="https://apis.google.com/js/api.js")
   if chart
@@ -29,7 +30,6 @@ block head
       window.theme = !{JSON.stringify(theme).replace(/<\//g, "<\\/")};
 block body
   .spc1
-  script(type="text/javascript",src="https://js.stripe.com/v2/")
   include /widget/quota.jade
   +quota-panel
   #root.pleditor(ng-controller="plEditor",style="max-width:1200px;margin-left:auto;margin-right:auto")

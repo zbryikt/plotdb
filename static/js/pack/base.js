@@ -11983,7 +11983,7 @@ x$.service('plNotify', ['$rootScope', '$timeout'].concat(function($rootScope, $t
   return this;
 }));
 x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', 'plConfig', 'dataService', 'chartService', 'eventBus'].concat(function($scope, $http, $interval, global, plNotify, plConfig, dataService, chartService, eventBus){
-  var that, x$;
+  var that, ref$, x$;
   $scope.trackEvent = function(cat, act, label, value){
     return ga('send', 'event', cat, act, label, value);
   };
@@ -12005,7 +12005,7 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
   }
   $scope.user.storage.used = 100 * (($scope.user.data || {}).datasize || 0) / plConfig.plan.sizeLimits[plConfig.mode % 2
     ? 2
-    : $scope.user.data.payment.plan || 0];
+    : ((ref$ = $scope.user.data || {}).payment || (ref$.payment = {})).plan || 0];
   $scope.dataService = dataService;
   $scope.limitscroll = function(node){
     var prevent;

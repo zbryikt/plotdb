@@ -59,7 +59,7 @@ angular.module \plotDB
     if $scope.user and $scope.user.data => ga("set","userId", $scope.user.data.key)
     $scope.user.storage.used = (
       100 * (($scope.user.data or {}).datasize || 0) /
-      plConfig.plan.sizeLimits[if (plConfig.mode % 2 ) => 2 else ($scope.user.data.payment.plan || 0)]
+      plConfig.plan.sizeLimits[if (plConfig.mode % 2 ) => 2 else (($scope.user.data or {}).{}payment.plan || 0)]
     )
     $scope.data-service = data-service
     $scope.limitscroll = (node) ->
