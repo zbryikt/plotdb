@@ -315,24 +315,28 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         });
       },
       bind: function(event, dimension, field){
-        var this$ = this;
         field == null && (field = {});
         if ((dimension.fields || []).filter(function(it){
           return it === field;
         }).length) {
           return;
         }
-        return field.update().then(function(){
-          if (dimension.multiple) {
-            (dimension.fields || (dimension.fields = [])).push(field);
-          } else {
-            dimension.fields = [field];
-          }
-          return $scope.render();
-        })['catch'](function(err){
-          plNotify.send('error', "failed to bind field. try again later.");
-          return console.error("chart.ls / dimension field binding failed due to : ", err);
-        });
+        field.loading = true;
+        if (dimension.multiple) {
+          (dimension.fields || (dimension.fields = [])).push(field);
+        } else {
+          dimension.fields = [field];
+        }
+        return $timeout(function(){
+          var this$ = this;
+          return field.update().then(function(){
+            delete field.loading;
+            return $scope.render();
+          })['catch'](function(err){
+            plNotify.send('error', "failed to bind field. try again later.");
+            return console.error("chart.ls / dimension field binding failed due to : ", err);
+          });
+        }, 200);
       },
       unbind: function(event, dimension, field){
         var idx;

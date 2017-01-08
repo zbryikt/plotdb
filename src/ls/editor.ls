@@ -174,14 +174,18 @@ angular.module \plotDB
           Promise.all promises .then -> $scope.render!
         bind: (event, dimension, field = {}) ->
           if (dimension.fields or []).filter(->it == field).length => return
-          field.update!
-            .then ~>
-              if dimension.multiple => dimension.[]fields.push field
-              else dimension.fields = [field]
-              $scope.render!
-            .catch (err) ~>
-              plNotify.send \error, "failed to bind field. try again later."
-              console.error "chart.ls / dimension field binding failed due to : ", err
+          field.loading = true
+          if dimension.multiple => dimension.[]fields.push field
+          else dimension.fields = [field]
+          $timeout (->
+            field.update!
+              .then ~>
+                delete field.loading
+                $scope.render!
+              .catch (err) ~>
+                plNotify.send \error, "failed to bind field. try again later."
+                console.error "chart.ls / dimension field binding failed due to : ", err
+          ), 200
         unbind: (event, dimension, field = {}) ->
           idx = dimension.fields.index-of(field)
           if idx < 0 => return

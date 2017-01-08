@@ -85,7 +85,7 @@ div#binding-panel(ng-controller="datasetList",ng-cloak,ng-init="useSample=true")
             .ds-fields
               .ds-field.placeholder(ng-show="!dim.fields || !dim.fields.length")
               .ds-field(ng-repeat="field in dim.fields",
-              ng-class="{'mismatch': !dimension.typematch(dim.type, field.datatype)}")
+              ng-class="{'mismatch': !dimension.typematch(dim.type, field.datatype), 'loading': field.loading}")
                 .delete(ng-click="dimension.unbind($event, dim, field)"): span &times;
                 .name {{field.name}}&nbsp;
                 small.grayed
