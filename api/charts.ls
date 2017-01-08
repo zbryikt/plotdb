@@ -297,7 +297,7 @@ engine.app.get \/v/chart/:id/, aux.numid true, (req, res) ->
       permission := p
       io.query "select users.payment from users where users.key = $1", [chart.owner]
     .then (r = {})->
-      payment = r.[]rows.0 or {}
+      payment = (r.[]rows.0 or {payment: {}}).payment
       token = req.query.token or null
       if !chart => return aux.reject 404
       if (permission.switch != \publish)
