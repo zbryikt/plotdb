@@ -306,7 +306,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           for (i$ = 0, len$ = (ref1$ = v.fields).length; i$ < len$; ++i$) {
             field = ref1$[i$];
             if (field.dataset === key) {
-              promises.push(field.update());
+              promises.push(field.update(true));
             }
           }
         }

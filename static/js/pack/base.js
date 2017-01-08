@@ -4076,7 +4076,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           for (i$ = 0, len$ = (ref1$ = v.fields).length; i$ < len$; ++i$) {
             field = ref1$[i$];
             if (field.dataset === key) {
-              promises.push(field.update());
+              promises.push(field.update(true));
             }
           }
         }
@@ -7342,12 +7342,13 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
       return "/dataset/?k=c" + dataset.key;
     },
     cache: {},
-    cachedLoad: function(_type, key){
+    cachedLoad: function(_type, key, forced){
       var this$ = this;
+      forced == null && (forced = false);
       if (_type.location === 'local') {
         return this.load(_type, key);
       }
-      if (this.cache[key]) {
+      if (!forced && this.cache[key]) {
         return Promise.resolve(this.cache[key]);
       }
       return this.load(_type, key).then(function(it){
@@ -7388,15 +7389,16 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
     return this;
   };
   Field.prototype = {
-    update: function(){
+    update: function(forced){
       var this$ = this;
+      forced == null && (forced = false);
       if (this.location === 'sample') {
         return Promise.resolve(this);
       }
       return dataService.cachedLoad({
         location: this.location,
         name: 'dataset'
-      }, this.dataset).then(function(dataset){
+      }, this.dataset, forced).then(function(dataset){
         var matched;
         matched = dataset.fields.filter(function(it){
           return it.name === this$.name;

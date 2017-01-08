@@ -170,7 +170,7 @@ angular.module \plotDB
         rebind: (key) ->
           promises = []
           for k,v of chart.dimension =>
-            for field in v.fields => if field.dataset == key => promises.push field.update!
+            for field in v.fields => if field.dataset == key => promises.push field.update(true)
           Promise.all promises .then -> $scope.render!
         bind: (event, dimension, field = {}) ->
           if (dimension.fields or []).filter(->it == field).length => return

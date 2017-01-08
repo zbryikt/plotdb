@@ -8,9 +8,9 @@ angular.module \plotDB
         if dataset._type.location == \server => return "/dataset/#{dataset.key}/"
         return "/dataset/?k=c#{dataset.key}"
       cache: {}
-      cachedLoad: (_type, key) ->
+      cachedLoad: (_type, key, forced = false) ->
         if _type.location == \local => return @load _type, key
-        if @cache[key] => return Promise.resolve(@cache[key])
+        if !forced and @cache[key] => return Promise.resolve(@cache[key])
         @load _type, key .then ~> @cache[key] = it
       list: ->
         IOService.list-remotely {name: \dataset, location: \server}
@@ -41,9 +41,9 @@ angular.module \plotDB
       #if dataset => @set-dataset dataset
       @
     Field.prototype = do
-      update: ->
+      update: (forced = false) ->
         if @location == \sample => return Promise.resolve @
-        data-service.cachedLoad {location: @location, name: \dataset}, @dataset
+        data-service.cachedLoad {location: @location, name: \dataset}, @dataset, forced
           .then (dataset) ~>
             matched = dataset.fields.filter(~>it.name == @name).0
             if !matched => return console.error "failed to update field data"
