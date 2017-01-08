@@ -5562,6 +5562,12 @@ plotdb.config = {
     'default': '#000000',
     category: "Global Settings"
   },
+  textFillInverse: {
+    name: "Text Color (Inverse)",
+    type: [plotdb.Color],
+    'default': '#ffffff',
+    category: "Global Settings"
+  },
   margin: {
     name: "Margin",
     type: [plotdb.Number],
@@ -6611,7 +6617,7 @@ $(document).ready(function(){
     };
   };
   render = function(payload, rebind){
-    var ref$, code, style, doc, data, assets, local, key, dimension, config, theme, reboot, ret, node, head, foot, iroot, iiroot, margin, marginVertical, promise, e;
+    var ref$, code, style, doc, data, assets, local, key, dimension, config, theme, reboot, ret, node, conf, head, foot, iroot, iiroot, margin, marginVertical, promise, e;
     rebind == null && (rebind = true);
     ref$ = ['code', 'style', 'doc'].map(function(it){
       return (payload.chart || (payload.chart = {}))[it].content;
@@ -6643,6 +6649,7 @@ $(document).ready(function(){
           document.body.appendChild(node);
         }
         if (payload.chart.metashow) {
+          conf = payload.chart.config;
           ref$ = [0, 0, 0, 0].map(function(){
             return document.createElement("div");
           }), head = ref$[0], foot = ref$[1], iroot = ref$[2], iiroot = ref$[3];
@@ -6660,20 +6667,26 @@ $(document).ready(function(){
           [head, iroot, foot].map(function(it){
             return node.appendChild(it);
           });
-          margin = (payload.chart.config.margin || {
+          margin = (conf.margin || {
             value: 10
           }).value;
           marginVertical = margin - 10 > 10
             ? margin - 10
             : margin / 2;
+          console.log(conf);
+          import$(node.style, {
+            background: conf.background.value,
+            color: conf.textFill.value,
+            "font-size": conf.fontSize.value + "px",
+            "font-family": (conf.fontFamily || {
+              value: "initial"
+            }).value
+          });
           import$(head.style, {
             position: "relative",
             "z-index": 999,
             "text-align": 'center',
-            margin: marginVertical + "px 0 0",
-            "font-family": (payload.chart.config.fontFamily || {
-              value: "initial"
-            }).value
+            margin: marginVertical + "px 0 0"
           });
           import$(foot.style, {
             left: margin + "px",

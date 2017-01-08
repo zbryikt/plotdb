@@ -102,9 +102,13 @@ plotd3.html.tooltip = function(root, sel, cb){
     });
     x$.on('mousemove', setblock);
     x$.on('mouseleave', function(d, i){
+      var this$ = this;
       return store.mouseoutHandler = setTimeout(function(){
-        ret.fire('mouseout', d, i, this);
-        ret.fire('mouseleave', d, i, this);
+        if (store.curnode === this$) {
+          store.curnode = null;
+        }
+        ret.fire('mouseout', d, i, this$);
+        ret.fire('mouseleave', d, i, this$);
         return popup.style({
           display: 'none'
         });
@@ -700,7 +704,7 @@ plotd3.rwd.axis = function(){
     }
   };
   ret.autotick = function(group, args){
-    var ref$, scale, orient, sizes, size, its, ots, tp, offset, format, count, ticks, domain, tickHeight, step, gbox, pbox;
+    var ref$, scale, orient, sizes, size, its, ots, tp, offset, format, count, ticks, domain, tickHeight, step, gbox, pbox, inverse;
     args == null && (args = []);
     axis.apply(group, args);
     ref$ = [axis.scale(), store.orient], scale = ref$[0], orient = ref$[1];
@@ -794,12 +798,15 @@ plotd3.rwd.axis = function(){
           dy: store.fontSize
         });
       } else if (orient === 'bottom' || orient === 'top') {
+        inverse = (ref$ = scale.range)[ref$.length - 1] > scale.range[0]
+          ? ['start', 'end']
+          : ['end', 'start'];
         group.select('g.tick:first-of-type text').style({
-          "text-anchor": 'start'
+          "text-anchor": inverse[0]
         });
         if (group.selectAll('g.tick')[0].length > 1) {
           group.select('g.tick:last-of-type text').style({
-            "text-anchor": 'end'
+            "text-anchor": inverse[1]
           });
         }
       }
@@ -844,13 +851,27 @@ plotd3.rwd.grid = function(){
     length: 0
   };
   ret = function(group){
-    var scale, ticks, that, len, x$, y$;
+    var scale, ticks, that, range, delta, len, x$, y$;
     scale = store.scale;
     ticks = (that = store.tickValues)
       ? that
       : (that = store.ticks)
         ? scale.ticks(that)
         : scale.ticks();
+    group.selectAll("rect").data([1]).enter().append('rect');
+    range = scale.range();
+    delta = Math.abs(range[range.length - 1] - range[0]);
+    group.select('rect').attr({
+      x: store.orient === 'horizontal'
+        ? 0
+        : Math.min(range[range.length - 1], range[0]),
+      y: store.orient === 'horizontal' ? Math.min(range[range.length - 1], range[0]) : 0,
+      width: store.orient === 'horizontal' ? store.size : delta,
+      height: store.orient === 'horizontal'
+        ? delta
+        : store.size,
+      fill: store.background ? store.background : 'none'
+    });
     if (['horizontal', 'vertical', 'angle'].indexOf(store.orient) >= 0) {
       len = store.size;
       x$ = group.selectAll("line.grid." + store.orient).data(ticks);
@@ -900,7 +921,7 @@ plotd3.rwd.grid = function(){
       fill: 'none'
     });
   };
-  ['orient', 'tickValues', 'size', 'ticks', 'scale', 'stroke', 'strokeWidth', 'strokeDashArray'].map(function(k){
+  ['orient', 'tickValues', 'size', 'ticks', 'scale', 'stroke', 'strokeWidth', 'strokeDashArray', 'background'].map(function(k){
     return ret[k] = function(k){
       return function(it){
         if (!arguments.length) {

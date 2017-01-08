@@ -203,6 +203,7 @@ render = (payload, rebind = true) ->
         document.body.appendChild(node)
 
       if payload.chart.metashow =>
+        conf = payload.chart.config
         [head,foot,iroot,iiroot] = [0,0,0,0].map(->document.createElement("div"))
         iroot.appendChild(iiroot)
         iroot.style <<< {position:"absolute",left:"0",right:"0"}
@@ -210,14 +211,19 @@ render = (payload, rebind = true) ->
         foot.style <<< {position:"absolute",bottom: "0"}
         [head, iroot, foot].map -> node.appendChild(it)
         #TODO - merge with view.ls
-        margin =( payload.chart.config.margin or {value: 10}).value
+        margin =( conf.margin or {value: 10}).value
         margin-vertical = if margin - 10 > 10 => margin - 10 else margin/2
+        console.log conf
+        node.style <<< do
+          background: conf.background.value
+          color: conf.textFill.value
+          "font-size": conf.fontSize.value + "px"
+          "font-family": (conf.fontFamily or {value: "initial"}).value
         head.style <<< do
           position: "relative"
           "z-index": 999
           "text-align": \center
           margin: "#{margin-vertical}px 0 0"
-          "font-family": (payload.chart.config.fontFamily or {value: "initial"}).value
         foot.style <<< do
           left: "#{margin}px"
           bottom: "#{margin-vertical}px"

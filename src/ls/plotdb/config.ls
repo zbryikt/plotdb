@@ -56,6 +56,11 @@ plotdb.config = do
     type: [plotdb.Color]
     default: '#000000'
     category: "Global Settings"
+  textFillInverse: do
+    name: "Text Color (Inverse)"
+    type: [plotdb.Color]
+    default: '#ffffff'
+    category: "Global Settings"
   margin: do
     name: "Margin"
     type: [plotdb.Number]

@@ -450,9 +450,10 @@ plotd3.rwd.axis = ->
         group.select 'g.tick:first-of-type text' .attr dy: -store.fontSize/2
         group.select 'g.tick:last-of-type text' .attr dy: store.fontSize
       else if orient in <[bottom top]> =>
-        group.select 'g.tick:first-of-type text' .style "text-anchor": \start
+        inverse = if scale.range[* - 1] > scale.range.0 => <[start end]> else <[end start]>
+        group.select 'g.tick:first-of-type text' .style "text-anchor": inverse.0
         if group.selectAll(\g.tick).0.length > 1 =>
-          group.select 'g.tick:last-of-type text' .style "text-anchor": \end
+          group.select 'g.tick:last-of-type text' .style "text-anchor": inverse.1
     group.selectAll "path,line" .attr {stroke: \black, fill: \none}
 
   <[
@@ -476,6 +477,17 @@ plotd3.rwd.grid = ->
   ret = (group)->
     scale = store.scale
     ticks = if store.tickValues => that else if store.ticks => scale.ticks(that) else scale.ticks!
+
+    group.selectAll "rect" .data [1] .enter!append \rect
+    range = scale.range!
+    delta = Math.abs(range[* - 1] - range.0)
+    group.select \rect .attr do
+      x: if(store.orient == \horizontal) => 0 else Math.min(range[* - 1], range.0)
+      y: if(store.orient == \horizontal) => Math.min(range[* - 1], range.0) else 0
+      width: if (store.orient == \horizontal) => store.size else delta
+      height: if (store.orient == \horizontal) => delta else store.size
+      fill: if store.background => store.background else \none
+
     if <[horizontal vertical angle]>.indexOf(store.orient) >= 0 =>
       len = store.size
       group.selectAll "line.grid.#{store.orient}" .data ticks
@@ -500,7 +512,7 @@ plotd3.rwd.grid = ->
       "stroke-dasharray": store.strokeDashArray if store.strokeDashArray
       fill: \none
 
-  <[orient tickValues size ticks scale stroke strokeWidth strokeDashArray]>.map (k) ->
+  <[orient tickValues size ticks scale stroke strokeWidth strokeDashArray background]>.map (k) ->
     ret[k] = ((k)-> ->
       if !arguments.length => return store[k]
       store[k] = it
