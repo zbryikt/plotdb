@@ -3445,7 +3445,7 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
   $scope.error = {
     all: true
   };
-  $scope.prices = [[0, 20, 50], [0, 16, 40]];
+  $scope.prices = [[0, 20, 50], [0, 200, 500]];
   $scope.check = function(target){
     if ($scope.check.handler) {
       $timeout.cancel($scope.check.handler);

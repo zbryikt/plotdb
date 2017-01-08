@@ -7,7 +7,7 @@ angular.module \plotDB
     $scope.payinfo = {cvc:null,exp_month:null,exp_year:null,number:null}
     #$scope.payinfo = {cvc:'123',exp_month:'02',exp_year:'18',number:'4242424242424242'}
     $scope.error = {all: true}
-    $scope.prices = [[0,20,50],[0,16,40]]
+    $scope.prices = [[0,20,50],[0,200,500]]
     $scope.check = (target) ->
       if $scope.check.handler => $timeout.cancel $scope.check.handler
       $scope.check.handler = $timeout (->
