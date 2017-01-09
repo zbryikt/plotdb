@@ -40,6 +40,8 @@ div#binding-panel(ng-controller="datasetList",ng-cloak,ng-init="useSample=true")
             ng-click="columnize(cur)") #[i.fa.fa-pencil-square-o] columnize
             a(ng-class="{'disabled':cur._type.location=='sample'}",
             ng-click="transpose(cur)") #[i.fa.fa-pencil-square-o] transpose
+            //-a(ng-class="{'disabled':cur._type.location=='sample'}",
+               ng-click="") #[i.fa.fa-refresh] refresh
             a(ng-class="{'disabled':cur._type.location=='sample'}",
             ng-click="dataPanel.edit(cur)") #[i.fa.fa-pencil-square-o] edit
             a(ng-class="{'disabled':cur._type.location=='sample'}",

@@ -209,6 +209,7 @@ angular.module \plotDB
 
       reset: -> @render!
       render: (rebind = true) ->
+        if $scope.target!data-loading => return
         if !@inited => return
         if !@chart => return
         @chart.update-data!
@@ -558,9 +559,11 @@ angular.module \plotDB
           @attr['font-style'] = (if !(@attr['font-style']?) or @attr['font-style'] == \normal => \italic else \normal)
 
       data-panel: do
-        init: -> eventBus.listen \dataset.saved, (dataset) ~>
-          $scope.dimension.rebind dataset.key
-          $timeout (~>@toggled = false), 200
+        init: ->
+          eventBus.listen \dataset.saved, (dataset) ~>
+            $scope.dimension.rebind dataset.key
+            $timeout (~>@toggled = false), 200
+          eventBus.listen \chart.dimension.update, ~> $scope.reset!
         toggle: -> @toggled = !!!@toggled
         toggled: false
         set-sample-data: (data) ->

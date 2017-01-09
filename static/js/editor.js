@@ -386,6 +386,9 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     render: function(rebind){
       var this$ = this;
       rebind == null && (rebind = true);
+      if ($scope.target().dataLoading) {
+        return;
+      }
       if (!this.inited) {
         return;
       }
@@ -1025,11 +1028,14 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     dataPanel: {
       init: function(){
         var this$ = this;
-        return eventBus.listen('dataset.saved', function(dataset){
+        eventBus.listen('dataset.saved', function(dataset){
           $scope.dimension.rebind(dataset.key);
           return $timeout(function(){
             return this$.toggled = false;
           }, 200);
+        });
+        return eventBus.listen('chart.dimension.update', function(){
+          return $scope.reset();
         });
       },
       toggle: function(){

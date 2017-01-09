@@ -1,7 +1,7 @@
 angular.module \plotDB
   ..service \chartService,
-  <[$rootScope $http plConfig sampleChart IOService baseService dataService]> ++
-  ($rootScope, $http, plConfig, sampleChart, IOService, baseService, dataService) ->
+  <[$rootScope $http plConfig sampleChart IOService baseService dataService eventBus]> ++
+  ($rootScope, $http, plConfig, sampleChart, IOService, baseService, dataService, eventBus) ->
     service = do
       sample: sampleChart
       link: (chart) -> "/chart/#{chart.key}/"
@@ -32,11 +32,22 @@ angular.module \plotDB
         _type: {location: \server, name: \chart}
       @ <<< src
       plotdb.chart.update-dimension @
-      for k,v of (@dimension or {}) =>
-        v.fields = (v.fields or []).map ->
-          field = new dataService.Field it
-          if !lazy => field.update!
-          field
+      datasets = {}
+      for k,v of (@dimension or {}) => v.fields.map -> if it.dataset => datasets[it.dataset] = true
+      @data-loading = true
+      promises = [data-service.cachedLoad({location: \server, name: \dataset}, k) for k of datasets]
+      if promises.length =>
+        Promise.all promises
+          .then ~>
+            for k,v of (@dimension or {}) =>
+              v.fields = (v.fields or []).map -> field = new dataService.Field it
+            if !lazy =>
+              promises = []
+              for k,v of (@dimension or {}) => v.fields.map -> promises.push(it.update!)
+              Promise.all promises .then ~>
+                @data-loading = false
+                eventBus.fire \chart.dimension.update
+            else @data-loading = false
       @
 
     object.prototype = do
