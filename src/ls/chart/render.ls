@@ -154,6 +154,28 @@ snapshot = (type='snapshot') ->
       inline-style + ";" + document.getElementById(\container).getAttribute(\style)
     )
     svg = svgnode.outerHTML
+
+    rgba-percent-to-value = (text) ->
+      re = /([a-zA-Z-]+)\s*([=:]?)\s*(['"]?)\s*rgba\(\s*([0-9.]+)%[, ]+([0-9.]+)%[, ]+([0-9.]+)%[, ]+([0-9.]+)\s*\)\s*\3/
+      str = "#{text}"
+      while true
+        ret = re.exec str
+        if !ret => break
+        des = [
+          ret.1, (if ret.2 == \: => ':#' else '="#'),
+          [ret.4, ret.5, ret.6].map(->
+            ret = Math.round(it * 2.55).toString(16)
+            if ret.length < 2 => return "0#ret" else ret
+          ).join(''),
+          (if ret.2 == \: => ';' else '" '), ret.1, '-opacity',
+          (if ret.2 == \: => ':' else '="'), ret.7,
+          (if ret.2 == \: => '' else '"')
+        ].join("")
+        text = text.replace ret.0, des
+        str = str.substring(ret.index + ret.1.length)
+      return text
+
+    svg = rgba-percent-to-value svg
     svgnode.setAttribute(\style, inline-style)
     if type == \getsvg =>
       return window.parent.postMessage {type: \getsvg, payload: svg}, plotdb-domain

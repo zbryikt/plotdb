@@ -6540,7 +6540,7 @@ $(document).ready(function(){
     });
   };
   snapshot = function(type){
-    var svgnode, styles, i$, to$, idx, style, ref$, width, height, inlineStyle, svg, img, encoded, e;
+    var svgnode, styles, i$, to$, idx, style, ref$, width, height, inlineStyle, svg, rgbaPercentToValue, img, encoded, e;
     type == null && (type = 'snapshot');
     try {
       d3.selectAll('#container svg').each(function(){
@@ -6574,6 +6574,31 @@ $(document).ready(function(){
       inlineStyle = svgnode.getAttribute('style');
       svgnode.setAttribute('style', inlineStyle + ";" + document.getElementById('container').getAttribute('style'));
       svg = svgnode.outerHTML;
+      rgbaPercentToValue = function(text){
+        var re, str, ret, des;
+        re = /([a-zA-Z-]+)\s*([=:]?)\s*(['"]?)\s*rgba\(\s*([0-9.]+)%[, ]+([0-9.]+)%[, ]+([0-9.]+)%[, ]+([0-9.]+)\s*\)\s*\3/;
+        str = text + "";
+        for (;;) {
+          ret = re.exec(str);
+          if (!ret) {
+            break;
+          }
+          des = [ret[1], ret[2] === ':' ? ':#' : '="#', [ret[4], ret[5], ret[6]].map(fn$).join(''), ret[2] === ':' ? ';' : '" ', ret[1], '-opacity', ret[2] === ':' ? ':' : '="', ret[7], ret[2] === ':' ? '' : '"'].join("");
+          text = text.replace(ret[0], des);
+          str = str.substring(ret.index + ret[1].length);
+        }
+        return text;
+        function fn$(it){
+          var ret;
+          ret = Math.round(it * 2.55).toString(16);
+          if (ret.length < 2) {
+            return "0" + ret;
+          } else {
+            return ret;
+          }
+        }
+      };
+      svg = rgbaPercentToValue(svg);
       svgnode.setAttribute('style', inlineStyle);
       if (type === 'getsvg') {
         return window.parent.postMessage({
