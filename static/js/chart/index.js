@@ -85,14 +85,13 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
             v = ref$[k];
             v.fields.map(fn1$);
           }
-          Promise.all(promises).then(function(){
+          return Promise.all(promises).then(function(){
             this$.dataLoading = false;
             return eventBus.fire('chart.dimension.update');
           });
         } else {
-          this$.dataLoading = false;
+          return this$.dataLoading = false;
         }
-        return console.log('hihi');
         function fn$(it){
           var field;
           return field = new dataService.Field(it);
@@ -100,6 +99,9 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
         function fn1$(it){
           return promises.push(it.update());
         }
+      })['catch'](function(){
+        this$.dataLoading = false;
+        return eventBus.fire('chart.dimension.update');
       });
     }
     return this;

@@ -48,7 +48,9 @@ angular.module \plotDB
                 @data-loading = false
                 eventBus.fire \chart.dimension.update
             else @data-loading = false
-            console.log \hihi
+          .catch ~>
+            @data-loading = false
+            eventBus.fire \chart.dimension.update
       @
 
     object.prototype = do
