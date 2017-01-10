@@ -33,10 +33,10 @@ angular.module \plotDB
       @ <<< src
       plotdb.chart.update-dimension @
       datasets = {}
-      for k,v of (@dimension or {}) => v.fields.map -> if it.dataset => datasets[it.dataset] = true
-      @data-loading = true
+      for k,v of (@dimension or {}) => v.[]fields.map -> if it.dataset => datasets[it.dataset] = true
       promises = [data-service.cachedLoad({location: \server, name: \dataset}, k) for k of datasets]
       if promises.length =>
+        @data-loading = true
         Promise.all promises
           .then ~>
             for k,v of (@dimension or {}) =>
@@ -48,6 +48,7 @@ angular.module \plotDB
                 @data-loading = false
                 eventBus.fire \chart.dimension.update
             else @data-loading = false
+            console.log \hihi
       @
 
     object.prototype = do

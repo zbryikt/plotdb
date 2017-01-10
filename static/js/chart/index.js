@@ -61,9 +61,8 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
     datasets = {};
     for (k in ref$ = this.dimension || {}) {
       v = ref$[k];
-      v.fields.map(fn$);
+      (v.fields || (v.fields = [])).map(fn$);
     }
-    this.dataLoading = true;
     res$ = [];
     for (k in datasets) {
       res$.push(dataService.cachedLoad({
@@ -73,6 +72,7 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
     }
     promises = res$;
     if (promises.length) {
+      this.dataLoading = true;
       Promise.all(promises).then(function(){
         var k, ref$, v, promises;
         for (k in ref$ = this$.dimension || {}) {
@@ -85,13 +85,14 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
             v = ref$[k];
             v.fields.map(fn1$);
           }
-          return Promise.all(promises).then(function(){
+          Promise.all(promises).then(function(){
             this$.dataLoading = false;
             return eventBus.fire('chart.dimension.update');
           });
         } else {
-          return this$.dataLoading = false;
+          this$.dataLoading = false;
         }
+        return console.log('hihi');
         function fn$(it){
           var field;
           return field = new dataService.Field(it);
