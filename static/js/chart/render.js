@@ -288,7 +288,7 @@ $(document).ready(function(){
       svg = svgnode.outerHTML;
       rgbaPercentToValue = function(text){
         var re, str, ret, des;
-        re = /([a-zA-Z-]+)\s*([=:]?)\s*(['"]?)\s*rgba\(\s*([0-9.]+)%[, ]+([0-9.]+)%[, ]+([0-9.]+)%[, ]+([0-9.]+)\s*\)\s*\3/;
+        re = new RegExp(["([a-zA-Z-]+)\\s*", "([=:]?)\\s*(['\"]?)\\s*", "rgba\\(\\s*([0-9.]+%?)\\s*,\\s*([0-9.]+%?)\\s*,\\s*([0-9.]+%?)\\s*,\\s*([0-9.]+)\\s*\\)\\s*\\3"].join(""));
         str = text + "";
         for (;;) {
           ret = re.exec(str);
@@ -301,12 +301,16 @@ $(document).ready(function(){
         }
         return text;
         function fn$(it){
-          var ret;
-          ret = Math.round(it * 2.55).toString(16);
-          if (ret.length < 2) {
-            return "0" + ret;
+          var v;
+          if (it[it.length - 1] === '%') {
+            v = Math.round(it.substring(0, it.length - 1) * 2.55).toString(16);
           } else {
-            return ret;
+            v = Math.round(+it).toString(16);
+          }
+          if (v.length < 2) {
+            return "0" + v;
+          } else {
+            return v;
           }
         }
       };

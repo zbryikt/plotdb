@@ -156,7 +156,11 @@ snapshot = (type='snapshot') ->
     svg = svgnode.outerHTML
 
     rgba-percent-to-value = (text) ->
-      re = /([a-zA-Z-]+)\s*([=:]?)\s*(['"]?)\s*rgba\(\s*([0-9.]+)%[, ]+([0-9.]+)%[, ]+([0-9.]+)%[, ]+([0-9.]+)\s*\)\s*\3/
+      re = new RegExp([
+        "([a-zA-Z-]+)\\s*" # attr name
+        "([=:]?)\\s*(['\"]?)\\s*" # token
+        "rgba\\(\\s*([0-9.]+%?)\\s*,\\s*([0-9.]+%?)\\s*,\\s*([0-9.]+%?)\\s*,\\s*([0-9.]+)\\s*\\)\\s*\\3"
+      ].join(""))
       str = "#{text}"
       while true
         ret = re.exec str
@@ -164,8 +168,9 @@ snapshot = (type='snapshot') ->
         des = [
           ret.1, (if ret.2 == \: => ':#' else '="#'),
           [ret.4, ret.5, ret.6].map(->
-            ret = Math.round(it * 2.55).toString(16)
-            if ret.length < 2 => return "0#ret" else ret
+            if it[* - 1] == \%  => v = Math.round((it.substring(0,it.length - 1)) * 2.55).toString(16)
+            else v = Math.round(+it).toString(16)
+            if v.length < 2 => return "0#v" else v
           ).join(''),
           (if ret.2 == \: => ';' else '" '), ret.1, '-opacity',
           (if ret.2 == \: => ':' else '="'), ret.7,
