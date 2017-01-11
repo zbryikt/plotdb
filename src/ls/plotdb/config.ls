@@ -223,7 +223,7 @@ plotdb.config = do
   gridBackground: do
     name: "Background"
     type: [plotdb.Color]
-    default: \#fff
+    default: "rgba(255,255,255,0)"
     category: "Grid"
 
   gridStroke: do
