@@ -5,6 +5,7 @@ block vars
   - var description = chart.description || "check this visualization powered by plotdb"
   - var url = "https://plotdb.io/v/chart/" + chart.key
   - var renderSrc = "pdb-viewer"
+  - var owner = (chart.plan == 2 ? chart.ownername : "plotdb")
 block head
   title #{chart.name} by #{chart.author}
   link(rel="icon",type="image/x-icon",href="/assets/img/favicon-16.png")
