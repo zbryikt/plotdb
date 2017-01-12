@@ -1907,7 +1907,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             bytes = atob(data.payload.split(',')[1]);
             mime = data.payload.split(',')[0].split(':')[1].split(';')[0];
             if (mime !== 'image/png') {
-              return $scope.download.queue[1].state = 1;
+              return $scope.download.queue[0].state = 1;
             }
             buf = new ArrayBuffer(bytes.length);
             ints = new Uint8Array(buf);

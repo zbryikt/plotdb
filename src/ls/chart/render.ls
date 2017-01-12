@@ -135,7 +135,21 @@ snapshot = (type='snapshot') ->
         "width": width
         "height": height
     #save the first svg #TODO save all?
-    svgnode = document.querySelector '#container svg'
+    allsvg = document.querySelectorAll('#container svg')
+    if allsvg.length > 1 =>
+      list = Array.from(allsvg).map ->
+        box = it.getBoundingClientRect!
+        [it.cloneNode(true), (box.right - box.left) * (box.bottom - box.top), it]
+      list.sort (a,b) -> b.1 - a.1
+      for i from 1 til list.length =>
+        g = document.createElementNS("http://www.w3.org/2000/svg", "g")
+        g.appendChild(list[i].0)
+        list.0.0.insertBefore g, list.0.0.childNodes[0]
+        box = list[i].2.getBoundingClientRect!
+        g.setAttribute("transform", "translate(#{box.left},#{box.top})")
+      svgnode = list.0.0
+    else svgnode = document.querySelector '#container svg'
+
     styles = svgnode.querySelectorAll("style")
     for idx from 0 til styles.length
       style = styles[idx]
@@ -153,6 +167,10 @@ snapshot = (type='snapshot') ->
     svgnode.setAttribute(\style,
       inline-style + ";" + document.getElementById(\container).getAttribute(\style)
     )
+    {width, height} = svgnode.getBoundingClientRect!
+    if !width or !height =>
+      width = +(svgnode.getAttribute("width") or 0) or +((svgnode.style.width or "").replace(/[^0-9]+$/,""))
+      height = +(svgnode.getAttribute("height") or 0) or +((svgnode.style.height or "").replace(/[^0-9]+$/,""))
     svg = svgnode.outerHTML
 
     rgba-percent-to-value = (text) ->
@@ -240,7 +258,6 @@ render = (payload, rebind = true) ->
         #TODO - merge with view.ls
         margin =( conf.margin or {value: 10}).value
         margin-vertical = if margin - 10 > 10 => margin - 10 else margin/2
-        console.log conf
         node.style <<< do
           background: conf.background.value
           color: conf.textFill.value

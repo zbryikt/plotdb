@@ -252,7 +252,7 @@ $(document).ready(function(){
     });
   };
   snapshot = function(type){
-    var svgnode, styles, i$, to$, idx, style, ref$, width, height, inlineStyle, svg, rgbaPercentToValue, img, encoded, e;
+    var allsvg, list, i$, to$, i, g, box, svgnode, styles, idx, style, ref$, width, height, inlineStyle, svg, rgbaPercentToValue, img, encoded, e;
     type == null && (type = 'snapshot');
     try {
       d3.selectAll('#container svg').each(function(){
@@ -265,7 +265,28 @@ $(document).ready(function(){
           "height": height
         });
       });
-      svgnode = document.querySelector('#container svg');
+      allsvg = document.querySelectorAll('#container svg');
+      if (allsvg.length > 1) {
+        list = Array.from(allsvg).map(function(it){
+          var box;
+          box = it.getBoundingClientRect();
+          return [it.cloneNode(true), (box.right - box.left) * (box.bottom - box.top), it];
+        });
+        list.sort(function(a, b){
+          return b[1] - a[1];
+        });
+        for (i$ = 1, to$ = list.length; i$ < to$; ++i$) {
+          i = i$;
+          g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          g.appendChild(list[i][0]);
+          list[0][0].insertBefore(g, list[0][0].childNodes[0]);
+          box = list[i][2].getBoundingClientRect();
+          g.setAttribute("transform", "translate(" + box.left + "," + box.top + ")");
+        }
+        svgnode = list[0][0];
+      } else {
+        svgnode = document.querySelector('#container svg');
+      }
       styles = svgnode.querySelectorAll("style");
       for (i$ = 0, to$ = styles.length; i$ < to$; ++i$) {
         idx = i$;
@@ -285,6 +306,11 @@ $(document).ready(function(){
       ref$ = svgnode.getBoundingClientRect(), width = ref$.width, height = ref$.height;
       inlineStyle = svgnode.getAttribute('style');
       svgnode.setAttribute('style', inlineStyle + ";" + document.getElementById('container').getAttribute('style'));
+      ref$ = svgnode.getBoundingClientRect(), width = ref$.width, height = ref$.height;
+      if (!width || !height) {
+        width = +(svgnode.getAttribute("width") || 0) || +(svgnode.style.width || "").replace(/[^0-9]+$/, "");
+        height = +(svgnode.getAttribute("height") || 0) || +(svgnode.style.height || "").replace(/[^0-9]+$/, "");
+      }
       svg = svgnode.outerHTML;
       rgbaPercentToValue = function(text){
         var re, str, ret, des;
@@ -414,7 +440,6 @@ $(document).ready(function(){
           marginVertical = margin - 10 > 10
             ? margin - 10
             : margin / 2;
-          console.log(conf);
           import$(node.style, {
             background: conf.background.value,
             color: conf.textFill.value,
