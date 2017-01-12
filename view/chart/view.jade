@@ -22,6 +22,8 @@ block body
   #wrapper.loading.pdb-root
   if chart.plan != 2
     a#plotdb-mark(href="https://plotdb.com",target="_blank") POWERED BY PLOTDB
+  a#plotdb-mark(href="https://plotdb.com",target="_blank") POWERED BY PLOTDB
+  a#plotdb-fullscreen(href="#",onclick="fullscreen()")
 block foot
   script(type="text/javascript").
     var chart = !{JSON.stringify(chart).replace(/<\//g, "<\\/")};
@@ -31,5 +33,22 @@ block foot
     var mychart = new plotdb.view.chart(chart, {theme: theme, fields: fields}); //, {theme: theme, fields: fields})
     //-mychart.loadlib();
     mychart.attach(document.getElementById("wrapper"));
+  script(type="text/javascript").
+    function fullscreen() {
+      if (document.fullscreenEnabled || document.webkitFullscreenEnabled ||
+      document.mozFullScreenEnabled || document.msFullscreenEnabled) {
+        var iframe = document.body;
+        if (iframe.requestFullscreen) {
+          iframe.requestFullscreen();
+        } else if (iframe.webkitRequestFullscreen) {
+          iframe.webkitRequestFullscreen();
+        } else if (iframe.mozRequestFullScreen) {
+          iframe.mozRequestFullScreen();
+        } else if (iframe.msRequestFullscreen) {
+          iframe.msRequestFullscreen();
+        }
+      }
+    }
+
   include /ga.jade
   //-include /fb.jade

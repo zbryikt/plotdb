@@ -7070,11 +7070,12 @@ function import$(obj, src){
 .pdb-popup.float .value {
   font-size: 0.9em;
 }
-#plotdb-mark {
+#plotdb-mark,
+#plotdb-fullscreen {
   position: fixed;
   z-index: 999999;
   bottom: 5px;
-  right: 5px;
+  right: 30px;
   text-align: center;
   font-size: 12px;
   font-family: optima;
@@ -7097,6 +7098,20 @@ function import$(obj, src){
   line-height: 8px;
   color: rgba(0,0,0,0.4);
   font-family: arial;
+}
+#plotdb-fullscreen {
+  padding: 0;
+  right: 5px;
+  background: rgba(255,255,255,0.9);
+  height: 16px;
+}
+#plotdb-fullscreen:before {
+  padding: 2px 5px 0;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.1);
+  content: "⤡";
+  display: block;
+  line-height: 14px;
 }
 /* Following are base64 images */
 .pdb-root.error {

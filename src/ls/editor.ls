@@ -612,8 +612,8 @@ angular.module \plotDB
             if /^\d+$/.exec(h) => h = h + \px
 
             if $scope.sharePanel.aspectRatio =>
-              return """<div style="width:100%"><div style="position:relative;height:0;overflor:hidden;padding-bottom:#ratio%"><iframe src="#link" frameborder="0" style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe></div></div>"""
-            else => return """<iframe src="#link" width="#w" height="#h" frameborder="0"></iframe>"""
+              return """<div style="width:100%"><div style="position:relative;height:0;overflor:hidden;padding-bottom:#ratio%"><iframe src="#link" frameborder="0" allowfullscreen="true" style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe></div></div>"""
+            else => return """<iframe src="#link" width="#w" height="#h" allowfullscreen="true" frameborder="0"></iframe>"""
           $scope.$watch 'sharePanel.embed', (~>
             @embedcode = embedcode-generator!
           ), true
