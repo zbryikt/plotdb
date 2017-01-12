@@ -1,4 +1,13 @@
 extends /base.jade
 block body
   #root.doc-root
-    block markdown
+    .doc-content
+      block markdown
+      .doc-nav
+        //-img(src="/assets/img/plotdb-docs.png")
+        //-.sep.dark
+        ul.nav.nav-pills.nav-stacked
+          li.active: a Overview
+          li: a Writing Vis
+          li: a Work with Theme
+          li: a External API
