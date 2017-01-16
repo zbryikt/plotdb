@@ -6573,7 +6573,7 @@ $(document).ready(function(){
         }
         svgnode = list[0][0];
       } else {
-        svgnode = document.querySelector('#container svg');
+        svgnode = document.querySelector('#container svg').cloneNode(true);
       }
       styles = svgnode.querySelectorAll("style");
       for (i$ = 0, to$ = styles.length; i$ < to$; ++i$) {
@@ -6599,6 +6599,11 @@ $(document).ready(function(){
         width = +(svgnode.getAttribute("width") || 0) || +(svgnode.style.width || "").replace(/[^0-9]+$/, "");
         height = +(svgnode.getAttribute("height") || 0) || +(svgnode.style.height || "").replace(/[^0-9]+$/, "");
       }
+      Array.from(svgnode.querySelectorAll('*')).forEach(function(it){
+        if (it.style.opacity === 0 || it.getAttribute('opacity') === 0 || it.getAttribute('display') === 'none' || it.style.display === 'none') {
+          return it.parentNode.removeChild(it);
+        }
+      });
       svg = svgnode.outerHTML;
       rgbaPercentToValue = function(text){
         var re, str, ret, des;

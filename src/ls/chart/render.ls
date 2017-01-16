@@ -148,7 +148,7 @@ snapshot = (type='snapshot') ->
         box = list[i].2.getBoundingClientRect!
         g.setAttribute("transform", "translate(#{box.left},#{box.top})")
       svgnode = list.0.0
-    else svgnode = document.querySelector '#container svg'
+    else svgnode = (document.querySelector '#container svg').cloneNode(true)
 
     styles = svgnode.querySelectorAll("style")
     for idx from 0 til styles.length
@@ -171,6 +171,11 @@ snapshot = (type='snapshot') ->
     if !width or !height =>
       width = +(svgnode.getAttribute("width") or 0) or +((svgnode.style.width or "").replace(/[^0-9]+$/,""))
       height = +(svgnode.getAttribute("height") or 0) or +((svgnode.style.height or "").replace(/[^0-9]+$/,""))
+
+    Array.from(svgnode.querySelectorAll(\*)).forEach ->
+      if it.style.opacity == 0 or it.getAttribute(\opacity) == 0 or
+      it.getAttribute(\display) == \none or it.style.display == \none => it.parentNode.removeChild it
+
     svg = svgnode.outerHTML
 
     rgba-percent-to-value = (text) ->
