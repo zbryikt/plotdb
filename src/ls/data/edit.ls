@@ -20,6 +20,22 @@ angular.module \plotDB
       $scope.dataset.key = null
       $scope.dataset.name = $scope.dataset.name + " - Copy"
       $scope.save!
+
+    <[#dataset-copy-btn]>.map (eventsrc) ~>
+      clipboard = new Clipboard eventsrc, do
+        text: (trigger) ->
+          if $scope.grid.toggled =>
+            data = $scope.grid.data
+            data = data.headers.join(\\t) + \\n + data.rows.map(->it.join(\\t)).join(\\n)
+            return data
+          else return $scope.rawdata
+      clipboard.on \success, ->
+        $(eventsrc).tooltip({title: 'copied', trigger: 'click'}).tooltip('show')
+        setTimeout((->$(eventsrc).tooltip('hide')), 1000)
+      clipboard.on \error, ->
+        $(eventsrc).tooltip({title: 'Press Ctrl+C to Copy', trigger: 'click'}).tooltip('show')
+        setTimeout((->$(eventsrc).tooltip('hide')), 1000)
+
     $scope.save = (locally = false) ->
       if !$scope.dataset => return
       if !$scope.user.authed! => return $scope.auth.toggle true

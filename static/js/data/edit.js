@@ -2,6 +2,7 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'permService', 'dataService', 'eventBus', 'plNotify', 'Paging'].concat(function($scope, $interval, $timeout, $http, permService, dataService, eventBus, plNotify, Paging){
+  var this$ = this;
   eventBus.fire('loading.dimmer.on');
   $scope.permtype = (window.permtype || (window.permtype = []))[1] || 'none';
   $scope.isAdmin = permService.isEnough($scope.permtype, 'admin');
@@ -25,6 +26,41 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
     $scope.dataset.name = $scope.dataset.name + " - Copy";
     return $scope.save();
   };
+  ['#dataset-copy-btn'].map(function(eventsrc){
+    var clipboard;
+    clipboard = new Clipboard(eventsrc, {
+      text: function(trigger){
+        var data;
+        if ($scope.grid.toggled) {
+          data = $scope.grid.data;
+          data = data.headers.join('\t') + '\n' + data.rows.map(function(it){
+            return it.join('\t');
+          }).join('\n');
+          return data;
+        } else {
+          return $scope.rawdata;
+        }
+      }
+    });
+    clipboard.on('success', function(){
+      $(eventsrc).tooltip({
+        title: 'copied',
+        trigger: 'click'
+      }).tooltip('show');
+      return setTimeout(function(){
+        return $(eventsrc).tooltip('hide');
+      }, 1000);
+    });
+    return clipboard.on('error', function(){
+      $(eventsrc).tooltip({
+        title: 'Press Ctrl+C to Copy',
+        trigger: 'click'
+      }).tooltip('show');
+      return setTimeout(function(){
+        return $(eventsrc).tooltip('hide');
+      }, 1000);
+    });
+  });
   $scope.save = function(locally){
     var promise;
     locally == null && (locally = false);

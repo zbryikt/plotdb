@@ -66,7 +66,7 @@
           /assets/codemirror/5.10/mode/xml/xml.js
           /assets/codemirror/5.10/mode/css/css.js
           /assets/ui-codemirror/0.3.0/ui-codemirror.min.js
-          /assets/clipboard/1.3.1/clipboard.min.js
+          /assets/clipboard/1.5.16/clipboard.min.js
           /assets/ngDraggable/0.1.8/ngDraggable.js
           /assets/utf8js/2.0.0/utf8.js
           /assets/base64/0.1.0/base64.js

@@ -313,7 +313,7 @@ render = (payload, rebind = true) ->
             # so we pass real dimension only if there is no user data
             if data and data.length => JSON.parse(JSON.stringify(dimension)) else dimension
           )
-        if (!data or !data.length) => data := window.sample-data
+        if (!data or !data.length) => data := JSON.parse(JSON.stringify(window.sample-data))
       config-preset config
       for k,v of (config or {}) =>
         for type in (v.type or [])=>

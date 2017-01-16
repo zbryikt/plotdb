@@ -86,6 +86,9 @@ include panel.jade
                   span #[i.fa.fa-file-excel-o.align16] upload Excel (.xls, .xlsx)
                 li.divider
                 li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] from Google Sheet
+            li#dataset-copy-btn
+              a #[i.fa.fa-clipboard] Copy All
+
             //-future feature
             //-li.dropdown
               a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-edit] transform... #[span.caret]

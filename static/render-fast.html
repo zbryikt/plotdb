@@ -6783,7 +6783,7 @@ $(document).ready(function(){
             window.sampleData = plotdb.chart.getSampleData(chart, data && data.length ? JSON.parse(JSON.stringify(dimension)) : dimension);
           }
           if (!data || !data.length) {
-            data = window.sampleData;
+            data = JSON.parse(JSON.stringify(window.sampleData));
           }
         }
         configPreset(config);
