@@ -270,6 +270,7 @@ plotdb.Palette = do
     sequential: "sequential"
     diverging: "diverging"
   scale: do
+    # example: [{data: [...], datatype: "SomeTypeName"}]
     auto: (pal, fields = [], scale) ->
       if !Array.isArray(fields) => fields = [fields]
       type = plotdb.Types.taxonomy((fields[0] or {}).datatype)
