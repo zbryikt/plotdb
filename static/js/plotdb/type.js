@@ -542,6 +542,91 @@ plotdb.Palette = {
     diverging: "diverging"
   },
   scale: {
+    auto: function(pal, fields, scale){
+      var type, c, domain, range, start, extent, i$, to$, end, j$, to1$, idx, hash, k;
+      fields == null && (fields = []);
+      if (!Array.isArray(fields)) {
+        fields = [fields];
+      }
+      type = plotdb.Types.taxonomy((fields[0] || {}).datatype);
+      c = pal.colors;
+      if (type === 'quantative') {
+        domain = c.map(function(it){
+          if (!(it.keyword != null) || it.keyword === "") {
+            return "";
+          } else {
+            return +it.keyword;
+          }
+        });
+        range = c.map(function(it){
+          return it.hex;
+        });
+        start = 0;
+        extent = [
+          Math.min.apply(null, fields.map(function(it){
+            return Math.min.apply(null, it.data || []);
+          })), Math.max.apply(null, fields.map(function(it){
+            return Math.max.apply(null, it.data || []);
+          }))
+        ];
+        if (domain[0] == null) {
+          domain[0] = extent[0];
+        }
+        if (!domain[domain.length - 1]) {
+          domain[domain.length - 1] = extent[1];
+        }
+        for (i$ = 0, to$ = domain.length; i$ < to$; ++i$) {
+          end = i$;
+          if (domain[end] && end > start + 1) {
+            for (j$ = 1, to1$ = end - start; j$ < to1$; ++j$) {
+              idx = j$;
+              domain[idx + start] = domain[start] + idx * ((domain[end] - domain[start]) / (end - start));
+            }
+          }
+          if (domain[end]) {
+            start = end;
+          }
+        }
+      } else {
+        hash = {};
+        domain = c.map(function(it){
+          return it.keyword;
+        }).filter(function(it){
+          return it;
+        });
+        fields.map(function(d){
+          return (d.data || []).map(function(it){
+            if (!in$(it, domain)) {
+              return hash[it] = 1;
+            }
+          });
+        });
+        domain = domain.concat((function(){
+          var results$ = [];
+          for (k in hash) {
+            results$.push(k);
+          }
+          return results$;
+        }()));
+        range = c.filter(function(it){
+          return it.keyword;
+        }).map(function(it){
+          return it.hex;
+        }).concat(c.filter(function(it){
+          return !it.keyword;
+        }).map(function(it){
+          return it.hex;
+        }));
+      }
+      if (!scale) {
+        if (type === 'quantative') {
+          scale = d3.scale.linear();
+        } else {
+          scale = d3.scale.ordinal();
+        }
+      }
+      return scale.domain(domain).range(range);
+    },
     ordinal: function(pal, domain, scale){
       var c, range;
       c = pal.colors;
@@ -609,8 +694,21 @@ plotdb.Palette = {
   }
 };
 plotdb.OrderTypes = [plotdb.Number, plotdb.Date, plotdb.Numstring, plotdb.Month, plotdb.Weekday, plotdb.Boolean, plotdb.Bit];
+plotdb.QuantativeTypes = [plotdb.Number, plotdb.Date, plotdb.Numstring];
 plotdb.Types = {
   list: ['Number', 'Numstring', 'Weekday', 'Month', 'Date', 'Boolean', 'Bit', 'Order'],
+  taxonomy: function(type){
+    if (typeof type === 'string') {
+      type = plotdb[type];
+    }
+    if (in$(type, plotdb.QuantativeTypes)) {
+      return "quantative";
+    }
+    if (in$(type, plotdb.OrderTypes)) {
+      return "ordinal";
+    }
+    return "nominal";
+  },
   resolveArray: function(vals){
     var matchedTypes, i$, to$, j, type, matched, j$, to1$, k;
     matchedTypes = [[0, 'String']];

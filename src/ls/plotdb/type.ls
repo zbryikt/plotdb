@@ -270,6 +270,36 @@ plotdb.Palette = do
     sequential: "sequential"
     diverging: "diverging"
   scale: do
+    auto: (pal, fields = [], scale) ->
+      if !Array.isArray(fields) => fields = [fields]
+      type = plotdb.Types.taxonomy((fields[0] or {}).datatype)
+      c = pal.colors
+      if type == \quantative =>
+        domain = c.map(-> if !(it.keyword?) or it.keyword=="" => "" else +it.keyword)
+        range = c.map(->it.hex)
+        start = 0
+        extent = [
+          Math.min.apply(null, fields.map(-> Math.min.apply(null, it.data or []))),
+          Math.max.apply(null, fields.map(-> Math.max.apply(null, it.data or [])))
+        ]
+        if !domain.0? => domain.0 = extent.0
+        if !domain[* - 1] => domain[* - 1] = extent.1
+        for end from 0 til domain.length
+          if domain[end] and end > start + 1 =>
+            for idx from 1 til (end - start)
+              domain[idx + start] = domain[start] + idx * ((domain[end] - domain[start]) / (end - start))
+          if domain[end] => start = end
+      else =>
+        hash = {}
+        domain = c.map(->it.keyword).filter(->it)
+        fields.map (d)-> (d.data or []).map -> if !(it in domain) => hash[it] = 1
+        domain ++= [k for k of hash]
+        range = (c.filter(->it.keyword).map(->it.hex) ++ c.filter(->!it.keyword).map(->it.hex))
+      if !scale =>
+        if type == \quantative => scale = d3.scale.linear!
+        else => scale = d3.scale.ordinal!
+      scale.domain(domain).range(range)
+
     ordinal: (pal, domain, scale) ->
       c = pal.colors
       range = (c.filter(->it.keyword).map(->it.hex) ++ c.filter(->!it.keyword).map(->it.hex))
@@ -293,10 +323,18 @@ plotdb.Palette = do
 plotdb.OrderTypes = [
   plotdb.Number, plotdb.Date, plotdb.Numstring, plotdb.Month, plotdb.Weekday, plotdb.Boolean, plotdb.Bit
 ]
+plotdb.QuantativeTypes = [
+  plotdb.Number, plotdb.Date, plotdb.Numstring
+]
 
 plotdb.Types = do
   # String will be used automatically if there is no matched type
   list: <[Number Numstring Weekday Month Date Boolean Bit Order]>
+  taxonomy: (type) ->
+    if typeof(type) == \string => type = plotdb[type]
+    if type in plotdb.QuantativeTypes => return "quantative"
+    if type in plotdb.OrderTypes => return "ordinal"
+    return "nominal"
   resolve-array: (vals) ->
     matched-types = [[0,\String]]
     for j from 0 til @list.length =>

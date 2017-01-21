@@ -9,34 +9,32 @@ plotdb.chart = do
     resize: ->
     render: ->
   data-from-dimension: (dimension) ->
-    data = []
+    [parsers,data] = [{},[]]
     len = Math.max.apply null,
       [v for k,v of dimension]
         .reduce(((a,b) -> (a) ++ (b.fields or [])),[])
         .filter(->it.data)
         .map(->it.data.length) ++ [0]
-    for i from 0 til len
+    for k,v of dimension
+      if v.multiple => v.field-name = v.[]fields.map -> it.name
+      else v.field-name = if v.[]fields.0 => that.name else null
+      for field in v.[]fields =>
+        if !field.datatype => field.datatype = plotdb.Types.resolve(field.data)
+      default-parser = plotdb{}[(v.[]type[0] or {}).name].parse or null
+      parsers[k] = if v.fields.length =>
+        v.fields.map(->default-parser or plotdb{}[it.datatype].parse or (->it))
+      else [default-parser or (->it)]
+
+    for i from 0 til len =>
       ret = {}
       for k,v of dimension
-        if v.multiple =>
-          ret[k] = if v.[]fields.length => v.[]fields.map(->it.[]data[i]) else null
-          v.field-name = v.[]fields.map -> it.name
+        if v.[]fields.length => ret[k] = v.[]fields.map(->it.[]data[i])
         else
-          ret[k] = if v.[]fields.0 => that.[]data[i] else null
-          v.field-name = if v.[]fields.0 => that.name else null
-        if ret[k] == null => # not bound dimension: we fill it with default
-          type = (v.type.0 or plotdb.String)
-          defval = plotdb[type.name].default
-          value = if (typeof(defval) == \function) => defval(k,v,i) else type.default
-          ret[k] = if v.multiple => [value] else value
-        if v.type and v.type.0 and plotdb[v.type.0.name].parse =>
-          parse = plotdb[v.type.0.name].parse
-          if Array.isArray(ret[k]) =>
-            for j from 0 til ret[k].length => ret[k][j] = parse ret[k][j]
-          else ret[k] = parse ret[k]
-        #if (v.type or []).filter(->it.name == \Number).length =>
-        #  if Array.isArray(ret[k]) => ret[k] = ret[k].map(->parseFloat(it))
-        #  else ret[k] = parseFloat(ret[k])
+          ret[k] = [[v.type.0 or plotdb.String].default]
+          if typeof(ret[k]) == \function => ret[k] = ret[k] k,v,i
+        for j from 0 til (ret[k] or []).length =>
+          ret[k][j] = parsers[k][j](ret[k][j])
+        if !v.multiple => ret[k] = ret[k].0
       data.push ret
     return data
   data-from-hash: (dimension, source) ->
