@@ -244,7 +244,11 @@ plotd3.rwd.legend = ->
     max = [0,0]
     @select \text.label .remove!
     if store.label =>
-      label = @append \text .attr class: \label .text store.label
+      label = @append \text .attr class: \label
+      sel = label.selectAll \tspan .data store.label.split \\n
+      sel.exit!remove!
+      sel.enter!append \tspan .text(->it) .attr {x: 0, dy: "1.1em"}
+
       label.attr do
         "font-size": (store.font-size * 1.1) if store.font-size?
         "font-weight": \bold

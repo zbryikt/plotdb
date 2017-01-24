@@ -399,7 +399,7 @@ plotd3.rwd.legend = function(){
     padding: [10, 5]
   };
   ret = function(){
-    var that, data, x$, offset, max, label, ref$;
+    var that, data, x$, offset, max, label, sel, ref$;
     store.group = this;
     if (that = store.tickValues) {
       data = that;
@@ -471,7 +471,15 @@ plotd3.rwd.legend = function(){
     if (store.label) {
       label = this.append('text').attr({
         'class': 'label'
-      }).text(store.label);
+      });
+      sel = label.selectAll('tspan').data(store.label.split('\n'));
+      sel.exit().remove();
+      sel.enter().append('tspan').text(function(it){
+        return it;
+      }).attr({
+        x: 0,
+        dy: "1.1em"
+      });
       label.attr({
         "font-size": store.fontSize != null ? store.fontSize * 1.1 : void 8,
         "font-weight": 'bold',
