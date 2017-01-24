@@ -252,7 +252,7 @@ plotd3.rwd.legend = ->
       label.attr do
         "font-size": (store.font-size * 1.1) if store.font-size?
         "font-weight": \bold
-        dy: \0.76em
+        dy: \0.65em
       if store.orient in <[bottom top]> => offset.0 += label.0.0.getBBox!width + store.padding.0 or 10
       else =>
         offset.1 += label.0.0.getBBox!height + store.padding.1 or 5

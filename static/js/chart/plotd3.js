@@ -483,7 +483,7 @@ plotd3.rwd.legend = function(){
       label.attr({
         "font-size": store.fontSize != null ? store.fontSize * 1.1 : void 8,
         "font-weight": 'bold',
-        dy: '0.76em'
+        dy: '0.65em'
       });
       if ((ref$ = store.orient) === 'bottom' || ref$ === 'top') {
         offset[0] += label[0][0].getBBox().width + store.padding[0] || 10;
