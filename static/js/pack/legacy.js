@@ -496,7 +496,7 @@ plotd3.rwd.legend = function(){
         offset[1] += label[0][0].getBBox().height + store.padding[1] || 5;
       }
     }
-    return this.selectAll('g.legend').each(function(d, i){
+    this.selectAll('g.legend').each(function(d, i){
       var node, ref$, w, h;
       node = d3.select(this).attr({
         transform: "translate(" + offset[0] + " " + offset[1] + ")"
@@ -526,6 +526,13 @@ plotd3.rwd.legend = function(){
         return offset[1] += store.type === 'radius' ? 3 : 0;
       }
     });
+    if (store.label) {
+      offset = ret.offset();
+      return label.selectAll('tspan').attr({
+        "text-anchor": (ref$ = store.orient) === 'left' || ref$ === 'right' ? "middle" : void 8,
+        x: offset[0] / 2
+      });
+    }
   };
   ret.offset = function(){
     var box;

@@ -274,7 +274,11 @@ plotd3.rwd.legend = ->
           node = d3.select @ .attr {transform: "translate(#{offset.0} #{offset.1})"}
         offset.1 += (h + (store.padding.1 or 5))
         offset.1 += (if store.type == \radius => 3 else 0)
-
+    if store.label =>
+      offset = ret.offset!
+      label.selectAll \tspan .attr do
+        "text-anchor": "middle" if store.orient in <[left right]>
+        x: offset.0/2
 
   ret.offset = ->
     if !store.group => return [0,0]
