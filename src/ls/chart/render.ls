@@ -14,7 +14,7 @@ window.thread = do
 <- $ document .ready
 
 dispatcher = (evt) ->
-  if (evt.data.type in <[snapshot getsvg getpng]>) => snapshot evt.data.type
+  if (evt.data.type in <[snapshot getsvg getpng getpng-hd]>) => snapshot evt.data.type
   else if evt.data.type == \render => render evt.data.payload, evt.data.rebind
   else if evt.data.type == \get-sample-data =>
     window.parent.postMessage {type: \get-sample-data, data: (window.sample-data or null)}, plotdb-domain
@@ -171,6 +171,19 @@ snapshot = (type='snapshot') ->
     if !width or !height =>
       width = +(svgnode.getAttribute("width") or 0) or +((svgnode.style.width or "").replace(/[^0-9]+$/,""))
       height = +(svgnode.getAttribute("height") or 0) or +((svgnode.style.height or "").replace(/[^0-9]+$/,""))
+
+    ##### FOR High Resolution ( > 4000 ) Png
+    if type == \getpng-hd
+      if width > 1920 or height > 1920 =>
+        width = Math.round(width * 2.1)
+        height = Math.round(height * 2.1)
+      else
+        rate = 4000 / (( if height > width => width else height) or 1)
+        width = width * rate
+        height = height * rate
+      svgnode.setAttribute("width", width)
+      svgnode.setAttribute("height", height)
+    #####
 
     Array.from(svgnode.querySelectorAll(\*)).forEach ->
       if it.style.opacity == 0 or it.getAttribute(\opacity) == 0 or

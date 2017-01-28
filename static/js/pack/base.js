@@ -4247,12 +4247,22 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
     download: {
       prepare: function(){
         var this$ = this;
-        return this.queue = ['png', 'svg', 'plotdb'].map(function(n, i){
-          var postfix, ret, ref$;
-          postfix = ['png', 'svg', 'json'];
+        return this.queue = ['png', 'svg', 'plotdb', 'png-hd'].map(function(n, i){
+          var name, alt, postfix, ret, ref$;
+          name = {
+            png: 'PNG',
+            svg: 'SVG',
+            plotdb: 'PLOTDB',
+            "png-hd": 'PNG'
+          };
+          alt = {
+            "png-hd": "High Res"
+          };
+          postfix = ['png', 'svg', 'json', 'png'];
           ret = {
             state: 0,
-            name: n.toUpperCase(),
+            name: name[n],
+            alt: alt[n],
             filename: $scope.target().name + "." + postfix[i]
           };
           if (i < 1 || ($scope.user.data && ((ref$ = $scope.user.data).payment || (ref$.payment = {})).plan > 0) || plConfig.mode % 2) {
@@ -4266,7 +4276,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
           return ret.state = 3, ret;
         });
       },
-      queue: [{}, {}, {}],
+      queue: [{}, {}, {}, {}],
       svg: function(){
         return $scope.canvas.window.postMessage({
           type: 'getsvg'
@@ -4275,6 +4285,11 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
       png: function(){
         return $scope.canvas.window.postMessage({
           type: 'getpng'
+        }, $scope.plotdbDomain);
+      },
+      "png-hd": function(){
+        return $scope.canvas.window.postMessage({
+          type: 'getpng-hd'
         }, $scope.plotdbDomain);
       },
       plotdb: function(){
@@ -5544,7 +5559,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
         var data;
         data = arg$.data;
         return $scope.$apply(function(){
-          var ref$, config, dimension, k, v, hash, key$, typedef, ref1$, event, bytes, mime, buf, ints, i$, to$, idx, node, res;
+          var ref$, config, dimension, k, v, hash, key$, typedef, ref1$, event, index, bytes, mime, buf, ints, i$, to$, idx, node, res;
           if (!data || typeof data !== 'object') {
             return;
           }
@@ -5671,14 +5686,15 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
                 type: 'image/svg+xml'
               }))
             });
-          } else if (data.type === 'getpng') {
+          } else if (data.type === 'getpng' || data.type === 'getpng-hd') {
+            index = data.type === 'getpng' ? 0 : 3;
             if (!data.payload) {
-              return $scope.download.queue[0].state = 1;
+              return $scope.download.queue[index].state = 1;
             }
             bytes = atob(data.payload.split(',')[1]);
             mime = data.payload.split(',')[0].split(':')[1].split(';')[0];
             if (mime !== 'image/png') {
-              return $scope.download.queue[0].state = 1;
+              return $scope.download.queue[index].state = 1;
             }
             buf = new ArrayBuffer(bytes.length);
             ints = new Uint8Array(buf);
@@ -5686,7 +5702,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
               idx = i$;
               ints[idx] = bytes.charCodeAt(idx);
             }
-            return node = import$($scope.download.queue[0], {
+            return node = import$($scope.download.queue[index], {
               state: 2,
               size: bytes.length,
               url: URL.createObjectURL(new Blob([buf], {

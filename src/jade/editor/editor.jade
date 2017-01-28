@@ -57,12 +57,19 @@ include /widget/palette-edit-modal.jade
               li(ng-repeat="item in download.queue",
               ng-class="['disabled','disabled failed','ready','disabled needpro'][item.state]")
                 a.pending
-                  span {{item.name}}&nbsp;
+                  span 
+                    | {{item.name}} 
+                    small.grayed(ng-if="item.alt") ({{item.alt}})
+                    | &nbsp;
                   img(src="/assets/img/loading.gif")
                   i.fa.fa-warning
                   .label.label-info Need Pro
                 a.link(ng-attr-download="{{item.filename}}",
-                ng-attr-href="{{item.url}}") {{item.name}} #[small {{item.size|size}}]
+                ng-attr-href="{{item.url}}")
+                  | {{item.name}} 
+                  small.grayed(ng-if="item.alt") ({{item.alt}})
+                  | &nbsp;
+                  small {{item.size|size}}
 
       #chart-config-header
         .pull-right: a(href="#",ng-click="resetConfig()") reset

@@ -6463,7 +6463,7 @@ $(document).ready(function(){
   var dispatcher, loadscript, loadlib, properEval, errorHandling, colorblind, configPreset, parse, snapshot, saveLocal, render, resizeHandler;
   dispatcher = function(evt){
     var ref$;
-    if ((ref$ = evt.data.type) === 'snapshot' || ref$ === 'getsvg' || ref$ === 'getpng') {
+    if ((ref$ = evt.data.type) === 'snapshot' || ref$ === 'getsvg' || ref$ === 'getpng' || ref$ === 'getpng-hd') {
       return snapshot(evt.data.type);
     } else if (evt.data.type === 'render') {
       return render(evt.data.payload, evt.data.rebind);
@@ -6687,7 +6687,7 @@ $(document).ready(function(){
     });
   };
   snapshot = function(type){
-    var allsvg, list, i$, to$, i, g, box, svgnode, styles, idx, style, ref$, width, height, inlineStyle, svg, rgbaPercentToValue, img, encoded, e;
+    var allsvg, list, i$, to$, i, g, box, svgnode, styles, idx, style, ref$, width, height, inlineStyle, rate, svg, rgbaPercentToValue, img, encoded, e;
     type == null && (type = 'snapshot');
     try {
       d3.selectAll('#container svg').each(function(){
@@ -6745,6 +6745,18 @@ $(document).ready(function(){
       if (!width || !height) {
         width = +(svgnode.getAttribute("width") || 0) || +(svgnode.style.width || "").replace(/[^0-9]+$/, "");
         height = +(svgnode.getAttribute("height") || 0) || +(svgnode.style.height || "").replace(/[^0-9]+$/, "");
+      }
+      if (type === 'getpng-hd') {
+        if (width > 1920 || height > 1920) {
+          width = Math.round(width * 2.1);
+          height = Math.round(height * 2.1);
+        } else {
+          rate = 4000 / ((height > width ? width : height) || 1);
+          width = width * rate;
+          height = height * rate;
+        }
+        svgnode.setAttribute("width", width);
+        svgnode.setAttribute("height", height);
       }
       Array.from(svgnode.querySelectorAll('*')).forEach(function(it){
         if (it.style.opacity === 0 || it.getAttribute('opacity') === 0 || it.getAttribute('display') === 'none' || it.style.display === 'none') {

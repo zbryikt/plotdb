@@ -250,16 +250,19 @@ angular.module \plotDB
         @target![it].lines = (@target![it].content or "").split(\\n).length
         @target![it].size = (@target![it].content or "").length
       download: do
-        prepare: -> @queue = <[png svg plotdb]>.map (n,i) ~>
-          postfix = <[png svg json]>
-          ret = {state: 0, name: n.toUpperCase!, filename: "#{$scope.target!.name}.#{postfix[i]}"}
+        prepare: -> @queue = <[png svg plotdb png-hd]>.map (n,i) ~>
+          name = {png: \PNG, svg: \SVG, plotdb: \PLOTDB, "png-hd": \PNG}
+          alt = {"png-hd": "High Res"}
+          postfix = <[png svg json png]>
+          ret = {state: 0, name: name[n], alt: alt[n], filename: "#{$scope.target!.name}.#{postfix[i]}"}
           if i < 1 or ($scope.user.data and $scope.user.data.{}payment.plan > 0) or (plConfig.mode % 2) =>
             setTimeout (~> $scope.$apply ~> [@[n].url = '', @[n]!]), 300
             return ret
           return ret <<< {state: 3}
-        queue: [{},{},{}]
+        queue: [{},{},{},{}]
         svg: -> $scope.canvas.window.postMessage {type: \getsvg}, $scope.plotdb-domain
         png: -> $scope.canvas.window.postMessage {type: \getpng}, $scope.plotdb-domain
+        "png-hd": -> $scope.canvas.window.postMessage {type: \getpng-hd}, $scope.plotdb-domain
         plotdb: ->
           payload = angular.toJson($scope.target!)
           @queue.2.url = URL.createObjectURL new Blob [payload], {type: \application/json}
@@ -1044,15 +1047,16 @@ angular.module \plotDB
             state: 2
             size: data.payload.length
             url: URL.createObjectURL(new Blob [data.payload], {type: 'image/svg+xml'})
-        else if data.type == \getpng =>
-          if !data.payload => return $scope.download.queue.0.state = 1
+        else if data.type == \getpng or data.type == \getpng-hd =>
+          index = if data.type == \getpng => 0 else 3
+          if !data.payload => return $scope.download.queue[index]state = 1
           bytes = atob(data.payload.split(\,).1)
           mime = data.payload.split(\,).0.split(\:).1.split(\;).0
-          if mime != 'image/png' => return $scope.download.queue.0.state = 1
+          if mime != 'image/png' => return $scope.download.queue[index]state = 1
           buf = new ArrayBuffer bytes.length
           ints = new Uint8Array buf
           for idx from 0 til bytes.length => ints[idx] = bytes.charCodeAt idx
-          node = $scope.download.queue.0 <<< do
+          node = $scope.download.queue[index] <<< do
             state: 2
             size: bytes.length
             url: URL.createObjectURL(new Blob [buf], {type: 'image/png'})
