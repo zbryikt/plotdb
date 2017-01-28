@@ -19,6 +19,7 @@ content-security-policy = [
     'unsafe-eval'
     connect.facebook.net/en_US/sdk.js
     www.google-analytics.com
+    https://www.google-analytics.com
     apis.google.com
     *.stripe.com
   ]>
