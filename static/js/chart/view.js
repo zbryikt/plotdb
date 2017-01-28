@@ -249,10 +249,12 @@ import$(plotdb.view.chart.prototype, {
     this._.chart.bind();
     return this._.chart.render();
   },
-  data: function(data, refresh){
-    refresh == null && (refresh = false);
+  data: function(data, refresh, mapping){
     if (data == null) {
       return this._.data;
+    }
+    if (mapping) {
+      data = plotdb.chart.dataConvert.byMapping(data, mapping);
     }
     this._.data = data;
     this.sync();

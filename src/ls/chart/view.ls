@@ -127,8 +127,11 @@ plotdb.view.chart.prototype <<< do
     @_.chart.resize!
     @_.chart.bind!
     @_.chart.render!
-  data: (data, refresh = false) ->
+
+  data: (data, refresh, mapping) ->
+
     if !data? => return @_.data
+    if mapping => data = plotdb.chart.data-convert.by-mapping data, mapping
     @_.data = data
     @sync!
     if @inited and refresh => @refresh!

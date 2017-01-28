@@ -247,12 +247,12 @@ plotd3.rwd.legend = ->
       label = @append \text .attr class: \label
       sel = label.selectAll \tspan .data store.label.split \\n
       sel.exit!remove!
-      sel.enter!append \tspan .text(->it) .attr {x: 0, dy: "1.1em"}
+      sel.enter!append \tspan .text(->it) .attr {x: 0}
 
       label.attr do
         "font-size": (store.font-size * 1.1) if store.font-size?
         "font-weight": \bold
-        dy: \0.65em
+        dy: \0.76em
       if store.orient in <[bottom top]> => offset.0 += label.0.0.getBBox!width + store.padding.0 or 10
       else =>
         offset.1 += label.0.0.getBBox!height + store.padding.1 or 5
@@ -274,11 +274,12 @@ plotd3.rwd.legend = ->
           node = d3.select @ .attr {transform: "translate(#{offset.0} #{offset.1})"}
         offset.1 += (h + (store.padding.1 or 5))
         offset.1 += (if store.type == \radius => 3 else 0)
-    if store.label =>
+    if store.label and store.orient in <[left right]> =>
       offset = ret.offset!
       label.selectAll \tspan .attr do
-        "text-anchor": "middle" if store.orient in <[left right]>
+        "text-anchor": "middle"
         x: offset.0/2
+        dy: "1.1em"
 
   ret.offset = ->
     if !store.group => return [0,0]

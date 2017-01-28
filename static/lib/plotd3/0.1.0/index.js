@@ -477,13 +477,12 @@ plotd3.rwd.legend = function(){
       sel.enter().append('tspan').text(function(it){
         return it;
       }).attr({
-        x: 0,
-        dy: "1.1em"
+        x: 0
       });
       label.attr({
         "font-size": store.fontSize != null ? store.fontSize * 1.1 : void 8,
         "font-weight": 'bold',
-        dy: '0.70em'
+        dy: '0.76em'
       });
       if ((ref$ = store.orient) === 'bottom' || ref$ === 'top') {
         offset[0] += label[0][0].getBBox().width + store.padding[0] || 10;
@@ -521,11 +520,12 @@ plotd3.rwd.legend = function(){
         return offset[1] += store.type === 'radius' ? 3 : 0;
       }
     });
-    if (store.label) {
+    if (store.label && ((ref$ = store.orient) === 'left' || ref$ === 'right')) {
       offset = ret.offset();
       return label.selectAll('tspan').attr({
-        "text-anchor": (ref$ = store.orient) === 'left' || ref$ === 'right' ? "middle" : void 8,
-        x: offset[0] / 2
+        "text-anchor": "middle",
+        x: offset[0] / 2,
+        dy: "1.1em"
       });
     }
   };

@@ -37,6 +37,15 @@ plotdb.chart = do
         if !v.multiple => ret[k] = ret[k].0
       data.push ret
     return data
+  data-convert: do
+    by-mapping: (data, mapping) ->
+      ret = {}
+      for k,v of mapping =>
+        ret[k] = [{
+          name: name
+          data: data.map -> it[name]
+        } for name in v]
+      ret
   data-from-hash: (dimension, source) ->
     if !dimension or !source => return []
     if Array.isArray(source) => return source
@@ -72,3 +81,7 @@ plotdb.chart = do
       if type.0 and plotdb[type.0].parse =>
         config[k] = plotdb[type.0].parse config[k]
       #if type.filter(->it == \Number).length => config[k] = parseFloat(config[k])
+  add: (name, json) -> plotdb.chart.add.{}list[name] = json
+  get: (name) ->
+    if !plotdb.chart.add.{}list[name] => return null
+    new plotdb.view.chart(JSON.parse(JSON.stringify(plotdb.chart.add.{}list[name])))

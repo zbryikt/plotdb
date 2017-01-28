@@ -889,6 +889,28 @@ plotdb.chart = {
       return (it.data || (it.data = []))[i];
     }
   },
+  dataConvert: {
+    byMapping: function(data, mapping){
+      var ret, k, v, res$, i$, len$, name;
+      ret = {};
+      for (k in mapping) {
+        v = mapping[k];
+        res$ = [];
+        for (i$ = 0, len$ = v.length; i$ < len$; ++i$) {
+          name = v[i$];
+          res$.push({
+            name: name,
+            data: data.map(fn$)
+          });
+        }
+        ret[k] = res$;
+      }
+      return ret;
+      function fn$(it){
+        return it[name];
+      }
+    }
+  },
   dataFromHash: function(dimension, source){
     var k, v;
     if (!dimension || !source) {
@@ -971,6 +993,17 @@ plotdb.chart = {
     function fn$(it){
       return it.name;
     }
+  },
+  add: function(name, json){
+    var ref$;
+    return ((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name] = json;
+  },
+  get: function(name){
+    var ref$;
+    if (!((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name]) {
+      return null;
+    }
+    return new plotdb.view.chart(JSON.parse(JSON.stringify(((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name])));
   }
 };
 function import$(obj, src){
@@ -2176,10 +2209,12 @@ import$(plotdb.view.chart.prototype, {
     this._.chart.bind();
     return this._.chart.render();
   },
-  data: function(data, refresh){
-    refresh == null && (refresh = false);
+  data: function(data, refresh, mapping){
     if (data == null) {
       return this._.data;
+    }
+    if (mapping) {
+      data = plotdb.chart.dataConvert.byMapping(data, mapping);
     }
     this._.data = data;
     this.sync();
