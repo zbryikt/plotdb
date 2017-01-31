@@ -618,6 +618,24 @@ plotdb.config = {
     type: [plotdb.Choice(['linear', 'step', 'step-before', 'step-after', 'basis', 'bundle', 'cardinal', 'monotone'])],
     category: "Line"
   },
+  lineStroke: {
+    name: "Line Color",
+    type: [plotdb.Color],
+    'default': '#999',
+    category: "Line"
+  },
+  lineStrokeWidth: {
+    name: "Line Width",
+    type: [plotdb.Number],
+    'default': 1,
+    category: "Line"
+  },
+  lineDashArray: {
+    name: "Line Dash Array",
+    type: [plotdb.String],
+    'default': "4 4",
+    category: "Line"
+  },
   strokeWidth: {
     name: "Stroke Width",
     type: [plotdb.Number],

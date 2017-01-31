@@ -613,6 +613,24 @@ plotdb.config = do
     ]>)]
     category: "Line"
 
+  lineStroke: do
+    name: "Line Color"
+    type: [plotdb.Color]
+    default: '#999'
+    category: "Line"
+
+  lineStrokeWidth: do
+    name: "Line Width"
+    type: [plotdb.Number]
+    default: 1
+    category: "Line"
+
+  lineDashArray: do
+    name: "Line Dash Array"
+    type: [plotdb.String]
+    default: "4 4"
+    category: "Line"
+
   strokeWidth: do
     name: "Stroke Width"
     type: [plotdb.Number]
