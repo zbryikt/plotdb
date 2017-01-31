@@ -282,6 +282,12 @@ plotdb.config = do
     default: \#ffaaaa
     category: "Bubble"
 
+  bubbleFillOpacity: do
+    name: "Fill Opacity"
+    type: [plotdb.Number]
+    default: 0.5
+    category: "Bubble"
+
   bubbleStroke: do
     name: "Stroke Color"
     type: [plotdb.Color]

@@ -10305,6 +10305,12 @@ plotdb.config = {
     'default': '#ffaaaa',
     category: "Bubble"
   },
+  bubbleFillOpacity: {
+    name: "Fill Opacity",
+    type: [plotdb.Number],
+    'default': 0.5,
+    category: "Bubble"
+  },
   bubbleStroke: {
     name: "Stroke Color",
     type: [plotdb.Color],
