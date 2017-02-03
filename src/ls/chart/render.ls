@@ -167,6 +167,8 @@ snapshot = (type='snapshot') ->
     svgnode.setAttribute(\style,
       inline-style + ";" + document.getElementById(\container).getAttribute(\style)
     )
+    svgnode.setAttribute(\xmlns, "http://www.w3.org/2000/svg")
+    svgnode.setAttribute(\xmlns:xlink, "http://www.w3.org/1999/xlink")
     {width, height} = svgnode.getBoundingClientRect!
     if !width or !height =>
       width = +(svgnode.getAttribute("width") or 0) or +((svgnode.style.width or "").replace(/[^0-9]+$/,""))

@@ -306,6 +306,8 @@ $(document).ready(function(){
       ref$ = svgnode.getBoundingClientRect(), width = ref$.width, height = ref$.height;
       inlineStyle = svgnode.getAttribute('style');
       svgnode.setAttribute('style', inlineStyle + ";" + document.getElementById('container').getAttribute('style'));
+      svgnode.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+      svgnode.setAttribute('xmlns:xlink', "http://www.w3.org/1999/xlink");
       ref$ = svgnode.getBoundingClientRect(), width = ref$.width, height = ref$.height;
       if (!width || !height) {
         width = +(svgnode.getAttribute("width") || 0) || +(svgnode.style.width || "").replace(/[^0-9]+$/, "");
