@@ -36,7 +36,6 @@
       view:
         <[
           /js/sched.js
-          /assets/jquery/1.10.2/jquery.min.js
           /js/plotdb/main.js
           /js/plotdb/type.js
           /js/plotdb/chart.js
