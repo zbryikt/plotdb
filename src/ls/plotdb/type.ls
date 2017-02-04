@@ -31,7 +31,7 @@ plotdb.String = do
 plotdb.Order = do
   name: \Order, default: (k,v,i) -> i, level: 4
   basetype: [plotdb.String]
-  test: (v) -> !!(plotdb.OrderTypes.map((type)-> type.test v).filter(->it).0)
+  test: (v) -> !!(plotdb.OrderTypes.map((type)->type.test v).filter(->it).0)
   parse: -> it
   order: do
     Ascending: (a,b) -> if b > a => -1 else if b < a => 1 else 0
@@ -83,7 +83,7 @@ plotdb.Bit = do
 plotdb.Numstring = do
   name: \Numstring, default: "", level: 6
   basetype: [plotdb.Order]
-  test: (->/\d+/.exec("#it"))
+  test: ->/\d+/.exec("#it")
   parse: ->
     numbers = []
     num = if it.split => it.split(/\.?[^0-9.]+/g) else [it]
@@ -118,18 +118,23 @@ plotdb.Number = do
 plotdb.Date = do
   name: \Date, default: \1970/1/1 ,level: 8
   basetype: [plotdb.Numstring]
-  test: -> return if !/^\d*$/.exec(it) and @parse(it) => true else false
+  test: ->
+    if typeof(it) == \object and it.type == \Date => return true
+    return if !/^\d*$/.exec(it) and @parse(it) => true else false
   parse: ->
+    if typeof(it) == \object and it.type == \Date => return it
     d = new Date(it)
     if !(d instanceof Date) or isNaN(d.getTime!) =>
       ret = /^(\d{1,2})[/-](\d{4})$/.exec it
       if !ret => return null
       d = new Date(ret.2, parseInt(ret.1) - 1)
-    return {raw: it, toString: (->@raw), parsed: d}
+    return new plotdb.Date.object({raw: it, parsed: d})
   order: do
     Ascending: (a,b) ->  return a.parsed.getTime! - b.parsed.getTime!
     Descending: (a,b) -> return b.parsed.getTime! - a.parsed.getTime!
     index: -> it.parsed.getTime!
+  object: ({raw, parsed}) -> @ <<< {raw: "#raw", parsed, type: "Date"}
+plotdb.Date.object.prototype.toString = -> @raw
 
 plotdb.Weekday = do
   name: \Weekday, default: \Mon, level: 8

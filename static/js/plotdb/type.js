@@ -247,10 +247,16 @@ plotdb.Date = {
   level: 8,
   basetype: [plotdb.Numstring],
   test: function(it){
+    if (typeof it === 'object' && it.type === 'Date') {
+      return true;
+    }
     return !/^\d*$/.exec(it) && this.parse(it) ? true : false;
   },
   parse: function(it){
     var d, ret;
+    if (typeof it === 'object' && it.type === 'Date') {
+      return it;
+    }
     d = new Date(it);
     if (!(d instanceof Date) || isNaN(d.getTime())) {
       ret = /^(\d{1,2})[/-](\d{4})$/.exec(it);
@@ -259,13 +265,10 @@ plotdb.Date = {
       }
       d = new Date(ret[2], parseInt(ret[1]) - 1);
     }
-    return {
+    return new plotdb.Date.object({
       raw: it,
-      toString: function(){
-        return this.raw;
-      },
       parsed: d
-    };
+    });
   },
   order: {
     Ascending: function(a, b){
@@ -277,7 +280,15 @@ plotdb.Date = {
     index: function(it){
       return it.parsed.getTime();
     }
+  },
+  object: function(arg$){
+    var raw, parsed;
+    raw = arg$.raw, parsed = arg$.parsed;
+    return this.raw = raw + "", this.parsed = parsed, this.type = "Date", this;
   }
+};
+plotdb.Date.object.prototype.toString = function(){
+  return this.raw;
 };
 plotdb.Weekday = {
   name: 'Weekday',
