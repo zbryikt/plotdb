@@ -391,6 +391,7 @@ angular.module \plotDB
     eventBus.listen \dataset.sample, (data) ->
       $scope.grid.data.headers = h = [k for k,v of data.0]
       $scope.grid.data.rows = data.map((d)-> h.map(->d[it]))
+      $scope.grid.data.types = plotdb.Types.resolve $scope.grid.data
       $scope.grid.render!
     eventBus.listen \dataset.edit, (dataset, load = true) ->
       $scope.inited = false

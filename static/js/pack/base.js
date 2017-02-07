@@ -8480,6 +8480,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         return d[it];
       });
     });
+    $scope.grid.data.types = plotdb.Types.resolve($scope.grid.data);
     return $scope.grid.render();
   });
   eventBus.listen('dataset.edit', function(dataset, load){
