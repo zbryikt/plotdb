@@ -10,7 +10,7 @@
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   background: #fff;
   color: #444;
-  z-index: 26;
+  z-index: 28;
 }
 #nav-top nav.navbar-default {
   -ms-transition: all 0.3s ease-out;
@@ -25,7 +25,7 @@
   margin: 0 auto;
 }
 #nav-top nav.navbar-default li a {
-  font-weight: 200;
+  font-weight: 300;
 }
 #nav-top nav.navbar-default .dropdown li a {
   font-weight: 400;
@@ -173,7 +173,7 @@
   height: 26px;
   position: fixed;
   top: 60px;
-  z-index: 25;
+  z-index: 27;
   -ms-transition: all 0.3s ease-out;
   -moz-transition: all 0.3s ease-out;
   -webkit-transition: all 0.3s ease-out;

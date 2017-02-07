@@ -3289,6 +3289,16 @@ small.hint {
   width: 152px;
   background: #fff;
 }
+.charts-sm .chart {
+  -webkit-flex: 1 1 240px;
+  flex: 1 1 240px;
+}
+.charts-sm .chart-img {
+  height: 180px;
+}
+.charts-sm .chart-desc {
+  max-height: 140px;
+}
 #nav-top {
   width: 100%;
   height: 60px;

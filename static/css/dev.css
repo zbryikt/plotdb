@@ -1,5 +1,5 @@
 .label.label-light {
-  font-weight: 200;
+  font-weight: 300;
 }
 .charts {
   display: -webkit-flex;
@@ -109,7 +109,7 @@
 .chart .labels .label {
   padding: 1px 6px 2px;
   margin: 0 5px 5px 0;
-  font-weight: 200;
+  font-weight: 300;
   letter-spacing: 1px;
   font-size: 12px;
   text-shadow: 0 0px 1px rgba(0,0,0,0.2);
@@ -577,16 +577,16 @@
   opacity: 1;
 }
 #code-editor.fullscreen {
-  z-index: 31;
+  z-index: 32;
 }
 #visualization-canvas2.fullscreen {
-  z-index: 31;
+  z-index: 32;
 }
 #code-editor.fullscreen.active {
-  z-index: 32;
+  z-index: 33;
 }
 #visualization-canvas2.fullscreen.active {
-  z-index: 32;
+  z-index: 33;
 }
 #fullscreen-dimmer {
   display: none;
@@ -618,7 +618,7 @@
   width: 50%;
 }
 #code-error.fullscreen {
-  z-index: 33;
+  z-index: 34;
   position: fixed;
   bottom: 10px;
   left: 10px;
@@ -693,7 +693,7 @@ small.hint {
   border-radius: 2px;
 }
 .ldColorPicker.bubble {
-  z-index: 29;
+  z-index: 30;
 }
 .file {
   position: relative;
@@ -753,7 +753,7 @@ small.hint {
 }
 #assets-preview {
   position: fixed;
-  z-index: 37;
+  z-index: 38;
   top: 0;
   left: 0;
   width: 100%;
@@ -984,7 +984,7 @@ small.hint {
 }
 #user-feedback {
   position: fixed;
-  z-index: 36;
+  z-index: 37;
   bottom: 0;
   right: 20px;
   width: 180px;
@@ -1015,4 +1015,14 @@ small.hint {
   text-align: center;
   width: 152px;
   background: #fff;
+}
+.charts-sm .chart {
+  -webkit-flex: 1 1 240px;
+  flex: 1 1 240px;
+}
+.charts-sm .chart-img {
+  height: 180px;
+}
+.charts-sm .chart-desc {
+  max-height: 140px;
 }
