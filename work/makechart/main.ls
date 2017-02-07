@@ -13,8 +13,8 @@ bluebird.config do
 params = [2097,{}]
 io = new postgresql config
 
-io.query "select doc from charts where key = 2203" .then (r={}) ->
-  doc = r.rows.0.doc
+io.query "select code from charts where key = 2203" .then (r={}) ->
+  code = r.rows.0.code
 
   counties = <[
     彰化縣 屏東縣 雲林縣 新竹市 新北市 花蓮縣 連江縣 基隆市 臺東縣 臺北市
@@ -30,11 +30,11 @@ io.query "select doc from charts where key = 2203" .then (r={}) ->
     ))
     ret = io.query("update charts set assets = $1 where key = #count", [JSON.stringify(object.assets)])
       .then (r={}) ->
-        payload = JSON.parse(JSON.stringify(doc))
+        payload = JSON.parse(JSON.stringify(code))
         payload.content = payload.content.replace(/屏東縣/, "#county")
         desc = """動畫式的#{county}村里級熱圖，透過點擊縣市中的鄉鎮再顯示村里細節。資料以村里為主，但可選擇鄉鎮區塊的資料計算方式要透過村里數值的加總或平均，亦可自由控制是否要顯示鄉鎮區塊。"""
         io.query(
-          "update charts set (doc,name,owner,description) = ($1,$2,$3,$4) where key = #count",
+          "update charts set (code,name,owner,description) = ($1,$2,$3,$4) where key = #count",
           [JSON.stringify(payload),"#{county}互動地圖", 4,desc]
         )
     return ret
