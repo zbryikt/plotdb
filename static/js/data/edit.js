@@ -2,7 +2,6 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'permService', 'dataService', 'eventBus', 'plNotify', 'Paging'].concat(function($scope, $interval, $timeout, $http, permService, dataService, eventBus, plNotify, Paging){
-  var this$ = this;
   eventBus.fire('loading.dimmer.on');
   $scope.permtype = (window.permtype || (window.permtype = []))[1] || 'none';
   $scope.isAdmin = permService.isEnough($scope.permtype, 'admin');
@@ -26,41 +25,65 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
     $scope.dataset.name = $scope.dataset.name + " - Copy";
     return $scope.save();
   };
-  ['#dataset-copy-btn'].map(function(eventsrc){
-    var clipboard;
-    clipboard = new Clipboard(eventsrc, {
-      text: function(trigger){
-        var data;
-        if ($scope.grid.toggled) {
-          data = $scope.grid.data;
-          data = data.headers.join('\t') + '\n' + data.rows.map(function(it){
-            return it.join('\t');
-          }).join('\n');
-          return data;
-        } else {
-          return $scope.rawdata;
-        }
+  $scope.copy = {
+    toggle: function(state){
+      if (!(typeof states != 'undefined' && states !== null)) {
+        return this.toggled = !this.toggled;
+      } else {
+        return this.toggled = state;
       }
-    });
-    clipboard.on('success', function(){
-      $(eventsrc).tooltip({
-        title: 'copied',
-        trigger: 'click'
-      }).tooltip('show');
-      return setTimeout(function(){
-        return $(eventsrc).tooltip('hide');
-      }, 1000);
-    });
-    return clipboard.on('error', function(){
-      $(eventsrc).tooltip({
-        title: 'Press Ctrl+C to Copy',
-        trigger: 'click'
-      }).tooltip('show');
-      return setTimeout(function(){
-        return $(eventsrc).tooltip('hide');
-      }, 1000);
-    });
-  });
+    },
+    init: function(){
+      var this$ = this;
+      ['#dataset-copy-btn'].map(function(eventsrc){
+        var clipboard;
+        clipboard = new Clipboard(eventsrc, {
+          text: function(trigger){
+            var data;
+            if ($scope.grid.toggled) {
+              data = $scope.grid.data;
+              data = data.headers.join('\t') + '\n' + data.rows.map(function(it){
+                return it.join('\t');
+              }).join('\n');
+              return data;
+            } else {
+              return $scope.rawdata;
+            }
+          }
+        });
+        clipboard.on('success', function(){
+          $(eventsrc).tooltip({
+            title: 'copied',
+            trigger: 'click'
+          }).tooltip('show');
+          return setTimeout(function(){
+            return $(eventsrc).tooltip('hide');
+          }, 2000);
+        });
+        return clipboard.on('error', function(){
+          return $scope.$apply(function(){
+            return $scope.copy.toggle();
+          });
+        });
+      });
+      return document.body.addEventListener('keydown', function(e){
+        if (e.keyCode === 67 || e.key === "c") {
+          return $scope.$apply(function(){
+            if ($scope.copy.toggled) {
+              $('#dataset-copy-btn').tooltip({
+                title: 'Copied',
+                trigger: 'click'
+              }).tooltip('show');
+              setTimeout(function(){
+                return $('#dataset-copy-btn').tooltip('hide');
+              }, 2000);
+            }
+            return $scope.copy.toggle(false);
+          });
+        }
+      });
+    }
+  };
   $scope.save = function(locally){
     var promise;
     locally == null && (locally = false);
@@ -1064,6 +1087,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
     }
   };
   $scope.init();
+  $scope.copy.init();
   $scope.grid.init();
   return $scope.parser.gsheet.init();
 }));

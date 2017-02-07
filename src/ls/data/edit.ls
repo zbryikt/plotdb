@@ -21,20 +21,29 @@ angular.module \plotDB
       $scope.dataset.name = $scope.dataset.name + " - Copy"
       $scope.save!
 
-    <[#dataset-copy-btn]>.map (eventsrc) ~>
-      clipboard = new Clipboard eventsrc, do
-        text: (trigger) ->
-          if $scope.grid.toggled =>
-            data = $scope.grid.data
-            data = data.headers.join(\\t) + \\n + data.rows.map(->it.join(\\t)).join(\\n)
-            return data
-          else return $scope.rawdata
-      clipboard.on \success, ->
-        $(eventsrc).tooltip({title: 'copied', trigger: 'click'}).tooltip('show')
-        setTimeout((->$(eventsrc).tooltip('hide')), 1000)
-      clipboard.on \error, ->
-        $(eventsrc).tooltip({title: 'Press Ctrl+C to Copy', trigger: 'click'}).tooltip('show')
-        setTimeout((->$(eventsrc).tooltip('hide')), 1000)
+    $scope.copy = do
+      toggle: (state) ->
+        if !(states?) => @toggled = !!!@toggled
+        else @toggled = state
+      init: ->
+        <[#dataset-copy-btn]>.map (eventsrc) ~>
+          clipboard = new Clipboard eventsrc, do
+            text: (trigger) ->
+              if $scope.grid.toggled =>
+                data = $scope.grid.data
+                data = data.headers.join(\\t) + \\n + data.rows.map(->it.join(\\t)).join(\\n)
+                return data
+              else return $scope.rawdata
+          clipboard.on \success, ->
+            $(eventsrc).tooltip({title: 'copied', trigger: 'click'}).tooltip('show')
+            setTimeout((->$(eventsrc).tooltip('hide')), 2000)
+          clipboard.on \error, -> $scope.$apply -> $scope.copy.toggle!
+        document.body.addEventListener \keydown, (e) ->
+          if e.keyCode == 67 or e.key == "c" => $scope.$apply ->
+            if $scope.copy.toggled =>
+              $('#dataset-copy-btn').tooltip({title: 'Copied', trigger: 'click'}).tooltip('show')
+              setTimeout((->$('#dataset-copy-btn').tooltip('hide')), 2000)
+            $scope.copy.toggle false
 
     $scope.save = (locally = false) ->
       if !$scope.dataset => return
@@ -621,5 +630,6 @@ angular.module \plotDB
           ), 0
 
     $scope.init!
+    $scope.copy.init!
     $scope.grid.init!
     $scope.parser.gsheet.init!
