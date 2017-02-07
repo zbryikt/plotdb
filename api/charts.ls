@@ -83,9 +83,10 @@ engine.router.api.get "/chart/", (req, res) ->
 
   #TODO check if we need to optimize this
   io.query([
-    "select users.displayname as ownername,"
+    "select users.displayname as ownername, users.key as owner,"
     "charts.key, charts.name, charts.description, charts.basetype, charts.visualencoding, charts.category,"
-    " charts.tags, charts.likes, charts.permission->'switch' as published, charts.dimlen, charts.createdtime, charts.modifiedtime"
+    "charts.tags, charts.likes, charts.permission->'switch' as published, charts.dimlen,"
+    "charts.createdtime, charts.modifiedtime"
     "from charts,users" + (if fav => ",likes" else "")
     "where users.key = charts.owner and"
     (conditions.map(->it.0) ++ [
