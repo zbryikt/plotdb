@@ -88,6 +88,33 @@ include panel.jade
                 li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] from Google Sheet
             li#dataset-copy-btn
               a #[i.fa.fa-clipboard] Copy All
+            li#dataset-download-btn.dropdown
+              a.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
+                i.fa.fa-download
+                span &nbsp;Download #[span.caret]
+              //-ul.dropdown-menu
+                li: a(href="#") #[i.fa.fa-fil-text-o.align16] ... as CSV
+
+              ul.dropdown-menu.download-options
+                li(ng-repeat="item in download.queue",
+                ng-class="['disabled','disabled failed','ready','disabled needpro'][item.state]")
+                  a.pending
+                    i.fa.align16
+                    span
+                      | {{item.name}}
+                      small.grayed(ng-if="item.alt") ({{item.alt}})
+                      | &nbsp;
+                    img(src="/assets/img/loading.gif")
+                    i.fa.fa-warning
+                    .label.label-info Need Pro
+                  a.link(ng-attr-download="{{item.filename}}",
+                  ng-attr-href="{{item.url}}")
+                    i.fa.align16
+                    | {{item.name}}
+                    small.grayed(ng-if="item.alt") ({{item.alt}})
+                    | &nbsp;
+                    small {{item.size|size}}
+
 
             //-future feature
             //-li.dropdown

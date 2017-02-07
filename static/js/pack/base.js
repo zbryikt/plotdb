@@ -8092,6 +8092,51 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       return this.communicate();
     }
   });
+  $scope.download = {
+    prepare: function(){
+      var this$ = this;
+      return this.queue = ['csv'].map(function(n, i){
+        var name, alt, postfix, ret, ref$;
+        name = {
+          csv: ".. as CSV"
+        };
+        alt = {};
+        postfix = ['csv'];
+        ret = {
+          state: 0,
+          name: name[n],
+          alt: alt[n],
+          filename: (($scope.dataset || {}).name || 'untitled') + ("." + postfix[i])
+        };
+        if (i < 1 || ($scope.user.data && ((ref$ = $scope.user.data).payment || (ref$.payment = {})).plan > 0) || plConfig.mode % 2) {
+          setTimeout(function(){
+            return $scope.$apply(function(){
+              return [this$[n].url = '', this$[n]()];
+            });
+          }, 300);
+          return ret;
+        }
+        return ret.state = 3, ret;
+      });
+    },
+    csv: function(){
+      var data;
+      data = $scope.grid.data;
+      data = ([data.headers].concat(data.rows)).map(function(it){
+        return it.map(function(it){
+          return "\"" + it.replace(/"/g, "\\\"") + "\"";
+        }).join(',');
+      }).join('\n');
+      return import$(this.queue[0], {
+        url: URL.createObjectURL(new Blob([data], {
+          type: 'text/csv'
+        })),
+        size: data.length,
+        state: 2
+      });
+    },
+    queue: [{}]
+  };
   $scope.parse = {
     rows: 0,
     fields: 0,

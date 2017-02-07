@@ -4609,7 +4609,7 @@ small.hint {
   box-shadow: 0 1px 1px rgba(0,0,0,0.1);
   border: 1px solid #ccc;
   border-bottom: 1px solid #999;
-  min-height: auto;
+  min-height: 36px;
   margin-bottom: 0;
 }
 .dataset-toolbar .container-fluid {
@@ -4976,35 +4976,35 @@ small.hint {
   width: 60px;
   display: inline-block;
 }
-.chart-download-options .fa-warning {
+.download-options .fa-warning {
   color: #f20;
   margin-left: 5px;
 }
-.chart-download-options .label {
+.download-options .label {
   float: right;
   margin-top: 2px;
 }
-.chart-download-options .label,
-.chart-download-options .fa-warning,
-.chart-download-options .link {
+.download-options .label,
+.download-options .fa-warning,
+.download-options .link {
   display: none;
 }
-.chart-download-options li.failed img {
+.download-options li.failed img {
   display: none;
 }
-.chart-download-options li.failed .fa-warning {
+.download-options li.failed .fa-warning {
   display: inline-block;
 }
-.chart-download-options li.ready .pending {
+.download-options li.ready .pending {
   display: none;
 }
-.chart-download-options li.ready .link {
+.download-options li.ready .link {
   display: block;
 }
-.chart-download-options li.needpro img {
+.download-options li.needpro img {
   display: none;
 }
-.chart-download-options li.needpro .label {
+.download-options li.needpro .label {
   display: inline;
 }
 @media (max-width: 800px) {

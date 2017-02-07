@@ -53,7 +53,7 @@ include /widget/palette-edit-modal.jade
             .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
               i.fa.fa-download
               span.caret
-            ul.dropdown-menu.chart-download-options
+            ul.dropdown-menu.download-options
               li(ng-repeat="item in download.queue",
               ng-class="['disabled','disabled failed','ready','disabled needpro'][item.state]")
                 a.pending

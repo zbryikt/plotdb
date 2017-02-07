@@ -179,6 +179,29 @@ angular.module \plotDB
         $('[data-toggle="tooltip"]').tooltip!
         @communicate!
 
+    $scope.download = do
+      prepare: -> @queue = <[csv]>.map (n,i) ~>
+        name = {csv: ".. as CSV"}
+        alt = {}
+        postfix = <[csv]>
+        ret = do
+          state: 0, name: name[n], alt: alt[n]
+          filename: (($scope.dataset or {}).name or 'untitled') + ".#{postfix[i]}"
+        if i < 1 or ($scope.user.data and $scope.user.data.{}payment.plan > 0) or (plConfig.mode % 2) =>
+          setTimeout (~> $scope.$apply ~> [@[n].url = '', @[n]!]), 300
+          return ret
+        return ret <<< {state: 3}
+      csv: ->
+        data = $scope.grid.data
+        data = ([data.headers] ++ data.rows)
+          .map -> it.map(-> """\"#{it.replace(/"/g,"\\\"")}\"""").join(\,)
+          .join \\n
+        #data = data.headers.mapjoin(\,) + \\n + data.rows.map(->it.join(\,)).join(\\n)
+        @queue.0 <<< do
+          url: URL.createObjectURL new Blob [data], {type: \text/csv}
+          size: data.length
+          state: 2
+      queue: [{}]:
     $scope.parse = do
       rows: 0, fields: 0, size: 0
       result: null
