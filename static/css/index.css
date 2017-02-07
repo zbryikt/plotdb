@@ -1298,7 +1298,7 @@ ul.dropdown-menu {
 .page-header .inner .desc,
 .team-header .inner .desc {
   font-size: 16px;
-  font-weight: 200;
+  font-weight: 300;
 }
 .page-header.simple {
   height: 120px;
@@ -1327,7 +1327,7 @@ ul.dropdown-menu {
   overflow: hidden;
 }
 .label.label-light {
-  font-weight: 200;
+  font-weight: 300;
 }
 .charts {
   display: -webkit-flex;
@@ -1437,7 +1437,7 @@ ul.dropdown-menu {
 .chart .labels .label {
   padding: 1px 6px 2px;
   margin: 0 5px 5px 0;
-  font-weight: 200;
+  font-weight: 300;
   letter-spacing: 1px;
   font-size: 12px;
   text-shadow: 0 0px 1px rgba(0,0,0,0.2);
@@ -2371,7 +2371,7 @@ small.hint {
   margin: 0 auto;
 }
 #nav-top nav.navbar-default li a {
-  font-weight: 200;
+  font-weight: 300;
 }
 #nav-top nav.navbar-default .dropdown li a {
   font-weight: 400;
@@ -3000,7 +3000,7 @@ small.hint {
   border-top: 1px solid #ccc;
   background: #444;
   color: #fff;
-  font-weight: 200;
+  font-weight: 300;
   padding: 20px;
   box-shadow: 0 -1px 2px rgba(0,0,0,0.1);
   clear: both;
@@ -4364,7 +4364,7 @@ small.hint {
   display: block;
   font-size: 12px;
   line-height: 11px;
-  font-weight: 200;
+  font-weight: 300;
   color: #999;
   padding: 4px 0;
   -ms-transition: all 0.1s linear;
