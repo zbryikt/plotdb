@@ -230,17 +230,19 @@ engine.router.api.put "/chart/:id", aux.numid false, (req, res) ~>
     .then -> res.send data
     .catch aux.error-handler res
 
+#TODO: parent inheritance
 engine.router.api.delete "/chart/:id", aux.numid false, (req, res) ~>
   chart = null
   if !req.user => return aux.r403 res
-  io.query "update charts set parent = null where parent = $1", [req.params.id]
-    .then -> io.query "select * from charts where key = $1", [req.params.id]
+  io.query "select * from charts where key = $1", [req.params.id]
     .then (r = {}) ->
       chart := r.[]rows.0
       if !chart => return aux.reject 404
       if !perm.test(req, chart.{}permission, chart.owner, \admin) => return aux.reject 403
       return control.get-size [[\charts, \key, chart.key]]
-    .then (size) -> control.update-size(req, chart.owner, -size),
+    .then (size) ->
+      control.update-size(req, chart.owner, -size)
+      io.query "update charts set parent = null where parent = $1", [req.params.id]
     .then -> io.query("delete from charts where key = $1", [req.params.id])
     .then -> res.send []
     .catch ->
