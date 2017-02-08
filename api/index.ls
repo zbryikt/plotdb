@@ -1,5 +1,5 @@
 require! <[fs path]>
-require! <[./global ./users ./themes ./charts ./datasets ./requests ./palette ./teams ./payment ./admin]>
+require! <[./global ./users ./themes ./charts ./datasets ./requests ./palette ./teams ./payment ./admin ./folder]>
 module.exports = (engine, io) ->
   global engine
   users engine, io
@@ -11,3 +11,4 @@ module.exports = (engine, io) ->
   palette engine, io
   payment engine, io
   admin engine, io
+  #folder engine, io

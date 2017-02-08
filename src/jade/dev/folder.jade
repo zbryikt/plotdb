@@ -1,0 +1,88 @@
+extends /base.jade
+block vars
+  - var rootid = "exploreview"
+  - var url = "https://plotdb.com/chart/explore/"
+block head
+block body
+  //-
+    .spc1
+    .page-header: .inner
+      .title Folder
+      .desc folder test
+
+    #root(ng-controller="folderList")
+      +cover-modal("edit.toggled", "edit.toggle()")
+        .panel.panel-default(style="width:500px;margin:auto")
+          .panel-body(style="height:135px;min-height:135px")
+            label(ng-if="folder.key") #[i.fa.fa-plus-circle] Rename Folder
+            label(ng-if="!folder.key") #[i.fa.fa-plus-circle] Create Folder
+            input.form-control(ng-if="!folder.key",
+            placeholder="folder name", value="unnamed folder",ng-model="createForm.name")
+            input.form-control(ng-if="folder.key",
+            placeholder="folder name", value="unnamed folder",ng-model="folder.name")
+            .sep.noline
+            .btn-group.pull-right
+              .btn.btn-default(ng-if="!folder.key", ng-click="createForm.create()") Create
+              .btn.btn-default(ng-if="folder.key", ng-click="rename()") Save
+              .btn.btn-default Cancel
+            .btn.btn-default.pull-left Custom Permission...
+
+      p folder basic operatin:
+      ul
+        li create folder
+        li delete folder
+        li move item into folder
+        li remove item from folder
+        li list folder
+
+      .panel.panel-default(style="width:500px;margin:auto")
+        .panel-body
+          label #[i.fa.fa-plus-circle] Create Folder
+          input.form-control(placeholder="folder name", value="unnamed folder",ng-model="createForm.name")
+          .sep.noline
+          .btn-group.pull-right
+            .btn.btn-default(ng-click="createForm.create()") Create
+            .btn.btn-default Cancel
+          .btn.btn-default.pull-left Custom Permission...
+
+      .btn.btn-default(ng-click="delete(1)") Delete Folder
+      .btn.btn-default(ng-click="addto(5,2200,'chart')") add chart
+      br
+
+      .chart(style="display:inline-block;flex:1 1")
+        .dropdown.pull-right(style="margin:5px")
+          .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown"): i.fa.fa-chevron-down
+          ul.dropdown-menu
+            //-
+              li: a(href="#") Set Team Readonly
+              li: a(href="#") Set Team Writable
+              li.divider
+            li: a(href="#") move to ...
+            li: a(href="#") remove from here
+
+        a.chart-img(href="#",style="display:block")
+          .ib(style="background-image:url(/s/chart/2200.png)")
+        .chart-desc
+          a.title(href="#")
+            span 台灣縣市互動地圖
+            .label.label-success.pull-right published
+          .desc check it yourself!
+        .labels
+          a.label(href="#") map
+          .flexend
+        .social
+          a.author(ng-attr-href="/user/4}") #[i.fa.fa-user] plotdb
+          .favorite #[i.fa.fa-heart] 0
+      .folder
+        h3 {{activeFolder.name || "unnamed folder"}}
+        div(ng-repeat="item in activeFolder.content",style="width:200px;height:160px;border:1px solid #ccc;border-radius:3px;overflow:hidden;position:relative")
+          img(ng-attr-src="/s/{{item.type}}/{{item.item}}.png",style="width:100%")
+          .btn.btn-default(style="position:absolute;top:10px;right:10px",ng-click="delfrom(activeFolder.key,item.item,item.type)") &times;
+      .folderlist
+        .folder(ng-repeat="item in folders")
+          span {{item.name}}
+          .btn.btn-group
+            .btn.btn-default(ng-click="delete(item.key)") &times;
+            .btn.btn-default(ng-click="active(item);edit.toggle(true)") rename
+            .btn.btn-default(ng-click="open(item)") open
+        #list-end

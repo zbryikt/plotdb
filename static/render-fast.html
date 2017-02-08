@@ -5704,12 +5704,12 @@ plotdb.config = {
     'default': 13,
     category: "Global Settings"
   },
-  duration: {
+  animationDuration: {
     name: "Animation Duration",
     type: [plotdb.Number],
-    'default': 1.5,
-    desc: "Animation Duration, in second (e.g., 1.5)",
-    category: "Global Settings"
+    'default': 500,
+    desc: "Animation Duration, in millisecond (e.g., 500)",
+    category: "Animation"
   },
   background: {
     name: "Background",

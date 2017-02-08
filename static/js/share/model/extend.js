@@ -578,6 +578,65 @@ base = function(model){
       }
     }
   });
+  base.folder = new model({
+    name: 'folder',
+    base: {
+      owner: {
+        required: true,
+        type: model.type.key({
+          type: model.type.user
+        })
+      },
+      name: {
+        max: 100,
+        min: 1,
+        required: true,
+        type: model.type.string
+      },
+      likes: {
+        required: false,
+        type: model.type.number
+      },
+      searchable: {
+        required: false,
+        type: model.type.boolean
+      },
+      createdtime: {
+        required: false,
+        type: model.type.date
+      },
+      modifiedtime: {
+        required: false,
+        type: model.type.date
+      },
+      permission: {
+        type: model.type.permission
+      }
+    }
+  });
+  base.folderContent = new model({
+    name: 'folder-content',
+    base: {
+      folder: {
+        required: true,
+        type: model.type.key({
+          type: base.folder
+        })
+      },
+      name: {
+        required: true,
+        type: model.type.stirng
+      },
+      item: {
+        required: true,
+        type: model.type.number
+      },
+      type: {
+        required: true,
+        type: model.type.string
+      }
+    }
+  });
   return base;
 };
 module.exports = base;

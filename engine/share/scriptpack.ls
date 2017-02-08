@@ -104,6 +104,7 @@
           /js/service.js
           /js/select.js
           /js/perm/index.js
+          /js/folder/index.js
         ]>
       frameworks: <[
           /assets/jquery/1.10.2/jquery.min.js

@@ -166,6 +166,25 @@ base = (model) ->
       amount: {required: true, type: model.type.number}
       plan: {require: true, type: model.type.string}
       method: {require: true, type: model.type.string}
+
+  base.folder = new model do
+    name: \folder
+    base: do
+      owner: {required: true, type: model.type.key({type:model.type.user})}
+      name: {max: 100, min: 1, required: true, type: model.type.string}
+      likes: {required: false, type: model.type.number}
+      searchable: { required: false, type: model.type.boolean }
+      createdtime: {required: false, type: model.type.date}
+      modifiedtime: {required: false, type: model.type.date}
+      permission: {type: model.type.permission}
+  base.folder-content = new model do
+    name: \folder-content
+    base: do
+      folder: {required: true, type: model.type.key({type: base.folder})}
+      name: {required: true, type: model.type.stirng}
+      item: {required: true, type: model.type.number}
+      type: {required: true, type: model.type.string}
+
   base
 
 module.exports = base

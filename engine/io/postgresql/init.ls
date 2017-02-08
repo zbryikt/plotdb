@@ -227,6 +227,23 @@ init-pwresettoken-table = """create table if not exists pwresettoken (
   time timestamp
 )"""
 
+init-folder-table = """create table if not exists folders (
+  key serial primary key,
+  owner int references users(key),
+  name text constraint nlen check (char_length(name) <= 200),
+  likes int constraint likecount check ( likes >=0 ),
+  searchable boolean,
+  createdtime timestamp,
+  modifiedtime timestamp,
+  permission jsonb
+)"""
+
+init-folder-content-table = """create table if not exists foldercontent (
+  folder int references folders(key),
+  item int,
+  type text
+)"""
+
 
 client = new pg.Client secret.io-pg.uri
 (e) <- client.connect
@@ -259,6 +276,9 @@ query init-users-table
   .then -> query init-team-themes-table
   .then -> query init-payment-history-table
   .then -> query init-pwresettoken-table
+  .then -> query init-folder-table
+  .then -> query init-folder-content-table
+  .then -> query alter-wrap "alter table foldercontent add column name text;"
   .then -> query """
     do $$
       begin
