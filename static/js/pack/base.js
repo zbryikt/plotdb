@@ -7830,7 +7830,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
   };
   $scope.copy = {
     toggle: function(state){
-      if (!(typeof states != 'undefined' && states !== null)) {
+      if (!(state != null)) {
         return this.toggled = !this.toggled;
       } else {
         return this.toggled = state;
@@ -7870,7 +7870,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         });
       });
       return document.body.addEventListener('keydown', function(e){
-        if (e.keyCode === 67 || e.key === "c") {
+        if ((e.keyCode === 67 || e.key === "c") && e.metaKey) {
           return $scope.$apply(function(){
             if ($scope.copy.toggled) {
               $('#dataset-copy-btn').tooltip({

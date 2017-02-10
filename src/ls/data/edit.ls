@@ -23,7 +23,7 @@ angular.module \plotDB
 
     $scope.copy = do
       toggle: (state) ->
-        if !(states?) => @toggled = !!!@toggled
+        if !(state?) => @toggled = !!!@toggled
         else @toggled = state
       init: ->
         <[#dataset-copy-btn]>.map (eventsrc) ~>
@@ -39,7 +39,7 @@ angular.module \plotDB
             setTimeout((->$(eventsrc).tooltip('hide')), 2000)
           clipboard.on \error, -> $scope.$apply -> $scope.copy.toggle!
         document.body.addEventListener \keydown, (e) ->
-          if e.keyCode == 67 or e.key == "c" => $scope.$apply ->
+          if (e.keyCode == 67 or e.key == "c") and e.metaKey => $scope.$apply ->
             if $scope.copy.toggled =>
               $('#dataset-copy-btn').tooltip({title: 'Copied', trigger: 'click'}).tooltip('show')
               setTimeout((->$('#dataset-copy-btn').tooltip('hide')), 2000)
