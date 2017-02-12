@@ -247,6 +247,9 @@ plotdb.Date = {
   level: 8,
   basetype: [plotdb.Numstring],
   test: function(it){
+    if (!it) {
+      return false;
+    }
     if (typeof it === 'object' && it.type === 'Date') {
       return true;
     }

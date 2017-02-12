@@ -13,7 +13,7 @@ get-user = (req, key) ->
   io.query "select * from users where key = $1", [key]
     .then (r = {}) ->
       user := r.[]rows.0
-      if !user => return bluebird.reject "user not found"
+      if !user => return aux.reject 404, "user not found"
       io.query [
         "select ",
         "(select count(datasets.key) from datasets where owner = $1) as datasets,"
@@ -22,7 +22,7 @@ get-user = (req, key) ->
       ].join(" "), [user.key]
     .then (r = {}) ->
       stat = r.[]rows.0
-      if !stat => return bluebird.reject "no user stat"
+      if !stat => return aux.reject 404, "no user stat"
       user <<< {stat}
 
 engine.router.api.get \/user/, entity.search 1

@@ -119,6 +119,7 @@ plotdb.Date = do
   name: \Date, default: \1970/1/1 ,level: 8
   basetype: [plotdb.Numstring]
   test: ->
+    if !it => return false
     if typeof(it) == \object and it.type == \Date => return true
     return if !/^\d*$/.exec(it) and @parse(it) => true else false
   parse: ->

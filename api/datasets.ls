@@ -117,7 +117,7 @@ save-dataset = (req, res, okey = null) ->
     .then (r) ->
       if r != 1 =>
         cur := r.[]rows.0
-        if !cur => return aux.r404 res
+        if !cur => return aux.reject 404
         if !perm.test(req, cur.{}permission, cur.owner, \write) => return aux.reject 403
       else cur := null
       data.size = JSON.stringify(req.body).length
