@@ -216,7 +216,10 @@ plotd3.rwd.legend = ->
       node.select \text
         ..text "#d"
         ..attr "font-size", store.font-size if store.font-size?
-      size = node.select \text .0.0.getBBox!height * 0.8
+      try
+        size = node.select \text .0.0.getBBox!height * 0.8
+      catch e
+        size = 0
       if store.marker => store.marker.call (node.select \path.marker .0.0), d, i
       else
         m = node.select \path.marker
@@ -253,13 +256,19 @@ plotd3.rwd.legend = ->
         "font-size": (store.font-size * 1.1) if store.font-size?
         "font-weight": \bold
         dy: \0.76em
-      if store.orient in <[bottom top]> => offset.0 += label.0.0.getBBox!width + store.padding.0 or 10
-      else =>
-        offset.1 += label.0.0.getBBox!height + store.padding.1 or 5
+      try
+        if store.orient in <[bottom top]> => offset.0 += label.0.0.getBBox!width + store.padding.0 or 10
+        else =>
+          offset.1 += label.0.0.getBBox!height + store.padding.1 or 5
+      catch
+        offset = [0,0]
 
     @.selectAll \g.legend .each (d,i) ->
       node = d3.select @ .attr {transform: "translate(#{offset.0} #{offset.1})"}
-      [w,h] = [@getBBox!width, @getBBox!height]
+      try
+        [w,h] = [@getBBox!width, @getBBox!height]
+      catch
+        [w,h] = [0,0]
       if store.orient in <[bottom top]> =>
         if store.size and store.size.0 < offset.0 + w =>
           offset.0 = 0
@@ -283,7 +292,11 @@ plotd3.rwd.legend = ->
 
   ret.offset = ->
     if !store.group => return [0,0]
-    box = store.group.0.0.getBBox!
+    try
+      box = store.group.0.0.getBBox!
+    catch
+      box = {width: 0, height: 0}
+
     return [box.width, box.height]
 
   <[label fontSize type marker tickValues ticks orient scale size padding]>.map (k) ->
@@ -459,7 +472,7 @@ plotd3.rwd.axis = ->
         group.select 'g.tick:first-of-type text' .attr dy: -store.fontSize/2
         group.select 'g.tick:last-of-type text' .attr dy: store.fontSize
       else if orient in <[bottom top]> =>
-        inverse = if scale.range[* - 1] > scale.range.0 => <[start end]> else <[end start]>
+        inverse = if scale.range![* - 1] > scale.range!0 => <[start end]> else <[end start]>
         group.select 'g.tick:first-of-type text' .style "text-anchor": inverse.0
         if group.selectAll(\g.tick).0.length > 1 =>
           group.select 'g.tick:last-of-type text' .style "text-anchor": inverse.1

@@ -404,7 +404,7 @@ plotd3.rwd.legend = function(){
     padding: [10, 5]
   };
   ret = function(){
-    var that, data, x$, offset, max, label, sel, ref$;
+    var that, data, x$, offset, max, label, sel, ref$, e;
     store.group = this;
     if (that = store.tickValues) {
       data = that;
@@ -428,7 +428,7 @@ plotd3.rwd.legend = function(){
     });
     x$.exit().remove();
     this.selectAll('g.legend').each(function(d, i){
-      var node, x$, size, m, r, dx;
+      var node, x$, size, e, m, r, dx;
       if (store.type === 'radius' && !d) {
         return;
       }
@@ -438,7 +438,12 @@ plotd3.rwd.legend = function(){
       if (store.fontSize != null) {
         x$.attr("font-size", store.fontSize);
       }
-      size = node.select('text')[0][0].getBBox().height * 0.8;
+      try {
+        size = node.select('text')[0][0].getBBox().height * 0.8;
+      } catch (e$) {
+        e = e$;
+        size = 0;
+      }
       if (store.marker) {
         store.marker.call(node.select('path.marker')[0][0], d, i);
       } else {
@@ -489,18 +494,28 @@ plotd3.rwd.legend = function(){
         "font-weight": 'bold',
         dy: '0.76em'
       });
-      if ((ref$ = store.orient) === 'bottom' || ref$ === 'top') {
-        offset[0] += label[0][0].getBBox().width + store.padding[0] || 10;
-      } else {
-        offset[1] += label[0][0].getBBox().height + store.padding[1] || 5;
+      try {
+        if ((ref$ = store.orient) === 'bottom' || ref$ === 'top') {
+          offset[0] += label[0][0].getBBox().width + store.padding[0] || 10;
+        } else {
+          offset[1] += label[0][0].getBBox().height + store.padding[1] || 5;
+        }
+      } catch (e$) {
+        e = e$;
+        offset = [0, 0];
       }
     }
     this.selectAll('g.legend').each(function(d, i){
-      var node, ref$, w, h;
+      var node, ref$, w, h, e;
       node = d3.select(this).attr({
         transform: "translate(" + offset[0] + " " + offset[1] + ")"
       });
-      ref$ = [this.getBBox().width, this.getBBox().height], w = ref$[0], h = ref$[1];
+      try {
+        ref$ = [this.getBBox().width, this.getBBox().height], w = ref$[0], h = ref$[1];
+      } catch (e$) {
+        e = e$;
+        ref$ = [0, 0], w = ref$[0], h = ref$[1];
+      }
       if ((ref$ = store.orient) === 'bottom' || ref$ === 'top') {
         if (store.size && store.size[0] < offset[0] + w) {
           offset[0] = 0;
@@ -535,11 +550,19 @@ plotd3.rwd.legend = function(){
     }
   };
   ret.offset = function(){
-    var box;
+    var box, e;
     if (!store.group) {
       return [0, 0];
     }
-    box = store.group[0][0].getBBox();
+    try {
+      box = store.group[0][0].getBBox();
+    } catch (e$) {
+      e = e$;
+      box = {
+        width: 0,
+        height: 0
+      };
+    }
     return [box.width, box.height];
   };
   ['label', 'fontSize', 'type', 'marker', 'tickValues', 'ticks', 'orient', 'scale', 'size', 'padding'].map(function(k){
@@ -818,7 +841,7 @@ plotd3.rwd.axis = function(){
           dy: store.fontSize
         });
       } else if (orient === 'bottom' || orient === 'top') {
-        inverse = (ref$ = scale.range)[ref$.length - 1] > scale.range[0]
+        inverse = (ref$ = scale.range())[ref$.length - 1] > scale.range()[0]
           ? ['start', 'end']
           : ['end', 'start'];
         group.select('g.tick:first-of-type text').style({
