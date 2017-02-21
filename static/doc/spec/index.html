@@ -1,0 +1,1027 @@
+<!DOCTYPE html><html lang="en"><head prefix="og: http://ogp.me/ns#"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><meta name="Description" content="Create, share and request visualizations online."><title>PlotDB: Share Visualizations with Everyone</title><meta property="og:locale" content="zh_TW"><meta property="og:image" content="//plotdb.com/assets/img/thumbnail.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:type" content="website"><meta property="og:url" content="https://plotdb.com/"><meta property="og:title" content="PlotDB: Share Visualizations with Everyone"><meta property="og:description" content="Create, share and request visualizations online."><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@plotdb"><meta name="twitter:creator" content="@plotdb"><meta name="twitter:title" content="PlotDB: Share Visualizations with Everyone"><meta name="twitter:description" content="Create, share and request visualizations online."><meta name="twitter:image" content="//plotdb.com/assets/img/thumbnail.png"><link rel="icon" type="image/x-icon" href="/assets/img/favicon-16.png"><link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato:300,400,700|Open+Sans+Condensed:300,700"><link rel="stylesheet" type="text/css" href="/css/pack/frameworks.css?42"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-77722201-1', 'auto');
+ga('send', 'pageview');</script><script src="/js/pack/frameworks.js?42"></script><script type="text/javascript" src="/global"></script><script type="text/javascript" src="/js/pack/base.js?42"></script></head><body id="" ng-app="plotDB" ng-controller="plSite"><div id="beta-ribbon"></div><div id="confirmbox"><div ng-show="confirmbox.toggled" ng-cloak class="cover-modal ng-hide-animate ng-hide"></div><div ng-show="confirmbox.toggled" ng-cloak class="cover-modal-inner ng-hide-animate ng-hide"><div class="panel panel-default"><div class="panel-body"><h3 ng-show="confirmbox.config.title">{{confirmbox.config.title}}</h3><p>{{confirmbox.config.message}}</p><div ng-repeat="option in confirmbox.config.options" ng-click="confirmbox.handle($index)" class="btn btn-default">{{option}}</div></div></div></div></div><div id="loading-dimmer" ng-class="{'active':loading.dimmer, 'show-progress':loading.progress}"><div class="progress"><div aria-valuemin="0" aria-valuemax="100" ng-attr-style="width:{{loading.progress}}%" class="progress-bar progress-bar-striped active"></div></div></div><div style="height:0">&nbsp;</div><div id="nav-top"><nav role="navigation" class="navbar navbar-default"><div class="container-fluid"><div class="navbar-header"><a href="/" class="navbar-brand"><img src="/assets/img/plotdb.png" style="height:100%"></a></div><div><ul class="nav navbar-nav"><li id="nav-chart" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-bar-chart"></i><span class="name">&nbsp;CHARTS</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/chart/explore/">Explore</a></li><li ng-show="user.data" ng-cloak><a href="/chart/me">My Charts</a></li><li class="divider"></li><li><a href="/chart/">from scratch</a></li></ul></li><li id="nav-dataset" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-table"></i><span class="name">&nbsp;DATASET</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/dataset/me/" ng-cloak ng-show="user.data">My Dataset</a></li><li class="divider"></li><li><a href="/dataset/">New Dataset</a></li></ul></li><li id="nav-theme" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-paint-brush"></i><span class="name">&nbsp;THEME</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/theme/explore/">Explore</a></li><li><a href="/theme/me/" ng-cloak ng-show="user.data">My Theme</a></li><li class="divider"></li><li><a href="/theme/">Make New Theme</a></li></ul></li><li id="nav-palette"><a href="/palette/editor.html" ng-cloak ng-show="user.data"><img src="/assets/img/palette2.svg" style="vertical-align:text-top;width:14px;margin-top:2px;"><span class="name">&nbsp;PALETTE EDITOR</span></a></li><li id="nav-showcase"><a href="/showcase/" ng-cloak><span class="name">&nbsp;SHOW CASE</span></a></li></ul><ul class="nav navbar-nav pull-right"><!--li#nav-request: a(href="/request/")i.fa.fa-comment
+| &nbsp;
+span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login" href="#" ng-click="auth.show = !!!auth.show"><i class="fa fa-sign-in"></i>&nbsp; <span>LOGIN / SIGNUP</span></a></li><li id="nav-profile" ng-cloak ng-show="user.data" class="dropdown"><div data-toggle="dropdown" class="btn"><div ng-attr-style="background-image:url(/s/avatar/{{user.data.avatar || '0'}}.jpg)" class="avatar"></div><span class="caret"></span></div><ul class="dropdown-menu"><li ng-show="user.data" ng-cloak><a href="/user/{{user.data.key}}"><b style="vertical-align:middle">{{user.data.displayname}}&nbsp;</b><label ng-show="!user.data.payment.plan" class="label label-default">Free</label><label ng-show="user.data.payment.plan==1" class="label label-info">Basic</label><label ng-show="user.data.payment.plan==2" class="label label-info">Expert</label></a></li><li class="divider"></li><li><a href="#"><label class="grayed">Storage Usage</label><div style="width:120px;margin:0" class="progress"><div ng-class="{'progress-bar-info': ((user.data.datasize || 0) / 100000 &lt; 50), 'progress-bar-warning': ((user.data.datasize || 0) / 100000 &gt; 50)}" ng-attr-style="width:{{(user.data.datasize || 0)/ 100000}}%" class="progress-bar progress-bar-info"><span ng-cloak>{{user.data.datasize|size}}</span></div></div></a></li><li class="divider"></li><li><a href="/team/">Teams</a></li><li><a href="/me/edit/">Settings</a></li><li class="divider"></li><li><a href="#" ng-click="auth.logout()">Logout</a></li></ul></li></ul></div></div></nav></div><div id="authpanel" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><div data-dismiss="modal" style="border-radius:50%;background:#222;" class="closebtn"></div><h4 class="modal-title text-center">Login to PlotDB</h4></div><div style="padding:20px" class="moda-body"><form class="form"><div ng-class="{'has-error':auth.error.email,'has-feedback':auth.error.email}" class="form-group"><input type="text" placeholder="Email" ng-model="auth.email" ng-keypress="auth.keyHandler($event)" class="form-control"><div ng-show="auth.error.email" class="form-control-feedback with-text">{{auth.error.email}} <i class="fa fa-close"></i></div></div><div ng-class="{'has-error':auth.error.passwd,'has-feedback':auth.error.passwd}" class="form-group"><input type="password" placeholder="Password" ng-model="auth.passwd" ng-keypress="auth.keyHandler($event)" class="form-control"><div ng-show="auth.error.passwd" class="form-control-feedback with-text">{{auth.error.passwd}} <i class="fa fa-close"></i></div></div><div ng-click="auth.login()" ng-cloak ng-class="{'loading':auth.loading}" class="btn btn-block btn-success btn-lg loader loading-success"><span ng-show="!auth.isSignIn">SIGNUP</span><span ng-show="auth.isSignIn">LOGIN</span></div><a href="/auth/reset/" style="margin-top:12px;font-size:12px;" class="pull-right">forgot password? &#xbb;</a><div class="checkbox"><label><input type="checkbox"> remember me</label></div></form><div style="position:relative"><hr><div ng-show="auth.failed" ng-cloak class="error">{{auth.failed}}</div><div ng-show="auth.succeed" ng-cloak class="success">{{auth.succeed}}</div></div><div id="authpanel-social-login" class="row"><div class="col-xs-6"><a ng-attr-href="/u/auth/facebook?nexturl={{nexturl}}" target="_blank" style="font-size:12px" class="btn btn-default btn-block"><i class="fa fa-facebook-official"></i><span>Sign in</span></a></div><div class="col-xs-6"><a ng-attr-href="/u/auth/google?nexturl={{nexturl}}" target="_blank" style="font-size:12px" href="#" class="btn btn-default btn-block"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 48 48"><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg><span>Sign in</span></a></div></div></div><div ng-cloak class="modal-footer text-center"><span ng-show="auth.isSignIn">Newcomer here? <a href="#" ng-click="auth.isSignIn=false">Sign up &#xbb;</a></span><span ng-show="!auth.isSignIn">Already a member? <a href="#" ng-click="auth.isSignIn=true">Sign In &#xbb;</a></span></div></div></div></div><div id="notifications"><div ng-repeat="n in notifications" ng-class="'notify-'+n.type" ng-cloak class="notify">{{n.message}}</div></div><div id="alertbox" ng-cloak ng-show="alert.toggled"><div class="ib"><br><div ng-cloak class="text-center">{{alert.msg}}</div><div class="footer"><div ng-click="alert.toggled=false" class="btn btn-default btn-sm">OK</div></div></div></div><link rel="stylesheet" type="text/css" href="/css/render/pdb.css"><script type="text/javascript" src="/js/pack/view.js"></script><script type="text/javascript" src="/lib/plotd3/0.1.0/index.js"></script><style type="text/css">html,body {background: #fff!important}</style><div id="root" class="doc-root"><div class="doc-content"><h1>PlotDB Viswork Specification</h1>
+
+<p>This document describes and guide you step by step to create a PlotDB-compatible <strong>viswork</strong> ( chart, visualization or interactive content ), which can be easily reused by others and even embedded into other websites.</p>
+
+<p><em>( In this document, we will both use the term <strong>viswork</strong> and <strong>chart</strong>, but they all refer to the same concept. )</em></p>
+
+<h2>First Step</h2>
+
+<p>Viswork has a set of predefined interface so it can communicate with PlotDB online editor and PlotDB renderer API. It is, however, just a simple JavaScript Object. for example, following example will print "hello world" in dev console:</p>
+
+<pre><code>{
+  render: function() {
+    console.log(&quot;hello world&quot;);
+  }
+}</code></pre>
+
+<p>as you can see, the <code>render</code> method is for rendering this viswork. Since we want to reuse this piece of code, this code will be executed under a viswork context ( <code>this</code> object ), and a DOM element stored in <code>this.root</code> is provided for it to render.</p>
+
+<p>For eaxmple, to render 'hello world' in the DOM element:</p>
+
+<pre><code>{
+  render: function() {
+    this.root.innerText = &quot;hello world!&quot;;
+  }
+}</code></pre>
+
+<h3>Initialization</h3>
+
+<p>Note that <code>render</code> will be called every time we need a redraw ( e.g., when container size changes ), so we will want to keep initialization or computing-intensive code out of <code>render</code>; for this purpose, we have <code>init</code> method:</p>
+
+<pre><code>{
+  init: function() {
+    this.newNode = document.createElement(&quot;div&quot;);
+    this.root.appendChild(node);
+  },
+  render: function() {
+    this.newNode.innerText = &quot;a new node&quot;;
+  }
+}</code></pre>
+
+<h3>Resizing</h3>
+
+<p><code>init</code> will only and should only be called once in the life time of viswork, unless you manually call it intentionally.</p>
+
+<p>There are other methods which serves for different purposes. For example, <code>resize</code> will be called when container dimension is changed:</p>
+
+<pre><code>{
+  resize: function() {
+    this.box = this.root.getBoundingClientRect();
+  },
+  render: function() {
+    this.root.innerText = &quot;Box Width = &quot; + this.box.width;
+  }
+}</code></pre>
+
+<p>Note that resize will be called if any configuration is updated.</p>
+
+<h3>Data Parsing</h3>
+
+<p><code>data</code> stores the input data as an array of object, and <code>parse</code> is called when input data is updated:</p>
+
+<pre><code>{
+  parse: function() {
+    this.entries = this.data.length || 0;
+  },
+  render: function() {
+    this.root.innerText = &quot;there are &quot; + this.entries + &quot; items.&quot;;
+  }
+}</code></pre>
+
+<h3>Data Binding</h3>
+
+<p><code>bind</code> is called after <code>parse</code>, for binding between data and DOM element. This may be optional if you are not using libraries like d3js, which separate data binding from rendering:</p>
+
+<pre><code>{
+  bind: function() {
+    var update = d3.select(this.root).selectAll(&quot;div&quot;).data(this.data);
+    update.exit().remove();
+    update.enter().append(&quot;div&quot;);  // these are d3js data binding logic, not a part of PlotDB.
+  }
+}</code></pre>
+
+<h3>Finalize</h3>
+
+<p>If your viswork uses resources like <code>setInterval</code>, recursive calls of <code>requestAnimationFrame</code> or anything that should be destroyed after lifecycle of this viswork, you should do it in <code>destroy</code> method:</p>
+
+<pre><code>{
+  init: function() {
+    this.timer = setInterval(function() {
+      console.log(&quot;hello world&quot;);
+    }, 1000); // Print &quot;hello world&quot; every 1 second
+  },
+  destroy: function() {
+    clearInterval(this.timer); // clear timer otherwise it might go on forever!
+  }
+}</code></pre>
+
+<h3>Wrap up</h3>
+
+<p>In short, lifecycle of a viswork will be like this:</p>
+
+<ul><li><strong>init()</strong>   // Initialization. Create DOM elemenet, time, etc</li><li><strong>parse()</strong>  // Data Parsing. calculate max value, date extent, or data transformation.</li><li><strong>bind()</strong>   // Data Binding. optional if you dont have this kind of design logic.</li><li><strong>resize()</strong> // Resize. will be called when container dimension or <strong>viswork configuration</strong> changes.</li><li><strong>render()</strong> // render viswork. called each time viswork needs to be redrawn.</li></ul>
+
+<p>Processes of some typical scenario is summarized as follow:</p>
+
+<p><strong>First time a viswork is rendered</strong></p>
+
+<pre><code>init -&gt; parse -&gt; bind -&gt; resize -&gt; render</code></pre>
+
+<p><strong> Data update </strong></p>
+
+<pre><code>parse -&gt; bind -&gt; resize -&gt; render</code></pre>
+
+<p><strong> configuration update </strong></p>
+
+<pre><code>resize -&gt; render</code></pre>
+
+<p><em>( some configuration requires binding to be called, which can be specified via <code>rebindOnChange</code> attribute )</em></p>
+
+<p><strong> Container resizing </strong></p>
+
+<pre><code>resize -&gt; render</code></pre>
+
+<p>Here is an example of bar chart which uses randomly generated data:</p>
+
+<pre><code>{
+  init: function() {
+    for(var i=0;i&lt;10;i++) {  // create 10 DIVs
+      this.root.appendChild(document.createElement(&quot;div&quot;));
+    }
+    this.nodes = this.root.querySelectorAll(&quot;div&quot;);
+  },
+  parse: function() {
+    this.randomData = [];  // randomly generate 10 numbers
+    for(var i=0;i&lt;10;i++) this.randomData.push(Math.random());
+  },
+  bind: function() {  // bind data with DIVs
+    for(var i=0;i&lt;10;i++) this.nodes[i].data = this.randomData[i];
+  },
+  render: function() {
+    for(var i=0;i&lt;10;i++) { // styling DIVs correctly
+      this.nodes[i].style.width = (this.nodes[i].data * 100) + &quot;px&quot;;
+      this.nodes[i].style.height = &quot;17px&quot;;
+      this.nodes[i].style.background = &quot;#000&quot;;
+    }
+  }
+}</code></pre>
+
+<p>and the following is its output result:</p>
+
+<p><div id="container1" class="chart-demo"></div>
+<script>
+plotdb.chart.add("sample1", {code: {content: {
+  init: function() {
+    for(var i=0;i<10;i++) this.root.appendChild(document.createElement("div"));
+    this.nodes = this.root.querySelectorAll("div");
+  },
+  parse: function() {
+    this.randomData = [];
+    for(var i=0;i<10;i++) this.randomData.push(Math.random());
+  },
+  bind: function() {
+    var nodes = this.root.querySelectorAll("div");
+    for(var i=0;i<10;i++) nodes[i].data = this.randomData[i];
+  },
+  render: function() {
+    var nodes = this.root.querySelectorAll("div");
+    for(var i=0;i<10;i++) {
+      this.nodes[i].style.width = (this.nodes[i].data * 100) + "px";
+      this.nodes[i].style.height = "17px";
+      this.nodes[i].style.background = "#000";
+    }
+  }
+}}});
+var chart = plotdb.chart.get("sample1");
+chart.attach("#container1");
+</script></p>
+
+<p>you can copy above example code and paste into the <strong>code panel</strong> in the <a href="https://plotdb.com/chart/">PlotDB online editor</a> to see how it works.</p>
+
+<h2>Configuration</h2>
+
+<p>Once you create your first viswork, you may want to accept input data and let the viswork configurable for other people to use. In this section we covers the <strong>configuration</strong> part.</p>
+
+<p>To add a configuration, add a new property in <code>config</code> member of your viswork:</p>
+
+<pre><code>{
+  config: {
+    barColor: {}
+  },
+  ...
+}</code></pre>
+
+<p>in above example we add a "barColor" property in the <code>config</code> member. Property, however, needs to be defined properly, so we can how its data type and default value:</p>
+
+<pre><code>barColor: {
+  name: &quot;Bar Color&quot;,                        // verbal name
+  type: [plotdb.Color]                      // data type
+  default: &quot;red&quot;                            // default value
+  desc: &quot;This is the color of the bar&quot;,     // additional information
+  category: &quot;Global Settings&quot;               // category
+}</code></pre>
+
+<p>here we define barColor with name "Bar Color", a simple description, a default value <code>red</code>, a category and its data type. All these information will be used in the online editor for users to quickly configure your viswork to fit their need.</p>
+
+<p>To use this config in code, look up <code>config</code> member for "barCode" property:</p>
+
+<pre><code>{
+  render: function() {
+    this.root.style.background = this.config.barColor;
+  }
+}</code></pre>
+
+<p>note again that config change will both trigger <code>resize</code> and <code>render</code> to be called in <a href="https://plotdb.com/doc/render/">PlotDB renderer</a>.</p>
+
+<h3>Predefined Configurations and Inheritance</h3>
+
+<p>Sometimes it is tedious to write again and again all these configurations in different viswork. You can let a config to use settings from another config by using <code>extend</code> attribute:</p>
+
+<pre><code>config: {
+  barColor: {
+    name: &quot;Bar Color&quot;,
+    type: [plotdb.Color],
+    desc: &quot;color of the bar&quot;,
+    default: &quot;red&quot;
+  },
+  barStroke: {name: &quot;Bar Stroke&quot;, extend: &quot;barColor&quot;}
+}</code></pre>
+
+<p>above example let <code>barStroke</code> extend <code>barColor</code>, which is another property defined in <code>config</code> object.</p>
+
+<p>Furthermore, PlotDB provides predefined configuration for you to directly extend. For these configuration, you can just declare their existence, e.g.,</p>
+
+<pre><code>config: {
+  stroke: {}, // stroke is a predefined config
+  fontSize: {}, // fontSize is also a predefined config
+  barColor: { name: &quot;Bar Color&quot;, ... } // barColor is not a predefined config
+}</code></pre>
+
+<p>and inheritance directly from predefined configuration is also possible:</p>
+
+<pre><code>config: {
+  myStroke: { extend: &quot;stroke&quot; } // extend a predefined configuration `stroke`
+}</code></pre>
+
+<h3>Re-bind on Change</h3>
+
+<p>Configuration changes trigger <code>resize</code> and <code>render</code> methods to be called, but if your config need rebind in data, you can set <code>rebindOnChange</code> to true:</p>
+
+<pre><code>config: {
+  bindMethod: { rebindOnChange: true }
+}</code></pre>
+
+<p>then it will trigger <code>bind -&gt; resize -&gt; render</code> when bindMethod is changed.</p>
+
+<h3>Configuration Data Types</h3>
+
+<p>For now, PlotDB provides following data type:</p>
+
+<ul><li><a href="#">PlotDB.Number</a></li><li><a href="#">PlotDB.Date</a></li><li><a href="#">PlotDB.Choice</a></li><li><a href="#">PlotDB.String</a></li><li><a href="#">PlotDB.Color</a></li><li><a href="#">PlotDB.Palette</a></li></ul>
+
+<p>a complete list and usage can be found in the last section - <a href="#">PlotDB Viswork API Reference</a>.</p>
+
+<p>Here is an example of bar chart what enable users to change bar color ( modified from above bar chart example ):</p>
+
+<pre><code>{
+  config: {
+    barColor: {
+      name: &quot;Bar Color&quot;,
+      type: [plotdb.Color],
+      desc: &quot;color of the bar&quot;,
+      default: &quot;red&quot;
+    },
+    barStroke: {
+      name: &quot;Bar Stroke&quot;,
+      default: &quot;blue&quot;,
+      extend: &quot;barColor&quot;
+    }
+  },
+  init: function() {
+    for(var i=0;i&lt;10;i++) {  // create 10 DIVs
+      this.root.appendChild(document.createElement(&quot;div&quot;));
+    }
+    this.nodes = this.root.querySelectorAll(&quot;div&quot;);
+  },
+  parse: function() {
+    this.randomData = [];  // randomly generate 10 numbers
+    for(var i=0;i&lt;10;i++) this.randomData.push(Math.random());
+  },
+  bind: function() {  // bind data with DIVs
+    for(var i=0;i&lt;10;i++) this.nodes[i].data = this.randomData[i];
+  },
+  render: function() {
+    for(var i=0;i&lt;10;i++) { // styling DIVs correctly
+      this.nodes[i].style.width = (this.nodes[i].data * 100) + &quot;px&quot;;
+      this.nodes[i].style.height = &quot;17px&quot;;
+      this.nodes[i].style.background = this.config.barColor;
+      this.nodes[i].style.border = &quot;1px solid &quot; + this.config.barStroke;
+    }
+  }
+}</code></pre>
+
+<p>and the following is its output result:</p>
+
+<p><div id="container2" class="chart-demo"></div>
+<script>
+plotdb.chart.add("sample2", {code: {content: {
+  config: {
+    barColor: {
+      name: "Bar Color",
+      type: [plotdb.Color],
+      desc: "color of the bar",
+      default: "red"
+    },
+    barStroke: {
+      name: "Bar Stroke",
+      default: "blue",
+      extend: "barColor"
+    }
+  },
+  init: function() {
+    for(var i=0;i<10;i++) this.root.appendChild(document.createElement("div"));
+    this.nodes = this.root.querySelectorAll("div");
+  },
+  parse: function() {
+    this.randomData = [];
+    for(var i=0;i<10;i++) this.randomData.push(Math.random());
+  },
+  bind: function() {
+    for(var i=0;i<10;i++) this.nodes[i].data = this.randomData[i];
+  },
+  render: function() {
+    for(var i=0;i<10;i++) {
+      this.nodes[i].style.width = (this.nodes[i].data * 100) + "px";
+      this.nodes[i].style.height = "17px";
+      this.nodes[i].style.background = this.config.barColor;
+      this.nodes[i].style.border = "1px solid " + this.config.barStroke;
+    }
+  }
+}}});
+var chart = plotdb.chart.get("sample2");
+chart.attach("#container2");
+</script></p>
+
+<p><br/></p>
+
+<h2>Data and Dimension</h2>
+
+<p>As mentioned before,  we can use <code>data</code> member to access input data:</p>
+
+<pre><code>{
+  render: function() {
+    this.root.innerText = this.data;
+  }
+}</code></pre>
+
+<p><code>data</code> member is simply a array of object; following is an example of <code>data</code> member:</p>
+
+<pre><code>[
+  { name: &quot;Pineapple&quot;, value: 6 },
+  { name: &quot;Apple&quot;,     value: 4 },
+]</code></pre>
+
+<p>However, we need to define the <strong>field name</strong> and **data type* of fields in each object so PlotDB can help mapping user data into this format. To define the data schema, use <code>dimension</code> member:</p>
+
+<pre><code>{
+  dimension: {
+    label: {                 // name of field: &#39;label&#39;
+      type: [plotdb.Number], // type of field: Number
+      require: true,         // require? yes
+      desc: &quot;Label of Bar&quot;,  // additional information
+      multiple: false        // accept multiple value? no
+    }
+  },
+  ...
+}</code></pre>
+
+<p>above example adds a new viswork <em>dimension</em> named <strong>label</strong>, with data type <code>plotdb.Number</code> and marked as required. it will then appear in the <em>Data Binding</em> section for user to drop their data field. This dimensin is also used in PlotDB Renderer API when calling <code>chart.data</code> API, check <a href="https://plotdb.com/doc/render/">PlotDB Renderer API Documentation</a> for more detail.</p>
+
+<h3>Multiple Value</h3>
+
+<p>If we define a dimension to be multiple, it will become an array in <code>data</code> member; following example prints all values with in input data into dev console:</p>
+
+<pre><code>{
+  dimension: {
+    length: { type: [plotdb.Number], multiple: true }
+  },
+  render: {
+    for(var i=0;i&lt;this.data.length;i++) {
+      for(var j=0;j&lt;this.data[i].values.length;j++) {
+        console.log(this.data[i].values[j]);
+      }
+    }
+  }</code></pre>
+
+<h3>Additional Information about Dimension</h3>
+
+<p><code>dimension</code> member provides us additional information about input data, such as data field name and field count:</p>
+
+<pre><code>{
+  render: function() {
+    console.log(&quot;Field Names: &quot;, this.dimension.values.fieldName);
+    console.log(&quot;2nd Data Field: &quot;, this.dimension.values.fields[1]);
+  }
+}</code></pre>
+
+<p>Sometimes these information are quite useful when making legend or labels.</p>
+
+<h2>Data Types</h2>
+
+<p>PlotDB defines several common data types which can be used in defing viswork dimension and configuration. They are:</p>
+
+<ul><li>plotdb.Palette</li><li>plotdb.Choice</li><li>plotdb.Order</li><li>plotdb.Date</li><li>plotdb.Number</li><li>plotdb.String</li><li>plotdb.Numstring</li><li>plotdb.Color</li></ul>
+
+<p>some of theme have different interface and usage, which are described below.</p>
+
+<h3>plotdb.Choice</h3>
+
+<p><code>plotdb.Choice</code> is dedicated for defining select options in a configuration. Following example demonstrates the usage of <code>plotdb.Choice</code>:</p>
+
+<pre><code>{
+  someConfig: {
+    name: &quot;Some Config&quot;,
+    type: [plotdb.Choice([&quot;Yes&quot;, &quot;No&quot;])],
+    default: &quot;Yes&quot;
+  }
+}</code></pre>
+
+<p>this example will show an selection box in config with two options "Yes" and "No" for users to choose. the selected data in <code>this.config</code> will be either "Yes" and "No" with <code>string</code> type in JavaScript.</p>
+
+<h3>plotdb.Palette</h3>
+
+<p>Palette is dedicated for define palette in a configuration. It lets users design and use colors in a set. Following example demonstrates how to use 'plotdb.Palette':</p>
+
+<pre><code>{
+  someConfig: {
+    name: &quot;Some Config&quot;,
+    type: [plotdb.Palette],
+    default: {
+      colors: [
+        {hex: &quot;#ff0000&quot;, keyword: &quot;Apple&quot;}, {hex: &quot;#00ff00&quot;, keyword: &quot;Lemon}
+      ]
+    }
+  }
+}</code></pre>
+
+<p>the <code>hex</code> and <code>keyword</code> defines the color and the corresponding value to map to this color. in <code>config</code> object, this can be accessed as following:</p>
+
+<pre><code>config.palette.colors[n].hex</code></pre>
+
+<h3>plotdb.Order</h3>
+
+<p><code>plotdb.Order</code> is the base type of all ordinal data type. It provides a handy function for you to sort <code>data</code> in desired direction:</p>
+
+<pre><code>plotdb.Order.sort(this.data, &quot;someField&quot;, isAscending);</code></pre>
+
+<h3>plotdb.Date</h3>
+
+<p><code>plotdb.Date</code> by default parses input date into an object in following format:</p>
+
+<pre><code>{
+  raw: &lt;raw-data-from-input-data&gt;,
+  parsed: &lt;parsed-result&gt;,
+  type: &quot;Date&quot;
+}</code></pre>
+
+<h2>Predefined Configurations</h2>
+
+<p>Follow and directly inherit from these configurations can make your viswork more compatible with other visworks, yet it is not a requirement.</p>
+
+<h3>Global Settings</h3>
+
+<pre><code>language:
+  name: &quot;Language&quot;
+  type: [plotdb.Choice([{name: &quot;正體中文&quot;, value: &quot;zh-tw&quot;}, {name: &quot;English&quot;, value: &quot;en&quot;}])]
+  default: {name: &quot;English&quot;, value: &quot;en&quot;}
+  rebindOnChange: true
+  category: &quot;Global Settings&quot;
+
+fontFamily:
+  name: &quot;Font&quot;
+  type: [plotdb.String]
+  default: &quot;Arial&quot;
+  category: &quot;Global Settings&quot;
+
+fontSize:
+  name: &quot;Font Size&quot;
+  type: [plotdb.Number]
+  default: 13
+  category: &quot;Global Settings&quot;
+
+background:
+  name: &quot;Background&quot;
+  type: [plotdb.Color]
+  default: &#39;#ffffff&#39;
+  category: &quot;Global Settings&quot;
+
+textFill:
+  name: &quot;Text Color&quot;
+  type: [plotdb.Color]
+  default: &#39;#000000&#39;
+  category: &quot;Global Settings&quot;
+
+textFillInverse:
+  name: &quot;Text Color (Inverse)&quot;
+  type: [plotdb.Color]
+  default: &#39;#ffffff&#39;
+  category: &quot;Global Settings&quot;
+
+margin:
+  name: &quot;Margin&quot;
+  type: [plotdb.Number]
+  default: 10
+  category: &quot;Global Settings&quot;
+
+padding:
+  name: &quot;Padding&quot;
+  type: [plotdb.Number]
+  default: 10
+  category: &quot;Global Settings&quot;
+
+boxRoundness:
+  name: &quot;Block Roundness&quot;
+  type: [plotdb.Number]
+  default: 0
+  category: &quot;Global Settings&quot;
+
+palette:
+  name: &quot;Palette&quot;
+  type: [plotdb.Palette]
+  subtype: plotdb.Palette.subtype.Qualitative
+  default: {colors:[{hex:&#39;#f4502a&#39;},{hex:&#39;#f1c227&#39;},{hex:&#39;#008a6d&#39;},{hex:&#39;#00acdb&#39;},{hex:&#39;#0064a8&#39;}]}
+  category: &quot;Global Settings&quot;
+
+colorNegative:
+  name: &quot;Negative&quot;
+  type: [plotdb.Color]
+  desc: &quot;Color for negative values&quot;
+  default: plotdb.Color.Negative
+  subtype: plotdb.Color.subtype.Negative
+  category: &quot;Global Settings&quot;
+
+colorPositive:
+  name: &quot;Positive&quot;
+  type: [plotdb.Color]
+  desc: &quot;Color for positive values&quot;
+  default: plotdb.Color.Positive
+  subtype: plotdb.Color.subtype.Positive
+  category: &quot;Global Settings&quot;
+
+colorNeutral:
+  name: &quot;Neutral&quot;
+  type: [plotdb.Color]
+  desc: &quot;Color for neutral values&quot;
+  default: plotdb.Color.Neutral
+  subtype: plotdb.Color.subtype.Neutral
+  category: &quot;Global Settings&quot;
+
+colorEmpty:
+  name: &quot;Empty&quot;
+  type: [plotdb.Color]
+  desc: &quot;Color for &#39;no values&#39;&quot;
+  default: plotdb.Color.Empty
+  subtype: plotdb.Color.subtype.Empty
+  category: &quot;Global Settings&quot;
+
+colorPast:
+  name: &quot;Past&quot;
+  type: [plotdb.Color]
+  desc: &quot;Color for values in past&quot;
+  subtype: plotdb.Color.subtype.Fade
+  category: &quot;Global Settings&quot;
+
+fill:
+  name: &quot;Fill&quot;
+  type: [plotdb.Color]
+  default: &quot;#e03f0e&quot;
+  category: &quot;Global Settings&quot;
+
+fillOpacity:
+  name: &quot;Fill Opacity&quot;
+  type: [plotdb.Number]
+  default: 0.6
+  category: &quot;Global Settings&quot;
+
+stroke:
+  name: &quot;Stroke&quot;
+  type: [plotdb.Color]
+  desc: &quot;Stroke Color&quot;
+  default: &quot;#999&quot;
+  category: &quot;Global Settings&quot;
+
+strokeWidth:
+  name: &quot;Stroke Width&quot;
+  type: [plotdb.Number]
+  desc: &quot;Default Stroke width&quot;
+  default: 2
+  category: &quot;Global Settings&quot;
+
+strokeDashArray:
+  name: &quot;Stroke Dash Style&quot;
+  type: [plotdb.Number]
+  default: 2
+  desc: &quot;SVG style dash array. &#39;2 4&#39; means 2px line and 4px space.&quot;
+  category: &quot;Global Settings&quot;</code></pre>
+
+<h3>Animation</h3>
+
+<pre><code>animationDuration:
+  name: &quot;Animation Duration&quot;
+  type: [plotdb.Number]
+  default: 500
+  desc: &quot;Animation Duration, in millisecond (e.g., 500)&quot;
+  category: &quot;Animation&quot;</code></pre>
+
+<h3>Layout</h3>
+
+<pre><code>aspectRatio:
+  name: &quot;Aspect Ratio&quot;
+  type: [plotdb.Boolean]
+  default: true
+  category: &quot;Layout&quot;</code></pre>
+
+<h3>Popup</h3>
+
+<pre><code>popupShow:
+  name: &quot;show Popup&quot;
+  desc: &quot;show Popup when user hovers over elements&quot;
+  type: [plotdb.Boolean]
+  default: true
+  category: &quot;Popup&quot;
+  rebindOnChange: true</code></pre>
+
+<h3>Geography</h3>
+
+<pre><code>geoFill:
+  name: &quot;Fill Color&quot;
+  type: [plotdb.Color]
+  desc: &quot;Default color for filling geographic path&quot;
+  default: &quot;#eee&quot;
+  category: &quot;Geography&quot;
+
+geoStroke:
+  name: &quot;Stroke Color&quot;
+  type: [plotdb.Color]
+  desc: &quot;Default color for outline of geographic path&quot;
+  default: &quot;#919191&quot;
+  category: &quot;Geography&quot;
+
+geoStrokeWidth:
+  name: &quot;Stroke Width&quot;
+  type: [plotdb.Number]
+  desc: &quot;geographic path outline width&quot;
+  default: 1
+  category: &quot;Geography&quot;</code></pre>
+
+<h3>Color</h3>
+
+<pre><code>hoverFill:
+  name: &quot;Hovering Fill Color&quot;
+  type: [plotdb.Color]
+  desc: &quot;Fill color when hovering element&quot;
+  default: &quot;#aaa&quot;
+  category: &quot;Color&quot;
+
+hoverStroke:
+  name: &quot;Hovering Stroke Color&quot;
+  type: [plotdb.Color]
+  desc: &quot;Stroke color when hovering element&quot;
+  default: &quot;#fff&quot;
+  category: &quot;Color&quot;</code></pre>
+
+<h3>Line</h3>
+
+<pre><code>connectFill:
+  name: &quot;Fill Color&quot;
+  type: [plotdb.Color]
+  desc: &quot;Fill color between connection path of data node&quot;
+  default: &quot;#aaa&quot;
+  category: &quot;Line&quot;
+
+connectStroke:
+  name: &quot;Stroke Color&quot;
+  type: [plotdb.Color]
+  desc: &quot;Stroke color between connection path of data node&quot;
+  default: &quot;#aaa&quot;
+  category: &quot;Line&quot;
+
+connectStrokeWidth:
+  name: &quot;Stroke width&quot;
+  type: [plotdb.Number]
+  desc: &quot;Stroke size between connection path of data node&quot;
+  default: 2
+  category: &quot;Line&quot;
+
+connectDashArray:
+  name: &quot;Dash Array&quot;
+  type: [plotdb.String]
+  desc: &quot;SVG style dash array. &#39;2 4&#39; means 2px line and 4px space.&quot;
+  default: &quot;2 2&quot;
+  category: &quot;Line&quot;
+
+lineSmoothing:
+  name: &quot;Line Smoothing&quot;
+  default: &quot;linear&quot;
+  type: [plotdb.Choice(&lt;[
+    linear step step-before step-after basis bundle cardinal monotone
+  ]&gt;)]
+  category: &quot;Line&quot;
+
+lineStroke:
+  name: &quot;Line Color&quot;
+  type: [plotdb.Color]
+  default: &#39;#999&#39;
+  category: &quot;Line&quot;
+
+lineStrokeWidth:
+  name: &quot;Line Width&quot;
+  type: [plotdb.Number]
+  default: 1
+  category: &quot;Line&quot;
+
+lineDashArray:
+  name: &quot;Line Dash Array&quot;
+  type: [plotdb.String]
+  default: &quot;4 4&quot;
+  category: &quot;Line&quot;</code></pre>
+
+<h3>Grid</h3>
+
+<pre><code>gridShow:
+  name: &quot;Show Grid&quot;
+  type: [plotdb.Boolean]
+  default: true
+  category: &quot;Grid&quot;
+
+gridBackground:
+  name: &quot;Background&quot;
+  type: [plotdb.Color]
+  default: &quot;rgba(255,255,255,0)&quot;
+  category: &quot;Grid&quot;
+
+gridStroke:
+  name: &quot;Color&quot;
+  type: [plotdb.Color]
+  default: &quot;#ccc&quot;
+  category: &quot;Grid&quot;
+
+gridStrokeWidth:
+  name: &quot;Stroke Width&quot;
+  type: [plotdb.Number]
+  default: 1
+  category: &quot;Grid&quot;
+
+gridFrameStroke:
+  name: &quot;Frame Color&quot;
+  type: [plotdb.Color]
+  default: &quot;#ccc&quot;
+  category: &quot;Grid&quot;
+
+gridFrameStrokeWidth:
+  name: &quot;Frame Width&quot;
+  type: [plotdb.Number]
+  default: 3
+  category: &quot;Grid&quot;
+
+gridDashArray:
+  name: &quot;Dash Style&quot;
+  type: [plotdb.String]
+  default: &quot;2 4&quot;
+  category: &quot;Grid&quot;
+  desc: &quot;SVG style dash array. &#39;2 4&#39; means 2px line and 4px space.&quot;</code></pre>
+
+<h3>Bubble</h3>
+
+<pre><code>bubbleSizeMin:
+  name: &quot;Min Size&quot;
+  type: [plotdb.Number]
+  default: 0
+  category: &quot;Bubble&quot;
+
+bubbleSizeMax:
+  name: &quot;Max Size&quot;
+  type: [plotdb.Number]
+  default: 20
+  category: &quot;Bubble&quot;
+
+bubbleFill:
+  name: &quot;Fill Color&quot;
+  type: [plotdb.Color]
+  default: &quot;#ffaaaa&quot;
+  category: &quot;Bubble&quot;
+
+bubbleFillOpacity:
+  name: &quot;Fill Opacity&quot;
+  type: [plotdb.Number]
+  default: 0.5
+  category: &quot;Bubble&quot;
+
+bubbleStroke:
+  name: &quot;Stroke Color&quot;
+  type: [plotdb.Color]
+  default: &quot;#c01d1d&quot;
+  category: &quot;Bubble&quot;
+
+bubbleStrokeWidth:
+  name: &quot;Stroke Width&quot;
+  type: [plotdb.Number]
+  default: 1
+  category: &quot;Bubble&quot;
+
+bubblePadding:
+  name: &quot;Bubble Padding&quot;
+  type: [plotdb.Number]
+  default: 5
+  category: &quot;Bubble&quot;</code></pre>
+
+<h3>TBD</h3>
+
+<pre><code>barThick:
+  name: &quot;Bar Thickness&quot;
+  type: [plotdb.Number]
+  default: 10
+  category: &quot;Layout&quot;
+
+lineThick:
+  name: &quot;Line Thickness&quot;
+  type: [plotdb.Number]
+  default: 10
+  category: &quot;Layout&quot;</code></pre>
+
+<h3>Legend</h3>
+
+<pre><code>legendShow:
+  name: &quot;Show Legend&quot;
+  type: [plotdb.Boolean]
+  default: true
+  category: &quot;Legend&quot;
+
+legendLabel:
+  name: &quot;Label&quot;
+  type: [plotdb.String]
+  category: &quot;Legend&quot;
+
+legendPosition:
+  name: &quot;Position&quot;
+  type: [plotdb.Choice(&lt;[top left right bottom]&gt;)]
+  default: &quot;right&quot;
+  category: &quot;Legend&quot;</code></pre>
+
+<h3>Label</h3>
+
+<pre><code>otherLabel:
+  name: &quot;Label for &#39;other&#39;&quot;
+  type: [plotdb.String]
+  default: &quot;Other&quot;
+  category: &quot;Label&quot;
+
+showLabel: do #legacy. backward compatibility
+  name: &quot;Show Data Label&quot;
+  type: [plotdb.Boolean]
+  default: false
+  category: &quot;Label&quot;
+
+labelShadowSize:
+  name: &quot;Label Shadow Size&quot;
+  type: [plotdb.Number]
+  default: 2
+  category: &quot;Label&quot;
+
+labelShow:
+  name: &quot;Show Data Label&quot;
+  type: [plotdb.Boolean]
+  default: false
+  category: &quot;Label&quot;
+
+labelShowValue:
+  name: &quot;Show Value&quot;
+  type: [plotdb.Boolean]
+  desc: &quot;Show value labels in chart&quot;
+  default: false
+  rebindOnChange: true
+  category: &quot;Label&quot;
+
+labelShowOverflow:
+  name: &quot;Show Overflow Label&quot;
+  type: [plotdb.Boolean]
+  desc: &quot;Show all label, even if they are too long.&quot;
+  default: false
+  category: &quot;Label&quot;
+
+labelPosition:
+  name: &quot;Label Position&quot;
+  type: [plotdb.Choice([&quot;in&quot;,&quot;out&quot;])]
+  default: &quot;out&quot;
+  category: &quot;Label&quot;
+
+showPercent:
+  name: &quot;Percentage in Label&quot;
+  type: [plotdb.Boolean]
+  desc: &quot;Show percentage in data label&quot;
+  default: true
+  category: &quot;Label&quot;</code></pre>
+
+<h3>Dot</h3>
+
+<pre><code>nodeShow:
+  name: &quot;Show Data Dot&quot;
+  type: [plotdb.Boolean]
+  default: true
+  category: &quot;Dot&quot;
+
+nodeSize:
+  name: &quot;Dot Size&quot;
+  type: [plotdb.Number]
+  default: 6
+  category: &quot;Dot&quot;
+
+nodeFill:
+  name: &quot;Fill Color&quot;
+  type: [plotdb.Color]
+  desc: &quot;fill Dot with this color&quot;
+  default: &quot;#eee&quot;
+  category: &quot;Dot&quot;
+
+nodeStroke:
+  name: &quot;Stroke Color&quot;
+  type: [plotdb.Color]
+  desc: &quot;draw Dot outline with this color&quot;
+  default: &quot;#919191&quot;
+  category: &quot;Dot&quot;
+
+nodeStrokeWidth:
+  name: &quot;Stroke Width&quot;
+  type: [plotdb.Number]
+  default: 1
+  category: &quot;Dot&quot;</code></pre>
+
+<h3>Value</h3>
+
+<pre><code>unit:
+  name: &quot;Unit&quot;
+  type: [plotdb.String]
+  default: &quot;&quot;
+  desc: &quot;Unit of value&quot;
+  category: &quot;Value&quot;
+
+xScaleRange:
+  name: &quot;Data Range in X axis&quot;
+  type: [plotdb.Range]
+  desc: &quot;Enforce chart rendering within this range, in x axis&quot;
+  default: [0,1]
+  category: &quot;Value&quot;
+
+yScaleRange:
+  name: &quot;Data Range in Y axis&quot;
+  type: [plotdb.Range]
+  desc: &quot;Enforce chart rendering within this range, in y axis&quot;
+  default: [0,1]
+  category: &quot;Value&quot;
+
+rScaleRange:
+  name: &quot;Data Range in Circle Radius&quot;
+  type: [plotdb.Range]
+  desc: &quot;Enforce chart rendering within this range, in circle radius&quot;
+  default: [0,1]
+  category: &quot;Value&quot;
+
+threshold:
+  name: &quot;Threshold&quot;
+  type: [plotdb.Number]
+  desc: &quot;data larger than this value will be treated as positive, vice versa.&quot;
+  default: 0
+  category: &quot;Value&quot;
+
+sort:
+  name: &quot;Sort data&quot;
+  type: [plotdb.Choice(&lt;[Ascending Descending None]&gt;)]
+  default: &quot;Descending&quot;
+  category: &quot;Value&quot;
+
+emptyAs0:
+  name: &quot;Empty as 0&quot;
+  type: [plotdb.Boolean]
+  desc: &quot;Treat undefined data as 0&quot;
+  default: true
+  category: &quot;Value&quot;
+
+otherLimit:
+  name: &quot;Small Data Threshold&quot;
+  type: [plotdb.Number]
+  desc: &quot;Data smaller than this value will be clustered into one set of data&quot;
+  default: 0
+  category: &quot;Value&quot;</code></pre><div id="disqus_thread"></div></div></div><script>var disqus_config = function () {
+this.page.url = "https://plotdb.com/doc/"; /* TODO */
+this.page.identifier = "/doc/"; /* PAGE IDENTIFIER */
+};
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//plotdb.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();</script><div id="user-feedback" ng-click="gfbt=!!!gfbt"><i class="fa fa-commenting"></i><span>send feedback</span></div><div ng-cloak ng-show="gfbt" ng-click="gfbt=false" class="cover-modal ng-hide-animate ng-hide"></div><div ng-cloak ng-show="gfbt" class="cover-modal-inner ng-hide-animate ng-hide"><div class="panel panel-default"><div style="height:500px;overflow-y:scroll" class="panel-body"><div data-href="http://plotdb.com/feedback/" data-width="100%" data-numposts="5" data-colorscheme="light" class="fb-comments"></div></div><div class="panel-footer text-right"><div ng-click="gfbt=false" class="btn btn-default">Close</div></div></div></div><div id="fb-root"></div><script>window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '1546734828988373',
+    xfbml      : true,
+    version    : 'v2.5'
+  });
+  var i,list = (window.fbQueue || []);
+  for(i=0;i<list.length;i++) window.fbQueue[i]();
+};
+window.onload = function() {
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+};</script></body></html>
