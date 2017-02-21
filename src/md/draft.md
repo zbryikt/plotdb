@@ -1,5 +1,3 @@
-
-PlotDB provides 
 PlotDB is a platform for developers to create reusable visualization for people who cannot code. To do this, a visualization is split into following parts:
 
  * data bindings / mapping between data fields and visual encoding
@@ -219,4 +217,3 @@ you can save the above code as a standalone js file, and load it with script tag
     var chart = plotdb.chart.get("my-chart");
 
 it returns the chart object like the one `plotdb.load` passes into the callback function.
-
