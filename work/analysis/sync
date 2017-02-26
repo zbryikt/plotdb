@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+scp main.ls tkirby@104.197.48.215:workspace/production/server/work/analysis/main.ls

@@ -4,7 +4,7 @@
     div
       ul.nav.navbar-nav
         li.dropdown(ng-class="{'active':q.type}")
-          a.dropdown-toggle(data-toggle="dropdown")
+          a.dropdown-toggle(data-toggle="dropdown",data-track="ChartList,Filter,ChartType")
             small chart type
             span(ng-cloak,ng-show="q.type") {{qmap.type[q.type]}}
             span(ng-cloak,ng-show="!q.type") Any
@@ -34,7 +34,7 @@
               li(ng-class="{'active':q.type=='99'}"): a(ng-click="q.type='99'") Other
 
         li.dropdown(ng-class="{'active':q.enc}")
-          a.dropdown-toggle(data-toggle="dropdown")
+          a.dropdown-toggle(data-toggle="dropdown",data-track="ChartList,Filter,ChartEncoding")
             small encoding
             span(ng-cloak,ng-show="q.enc") {{qmap.enc[q.enc]}}
             span(ng-cloak,ng-show="!q.enc") Any
@@ -54,7 +54,7 @@
             //-li(ng-class="{'active':q.enc=='99'}"): a(ng-click="q.enc='99'") Other
 
         li.dropdown(ng-class="{'active':q.cat}")
-          a.dropdown-toggle(data-toggle="dropdown")
+          a.dropdown-toggle(data-toggle="dropdown",data-track="ChartList,Filter,ChartCategory")
             small category
             span(ng-cloak,ng-show="q.cat") {{qmap.cat[q.cat]}}
             span(ng-cloak,ng-show="!q.cat") Any
@@ -70,7 +70,7 @@
             //-li(ng-class="{'active':q.cat=='99'}"): a(ng-click="q.cat='99'") Other
 
         li.dropdown(ng-class="{'active':q.dim}")
-          a.dropdown-toggle(data-toggle="dropdown")
+          a.dropdown-toggle(data-toggle="dropdown",data-track="ChartList,Filter,ChartDimension")
             small dimension
             span(ng-cloak,ng-show="q.dim") {{qmap.dim[q.dim]}}
             span(ng-cloak,ng-show="!q.dim") Any
@@ -95,7 +95,7 @@
 
       form.navbar-form.navbar-right
         .form-group
-          .btn.btn-default(
+          .btn.btn-default(data-track="ChartList,Filter,Favorite",
           data-toggle="tooltip",data-placement="top",title="Show My Favorite",
           ng-class="{'active':q.fav}",ng-click="q.fav=!!!q.fav") #[i.fa.fa-heart]
           | &nbsp;

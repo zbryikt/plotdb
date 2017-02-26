@@ -125,7 +125,7 @@ $(document).ready(function(){
       empty = "{exports:{init:function(){},update:function(){},resize:function(){},bind:function(){},render:function(){}}}";
       window.errorMessage = "";
       module = updateModule ? 'module' : 'moduleLocal';
-      if (code[0] === '{') {
+      if (code.trim()[0] === '{') {
         code = "(function() { window." + module + " = {exports:" + code + "}; })()";
       } else {
         code = "(function() { " + code + "; window." + module + " = (typeof(module)=='undefined'?" + empty + ":module); })()";
@@ -198,23 +198,27 @@ $(document).ready(function(){
     });
   };
   configPreset = function(config){
-    var k, ref$, v, lresult$, p, field, ref1$, value, results$ = [];
+    var k, ref$, v, p, field, value, results$ = [];
     for (k in ref$ = config || {}) {
       v = ref$[k];
-      lresult$ = [];
-      p = plotdb.config[k]
-        ? k
-        : plotdb.config[v.extend] ? v.extend : null;
+      if (config[v.extend]) {
+        p = config[v.extend];
+      } else if (plotdb.config[v.extend]) {
+        p = plotdb.config[v.extend];
+      } else if (plotdb.config[k]) {
+        p = plotdb.config[k];
+      } else {
+        p = null;
+      }
       if (!p) {
         continue;
       }
-      for (field in ref1$ = plotdb.config[p]) {
-        value = ref1$[field];
+      for (field in p) {
+        value = p[field];
         if (!(v[field] != null)) {
-          lresult$.push(v[field] = value);
+          results$.push(v[field] = value);
         }
       }
-      results$.push(lresult$);
     }
     return results$;
   };
@@ -581,11 +585,15 @@ $(document).ready(function(){
           if (thread.racing()) {
             return thread.dec(reboot);
           }
-          chart.resize();
-          if (rebind || reboot) {
+          if (chart.resize) {
+            chart.resize();
+          }
+          if ((rebind || reboot) && chart.bind) {
             chart.bind();
           }
-          chart.render();
+          if (chart.render) {
+            chart.render();
+          }
           module.execError = false;
           return window.parent.postMessage({
             type: 'error',
@@ -617,8 +625,12 @@ $(document).ready(function(){
         return;
       }
       chart = window.module.exports;
-      chart.resize();
-      return chart.render();
+      if (chart.resize) {
+        chart.resize();
+      }
+      if (chart.render) {
+        return chart.render();
+      }
     }, 400);
   });
   window.addEventListener('keydown', function(e){

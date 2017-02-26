@@ -23,69 +23,63 @@
 # Category
 # Color / Axis / Value / Layout / Label
 plotdb.config = do
-  # Global Configuration
+
+  ### Global Configuration
   language: do
     name: "Language"
     type: [plotdb.Choice([{name: "正體中文", value: "zh-tw"}, {name: "English", value: "en"}])]
     default: {name: "English", value: "en"}
-    category: "Global Settings"
     rebindOnChange: true
+    category: "Global Settings"
+
   fontFamily: do
     name: "Font"
     type: [plotdb.String]
     default: "Arial"
     category: "Global Settings"
+
   fontSize: do
     name: "Font Size"
     type: [plotdb.Number]
     default: 13
     category: "Global Settings"
-  animationDuration: do
-    name: "Animation Duration"
-    type: [plotdb.Number]
-    default: 500
-    desc: "Animation Duration, in millisecond (e.g., 500)"
-    category: "Animation"
+
   background: do
     name: "Background"
     type: [plotdb.Color]
     default: '#ffffff'
     category: "Global Settings"
+
   textFill: do
     name: "Text Color"
     type: [plotdb.Color]
     default: '#000000'
     category: "Global Settings"
+
   textFillInverse: do
     name: "Text Color (Inverse)"
     type: [plotdb.Color]
     default: '#ffffff'
     category: "Global Settings"
+
   margin: do
     name: "Margin"
     type: [plotdb.Number]
     default: 10
     category: "Global Settings"
-  aspectRatio: do
-    name: "Aspect Ratio"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Layout"
 
-  popupShow: do
-    name: "show Popup"
-    desc: "show Popup when user hovers over elements"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Popup"
-    rebindOnChange: true
+  padding: do
+    name: "Padding"
+    type: [plotdb.Number]
+    default: 10
+    category: "Global Settings"
 
   boxRoundness: do
     name: "Block Roundness"
     type: [plotdb.Number]
     default: 0
     category: "Global Settings"
-  # Color Configuration
+
   palette: do
     name: "Palette"
     type: [plotdb.Palette]
@@ -151,6 +145,49 @@ plotdb.config = do
     default: \#999
     category: "Global Settings"
 
+  strokeWidth: do
+    name: "Stroke Width"
+    type: [plotdb.Number]
+    desc: "Default Stroke width"
+    default: \2
+    category: "Global Settings"
+
+  strokeDashArray: do
+    name: "Stroke Dash Style"
+    type: [plotdb.Number]
+    default: \2
+    desc: "SVG style dash array. '2 4' means 2px line and 4px space."
+    category: "Global Settings"
+
+  ### Animation
+
+  animationDuration: do
+    name: "Animation Duration"
+    type: [plotdb.Number]
+    default: 500
+    desc: "Animation Duration, in millisecond (e.g., 500)"
+    category: "Animation"
+
+  ### Layout
+
+  aspectRatio: do
+    name: "Aspect Ratio"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Layout"
+
+  ### Popup
+
+  popupShow: do
+    name: "show Popup"
+    desc: "show Popup when user hovers over elements"
+    type: [plotdb.Boolean]
+    default: true
+    category: "Popup"
+    rebindOnChange: true
+
+  ### Geography
+
   geoFill: do
     name: "Fill Color"
     type: [plotdb.Color]
@@ -172,6 +209,8 @@ plotdb.config = do
     default: \1
     category: "Geography"
 
+  ### Color
+
   hoverFill: do
     name: "Hovering Fill Color"
     type: [plotdb.Color]
@@ -185,6 +224,8 @@ plotdb.config = do
     desc: "Stroke color when hovering element"
     default: \#fff
     category: "Color"
+
+  ### Line
 
   connectFill: do
     name: "Fill Color"
@@ -213,6 +254,34 @@ plotdb.config = do
     desc: "SVG style dash array. '2 4' means 2px line and 4px space."
     default: "2 2"
     category: "Line"
+
+  lineSmoothing: do
+    name: "Line Smoothing"
+    default: "linear"
+    type: [plotdb.Choice(<[
+      linear step step-before step-after basis bundle cardinal monotone
+    ]>)]
+    category: "Line"
+
+  lineStroke: do
+    name: "Line Color"
+    type: [plotdb.Color]
+    default: '#999'
+    category: "Line"
+
+  lineStrokeWidth: do
+    name: "Line Width"
+    type: [plotdb.Number]
+    default: 1
+    category: "Line"
+
+  lineDashArray: do
+    name: "Line Dash Array"
+    type: [plotdb.String]
+    default: "4 4"
+    category: "Line"
+
+  ### Grid
 
   gridShow: do
     name: "Show Grid"
@@ -257,12 +326,7 @@ plotdb.config = do
     category: "Grid"
     desc: "SVG style dash array. '2 4' means 2px line and 4px space."
 
-  # Layout Configuration
-  padding: do
-    name: "Padding"
-    type: [plotdb.Number]
-    default: 10
-    category: "Global Settings"
+  ### Bubble
 
   bubbleSizeMin: do
     name: "Min Size"
@@ -306,19 +370,21 @@ plotdb.config = do
     default: 5
     category: "Bubble"
 
-  #TBD
+  ### TBD
+
   barThick: do
     name: "Bar Thickness"
     type: [plotdb.Number]
     default: 10
     category: "Layout"
 
-  #TBD
   lineThick: do
     name: "Line Thickness"
     type: [plotdb.Number]
     default: 10
     category: "Layout"
+
+  ### Legend
 
   legendShow: do
     name: "Show Legend"
@@ -336,6 +402,8 @@ plotdb.config = do
     type: [plotdb.Choice(<[top left right bottom]>)]
     default: "right"
     category: "Legend"
+
+  ### Label
 
   otherLabel: do
     name: "Label for 'other'"
@@ -376,6 +444,21 @@ plotdb.config = do
     default: false
     category: "Label"
 
+  labelPosition: do
+    name: "Label Position"
+    type: [plotdb.Choice(["in","out"])]
+    default: "out"
+    category: "Label"
+
+  showPercent: do
+    name: "Percentage in Label"
+    type: [plotdb.Boolean]
+    desc: "Show percentage in data label"
+    default: true
+    category: "Label"
+
+  ### Dot
+
   nodeShow: do
     name: "Show Data Dot"
     type: [plotdb.Boolean]
@@ -408,26 +491,15 @@ plotdb.config = do
     default: \1
     category: "Dot"
 
-  labelPosition: do
-    name: "Label Position"
-    type: [plotdb.Choice(["in","out"])]
-    default: "out"
-    category: "Label"
+  ### Value
 
-  showPercent: do
-    name: "Percentage in Label"
-    type: [plotdb.Boolean]
-    desc: "Show percentage in data label"
-    default: true
-    category: "Label"
-
-  #Value
   unit: do
     name: "Unit"
     type: [plotdb.String]
     default: ""
     desc: "Unit of value"
     category: "Value"
+
   xScaleRange: do
     name: "Data Range in X axis"
     type: [plotdb.Range]
@@ -475,176 +547,8 @@ plotdb.config = do
     desc: "Data smaller than this value will be clustered into one set of data"
     default: 0
     category: "Value"
-  /*
-  #Axis
-  axisInnerPadding: do
-    name: "Axis Inner Tick length"
-    type: [plotdb.Number]
-    default: 2
-    category: "Axis"
 
-  axisOutterPadding: do
-    name: "Axis Outer Tick length"
-    type: [plotdb.Number]
-    default: 2
-    category: "Axis"
-
-  showXAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "X Axis"
-
-  xAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "X Axis"
-
-  xAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "X Axis"
-
-  xAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "X Axis"
-
-  xAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "X Axis"
-
-  showYAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Y Axis"
-
-  yAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "Y Axis"
-
-  yAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Y Axis"
-
-  yAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Y Axis"
-
-  yAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "Y Axis"
-
-  showRadialAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Radial Axis"
-
-  rAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "Radial Axis"
-
-  rAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Radial Axis"
-
-  rAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Radial Axis"
-
-  rAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "Radial Axis"
-
-  showAngularAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Angular Axis"
-
-  aAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "Angular Axis"
-
-  aAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Angular Axis"
-
-  aAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Angular Axis"
-
-  aAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "Angular Axis"
-  */
-  lineSmoothing: do
-    name: "Line Smoothing"
-    default: "linear"
-    type: [plotdb.Choice(<[
-      linear step step-before step-after basis bundle cardinal monotone
-    ]>)]
-    category: "Line"
-
-  lineStroke: do
-    name: "Line Color"
-    type: [plotdb.Color]
-    default: '#999'
-    category: "Line"
-
-  lineStrokeWidth: do
-    name: "Line Width"
-    type: [plotdb.Number]
-    default: 1
-    category: "Line"
-
-  lineDashArray: do
-    name: "Line Dash Array"
-    type: [plotdb.String]
-    default: "4 4"
-    category: "Line"
-
-  strokeWidth: do
-    name: "Stroke Width"
-    type: [plotdb.Number]
-    desc: "Default Stroke width"
-    default: \2
-    category: "Global Settings"
-
-  strokeDashArray: do
-    name: "Stroke Dash Style"
-    type: [plotdb.Number]
-    default: \2
-    desc: "SVG style dash array. '2 4' means 2px line and 4px space."
-    category: "Global Settings"
-
+  ### TBD
   zeroBaseline: do # legacy
     name: "Zero Baseline"
     desc: "y Axis starts with zero"

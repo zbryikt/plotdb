@@ -3,13 +3,255 @@ var x$;
 x$ = angular.module('plotDB');
 x$.service('folderService', ['$rootScope', '$http', 'IOService', 'baseService', 'plNotify', 'eventBus', 'plConfig'].concat(function($rootScope, $http, IOService, baseService, plNotify, eventBus, plConfig){
   var service, object, folderService;
-  service = {};
+  service = {
+    addto: function(folder, item, type){
+      return new Promise(function(res, rej){
+        return $http({
+          url: "/d/folder/" + folder + "/content",
+          method: "POST",
+          data: {
+            item: item,
+            type: type
+          }
+        }).success(function(d){
+          return res(d);
+        }).error(function(d){
+          return rej(d);
+        });
+      });
+    }
+  };
   object = function(){};
   folderService = baseService.derive('folder', service, object);
   return folderService;
 }));
+x$.controller('folderEdit', ['$scope', '$http', 'folderService', 'plNotify', 'eventBus'].concat(function($scope, $http, folderService, plNotify, eventBus){
+  $scope.edit = {
+    toggled: {},
+    toggle: function(v, type){
+      var list, k, this$ = this;
+      list = type != null
+        ? [type]
+        : (function(){
+          var results$ = [];
+          for (k in this.toggled) {
+            results$.push(k);
+          }
+          return results$;
+        }.call(this));
+      return list.forEach(function(k){
+        return this$.toggled[k] = !(v != null) ? !this$.toggled[k] : v;
+      });
+    }
+  };
+  $scope.prepare = function(folder){
+    var that;
+    $scope.folder = folder;
+    $scope.name = (that = folder && folder.name) ? that : "unnamed collection";
+    return $scope.description = (that = folder && folder.description) ? that : "";
+  };
+  eventBus.listen('folder.edit.name', function(folder){
+    $scope.prepare(folder);
+    return $scope.edit.toggle(true, 'name');
+  });
+  eventBus.listen('folder.edit.description', function(folder){
+    $scope.prepare(folder);
+    return $scope.edit.toggle(true, 'description');
+  });
+  return $scope.save = function(){
+    var create, folder;
+    eventBus.fire('loading.dimmer.on');
+    create = false;
+    folder = $scope.folder;
+    if (!folder) {
+      folder = new folderService.folder({
+        permission: {
+          'switch': 'publish',
+          list: [{
+            "perm": "fork",
+            "type": "global",
+            "target": null,
+            "username": "and anonymous user",
+            "displayname": "Everyone"
+          }]
+        },
+        name: $scope.name,
+        description: $scope.description,
+        key: null,
+        owner: null
+      });
+    } else {
+      folder.name = $scope.name;
+      folder.description = $scope.description;
+    }
+    return folder.save().then(function(){
+      return $scope.$apply(function(){
+        eventBus.fire('loading.dimmer.off');
+        plNotify.send('success', "saved");
+        $scope.edit.toggle(false);
+        if (!$scope.folder) {
+          return eventBus.fire('folderList.add', folder);
+        }
+      });
+    })['catch'](function(){
+      plNotify.send('error', "failed.. try later?");
+      return eventBus.fire('loading.dimmer.off');
+    });
+  };
+}));
+x$.controller('folderChooser', ['$scope', '$http', 'folderService', 'plNotify', 'eventBus'].concat(function($scope, $http, folderService, plNotify, eventBus){
+  $scope.show = false;
+  $scope.target = null;
+  $scope.mfolder = [];
+  $scope.createAndAdd = function(keyword){
+    var folder;
+    if (!keyword) {
+      return;
+    }
+    eventBus.fire('loading.dimmer.on');
+    folder = new folderService.folder({
+      name: keyword,
+      key: null,
+      owner: null
+    });
+    return folder.save().then(function(key){
+      return $scope.$apply(function(){
+        $scope.mfolder = [folder];
+        $scope.add();
+        return eventBus.fire('loading.dimmer.off');
+      });
+    })['catch'](function(){
+      return $scope.$apply(function(){
+        plNotify.send('success', 'cannot create collection. try later?');
+        return eventBus.fire('loading.dimmer.off');
+      });
+    });
+  };
+  $scope.add = function(){
+    var fkey, ref$, tkey, type;
+    fkey = ((ref$ = $scope.mfolder || ($scope.mfolder = []))[0] || (ref$[0] = {})).key;
+    tkey = ($scope.target || ($scope.target = {})).key;
+    type = ((ref$ = $scope.target || ($scope.target = {}))._type || (ref$._type = {})).name || ($scope.target || ($scope.target = {})).type;
+    if (!tkey && ($scope.target || ($scope.target = {})).type) {
+      tkey = ($scope.target || ($scope.target = {})).item;
+    }
+    if (!fkey || !tkey) {
+      $scope.hint = true;
+      return;
+    }
+    eventBus.fire('loading.dimmer.on');
+    return folderService.addto(fkey, tkey, type).then(function(){
+      return $scope.$apply(function(){
+        eventBus.fire('loading.dimmer.off');
+        $scope.show = false;
+        return plNotify.send('success', "added");
+      });
+    })['catch'](function(d){
+      return $scope.$apply(function(){
+        eventBus.fire('loading.dimmer.off');
+        if (d === 'existed') {
+          $scope.show = false;
+          return plNotify.send('warning', "already in this collection");
+        } else {
+          return plNotify.send('error', "failed to add; try later?");
+        }
+      });
+    });
+  };
+  eventBus.listen('folder-chooser-prechoose', function(key){
+    return console.log('123');
+  });
+  return eventBus.listen('add-to-collection', function(item){
+    var ret, folder;
+    ret = /hint\.addCollection\.(\d+)/.exec(window.location.hash);
+    if (ret) {
+      folder = new folderService.folder({
+        key: ret[1]
+      });
+      return folder.load().then(function(){
+        return $scope.$apply(function(){
+          folder.type = 'folder';
+          folder.displayname = folder.name;
+          $scope.mfolder.splice(0);
+          $scope.mfolder.push(folder);
+          $scope.target = item;
+          return $scope.show = true;
+        });
+      });
+    } else {
+      $scope.target = item;
+      return $scope.show = true;
+    }
+  });
+}));
+x$.controller('folderView', ['$scope', '$http', 'IOService', 'folderService', 'Paging', 'plNotify', 'eventBus'].concat(function($scope, $http, IOService, folderService, Paging, plNotify, eventBus){
+  var key;
+  $scope.item = [];
+  key = /\/collection\/(\d+)\/?/.exec(window.location.href);
+  $http({
+    url: "/d/folder/" + key[1],
+    method: 'GET'
+  }).success(function(d){
+    $scope.folder = new folderService.folder(d);
+    return $scope.items = d.content;
+  }).error(function(d){});
+  $scope.rename = function(){
+    return eventBus.fire('folder.edit.name', $scope.folder);
+  };
+  $scope.open = function(item){
+    return window.location.href = "/chart/" + item.item;
+  };
+  $scope.libraryName = function(){
+    return (($scope.folder || ($scope.folder = {})).name || "unnamed").replace(/ /g, "-");
+  };
+  $scope.hint = {
+    download: {
+      toggled: false,
+      toggle: function(it){
+        return this.toggled = it != null
+          ? it
+          : !this.toggled;
+      }
+    }
+  };
+  return $scope.remove = function(item){
+    eventBus.fire('loading.dimmer.on');
+    return $http({
+      url: "/d/folder/" + key[1] + "/content/del",
+      method: 'POST',
+      data: {
+        item: item.item,
+        type: item.type
+      }
+    }).success(function(d){
+      plNotify.send('success', "removed.");
+      eventBus.fire('loading.dimmer.off');
+      if ($scope.items.indexOf(item) >= 0) {
+        return $scope.items.splice($scope.items.indexOf(item), 1);
+      }
+    }).error(function(d){
+      plNotify.send('success', "failed to remove. try later?");
+      return eventBus.fire('loading.dimmer.off');
+    });
+  };
+}));
 x$.controller('folderList', ['$scope', '$http', 'IOService', 'folderService', 'Paging', 'plNotify', 'eventBus'].concat(function($scope, $http, IOService, folderService, Paging, plNotify, eventBus){
+  $scope.settingPanel = {
+    tab: 'permission',
+    init: function(){
+      return $scope.permtype = (window.permtype || (window.permtype = []))[1] || 'none';
+    },
+    toggle: function(tab){
+      if (tab != null) {
+        this.tab = tab;
+      }
+      return this.toggled = !this.toggled;
+    },
+    toggled: false
+  };
+  $scope.paging = Paging;
   $scope.loading = true;
+  $scope.myfolders = [];
   $scope.folders = [];
   $scope.q = {};
   $scope.qLazy = {
@@ -27,10 +269,18 @@ x$.controller('folderList', ['$scope', '$http', 'IOService', 'folderService', 'P
     }, delay, reset).then(function(ret){
       var this$ = this;
       return $scope.$apply(function(){
-        var data;
+        var data, keys;
         data = (ret || []).map(function(it){
           return new folderService.folder(it, true);
         });
+        keys = $scope.folders.map(function(it){
+          return it.key;
+        });
+        if (!reset) {
+          data = data.filter(function(it){
+            return keys.indexOf(it.key) < 0;
+          });
+        }
         Paging.flexWidth(data);
         return $scope.folders = (reset
           ? []
@@ -47,6 +297,9 @@ x$.controller('folderList', ['$scope', '$http', 'IOService', 'folderService', 'P
   Paging.loadOnScroll(function(){
     return $scope.loadList();
   }, $('#list-end'));
+  $scope.goto = function(folder){
+    return window.location.href = "/collection/" + folder.key;
+  };
   $scope.open = function(folder){
     folder = new folderService.folder({
       key: folder.key || folder
@@ -60,15 +313,23 @@ x$.controller('folderList', ['$scope', '$http', 'IOService', 'folderService', 'P
       return console.log('erro');
     });
   };
-  $scope['delete'] = function(key){
-    var folder;
-    folder = new folderService.folder({
-      key: key
-    });
+  $scope['delete'] = function(folder){
+    eventBus.fire('loading.dimmer.on');
     return folder['delete']().then(function(){
-      return console.log('ok');
+      return $scope.$apply(function(){
+        plNotify.send('success', 'deleted');
+        if ($scope.folders.indexOf(folder) >= 0) {
+          return $scope.folders.splice($scope.folders.indexOf(folder), 1);
+        }
+      });
     })['catch'](function(){
-      return console.log('err');
+      return $scope.$apply(function(){
+        return plNotify.send('error', 'failed to delete. try later?');
+      });
+    })['finally'](function(){
+      return $scope.$apply(function(){
+        return eventBus.fire('loading.dimmer.off');
+      });
     });
   };
   $scope.delfrom = function(folder, item, type){
@@ -90,60 +351,19 @@ x$.controller('folderList', ['$scope', '$http', 'IOService', 'folderService', 'P
     });
   };
   $scope.addto = function(folder, item, type){
-    return $http({
-      url: "/d/folder/" + folder + "/content",
-      method: "POST",
-      data: {
-        item: item,
-        type: type
-      }
-    }).success(function(d){
-      return plNotify.send('success', "added");
-    }).error(function(d){
-      if (d === 'existed') {
-        return plNotify.send('error', "already in folder");
-      } else {
-        return plNotify.send('error', "failed to move to folder. try later?");
-      }
-    });
+    return folderService.addto(folder, item, type);
   };
-  $scope.active = function(it){
-    return $scope.folder = it;
-  };
-  $scope.edit = {
-    toggled: false,
-    toggle: function(it){
-      return this.toggled = !(it != null) ? !this.toggled : it;
+  $scope.rename = function(it){
+    if (it.owner === $scope.user.data.key) {
+      return eventBus.fire('folder.edit.name', it);
     }
   };
-  $scope.rename = function(){
-    if ($scope.folder) {
-      return $scope.folder.save().then(function(){
-        return plNotify.send('success', "saved");
-      })['catch'](function(){
-        return plNotify.send('success', "save failed. try later?");
-      });
-    }
+  $scope.create = function(){
+    return eventBus.fire('folder.edit.name', null);
   };
-  return $scope.createForm = {
-    name: "unnamed folder",
-    permission: {
-      'switch': 'publish',
-      list: []
-    },
-    create: function(){
-      var folder, ref$, ref1$, ref2$;
-      console.log(1);
-      folder = new folderService.folder((ref$ = (ref2$ = {}, ref2$.permission = (ref1$ = $scope.createForm).permission, ref2$.name = ref1$.name, ref2$), ref$.key = null, ref$.owner = null, ref$));
-      console.log(2);
-      return folder.save().then(function(){
-        console.log(3);
-        return console.log('ok');
-      })['catch'](function(){
-        return console.log('err');
-      });
-    }
-  };
+  return eventBus.listen('folderList.add', function(it){
+    return $scope.folders = [it].concat($scope.folders);
+  });
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

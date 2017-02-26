@@ -17,9 +17,12 @@ plotdb.view = do
     @_ = {handler: {}, _chart: JSON.stringify(chart), fields, root, inited: false}
     if chart =>
       code = chart.code.content
-      if code.0 == \{ => code = "(function() { return #code; })();"
-      else code = "(function() { #code; return module.exports; })();"
-      @_.chart = chart = eval(code) <<< chart
+      if typeof(code) == \string =>
+        if code.0 == \{ => code = "(function() { return #code; })();"
+        else code = "(function() { #code; return module.exports; })();"
+        @_.chart = chart = eval(code) <<< chart
+      else
+        @_.chart = chart = code <<< chart
     plotdb.chart.update-dimension chart
     plotdb.chart.update-config chart, chart.config
     plotdb.chart.update-assets chart, chart.assets
@@ -50,6 +53,7 @@ plotdb.view.chart.prototype <<< do
     libs = @_.chart.library or []
 
   attach: (root) ->
+    if typeof(root) == \string => root = document.querySelector(root)
     @_.root = root
     {chart, theme} = @_.{chart,theme}
     root.setAttribute("class", ((root.getAttribute("class") or "")
@@ -83,31 +87,32 @@ plotdb.view.chart.prototype <<< do
       root = iiroot
 
     root.innerHTML = [
-      "<style type='text/css'>/* <![CDATA[ */#{chart.style.content}/* ]]> */</style>" if chart and chart.style
-      "<style type='text/css'>/* <![CDATA[ */#{theme.style.content}/* ]]> */</style>" if theme and theme.style
+      "<style type='text/css'>/* <![CDATA[ */#{chart.{}style.content or ""}/* ]]> */</style>" if chart and chart.style
+      "<style type='text/css'>/* <![CDATA[ */#{theme.{}style.content or ""}/* ]]> */</style>" if theme and theme.style
       "<div style='position:relative;width:100%;height:100%;'><div style='height:0;'>&nbsp;</div>"
-      chart.doc.content
+      chart.{}doc.content or ""
       "</div>"
-      theme.doc.content if theme and theme.{}doc.content
+      theme.{}doc.content if theme and theme.{}doc.content
     ].join("")
     chart.root = root.querySelector("div:first-of-type")
     resize = ->
       if resize.handle => clearTimeout resize.handle
       resize.handle = setTimeout (~>
         resize.handle = null
-        chart.resize!
-        chart.render!
+        if chart.resize => chart.resize!
+        if chart.render => chart.render!
       ), 500
-    window.addEventListener \resize, (-> resize! )
+    plotdb.util.trackResizeEvent root, (-> resize!)
     newClass = (root.getAttribute(\class) or "").split(' ').filter(->it!='loading').join(" ").trim!
     try
-      chart.init!
+      if chart.init => chart.init!
       if chart.parse => chart.parse!
-      chart.resize!
-      chart.bind!
-      chart.render!
-    catch
+      if chart.resize => chart.resize!
+      if chart.bind => chart.bind!
+      if chart.render => chart.render!
+    catch e
       newClass += ' error'
+      console.error e
     root.setAttribute \class, newClass
     @inited = true
 
@@ -118,6 +123,7 @@ plotdb.view.chart.prototype <<< do
   resize: -> @_.chart.resize!
   bind: -> @_.chart.bind!
   render: -> @_.chart.render!
+  destroy: -> if @_.chart.destroy => @_.chart.destroy!
   clone: ->
     new plotdb.view.chart(JSON.parse(@_._chart), @_{theme, fields})
   on: (event, cb) -> @_.handler[][event].push cb

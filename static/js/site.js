@@ -13,6 +13,104 @@ x$.config(['$compileProvider', '$httpProvider'].concat(function($compileProvider
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob:|https?:\/\/([a-z0-9]+.)?plotdb\.com\/|https?:\/\/([a-z0-9]+.)?plotdb\.io\/|http:\/\/localhost\/|http:\/\/localhost.io\/|https:\/\/www\.facebook\.com\/|https:\/\/www\.pinterest\.com\/|mailto:\?|http:\/\/www\.linkedin\.com\/|http:\/\/twitter\.com\/)|#|https:\/\/docs.google.com\/spreadsheets\//);
   return $httpProvider.interceptors.push('httpRequestInterceptor');
 }));
+x$.service('license', ['$rootScope'].concat(function($rootScope){
+  var ret;
+  ret = {
+    init: function(obj){
+      return ret.defaultLicenses['MIT License'];
+    },
+    match: function(obj){
+      var k, ref$, v, matched, k2, v2;
+      for (k in ref$ = ret.defaultLicenses) {
+        v = ref$[k];
+        matched = true;
+        for (k2 in v) {
+          v2 = v[k2];
+          if (v2.free !== obj[k2].free || (!obj[k2].free && v2.price !== obj[k2].price)) {
+            matched = false;
+            break;
+          }
+        }
+        if (matched) {
+          return k;
+        }
+      }
+      return "Custom License";
+    },
+    get: function(it){
+      return JSON.parse(JSON.stringify(ret.defaultLicenses[it] || ret.defaultLicenses['MIT License']));
+    },
+    defaultLicenses: {
+      'MIT License': {
+        'Personal Use': {
+          free: true,
+          price: 0
+        },
+        'Generate SVG': {
+          free: true,
+          price: 0
+        },
+        'Embedded with IFrame': {
+          free: true,
+          price: 0
+        },
+        'Run in Single Site': {
+          free: true,
+          price: 0
+        },
+        'Run in Multiple Sites': {
+          free: true,
+          price: 0
+        }
+      },
+      'PlotDB Basic License': {
+        'Personal Use': {
+          free: true,
+          price: 0
+        },
+        'Generate SVG': {
+          free: true,
+          price: 0
+        },
+        'Embedded with IFrame': {
+          free: true,
+          price: 0
+        },
+        'Run in Single Site': {
+          free: false,
+          price: 10
+        },
+        'Run in Multiple Sites': {
+          free: false,
+          price: 50
+        }
+      },
+      'PlotDB Expert License': {
+        'Personal Use': {
+          free: true,
+          price: 0
+        },
+        'Embedded with IFrame': {
+          free: true,
+          price: 0
+        },
+        'Generate SVG': {
+          free: false,
+          price: 1
+        },
+        'Run in Single Site': {
+          free: false,
+          price: 10
+        },
+        'Run in Multiple Sites': {
+          free: false,
+          price: 50
+        }
+      }
+    }
+  };
+  return ret;
+}));
 x$.service('eventBus', ['$rootScope'].concat(function($rootScope){
   var ret;
   return ret = import$(this, {
@@ -98,8 +196,8 @@ x$.service('plNotify', ['$rootScope', '$timeout'].concat(function($rootScope, $t
   };
   return this;
 }));
-x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', 'plConfig', 'dataService', 'chartService', 'eventBus'].concat(function($scope, $http, $interval, global, plNotify, plConfig, dataService, chartService, eventBus){
-  var that, ref$, x$;
+x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', 'plConfig', 'dataService', 'chartService', 'eventBus', 'Modal'].concat(function($scope, $http, $interval, global, plNotify, plConfig, dataService, chartService, eventBus, Modal){
+  var that, ref$, ret, x$, tracks, i$, to$, i, results$ = [];
   $scope.trackEvent = function(cat, act, label, value){
     return ga('send', 'event', cat, act, label, value);
   };
@@ -159,6 +257,24 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
       }
       return doPrevent ? prevent(e) : undefined;
     });
+  };
+  $scope.hint = new Modal.control();
+  if (window.location.hash) {
+    ret = /hint\.([^.]+)\./.exec(window.location.hash);
+    if (ret) {
+      $scope.hint.toggle(true, ret[1]);
+    }
+  }
+  $scope.fire = function(name, payload){
+    return eventBus.fire(name, payload);
+  };
+  $scope.addToCollection = function(item, type){
+    type == null && (type = null);
+    console.log(item);
+    if (type) {
+      (item._type || (item._type = {})).name = type;
+    }
+    return eventBus.fire('add-to-collection', item);
   };
   $scope.confirmbox = {
     config: {
@@ -349,9 +465,20 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     chart = JSON.parse(localStorage.getItem("/charttype/#item"))
     $scope.charts.push chart
   */
-  return $scope.load = function(chart){
+  $scope.load = function(chart){
     return window.location.href = chartService.link(chart);
   };
+  tracks = $('*[data-track]');
+  for (i$ = 0, to$ = tracks.length; i$ < to$; ++i$) {
+    i = i$;
+    results$.push(tracks[i].addEventListener('click', fn$));
+  }
+  return results$;
+  function fn$(){
+    var data;
+    data = this.getAttribute('data-track').split(',');
+    return ga('send', 'event', data[0] || null, data[1] || null, data[2] || null, data[3] || null);
+  }
 }));
 x$.controller('quota', ['$scope', 'eventBus'].concat(function($scope, eventBus){
   $scope.quota = {};

@@ -11,6 +11,7 @@
           /assets/medium-editor/5.15.1/css/medium-editor.min.css
           /assets/medium-insert/2.2.4/css/base.min.css
           /assets/medium-insert/2.2.4/css/frontend.min.css
+          /assets/animate.css/3.5.1/index.css
           /css/index.css
         ]>
     js: do
@@ -30,6 +31,7 @@
           /js/plotdb/theme.js
           /js/plotdb/data.js
           /js/plotdb/config.js
+          /js/plotdb/util.js
           /js/share/config.js
           /js/chart/render.js
         ]>
@@ -42,6 +44,7 @@
           /js/plotdb/theme.js
           /js/plotdb/data.js
           /js/plotdb/config.js
+          /js/plotdb/util.js
           /js/share/config.js
           /js/chart/view.js
         ]>
@@ -53,6 +56,7 @@
           /js/plotdb/theme.js
           /js/plotdb/data.js
           /js/plotdb/config.js
+          /js/plotdb/util.js
           /js/share/config.js
           /js/chart/view.js
         ]>
@@ -91,6 +95,7 @@
           /js/plotdb/theme.js
           /js/plotdb/data.js
           /js/plotdb/config.js
+          /js/plotdb/util.js
           /js/chart/sample.js
           /js/chart/index.js
           /js/palette/sample.js

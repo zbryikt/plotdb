@@ -1,13 +1,31 @@
 extends /base.jade
 block body
+  link(rel="stylesheet",type="text/css",href="/css/render/pdb.css")
+  script(type="text/javascript",src="/js/pack/view.js")
+  script(type="text/javascript",src="/lib/plotd3/0.1.0/index.js")
+  style(type="text/css").
+    html,body {background: #fff!important}
   #root.doc-root
     .doc-content
       block markdown
-      .doc-nav
-        //-img(src="/assets/img/plotdb-docs.png")
-        //-.sep.dark
-        ul.nav.nav-pills.nav-stacked
-          li.active: a Overview
-          li: a Writing Vis
-          li: a Work with Theme
-          li: a External API
+      #disqus_thread
+
+  script.
+    var disqus_config = function () {
+    this.page.url = "https://plotdb.com/doc/"; /* TODO */
+    this.page.identifier = "/doc/"; /* PAGE IDENTIFIER */
+    };
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    s.src = '//plotdb.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+  //-.doc-nav
+    //-img(src="/assets/img/plotdb-docs.png")
+    //-.sep.dark
+    ul.nav.nav-pills.nav-stacked
+      li.active: a Overview
+      li: a Writing Vis
+      li: a Work with Theme
+      li: a External API

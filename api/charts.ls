@@ -244,6 +244,7 @@ engine.router.api.delete "/chart/:id", aux.numid false, (req, res) ~>
       control.update-size(req, chart.owner, -size)
       io.query "update charts set parent = null where parent = $1", [req.params.id]
     .then -> io.query("delete from teamcharts where chart = $1", [req.params.id])
+    .then -> io.query("delete from foldercontent where type = 'chart' and item = $1", [req.params.id])
     .then -> io.query("delete from charts where key = $1", [req.params.id])
     .then -> res.send []
     .catch ->

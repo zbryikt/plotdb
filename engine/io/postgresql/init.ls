@@ -279,6 +279,8 @@ query init-users-table
   .then -> query init-folder-table
   .then -> query init-folder-content-table
   .then -> query alter-wrap "alter table foldercontent add column name text;"
+  .then -> query alter-wrap "alter table folders add column thumbnail int;"
+  .then -> query alter-wrap "alter table folders add column description text constraint dlen check (char_length(description) <= 512);"
   .then -> query """
     do $$
       begin

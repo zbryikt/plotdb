@@ -7,6 +7,41 @@ angular.module \plotDB
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(blob:|https?:\/\/([a-z0-9]+.)?plotdb\.com\/|https?:\/\/([a-z0-9]+.)?plotdb\.io\/|http:\/\/localhost\/|http:\/\/localhost.io\/|https:\/\/www\.facebook\.com\/|https:\/\/www\.pinterest\.com\/|mailto:\?|http:\/\/www\.linkedin\.com\/|http:\/\/twitter\.com\/)|#|https:\/\/docs.google.com\/spreadsheets\//)
     $httpProvider.interceptors.push \httpRequestInterceptor
 
+  ..service 'license', <[$rootScope]> ++ ($rootScope) ->
+    ret = do
+      init: (obj) ->
+        return ret.default-licenses['MIT License']
+      match: (obj) ->
+        for k,v of ret.default-licenses =>
+          matched = true
+          for k2,v2 of v => if v2.free != obj[k2].free or (!obj[k2].free and v2.price != obj[k2].price) =>
+            matched = false
+            break
+          if matched => return k
+        return "Custom License"
+      get: ->
+        return JSON.parse(JSON.stringify(ret.default-licenses[it] or ret.default-licenses['MIT License']))
+      default-licenses: 
+        'MIT License':  do
+          'Personal Use': { free: true, price: 0 }
+          'Generate SVG': { free: true, price: 0 }
+          'Embedded with IFrame': { free: true, price: 0 }
+          'Run in Single Site': { free: true, price: 0 }
+          'Run in Multiple Sites': { free: true, price: 0 }
+        'PlotDB Basic License':  do
+          'Personal Use': { free: true, price: 0 }
+          'Generate SVG': { free: true, price: 0 }
+          'Embedded with IFrame': { free: true, price: 0 }
+          'Run in Single Site': { free: false, price: 10 }
+          'Run in Multiple Sites': { free: false, price: 50 }
+        'PlotDB Expert License':  do
+          'Personal Use': { free: true, price: 0 }
+          'Embedded with IFrame': { free: true, price: 0 }
+          'Generate SVG': { free: false, price: 1 }
+          'Run in Single Site': { free: false, price: 10 }
+          'Run in Multiple Sites': { free: false, price: 50 }
+    return ret
+
   ..service 'eventBus', <[$rootScope]> ++ ($rootScope) ->
     ret = @ <<< do
       queues: {}
@@ -45,8 +80,8 @@ angular.module \plotDB
     @
 
   ..controller \plSite,
-  <[$scope $http $interval global plNotify plConfig dataService chartService eventBus]> ++
-  ($scope, $http, $interval, global, plNotify, plConfig, data-service, chart-service, eventBus) ->
+  <[$scope $http $interval global plNotify plConfig dataService chartService eventBus Modal]> ++
+  ($scope, $http, $interval, global, plNotify, plConfig, data-service, chart-service, eventBus, Modal) ->
     $scope.track-event = (cat, act, label, value) -> ga \send, \event, cat, act, label, value
     $scope.notifications = plNotify.queue
     $scope.alert = plNotify.alert
@@ -88,7 +123,16 @@ angular.module \plotDB
         else if (e.deltaY > 0 and (scroll.height - height - scroll.top) <= 0) =>
           do-prevent = true
         return if do-prevent => prevent e else undefined
+    $scope.hint = new Modal.control!
 
+    if window.location.hash =>
+      ret = /hint\.([^.]+)\./.exec(window.location.hash)
+      if ret => $scope.hint.toggle true, ret.1
+    $scope.fire = (name,payload) -> eventBus.fire name, payload
+    $scope.addToCollection = (item,type=null) ->
+      console.log item
+      if type => item.{}_type.name = type
+      eventBus.fire \add-to-collection, item
     $scope.confirmbox = do
       config: do
         message: ""
@@ -217,6 +261,11 @@ angular.module \plotDB
     $scope.load = (chart) ->
       window.location.href = chartService.link chart
       #"/chart/?k=#{chart.{}type.name or 'local'}|charttype|#{chart.key}"
+    tracks = $('*[data-track]')
+    for i from 0 til tracks.length =>
+      tracks[i].addEventListener \click, ->
+        data = @getAttribute \data-track .split(\,)
+        ga \send, \event, (data.0 or null), (data.1 or null), (data.2 or null), (data.3 or null)
   ..controller \quota, <[$scope eventBus]> ++ ($scope, eventBus) ->
     $scope.quota = {}
     eventBus.listen \quota.widget.on, -> $scope.quota.showQuota = true

@@ -1,0 +1,30 @@
+include /mixin.jade
++cover-modal("settingPanel.toggled","settingPanel.toggle()","narrow")
+  .panel.panel-default(ng-init="settingPanel.tab='permission'")
+    .panel-heading &nbsp;
+    .panel-body: div(ng-cloak)
+      .closebtn.inner.lg.inverse(ng-click="settingPanel.toggle()")
+      ul.nav.nav-tabs
+        li(ng-class="{'active':settingPanel.tab=='permission'}",ng-click="settingPanel.tab='permission'")
+          a(href="#") #[i.fa.fa-lock] Permission
+
+      div(ng-show="settingPanel.tab=='info'",style="position:relative")
+        br
+        label Collection Name
+        input.form-control(ng-model="activeFolder.name")
+      div(ng-show="settingPanel.tab=='permission'",style="position:relative")
+        //-include /widget/panel-lock.jade
+        div
+          +searchable()
+          .sep
+          div(ng-controller="permEdit",ng-init="setPerm(target().permission)")
+            include /widget/permission.jade
+            +permPanel('entity')
+
+    .panel-footer.text-right(style="padding-left: 5px")
+      .btn.btn-success.btn-sm.loader(ng-class="{'btn-glowing': needSave,'loading':save.handle}",
+      ng-click="save()") SAVE
+      span &nbsp;
+      .btn.btn-default.btn-sm(ng-click="settingPanel.toggle()") Close
+
+

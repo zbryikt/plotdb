@@ -83,5 +83,10 @@ plotdb.chart = do
       #if type.filter(->it == \Number).length => config[k] = parseFloat(config[k])
   add: (name, json) -> plotdb.chart.add.{}list[name] = json
   get: (name) ->
-    if !plotdb.chart.add.{}list[name] => return null
-    new plotdb.view.chart(JSON.parse(JSON.stringify(plotdb.chart.add.{}list[name])))
+    chart = plotdb.chart.add.{}list[name]
+    if !chart => return null
+    code = chart.code.content
+    chart = JSON.parse(JSON.stringify(chart))
+    if typeof(code) != \string => chart.code.content = code
+    new plotdb.view.chart chart
+  list: -> [k for k of plotdb.chart.add.list]

@@ -36,5 +36,5 @@ io.query "select * from charts" + (if is-all => "" else " where owner=4")
     fs.write-file-sync name, JSON.stringify(ret)
     fs.write-file-sync "chart-to-update.json", JSON.stringify(mismatched)
     console.log "done."
-    setTimeout (-> process.exit! ), 1000
+    setTimeout (-> process.exit! ), 0
 

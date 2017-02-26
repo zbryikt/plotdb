@@ -1,0 +1,78 @@
+extends /base.jade
+block vars
+  - var rootid = "exploreview"
+  - var url = "https://plotdb.com/chart/explore/"
+block head
+block body
+  div(ng-controller="folderList")
+    .spc1
+    .page-header(style="height:188px;background:url(/assets/img/collection-icons.png) 85% center no-repeat #fff"): .inner
+      .media
+        .media-left
+          img(src="/assets/img/collection.svg",style="width:120px")
+        .media-body
+          //-img.pull-right(src="/assets/img/collection-icons.png")
+          .title
+            span Collections &nbsp;
+            .btn.btn-success(ng-click="create()",style="vertical-align:text-top") #[i.fa.fa-plus] create
+          .desc(style="max-width:500px")
+            p Bring all your favorite visualizations in one place! And you can have multiple collections too. make collections by project, theme, type or even by your customer. Developer? also try bundling all visworks in a collection into a #[i JavaScript library]!
+
+
+
+    #root
+      include panel.jade
+      include naming.jade
+
+      div(style="margin:auto;width:1024px")
+        .text-center
+          .btn-group
+            .btn.btn-default(ng-click="q.owner=user.data.key",
+            ng-class="{'active':q.owner==user.data.key}") My Collections
+            .btn.btn-default(ng-click="q.owner=null", ng-class="{'active':!q.owner}") Everyone's Collections
+          span &nbsp; &nbsp;
+          //-.btn.btn-default: i.fa.fa-heart
+          //-.pull-right
+            .input-group(style="width:200px")
+              input.form-control
+              span.input-group-btn: .btn.btn-default: i.fa.fa-search
+        .sep.gap
+        .charts
+          .chart.narrow(ng-cloak,ng-repeat="item in folders",style="padding-bottom:33px")
+            .dropdown.pull-right(ng-cloak,style="margin:5px;z-index:1",ng-show="item.owner==user.data.key")
+              .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown"): i.fa.fa-chevron-down
+              ul.dropdown-menu
+                li: a(ng-click="active(item);settingPanel.toggle()") #[i.fa.fa-edit] Edit
+                li: a(ng-click="rename(item)") #[i.fa.fa-tag] Rename
+                li.divider
+                li: a(ng-click="delete(item)") #[i.fa.fa-close] Delete
+            a.chart-img(ng-attr-href="/collection/{{item.key}}")
+              .ib(ng-attr-style="background-image:url(/s/chart/{{item.thumbnail || 0}}.png)")
+            .chart-desc
+              .title(ng-attr-href="/collection/{{item.key}}",ng-cloak) {{item.name}}
+              .desc(ng-class="{'grayed':!item.description}") {{item.description || '(no description...)'}}
+            .social
+              a.author(ng-attr-href="/user/{{item.owner}}")
+                .avatar.xs(ng-attr-style="background-image(/s/avatar/{{item.owner}}.png);margin-right:3px;display:inline-block;vertical-align:middle")
+                span(style="vertical-align:middle;line-height:16px") {{item.ownername}}
+
+          .flexend
+        #list-end.text-center: span(ng-cloak,ng-show="paging.end") this is the end :)
+        .loader.alone.lg.loading.fixed.scrolling(ng-cloak,ng-show="paging.loading && !paging.end",style="bottom: 60px")
+        //-.folderlist(style="display:flex;flex-wrap:wrap")
+          .folder(ng-cloak,ng-repeat="item in folders",style="display:block;width:212px;min-height:180px;border:1px solid #ccc;box-shadow:0 2px 3px rgba(0,0,0,0.3);padding:5px;background:#fff;flex:1 1 212px;margin:10px")
+            .dropdown.pull-right(ng-cloak,style="margin:5px;z-index:1",ng-show="item.owner==user.data.key")
+              .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown"): i.fa.fa-chevron-down
+              ul.dropdown-menu
+                li: a(ng-click="active(item);settingPanel.toggle()") #[i.fa.fa-edit] Edit
+                li: a(ng-click="rename(item)") #[i.fa.fa-tag] Rename
+                li.divider
+                li: a(ng-click="delete(item)") #[i.fa.fa-close] Delete
+            .clickable(ng-click="goto(item)",ng-attr-style="background-size:cover;background:url(/s/chart/{{item.thumbnail || 0}}.png) #eee center center;display:block;width:100%;height:160px;filter:brightness(0.9);z-index:0;")
+            a.clickable.text-center(ng-cloak,ng-attr-href="/collection/{{item.key}}",style="font-size:1.2em") {{item.name}}&nbsp;
+            div
+              span.avatar.xs(ng-attr-style="background-image(/s/avatar/{{item.owner}}.png)")
+              span {{item.ownername}}
+          .flexend
+          #list-end.text-center: span(ng-cloak,ng-show="paging.end") this is the end :)
+          .loader.alone.lg.loading.fixed.scrolling(ng-cloak,ng-show="paging.loading && !paging.end",style="bottom: 60px")

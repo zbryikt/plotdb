@@ -1,20 +1,33 @@
 @import '../vars'
 @import '../basic'
+@import 'chart'
 
 .team-ctrl-panel
   max-width: 1200px
   margin: -65px auto 0
 
+.team-list
+  display: flex
+  flex-wrap(wrap)
+  #list-end
+    flex: 10 0 0
+
 .team-item
+  flex(1 1 240px)
   background: #fff
-  margin: 0 0 20px
+  margin: 10px
   padding: 10px
   border-radius: 3px
   box-shadow: 0 1px 3px rgba(0,0,0,0.1)
   .avatar
     display: inline-block
     vertical-align: top
-    margin-right: 10px
+  .title
+    font-size: 18px
+  .desc
+    max-height: 80px
+
+
 .team-desc
   display: inline-block
   vertical-align: top
@@ -34,6 +47,12 @@
     width: 160px
     height: 100px
     border: 1px solid #ccc
+.team-members
+  margin-top: 10px
+  width: 100%
+  background: #eee
+  padding: 5px 5px 0
+  border-radius: 5px
 .team-members.compact .team-member
   width: 32px
   height: 24px

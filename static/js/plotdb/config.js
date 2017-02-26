@@ -15,8 +15,8 @@ plotdb.config = {
       name: "English",
       value: "en"
     },
-    category: "Global Settings",
-    rebindOnChange: true
+    rebindOnChange: true,
+    category: "Global Settings"
   },
   fontFamily: {
     name: "Font",
@@ -29,13 +29,6 @@ plotdb.config = {
     type: [plotdb.Number],
     'default': 13,
     category: "Global Settings"
-  },
-  animationDuration: {
-    name: "Animation Duration",
-    type: [plotdb.Number],
-    'default': 500,
-    desc: "Animation Duration, in millisecond (e.g., 500)",
-    category: "Animation"
   },
   background: {
     name: "Background",
@@ -61,19 +54,11 @@ plotdb.config = {
     'default': 10,
     category: "Global Settings"
   },
-  aspectRatio: {
-    name: "Aspect Ratio",
-    type: [plotdb.Boolean],
-    'default': true,
-    category: "Layout"
-  },
-  popupShow: {
-    name: "show Popup",
-    desc: "show Popup when user hovers over elements",
-    type: [plotdb.Boolean],
-    'default': true,
-    category: "Popup",
-    rebindOnChange: true
+  padding: {
+    name: "Padding",
+    type: [plotdb.Number],
+    'default': 10,
+    category: "Global Settings"
   },
   boxRoundness: {
     name: "Block Roundness",
@@ -160,6 +145,41 @@ plotdb.config = {
     'default': '#999',
     category: "Global Settings"
   },
+  strokeWidth: {
+    name: "Stroke Width",
+    type: [plotdb.Number],
+    desc: "Default Stroke width",
+    'default': '2',
+    category: "Global Settings"
+  },
+  strokeDashArray: {
+    name: "Stroke Dash Style",
+    type: [plotdb.Number],
+    'default': '2',
+    desc: "SVG style dash array. '2 4' means 2px line and 4px space.",
+    category: "Global Settings"
+  },
+  animationDuration: {
+    name: "Animation Duration",
+    type: [plotdb.Number],
+    'default': 500,
+    desc: "Animation Duration, in millisecond (e.g., 500)",
+    category: "Animation"
+  },
+  aspectRatio: {
+    name: "Aspect Ratio",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Layout"
+  },
+  popupShow: {
+    name: "show Popup",
+    desc: "show Popup when user hovers over elements",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Popup",
+    rebindOnChange: true
+  },
   geoFill: {
     name: "Fill Color",
     type: [plotdb.Color],
@@ -223,6 +243,30 @@ plotdb.config = {
     'default': "2 2",
     category: "Line"
   },
+  lineSmoothing: {
+    name: "Line Smoothing",
+    'default': "linear",
+    type: [plotdb.Choice(['linear', 'step', 'step-before', 'step-after', 'basis', 'bundle', 'cardinal', 'monotone'])],
+    category: "Line"
+  },
+  lineStroke: {
+    name: "Line Color",
+    type: [plotdb.Color],
+    'default': '#999',
+    category: "Line"
+  },
+  lineStrokeWidth: {
+    name: "Line Width",
+    type: [plotdb.Number],
+    'default': 1,
+    category: "Line"
+  },
+  lineDashArray: {
+    name: "Line Dash Array",
+    type: [plotdb.String],
+    'default': "4 4",
+    category: "Line"
+  },
   gridShow: {
     name: "Show Grid",
     type: [plotdb.Boolean],
@@ -265,12 +309,6 @@ plotdb.config = {
     'default': "2 4",
     category: "Grid",
     desc: "SVG style dash array. '2 4' means 2px line and 4px space."
-  },
-  padding: {
-    name: "Padding",
-    type: [plotdb.Number],
-    'default': 10,
-    category: "Global Settings"
   },
   bubbleSizeMin: {
     name: "Min Size",
@@ -382,6 +420,19 @@ plotdb.config = {
     'default': false,
     category: "Label"
   },
+  labelPosition: {
+    name: "Label Position",
+    type: [plotdb.Choice(["in", "out"])],
+    'default': "out",
+    category: "Label"
+  },
+  showPercent: {
+    name: "Percentage in Label",
+    type: [plotdb.Boolean],
+    desc: "Show percentage in data label",
+    'default': true,
+    category: "Label"
+  },
   nodeShow: {
     name: "Show Data Dot",
     type: [plotdb.Boolean],
@@ -413,19 +464,6 @@ plotdb.config = {
     type: [plotdb.Number],
     'default': '1',
     category: "Dot"
-  },
-  labelPosition: {
-    name: "Label Position",
-    type: [plotdb.Choice(["in", "out"])],
-    'default': "out",
-    category: "Label"
-  },
-  showPercent: {
-    name: "Percentage in Label",
-    type: [plotdb.Boolean],
-    desc: "Show percentage in data label",
-    'default': true,
-    category: "Label"
   },
   unit: {
     name: "Unit",
@@ -481,174 +519,6 @@ plotdb.config = {
     desc: "Data smaller than this value will be clustered into one set of data",
     'default': 0,
     category: "Value"
-  }
-  /*
-  #Axis
-  axisInnerPadding: do
-    name: "Axis Inner Tick length"
-    type: [plotdb.Number]
-    default: 2
-    category: "Axis"
-  
-  axisOutterPadding: do
-    name: "Axis Outer Tick length"
-    type: [plotdb.Number]
-    default: 2
-    category: "Axis"
-  
-  showXAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "X Axis"
-  
-  xAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "X Axis"
-  
-  xAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "X Axis"
-  
-  xAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "X Axis"
-  
-  xAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "X Axis"
-  
-  showYAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Y Axis"
-  
-  yAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "Y Axis"
-  
-  yAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Y Axis"
-  
-  yAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Y Axis"
-  
-  yAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "Y Axis"
-  
-  showRadialAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Radial Axis"
-  
-  rAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "Radial Axis"
-  
-  rAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Radial Axis"
-  
-  rAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Radial Axis"
-  
-  rAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "Radial Axis"
-  
-  showAngularAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Angular Axis"
-  
-  aAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "Angular Axis"
-  
-  aAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Angular Axis"
-  
-  aAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Angular Axis"
-  
-  aAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "Angular Axis"
-  */,
-  lineSmoothing: {
-    name: "Line Smoothing",
-    'default': "linear",
-    type: [plotdb.Choice(['linear', 'step', 'step-before', 'step-after', 'basis', 'bundle', 'cardinal', 'monotone'])],
-    category: "Line"
-  },
-  lineStroke: {
-    name: "Line Color",
-    type: [plotdb.Color],
-    'default': '#999',
-    category: "Line"
-  },
-  lineStrokeWidth: {
-    name: "Line Width",
-    type: [plotdb.Number],
-    'default': 1,
-    category: "Line"
-  },
-  lineDashArray: {
-    name: "Line Dash Array",
-    type: [plotdb.String],
-    'default': "4 4",
-    category: "Line"
-  },
-  strokeWidth: {
-    name: "Stroke Width",
-    type: [plotdb.Number],
-    desc: "Default Stroke width",
-    'default': '2',
-    category: "Global Settings"
-  },
-  strokeDashArray: {
-    name: "Stroke Dash Style",
-    type: [plotdb.Number],
-    'default': '2',
-    desc: "SVG style dash array. '2 4' means 2px line and 4px space.",
-    category: "Global Settings"
   },
   zeroBaseline: {
     name: "Zero Baseline",

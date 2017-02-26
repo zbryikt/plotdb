@@ -4,6 +4,11 @@ angular.module \plotDB
   ($rootScope, $http, plConfig, IOService, baseService) ->
     service = do
       config: plselect: do
+        folder: do
+          placeholder: "search by collection name or id ..."
+          ajax: do
+            url: \/d/entity/?type=8
+            param: (keyword, limit, offset, scope) -> {keyword, limit, offset}
         chart: do
           placeholder: "search by chart name or id ..."
           ajax: do

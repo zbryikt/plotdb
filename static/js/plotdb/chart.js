@@ -204,11 +204,24 @@ plotdb.chart = {
     return ((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name] = json;
   },
   get: function(name){
-    var ref$;
-    if (!((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name]) {
+    var chart, ref$, code;
+    chart = ((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name];
+    if (!chart) {
       return null;
     }
-    return new plotdb.view.chart(JSON.parse(JSON.stringify(((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name])));
+    code = chart.code.content;
+    chart = JSON.parse(JSON.stringify(chart));
+    if (typeof code !== 'string') {
+      chart.code.content = code;
+    }
+    return new plotdb.view.chart(chart);
+  },
+  list: function(){
+    var k, results$ = [];
+    for (k in plotdb.chart.add.list) {
+      results$.push(k);
+    }
+    return results$;
   }
 };
 function import$(obj, src){

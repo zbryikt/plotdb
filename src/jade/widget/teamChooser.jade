@@ -1,0 +1,14 @@
+include /mixin.jade
+mixin team-panel
+  div(ng-controller="teamChooser")
+    +cover-modal("show==true","show=!!!show")
+      .panel.panel-default(style="max-width:400px;margin:auto")
+        .panel-body(style="min-height:140px")
+          h4 choose the team you want to add to: 
+          div(ng-class="{'jump': hint}"): +selectbox("mteam", "team", null, {multiple: false})
+          .sep.no-line
+          .pull-left: a.btn.btn-link(href="/team/") view teams
+          .text-right
+            .btn.btn-default(ng-click="add()",ng-class="{'disabled':!mteam.length}") Add
+            span &nbsp;
+            .btn.btn-default(ng-click="show=false") Cancel

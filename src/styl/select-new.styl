@@ -64,6 +64,10 @@
       overflow: hidden
     .select-hint
       margin: 3px
+      a
+        float: right
+        margin-right: 5px
+        cursor: pointer
     .select-option
       padding: 5px
     .select-option:hover, .select-option.active:hover
@@ -79,9 +83,14 @@
         margin-right: 5px
         width: 32px
         height: 32px
-        position: absolute
       .avatar + .name
         display: inline-block
+        position: absolute
+        top: 0
+        bottom: 0
+        margin: auto 0
+        left: 10px
+        height: 18px
         line-height: 16px
         padding-left: 37px
         width: 100%
@@ -119,16 +128,19 @@
     padding: 0
     input
       padding-left: 3px
+      height: 33px
     .select-option
       width: 100%
       border-radius: 0
       border: none
       margin: 0
       padding: 0
+      line-height: 32px
       .avatar
         margin-top: 0
         width: 32px
         height: 32px
+        vertical-align: top
       i.fa
         display: none
       span
@@ -136,9 +148,14 @@
         padding: 0
         margin: 0
       .name
-        padding: 7px
-        margin-left: 0
-        width: 120px
+        padding: 0
+        position: absolute
+        top: 0
+        left: 37px
+        border: none
+        bottom: 0
+        margin: auto 0
+        width: 100%
         overflow: hidden
         text-overflow: ellipsis
         vertical-align: middle
@@ -147,3 +164,31 @@
 .select-box.alone
   .select-input.form-control
     border-radius: 0
+
+.select-box.lg
+  .select-input
+    height: 46px
+  .select-option
+    line-height: 32px
+  .avatar
+    width: 26px
+    height: 26px
+  input
+    line-height: 32px
+  .select-dropdown
+    top: 46px
+    i.fa-check
+      line-height: 32px
+.select-box.lg.single
+  .select-input.form-control
+    input
+      height: 44px
+      padding-left: 10px
+    .select-option
+      line-height: 44px
+      .name
+       left: 54px
+      .avatar
+        width: 44px
+        height: 44px
+        border-radius: 0

@@ -60,7 +60,7 @@ proper-eval = (code, updateModule = true) -> new Promise (res, rej) ->
   empty="{exports:{init:function(){},update:function(){},resize:function(){},bind:function(){},render:function(){}}}"
   window.error-message = ""
   module = if updateModule => \module else \moduleLocal
-  if code.0 == '{' => code := "(function() { window.#module = {exports:#code}; })()"
+  if code.trim!0 == '{' => code := "(function() { window.#module = {exports:#code}; })()"
   else code := "(function() { #code; window.#module = (typeof(module)=='undefined'?#empty:module); })()"
   window.codeURL = codeURL = URL.createObjectURL new Blob [code], {type: "text/javascript"}
   codeNode = document.createElement("script")
@@ -102,10 +102,18 @@ colorblind = (payload) ->
 
 config-preset = (config) ->
   for k,v of (config or {}) =>
+    if config[v.extend] => p = config[v.extend]
+    else if plotdb.config[v.extend] => p = plotdb.config[v.extend]
+    else if plotdb.config[k] => p = plotdb.config[k]
+    else p = null
+    if !p => continue
+    for field, value of p => if !(v[field]?) => v[field] = value
+    /*
     p = if plotdb.config[k] => k else if plotdb.config[v.extend] => v.extend else null
     if !p => continue
     for field,value of plotdb.config[p] =>
       if !(v[field]?) => v[field] = value
+    */
 
 parse = (payload, type) ->
   loadlib payload .then ->
@@ -370,9 +378,9 @@ render = (payload, rebind = true) ->
         ret
       <~ promise.then
       if thread.racing! => return thread.dec reboot
-      chart.resize!
-      if rebind or reboot => chart.bind!
-      chart.render!
+      if chart.resize => chart.resize!
+      if (rebind or reboot) and chart.bind => chart.bind!
+      if chart.render => chart.render!
       module.exec-error = false
       window.parent.postMessage {type: \error, payload: window.error-message or ""}, plotdb-domain
     .catch (e) ->
@@ -392,8 +400,8 @@ window.addEventListener \resize, ->
     resize-handler := null
     if !window.module or !window.module.exports => return
     chart = window.module.exports
-    chart.resize!
-    chart.render!
+    if chart.resize => chart.resize!
+    if chart.render => chart.render!
   ), 400
 
 window.addEventListener \keydown, (e) ->

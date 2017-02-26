@@ -5491,11 +5491,24 @@ plotdb.chart = {
     return ((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name] = json;
   },
   get: function(name){
-    var ref$;
-    if (!((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name]) {
+    var chart, ref$, code;
+    chart = ((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name];
+    if (!chart) {
       return null;
     }
-    return new plotdb.view.chart(JSON.parse(JSON.stringify(((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name])));
+    code = chart.code.content;
+    chart = JSON.parse(JSON.stringify(chart));
+    if (typeof code !== 'string') {
+      chart.code.content = code;
+    }
+    return new plotdb.view.chart(chart);
+  },
+  list: function(){
+    var k, results$ = [];
+    for (k in plotdb.chart.add.list) {
+      results$.push(k);
+    }
+    return results$;
   }
 };
 function import$(obj, src){
@@ -5692,8 +5705,8 @@ plotdb.config = {
       name: "English",
       value: "en"
     },
-    category: "Global Settings",
-    rebindOnChange: true
+    rebindOnChange: true,
+    category: "Global Settings"
   },
   fontFamily: {
     name: "Font",
@@ -5706,13 +5719,6 @@ plotdb.config = {
     type: [plotdb.Number],
     'default': 13,
     category: "Global Settings"
-  },
-  animationDuration: {
-    name: "Animation Duration",
-    type: [plotdb.Number],
-    'default': 500,
-    desc: "Animation Duration, in millisecond (e.g., 500)",
-    category: "Animation"
   },
   background: {
     name: "Background",
@@ -5738,19 +5744,11 @@ plotdb.config = {
     'default': 10,
     category: "Global Settings"
   },
-  aspectRatio: {
-    name: "Aspect Ratio",
-    type: [plotdb.Boolean],
-    'default': true,
-    category: "Layout"
-  },
-  popupShow: {
-    name: "show Popup",
-    desc: "show Popup when user hovers over elements",
-    type: [plotdb.Boolean],
-    'default': true,
-    category: "Popup",
-    rebindOnChange: true
+  padding: {
+    name: "Padding",
+    type: [plotdb.Number],
+    'default': 10,
+    category: "Global Settings"
   },
   boxRoundness: {
     name: "Block Roundness",
@@ -5837,6 +5835,41 @@ plotdb.config = {
     'default': '#999',
     category: "Global Settings"
   },
+  strokeWidth: {
+    name: "Stroke Width",
+    type: [plotdb.Number],
+    desc: "Default Stroke width",
+    'default': '2',
+    category: "Global Settings"
+  },
+  strokeDashArray: {
+    name: "Stroke Dash Style",
+    type: [plotdb.Number],
+    'default': '2',
+    desc: "SVG style dash array. '2 4' means 2px line and 4px space.",
+    category: "Global Settings"
+  },
+  animationDuration: {
+    name: "Animation Duration",
+    type: [plotdb.Number],
+    'default': 500,
+    desc: "Animation Duration, in millisecond (e.g., 500)",
+    category: "Animation"
+  },
+  aspectRatio: {
+    name: "Aspect Ratio",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Layout"
+  },
+  popupShow: {
+    name: "show Popup",
+    desc: "show Popup when user hovers over elements",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Popup",
+    rebindOnChange: true
+  },
   geoFill: {
     name: "Fill Color",
     type: [plotdb.Color],
@@ -5900,6 +5933,30 @@ plotdb.config = {
     'default': "2 2",
     category: "Line"
   },
+  lineSmoothing: {
+    name: "Line Smoothing",
+    'default': "linear",
+    type: [plotdb.Choice(['linear', 'step', 'step-before', 'step-after', 'basis', 'bundle', 'cardinal', 'monotone'])],
+    category: "Line"
+  },
+  lineStroke: {
+    name: "Line Color",
+    type: [plotdb.Color],
+    'default': '#999',
+    category: "Line"
+  },
+  lineStrokeWidth: {
+    name: "Line Width",
+    type: [plotdb.Number],
+    'default': 1,
+    category: "Line"
+  },
+  lineDashArray: {
+    name: "Line Dash Array",
+    type: [plotdb.String],
+    'default': "4 4",
+    category: "Line"
+  },
   gridShow: {
     name: "Show Grid",
     type: [plotdb.Boolean],
@@ -5942,12 +5999,6 @@ plotdb.config = {
     'default': "2 4",
     category: "Grid",
     desc: "SVG style dash array. '2 4' means 2px line and 4px space."
-  },
-  padding: {
-    name: "Padding",
-    type: [plotdb.Number],
-    'default': 10,
-    category: "Global Settings"
   },
   bubbleSizeMin: {
     name: "Min Size",
@@ -6059,6 +6110,19 @@ plotdb.config = {
     'default': false,
     category: "Label"
   },
+  labelPosition: {
+    name: "Label Position",
+    type: [plotdb.Choice(["in", "out"])],
+    'default': "out",
+    category: "Label"
+  },
+  showPercent: {
+    name: "Percentage in Label",
+    type: [plotdb.Boolean],
+    desc: "Show percentage in data label",
+    'default': true,
+    category: "Label"
+  },
   nodeShow: {
     name: "Show Data Dot",
     type: [plotdb.Boolean],
@@ -6090,19 +6154,6 @@ plotdb.config = {
     type: [plotdb.Number],
     'default': '1',
     category: "Dot"
-  },
-  labelPosition: {
-    name: "Label Position",
-    type: [plotdb.Choice(["in", "out"])],
-    'default': "out",
-    category: "Label"
-  },
-  showPercent: {
-    name: "Percentage in Label",
-    type: [plotdb.Boolean],
-    desc: "Show percentage in data label",
-    'default': true,
-    category: "Label"
   },
   unit: {
     name: "Unit",
@@ -6158,174 +6209,6 @@ plotdb.config = {
     desc: "Data smaller than this value will be clustered into one set of data",
     'default': 0,
     category: "Value"
-  }
-  /*
-  #Axis
-  axisInnerPadding: do
-    name: "Axis Inner Tick length"
-    type: [plotdb.Number]
-    default: 2
-    category: "Axis"
-  
-  axisOutterPadding: do
-    name: "Axis Outer Tick length"
-    type: [plotdb.Number]
-    default: 2
-    category: "Axis"
-  
-  showXAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "X Axis"
-  
-  xAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "X Axis"
-  
-  xAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "X Axis"
-  
-  xAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "X Axis"
-  
-  xAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "X Axis"
-  
-  showYAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Y Axis"
-  
-  yAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "Y Axis"
-  
-  yAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Y Axis"
-  
-  yAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Y Axis"
-  
-  yAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "Y Axis"
-  
-  showRadialAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Radial Axis"
-  
-  rAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "Radial Axis"
-  
-  rAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Radial Axis"
-  
-  rAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Radial Axis"
-  
-  rAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "Radial Axis"
-  
-  showAngularAxis: do
-    name: "Show Axis"
-    type: [plotdb.Boolean]
-    default: true
-    category: "Angular Axis"
-  
-  aAxisShowDomain: do
-    name: "Show Baseline"
-    default: true
-    category: "Angular Axis"
-  
-  aAxisTickSizeInner: do
-    name: "Inner Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Angular Axis"
-  
-  aAxisTickSizeOuter: do
-    name: "Outer Tick Size"
-    type: [plotdb.Number]
-    default: 6
-    category: "Angular Axis"
-  
-  aAxisTickPadding: do
-    name: "Tick Padding"
-    type: [plotdb.Number]
-    default: 3
-    category: "Angular Axis"
-  */,
-  lineSmoothing: {
-    name: "Line Smoothing",
-    'default': "linear",
-    type: [plotdb.Choice(['linear', 'step', 'step-before', 'step-after', 'basis', 'bundle', 'cardinal', 'monotone'])],
-    category: "Line"
-  },
-  lineStroke: {
-    name: "Line Color",
-    type: [plotdb.Color],
-    'default': '#999',
-    category: "Line"
-  },
-  lineStrokeWidth: {
-    name: "Line Width",
-    type: [plotdb.Number],
-    'default': 1,
-    category: "Line"
-  },
-  lineDashArray: {
-    name: "Line Dash Array",
-    type: [plotdb.String],
-    'default': "4 4",
-    category: "Line"
-  },
-  strokeWidth: {
-    name: "Stroke Width",
-    type: [plotdb.Number],
-    desc: "Default Stroke width",
-    'default': '2',
-    category: "Global Settings"
-  },
-  strokeDashArray: {
-    name: "Stroke Dash Style",
-    type: [plotdb.Number],
-    'default': '2',
-    desc: "SVG style dash array. '2 4' means 2px line and 4px space.",
-    category: "Global Settings"
   },
   zeroBaseline: {
     name: "Zero Baseline",
@@ -6435,6 +6318,87 @@ import$(plotdb.config, {
     category: "X Axis"
   }
 });
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}// Generated by LiveScript 1.3.1
+plotdb.util = {};
+plotdb.util.trackResizeEvent = function(root, callback){
+  var style, nodes, ref$, largeNumber, reset, ow, oh, nw, nh, rafid, onResize, onScroll;
+  style = {
+    basic: {
+      position: 'absolute',
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0
+    },
+    hide: {
+      "z-index": -1,
+      overflow: 'hidden',
+      visibility: 'hidden'
+    },
+    child: {
+      position: 'absolute',
+      left: 0,
+      top: 0,
+      transition: '0s'
+    }
+  };
+  import$(style.basic, style.hide);
+  nodes = [0, 0, 0, 0, 0, 0].map(function(){
+    return document.createElement('div');
+  });
+  ref$ = nodes[0].style;
+  ref$.position = 'relative';
+  ref$.width = '100%';
+  ref$.height = import$('100%', style.hide);
+  import$(nodes[1].style, style.basic);
+  import$(nodes[2].style, style.basic);
+  import$(nodes[3].style, style.basic);
+  import$(nodes[4].style, style.child);
+  ref$ = import$(nodes[5].style, style.child);
+  ref$.width = '200%';
+  ref$.height = '200%';
+  nodes[0].appendChild(nodes[1]);
+  nodes[1].appendChild(nodes[2]);
+  nodes[1].appendChild(nodes[3]);
+  nodes[2].appendChild(nodes[4]);
+  nodes[3].appendChild(nodes[5]);
+  root.appendChild(nodes[0]);
+  largeNumber = 1000000000;
+  reset = function(){
+    var ref$;
+    ref$ = nodes[4].style;
+    ref$.width = largeNumber + "px";
+    ref$.height = largeNumber + "px";
+    ref$ = nodes[2];
+    ref$.scrollLeft = largeNumber;
+    ref$.scrollTop = largeNumber;
+    return ref$ = nodes[3], ref$.scrollLeft = largeNumber, ref$.scrollTop = largeNumber, ref$;
+  };
+  reset();
+  ref$ = [0, 0, 0, 0, 0], ow = ref$[0], oh = ref$[1], nw = ref$[2], nh = ref$[3], rafid = ref$[4];
+  onResize = function(){
+    rafid = 0;
+    ow = nw;
+    oh = nh;
+    return callback();
+  };
+  onScroll = function(){
+    var dirty;
+    nw = nodes[0].offsetWidth;
+    nh = nodes[0].offsetHeight;
+    dirty = nw !== ow || nh !== oh;
+    if (dirty && !rafid) {
+      rafid = requestAnimationFrame(onResize);
+    }
+    return reset();
+  };
+  nodes[2].addEventListener('scroll', onScroll);
+  return nodes[3].addEventListener('scroll', onScroll);
+};
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
@@ -6601,7 +6565,7 @@ $(document).ready(function(){
       empty = "{exports:{init:function(){},update:function(){},resize:function(){},bind:function(){},render:function(){}}}";
       window.errorMessage = "";
       module = updateModule ? 'module' : 'moduleLocal';
-      if (code[0] === '{') {
+      if (code.trim()[0] === '{') {
         code = "(function() { window." + module + " = {exports:" + code + "}; })()";
       } else {
         code = "(function() { " + code + "; window." + module + " = (typeof(module)=='undefined'?" + empty + ":module); })()";
@@ -6674,23 +6638,27 @@ $(document).ready(function(){
     });
   };
   configPreset = function(config){
-    var k, ref$, v, lresult$, p, field, ref1$, value, results$ = [];
+    var k, ref$, v, p, field, value, results$ = [];
     for (k in ref$ = config || {}) {
       v = ref$[k];
-      lresult$ = [];
-      p = plotdb.config[k]
-        ? k
-        : plotdb.config[v.extend] ? v.extend : null;
+      if (config[v.extend]) {
+        p = config[v.extend];
+      } else if (plotdb.config[v.extend]) {
+        p = plotdb.config[v.extend];
+      } else if (plotdb.config[k]) {
+        p = plotdb.config[k];
+      } else {
+        p = null;
+      }
       if (!p) {
         continue;
       }
-      for (field in ref1$ = plotdb.config[p]) {
-        value = ref1$[field];
+      for (field in p) {
+        value = p[field];
         if (!(v[field] != null)) {
-          lresult$.push(v[field] = value);
+          results$.push(v[field] = value);
         }
       }
-      results$.push(lresult$);
     }
     return results$;
   };
@@ -7057,11 +7025,15 @@ $(document).ready(function(){
           if (thread.racing()) {
             return thread.dec(reboot);
           }
-          chart.resize();
-          if (rebind || reboot) {
+          if (chart.resize) {
+            chart.resize();
+          }
+          if ((rebind || reboot) && chart.bind) {
             chart.bind();
           }
-          chart.render();
+          if (chart.render) {
+            chart.render();
+          }
           module.execError = false;
           return window.parent.postMessage({
             type: 'error',
@@ -7093,8 +7065,12 @@ $(document).ready(function(){
         return;
       }
       chart = window.module.exports;
-      chart.resize();
-      return chart.render();
+      if (chart.resize) {
+        chart.resize();
+      }
+      if (chart.render) {
+        return chart.render();
+      }
     }, 400);
   });
   window.addEventListener('keydown', function(e){

@@ -21,13 +21,15 @@ content-security-policy = [
     www.google-analytics.com
     https://www.google-analytics.com
     apis.google.com
-    *.stripe.com
+    plotdb.disqus.com
+    a.disquscdn.com
   ]>
   <[style-src
     'self'
     'unsafe-inline'
     www.google-analytics.com
     fonts.googleapis.com
+    a.disquscdn.com
   ]>
   <[img-src
     'self'
@@ -37,7 +39,6 @@ content-security-policy = [
     www.facebook.com
     static.xx.fbcdn.net
     csi.gstatic.com
-    *.stripe.com
     *
   ]>
   <[font-src
@@ -50,13 +51,13 @@ content-security-policy = [
     'self'
     data:
     blob:
-    *.stripe.com
     *.facebook.com
     *.googleapis.com
     accounts.google.com
+    disqus.com
   ]>
   <[connect-src
-    'self' data: blob: plotdb.com
+    'self' data: blob: plotdb.com links.services.disqus.com
   ]>
 ]
 

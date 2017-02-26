@@ -1,14 +1,25 @@
+include /widget/folderChooser.jade
+include /widget/teamChooser.jade
++folder-panel
++team-panel
 .charts(ng-cloak)
   //-.chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
   .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1")
     //-.chart-ribon(ng-class="{'private': !chart.searchable, 'public': chart.searchable}")
+    .label.label-success.publish(ng-show="chart.published=='publish' && showPub") published
+    .dropdown.pull-right(style="margin:5px",ng-show="user.data")
+      .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown"): i.fa.fa-chevron-down
+      ul.dropdown-menu
+        li: a(ng-click="addToCollection(chart)") add to collection...
+        li(ng-class="{'disabled':chart.owner!=user.data.key}")
+          a(ng-click="addToTeam(chart)",ng-disabled="chart.owner!=user.data.key") add to team...
+          .hover-tip(ng-cloak,ng-show="chart.owner!=user.data.key") Only chart's owner can add it to a team
     a.chart-img(ng-attr-href="{{link(chart)}}",style="display:block")
       .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime|timestamp}})")
     .chart-desc
       a.title(ng-attr-href="{{link(chart)}}")
         //-.pull-right.grayed #[i.fa.fa-dot-circle-o] 5
         span {{chart.name}}
-        .label.label-success.pull-right(ng-show="chart.published=='publish' && showPub") published
       .desc {{chart.description || 'check it yourself!'}}
     .labels
       a.label(ng-attr-href="/chart/explore/?keyword={{tag}}",ng-cloak,ng-repeat="tag in chart.tags|tags") {{tag}}

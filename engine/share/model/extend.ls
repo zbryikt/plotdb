@@ -172,11 +172,13 @@ base = (model) ->
     base: do
       owner: {required: true, type: model.type.key({type:model.type.user})}
       name: {max: 100, min: 1, required: true, type: model.type.string}
+      description: {max: 512, required: false, type: model.type.string}
       likes: {required: false, type: model.type.number}
       searchable: { required: false, type: model.type.boolean }
       createdtime: {required: false, type: model.type.date}
       modifiedtime: {required: false, type: model.type.date}
       permission: {type: model.type.permission}
+      thumbnail: { type: model.type.number }
   base.folder-content = new model do
     name: \folder-content
     base: do

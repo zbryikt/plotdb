@@ -187,8 +187,8 @@ x$.controller('userChartList', ['$scope', '$http', 'dataService', 'chartService'
     return $scope.showPub = true;
   }
 }));
-x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging', 'dataService', 'chartService', 'plNotify'].concat(function($scope, $http, $timeout, IOService, Paging, dataService, chartService, plNotify){
-  var map, k, ref$, v;
+x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging', 'dataService', 'chartService', 'plNotify', 'eventBus'].concat(function($scope, $http, $timeout, IOService, Paging, dataService, chartService, plNotify, eventBus){
+  var trackKeywordEvent, lastKeyword, map, k, ref$, v;
   $scope.loading = true;
   $scope.charts = [];
   $scope.q = {
@@ -212,6 +212,12 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging'
     enc: ["Other", "Position", "Position ( Non-aligned )", "Length", "Direction", "Angle", "Area", "Volume", "Curvature", "Shade", "Saturation"],
     cat: ["Other", "Infographics", "Geographics", "Interactive", "Journalism", "Statistics", "Business"],
     dim: [0, 1, 2, 3, 4, 5, "> 5"]
+  };
+  $scope.addToTeam = function(chart){
+    if (!$scope.user.data || chart.owner !== $scope.user.data.key) {
+      return;
+    }
+    return eventBus.fire('add-to-team', chart);
   };
   $scope.link = function(it){
     return chartService.link(it);
@@ -243,7 +249,18 @@ x$.controller('chartList', ['$scope', '$http', '$timeout', 'IOService', 'Paging'
   $scope.$watch('q', function(){
     return $scope.loadList(500, true);
   }, true);
+  trackKeywordEvent = null;
+  lastKeyword = null;
   $scope.$watch('qLazy', function(){
+    if (trackKeywordEvent) {
+      $timeout.cancel(trackKeywordEvent);
+    }
+    if ($scope.qLazy.keyword && $scope.qLazy.keyword !== lastKeyword) {
+      trackKeywordEvent = $timeout(function(){
+        lastKeyword = $scope.qLazy.keyword;
+        return ga('send', 'event', "ChartList", "Filter", "Keyword " + $scope.qLazy.keyword);
+      }, 1000);
+    }
     return $scope.loadList(1000, true);
   }, true);
   $scope.like = function(chart){

@@ -1,7 +1,18 @@
 angular.module \plotDB
+  ..service \Modal, <[$rootScope]> ++ ($rootScope) ->
+    Modal = {}
+    Modal.control = ->
+      @toggled = {}
+      @
+    Modal.control.prototype = do
+      toggle: (v, type) ->
+        list = if type? => [type] else [k for k of @toggled]
+        list.forEach (k) ~> @toggled[k] = if !(v?) => !!!@toggled[k] else v
+    Modal
+
   ..service \Paging, <[$rootScope $timeout]> ++ ($rootScope, $timeout) ->
     Paging = do
-      session: 0, offset: 0, limit: 20, end: false, loading: false
+      session: 0, offset: 0, limit: 30, end: false, loading: false
       handle: null
       load-on-scroll: (cb, beacon, container) ->
         if container => container = $(container).0

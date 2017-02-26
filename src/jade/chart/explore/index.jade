@@ -9,6 +9,16 @@ block body
     .title Explore Viz
     .desc public charts available for re-use.
   #root.narrow.with-header(ng-controller="chartList")
+    +cover-modal("hint.toggled.addCollection", "hint.toggle(false, 'addCollection')")
+      .panel.panel-default: .panel-body
+         .text-center
+           h3 How to Add Viswork to Collection?
+           span toggling the dropdown menu in the viswork you want to add
+           br
+           br
+           .hint-img(style="background-image:url(/assets/img/hint/add-to-collection.gif)")
+           br
+           .btn.btn-success.btn-block.btn-lg(ng-click="hint.toggle(false)") OK I GOT IT.
     div(style="height:60px")
     #chart-filter.scroll-stick(data-top="50")
       include ../widget/search.jade

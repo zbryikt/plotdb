@@ -91,8 +91,8 @@ angular.module \plotDB
     $scope.q = {owner}
     if $scope.user.data and owner == $scope.user.data.key => $scope.showPub = true
   ..controller \chartList,
-  <[$scope $http $timeout IOService Paging dataService chartService plNotify]> ++
-  ($scope, $http, $timeout, IO-service, Paging, data-service, chart-service, plNotify) ->
+  <[$scope $http $timeout IOService Paging dataService chartService plNotify eventBus]> ++
+  ($scope, $http, $timeout, IO-service, Paging, data-service, chart-service, plNotify, eventBus) ->
     $scope.loading = true
     $scope.charts = []
     $scope.q = do
@@ -123,6 +123,9 @@ angular.module \plotDB
       dim: [
         0 1 2 3 4 5 "> 5"
       ]
+    $scope.addToTeam = (chart) ->
+      if !$scope.user.data or chart.owner != $scope.user.data.key => return
+      eventBus.fire \add-to-team, chart
     $scope.link = -> chart-service.link it
     $scope.paging = Paging
     $scope.load-list = (delay = 1000, reset = false) ->
@@ -135,7 +138,17 @@ angular.module \plotDB
         $scope.charts = (if reset => [] else $scope.charts) ++ data
 
     $scope.$watch 'q', (-> $scope.load-list 500, true), true
-    $scope.$watch 'qLazy', (-> $scope.load-list 1000, true), true
+    track-keyword-event = null
+    last-keyword = null
+    $scope.$watch 'qLazy', (->
+      if track-keyword-event => $timeout.cancel track-keyword-event
+      if $scope.q-lazy.keyword and $scope.q-lazy.keyword != last-keyword =>
+        track-keyword-event := $timeout (->
+          last-keyword := $scope.q-lazy.keyword
+          ga \send, \event, "ChartList", "Filter", "Keyword #{$scope.q-lazy.keyword}"
+        ), 1000
+      $scope.load-list 1000, true
+    ), true
 
     $scope.like = (chart) ->
       if !$scope.user.authed! => return $scope.auth.toggle true

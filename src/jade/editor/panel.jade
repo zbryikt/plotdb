@@ -13,22 +13,6 @@ mixin publish
     .pull-right.btn.btn-text.btn-sm(
     ng-show="target().permission.switch!='publish'") #[b invisible] in embed code / share link
 
-mixin searchable
-  .perm-item(style="padding: 10px 0")
-    label Searchable?
-    br
-    .btn-group
-      .btn.btn-default.btn-sm(ng-class="{'active':target().searchable}",ng-click="target().searchable=true")
-        i.fa.fa-check.text-success
-        span  On
-      .btn.btn-default.btn-sm(ng-class="{'active':!target().searchable}",ng-click="target().searchable=false")
-        i.fa.fa-check.text-success
-        span  Off
-    .pull-right.btn.btn-text.btn-sm(
-    ng-show="target().searchable") #[b shown] in search result
-    .pull-right.btn.btn-text.btn-sm(
-    ng-show="!target().searchable") #[b hidden] from search result
-
 +cover-modal("settingPanel.toggled","settingPanel.toggle()","narrow")
   .panel.panel-default(ng-init="settingPanel.tab='publish'")
     .panel-heading &nbsp;
@@ -43,6 +27,8 @@ mixin searchable
           a(href="#") #[i.fa.fa-info-circle] Chart Info
         li(ng-class="{'active':settingPanel.tab=='library'}",ng-click="settingPanel.tab='library'")
           a(href="#") #[i.fa.fa-book] Libraries
+        li(ng-class="{'active':settingPanel.tab=='license'}",ng-click="settingPanel.tab='license'")
+          a(href="#") #[i.fa.fa-book] License
 
       div(ng-show="settingPanel.tab=='permission'",style="position:relative")
         include /widget/panel-lock.jade
@@ -79,6 +65,36 @@ mixin searchable
           option(value="document") document
           option(value="assets") assets
           option(value="config") config
+        .sep
+
+      div(ng-show="settingPanel.tab=='license'")
+        .well
+          h3(style="margin:0") License
+          small.grayed How this viswork charges you for different usages
+
+        select.form-control(ng-model="chart.license.name")
+          option(value="MIT License") MIT License
+          option(value="PlotDB Basic License") PlotDB Basic License
+          option(value="PlotDB Expert License") PlotDB Expert License 
+          option(value="Custom License") Custom License 
+        .sep
+        .row.gap
+          .col-sm-6
+          .col-sm-3
+            span Free?
+          .col-sm-3
+            span Price (USD)
+        each i in ["Personal Use", "Generate SVG", "Embedded with IFrame", "Run in Single Site", "Run in Multiple Sites"]
+          .row.gap(style="line-height:30px")
+            .col-sm-6
+              span= i
+            .col-sm-3
+              select.form-control.input-sm(ng-model="chart.license.options['" + i + "'].free",
+              ng-options="o.v as o.n for o in [{n: 'Yes', v: true}, {n: 'No', v: false}]")
+            .col-sm-3
+              input.form-control.input-sm(
+              ng-disabled="chart.license.options['" + i + "'].free",
+              ng-model="chart.license.options['" + i + "'].price")
 
     .panel-footer.text-right(style="padding-left: 5px")
       .btn.btn-default.btn-sm.pull-left.loader(ng-click="clone()",

@@ -26,6 +26,39 @@ x$.service('teamService', ['$rootScope', '$http', 'plConfig', 'IOService', 'base
   teamService = baseService.derive('team', service, object);
   return teamService;
 }));
+x$.controller('teamChooser', ['$scope', '$http', 'folderService', 'plNotify', 'eventBus'].concat(function($scope, $http, folderService, plNotify, eventBus){
+  $scope.show = false;
+  $scope.target = null;
+  $scope.mteam = [];
+  $scope.add = function(){
+    if (!($scope.mteam || ($scope.mteam = []))[0] || !$scope.mteam[0].key || !($scope.target || ($scope.target = {})).key) {
+      $scope.hint = true;
+      return;
+    }
+    eventBus.fire('loading.dimmer.on');
+    return $http({
+      url: "/d/team/" + $scope.mteam[0].key + "/chart/",
+      method: 'post',
+      data: [($scope.target || ($scope.target = {})).key]
+    }).success(function(d){
+      eventBus.fire('loading.dimmer.off');
+      $scope.show = false;
+      return plNotify.send('success', "added");
+    }).error(function(d){
+      eventBus.fire('loading.dimmer.off');
+      if (d === 'existed') {
+        $scope.show = false;
+        return plNotify.send('warning', "already in this collection");
+      } else {
+        return plNotify.send('error', "failed to add; try later?");
+      }
+    });
+  };
+  return eventBus.listen('add-to-team', function(item){
+    $scope.target = item;
+    return $scope.show = true;
+  });
+}));
 x$.controller('teamEdit', ['$scope', '$http', '$timeout', 'plNotify', 'teamService', 'chartService', 'eventBus'].concat(function($scope, $http, $timeout, plNotify, teamService, chartService, eventBus){
   $scope.team = new teamService.team(window.team || {});
   $scope.members = window.members || [];

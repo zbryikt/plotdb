@@ -1,0 +1,14 @@
+include /mixin.jade
+mixin folder-panel
+  div(ng-controller="folderChooser")
+    +cover-modal("show==true","show=!!!show")
+      .panel.panel-default(style="max-width:400px;margin:auto")
+        .panel-body(style="min-height:140px")
+          h4 choose the collection you want to use: 
+          div(ng-class="{'bounce-once': hint}"): +selectbox("mfolder", "folder", null, {multiple: false, create: "createAndAdd"})
+          .sep.no-line
+          .pull-left: a.btn.btn-link(href="/collection/") view collections
+          .text-right
+            .btn.btn-default(ng-click="add()",ng-class="{'disabled':!mfolder.length}") Add
+            span &nbsp;
+            .btn.btn-default(ng-click="show=false") Cancel

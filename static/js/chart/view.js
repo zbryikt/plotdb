@@ -42,12 +42,16 @@ plotdb.view = {
     };
     if (chart) {
       code = chart.code.content;
-      if (code[0] === '{') {
-        code = "(function() { return " + code + "; })();";
+      if (typeof code === 'string') {
+        if (code[0] === '{') {
+          code = "(function() { return " + code + "; })();";
+        } else {
+          code = "(function() { " + code + "; return module.exports; })();";
+        }
+        this._.chart = chart = import$(eval(code), chart);
       } else {
-        code = "(function() { " + code + "; return module.exports; })();";
+        this._.chart = chart = import$(code, chart);
       }
-      this._.chart = chart = import$(eval(code), chart);
     }
     plotdb.chart.updateDimension(chart);
     plotdb.chart.updateConfig(chart, chart.config);
@@ -126,6 +130,9 @@ import$(plotdb.view.chart.prototype, {
   },
   attach: function(root){
     var ref$, chart, theme, head, foot, iroot, iiroot, margin, marginVertical, resize, newClass, e;
+    if (typeof root === 'string') {
+      root = document.querySelector(root);
+    }
     this._.root = root;
     ref$ = {
       chart: (ref$ = this._).chart,
@@ -177,7 +184,7 @@ import$(plotdb.view.chart.prototype, {
       });
       root = iiroot;
     }
-    root.innerHTML = [chart && chart.style ? "<style type='text/css'>/* <![CDATA[ */" + chart.style.content + "/* ]]> */</style>" : void 8, theme && theme.style ? "<style type='text/css'>/* <![CDATA[ */" + theme.style.content + "/* ]]> */</style>" : void 8, "<div style='position:relative;width:100%;height:100%;'><div style='height:0;'>&nbsp;</div>", chart.doc.content, "</div>", theme && (theme.doc || (theme.doc = {})).content ? theme.doc.content : void 8].join("");
+    root.innerHTML = [chart && chart.style ? "<style type='text/css'>/* <![CDATA[ */" + ((chart.style || (chart.style = {})).content || "") + "/* ]]> */</style>" : void 8, theme && theme.style ? "<style type='text/css'>/* <![CDATA[ */" + ((theme.style || (theme.style = {})).content || "") + "/* ]]> */</style>" : void 8, "<div style='position:relative;width:100%;height:100%;'><div style='height:0;'>&nbsp;</div>", (chart.doc || (chart.doc = {})).content || "", "</div>", theme && (theme.doc || (theme.doc = {})).content ? (theme.doc || (theme.doc = {})).content : void 8].join("");
     chart.root = root.querySelector("div:first-of-type");
     resize = function(){
       var this$ = this;
@@ -186,27 +193,40 @@ import$(plotdb.view.chart.prototype, {
       }
       return resize.handle = setTimeout(function(){
         resize.handle = null;
-        chart.resize();
-        return chart.render();
+        if (chart.resize) {
+          chart.resize();
+        }
+        if (chart.render) {
+          return chart.render();
+        }
       }, 500);
     };
-    window.addEventListener('resize', function(){
+    plotdb.util.trackResizeEvent(root, function(){
       return resize();
     });
     newClass = (root.getAttribute('class') || "").split(' ').filter(function(it){
       return it !== 'loading';
     }).join(" ").trim();
     try {
-      chart.init();
+      if (chart.init) {
+        chart.init();
+      }
       if (chart.parse) {
         chart.parse();
       }
-      chart.resize();
-      chart.bind();
-      chart.render();
+      if (chart.resize) {
+        chart.resize();
+      }
+      if (chart.bind) {
+        chart.bind();
+      }
+      if (chart.render) {
+        chart.render();
+      }
     } catch (e$) {
       e = e$;
       newClass += ' error';
+      console.error(e);
     }
     root.setAttribute('class', newClass);
     return this.inited = true;
@@ -228,6 +248,11 @@ import$(plotdb.view.chart.prototype, {
   },
   render: function(){
     return this._.chart.render();
+  },
+  destroy: function(){
+    if (this._.chart.destroy) {
+      return this._.chart.destroy();
+    }
   },
   clone: function(){
     var ref$;

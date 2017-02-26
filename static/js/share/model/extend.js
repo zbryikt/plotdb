@@ -593,6 +593,11 @@ base = function(model){
         required: true,
         type: model.type.string
       },
+      description: {
+        max: 512,
+        required: false,
+        type: model.type.string
+      },
       likes: {
         required: false,
         type: model.type.number
@@ -611,6 +616,9 @@ base = function(model){
       },
       permission: {
         type: model.type.permission
+      },
+      thumbnail: {
+        type: model.type.number
       }
     }
   });

@@ -22,19 +22,24 @@ block body
     br
     .team-list
       .team-item(ng-repeat="team in teams",ng-cloak)
-        a.avatar.xl(ng-attr-style="background-image:url(/s/avatar/{{team.avatar || 0}}.jpg)",ng-attr-href="/team/{{team.key}}")
+        .media
+          .media-left
+            a.avatar.xl(ng-attr-style="background-image:url(/s/avatar/{{team.avatar || 0}}.jpg)",ng-attr-href="/team/{{team.key}}")
+          .media-body
+            a.title(ng-attr-href="/team/{{team.key}}") {{team.displayname}}
+            .desc {{team.description}}
+            .grayed(ng-cloak,ng-show="!team.description") ( no description )
         .team-desc
-          h5: a(ng-attr-href="/team/{{team.key}}") {{team.displayname}}
-          div {{team.description}}
-          .grayed(ng-cloak,ng-show="!tem.description") ( no description )
         .team-members.compact.pull-right.text-right
           .team-member(ng-repeat="member in team.members")
-            .avatar.sm(ng-attr-style="background-image:url(/s/avatar/{{member.avatar || 0}}.jpg)")
+            a.avatar.sm(ng-href="/user/{{member.member}}",ng-attr-style="background-image:url(/s/avatar/{{member.avatar || 0}}.jpg)",target="_blank")
           .team-member(ng-if="team.count > team.members.length") ...
           br
           small.grayed {{team.count}} members
-      .loader.loading.alone.sm(style="margin:auto",ng-show="paging.loading && !paging.end")
-      .text-center.grayed(ng-show="paging.end") that's all. #[i.fa.fa-smile-o]
       #list-end
+    .sep.gap.light
+    .loader.loading.alone.sm(style="margin:auto",ng-show="paging.loading && !paging.end")
+    .text-center
+      .grayed(ng-show="paging.end") that's all. #[i.fa.fa-smile-o]
 
   include ../footer.jade

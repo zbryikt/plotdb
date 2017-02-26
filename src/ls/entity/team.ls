@@ -14,6 +14,38 @@ angular.module \plotDB
       @
     teamService = baseService.derive \team ,service, object
     teamService
+
+  ..controller \teamChooser,
+  <[$scope $http folderService plNotify eventBus]> ++
+  ($scope, $http, folder-service, plNotify, eventBus) ->
+    $scope.show = false
+    $scope.target = null
+    $scope.mteam = []
+    $scope.add = ->
+      if !$scope.[]mteam[0] or !$scope.mteam[0].key or !$scope.{}target.key =>
+        $scope.hint = true
+        return
+      eventBus.fire \loading.dimmer.on
+      $http do
+        url: "/d/team/#{$scope.mteam[0].key}/chart/"
+        method: \post
+        data: [$scope.{}target.key]
+      .success (d) ->
+        eventBus.fire \loading.dimmer.off
+        $scope.show = false
+        plNotify.send \success, "added"
+      .error (d) ->
+        eventBus.fire \loading.dimmer.off
+        if d == \existed =>
+          $scope.show = false
+          plNotify.send \warning, "already in this collection"
+        else
+          plNotify.send \error, "failed to add; try later?"
+
+    eventBus.listen \add-to-team, (item) ->
+      $scope.target = item
+      $scope.show = true
+
   ..controller \teamEdit,
   <[$scope $http $timeout plNotify teamService chartService eventBus]> ++
   ($scope, $http, $timeout, plNotify, teamService, chartService, eventBus) ->
@@ -88,6 +120,7 @@ angular.module \plotDB
         plNotify.send \success, "charts added"
       .error (d) ->
         plNotify.send \error, "failed to add charts. try again later?"
+
     $scope.add-members = (tid) ->
       if !$scope.newMembers or !$scope.newMembers.length => return
       ckey = $scope.members.map -> it.key

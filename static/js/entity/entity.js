@@ -6,6 +6,19 @@ x$.service('entityService', ['$rootScope', '$http', 'plConfig', 'IOService', 'ba
   service = {
     config: {
       plselect: {
+        folder: {
+          placeholder: "search by collection name or id ...",
+          ajax: {
+            url: '/d/entity/?type=8',
+            param: function(keyword, limit, offset, scope){
+              return {
+                keyword: keyword,
+                limit: limit,
+                offset: offset
+              };
+            }
+          }
+        },
         chart: {
           placeholder: "search by chart name or id ...",
           ajax: {

@@ -17,6 +17,11 @@ x$.controller('plSelectController', ['$scope'].concat(function($scope){
       multiple: true
     }, config || {});
   };
+  $scope.create = function(){
+    if ($scope.config.create) {
+      return $scope[$scope.config.create]($scope.portal.keyword);
+    }
+  };
   $scope.getIdx = function(item){
     var idx, ret;
     idx = $scope.portal.data.indexOf(item);
@@ -108,6 +113,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
       }, true);
       fetch = function(keyword, reset){
         reset == null && (reset = false);
+        s.portal.keyword = keyword;
         if (handler) {
           $timeout.cancel(handler);
         } else {
@@ -184,7 +190,7 @@ x$.directive('plselect', ['$compile', '$timeout', 'entityService', '$http'].conc
           close.closing = 0;
           dropdown.hide();
           e.removeClass('open');
-          if (autoHideInput) {
+          if (autoHideInput && s.portal.data && s.portal.data.length) {
             return hideInput();
           }
         }, delay);

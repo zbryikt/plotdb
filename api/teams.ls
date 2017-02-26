@@ -142,6 +142,7 @@ batch-add-charts = (req, res, team, cids) ->
     ].join(" "), cids)
       .then (r={})->
         charts = r.[]rows.filter -> req.user and req.user.key == it.owner
+        if !charts.length => return bluebird.resolve!
         params = []
         charts.forEach (c) ->
           item = c.permission.list.filter(-> it.type == \team and it.target = team.key).0

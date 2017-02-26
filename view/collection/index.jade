@@ -1,0 +1,107 @@
+extends ../module/base.jade
+block vars
+  - var rootid = "dataview"
+  - var title = 'plotdb'
+  - var description = "plotdb"
+  - var thumbnail = "https://plotdb.io/assets/img/thumbnail.jpg"
+  - var thumbtype = "image/jpg"
+  - var url = "https://plotdb.com/"
+block head
+  title #{folder.name}
+  script(type="text/javascript").
+    window.folder = !{JSON.stringify(folder)};
+mixin isAdmin
+  if permtype[0] > 5
+    block
+block body
+  include ../module/widget/folderChooser.jade
+  include ../module/collection/naming.jade
+  +folder-panel
+  #root.narrow(ng-controller="folderView")
+    +cover-modal("hint.download.toggled", "hint.download.toggle()")
+      .panel.panel-default
+        .panel-body
+          h2.text-center a Quick Example of Usage
+          br
+          pre: big: code.
+            &lt;link rel="stylesheet" type="text/css" href="<a href="/css/render/pdb.css">pdb.css</a>"/&gt;
+            &lt;script src="<a href="/js/pack/view.js">plotdb.js</a>"&gt;&lt;/script&gt;
+            &lt;script src="<span style='color:#f00'>{{libraryName()}}.js</span>"&gt;&lt;/script&gt;
+            &lt;script&gt;
+              var chart = plotdb.chart.get("<span style='color:#f00'>Viswork Name</span>");
+              chart.attach("#some-node");
+            &lt;/script&gt;
+          .text-center
+            br
+            h4 Want to know more about how to use it?
+            br
+            a.btn.btn-success(href="/doc/render/") Check the Developer Guide
+            span &nbsp;
+            .btn.btn-default(ng-click="hitn.download.toggle(false)") no thanks.
+            br
+    //-+cover-modal("edit.toggled", "edit.toggle()")
+      .panel.panel-default(style="width:500px;margin:auto")
+        .panel-body(style="height:135px;min-height:135px")
+          label(ng-show="!folder.key") Create Folder
+          label(ng-show="folder.key") Rename Folder
+          input.form-control(ng-if="!folder.key",
+          placeholder="folder name", value="unnamed folder",ng-model="createForm.name")
+          input.form-control(ng-if="folder.key",
+          placeholder="folder name", value="unnamed folder",ng-model="folder.name")
+          br
+          .btn-group.pull-right
+            .btn.btn-default(ng-if="!folder.key", ng-click="createForm.create()") Create
+            .btn.btn-default(ng-if="folder.key", ng-click="rename()") Save
+            .btn.btn-default(ng-click="edit.toggled=false") Cancel
+
+    h3 
+      small: a(href="/collection/") #[i.fa.fa-home] All Collections
+      span &nbsp;&nbsp;
+      small #[i.fa.fa-chevron-right] 
+      span &nbsp;
+      span(ng-click=(permtype[0]>5?"rename()":""),ng-cloak,class=(permtype[0]>5?"clickable":"")) {{folder.name}}
+      span &nbsp;&nbsp;
+      +isAdmin
+        small.grayed: i.fa.fa-edit
+      .pull-right
+        a.btn.btn-default(ng-attr-href="/collection/{{folder.key}}/download",
+        ng-click="hint.download.toggle(true)") Download as Library...
+    div(ng-click=(permtype[0]>5 ? "fire('folder.edit.description',folder)" : ""))
+      span.grayed(ng-cloak,ng-if="!folder.description") ( no description... )
+      span(ng-cloak,ng-if="folder.description") {{folder.description}}
+      span &nbsp; &nbsp;
+      +isAdmin
+        small.grayed: i.fa.fa-edit
+    .sep.gap
+
+    .text-center(ng-if="!items.length",ng-cloak)
+      br
+      br
+      h3 There is no content in this collection.
+      br
+      +isAdmin
+        a.btn.btn-success.btn-lg(href="/chart/explore/#hint.addCollection.") Let's add some!
+    .charts
+      .chart(ng-cloak,ng-repeat="item in items")
+        .dropdown.pull-right(style="margin:5px;z-index:1")
+          .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown"): i.fa.fa-chevron-down
+          ul.dropdown-menu
+            li: a(ng-click="addToCollection(item)") add to...
+            +isAdmin
+              li: a(ng-click="remove(item)") remove
+        a.chart-img(ng-attr-href="/chart/{{item.item}}",ng-attr-style="background-image:url(/s/{{item.type}}/{{item.item}}.png)")
+        .chart-desc
+          .title {{item.name || 'untitled'}}
+          .desc(ng-class="{'grayed':!item.description}") {{item.description || '( no description .. )'}}
+        .social
+          a.author(ng-attr-href="/user/{{item.owner}}")
+            .avatar.xs(ng-attr-style="background-image(/s/avatar/{{item.owner}}.png);margin-right:3px;display:inline-block;vertical-align:middle")
+            span(style="vertical-align:middle;line-height:16px") {{item.ownername}}
+
+      #list-end(style="flex:9 1 200px")
+    br
+    br
+    +isAdmin
+      .text-center(ng-cloak,ng-if="items.length"): a.btn.btn-default.btn-lg.btn-success(ng-attr-href="/chart/explore/#hint.addCollection.{{folder.key}}.") Add more ...
+
+  include ../module/footer.jade

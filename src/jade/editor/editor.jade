@@ -50,7 +50,8 @@ include /widget/palette-edit-modal.jade
           ng-class="{'loading':save.handle || save.pending}")
             +SaveFork
           .dropdown
-            .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
+            .btn.btn-default.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()",
+            data-track="ChartEditor,Download,Toggle")
               i.fa.fa-download
               span.caret
             ul.dropdown-menu.download-options
@@ -64,7 +65,7 @@ include /widget/palette-edit-modal.jade
                   img(src="/assets/img/loading.gif")
                   i.fa.fa-warning
                   .label.label-info Need Pro
-                a.link(ng-attr-download="{{item.filename}}",
+                a.link(ng-attr-download="{{item.filename}}",ng-click="download.track(item)",
                 ng-attr-href="{{item.url}}")
                   | {{item.name}} 
                   small.grayed(ng-if="item.alt") ({{item.alt}})
@@ -178,7 +179,8 @@ include /widget/palette-edit-modal.jade
         .btn-group
           .btn.btn-default(ng-click="editor.color.toggle()") Editor Style
           .btn.btn-default(ng-click="reset()") Reload
-          .btn.btn-default(ng-click="editor.fullscreen.toggle()")
+          .btn.btn-default(ng-click="editor.fullscreen.toggle()",
+          data-track="ChartEditor,Fullscreen")
             span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave 
             span
               | Fullscreen 
@@ -216,7 +218,7 @@ include /widget/palette-edit-modal.jade
         .btn.btn-default(ng-click="vis='code'") Edit Code #[small.hint Alt-Enter]
       .btn-group(style="right:auto;left:120px;bottom:0")
         #editor-colorblind-dropup.dropup.btn-group
-          .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+          .btn.btn-default.dropdown-toggle(data-toggle="dropdown",data-track='ChartEditor,Colorblind,Toggle')
             span(ng-show="colorblind.val=='normal'")
               i.fa.fa-eye-slash.grayed
               span &nbsp;colorblind #[span.caret]
@@ -225,31 +227,42 @@ include /widget/palette-edit-modal.jade
               span &nbsp;{{colorblind.val}} #[span.caret]
           ul.dropdown-menu
             li(ng-class="{'active':colorblind.val=='normal'}")
-              a(href="#",ng-click="colorblind.set('normal')") Normal People
+              a(href="#",ng-click="colorblind.set('normal')",
+              data-track="ChartEditor,Colorblind,Normal") Normal People
             li(ng-class="{'active':colorblind.val=='deuteranopia'}")
-              a(href="#",ng-click="colorblind.set('deuteranopia')") Red-Green #[small.grayed (9%)]
+              a(href="#",ng-click="colorblind.set('deuteranopia')",
+              data-track="ChartEditor,Colorblind,Red-Green") Red-Green #[small.grayed (9%)]
             li(ng-class="{'active':colorblind.val=='achromatopsia'}")
-              a(href="#",ng-click="colorblind.set('achromatopsia')") Monochromasy #[small.grayed (0.003%)]
+              a(href="#",ng-click="colorblind.set('achromatopsia')",
+              data-track="ChartEditor,Colorblind,Monochromasy") Monochromasy #[small.grayed (0.003%)]
             li.divider
             small.grayed(style="margin-left:20px") Advanced Options
             li(ng-class="{'active':colorblind.val=='protanopia'}")
-              a(href="#",ng-click="colorblind.set('protanopia')") Protanopia
+              a(href="#",ng-click="colorblind.set('protanopia')",
+              data-track="ChartEditor,Colorblind,Protanopia") Protanopia
             li(ng-class="{'active':colorblind.val=='protanomaly'}")
-              a(href="#",ng-click="colorblind.set('protanomaly')") Protanomaly
+              a(href="#",ng-click="colorblind.set('protanomaly')",
+              data-track="ChartEditor,Colorblind,Protanomaly") Protanomaly
             li(ng-class="{'active':colorblind.val=='deuteranopia'}")
-              a(href="#",ng-click="colorblind.set('deuteranopia')") Deuteranopia
+              a(href="#",ng-click="colorblind.set('deuteranopia')",
+              data-track="ChartEditor,Colorblind,Deuteranopia") Deuteranopia
             li(ng-class="{'active':colorblind.val=='deuteranomaly'}")
-              a(href="#",ng-click="colorblind.set('deuteranomaly')") Deuteranomaly
+              a(href="#",ng-click="colorblind.set('deuteranomaly')",
+              data-track="ChartEditor,Colorblind,Deuteranomaly") Deuteranomaly
             li(ng-class="{'active':colorblind.val=='tritanopia'}")
-              a(href="#",ng-click="colorblind.set('tritanopia')") Tritanopia
+              a(href="#",ng-click="colorblind.set('tritanopia')",
+              data-track="ChartEditor,Colorblind,Tritanopia") Tritanopia
             li(ng-class="{'active':colorblind.val=='tritanomaly'}")
-              a(href="#",ng-click="colorblind.set('tritanomaly')") Tritanomaly
+              a(href="#",ng-click="colorblind.set('tritanomaly')",
+              data-track="ChartEditor,Colorblind,Tritanomaly") Tritanomaly
             li(ng-class="{'active':colorblind.val=='achromatopsia'}")
-              a(href="#",ng-click="colorblind.set('achromatopsia')") Achromatopsia
+              a(href="#",ng-click="colorblind.set('achromatopsia')",
+              data-track="ChartEditor,Colorblind,Achromatopsia") Achromatopsia
             li(ng-class="{'active':colorblind.val=='achromatomaly'}")
-              a(href="#",ng-click="colorblind.set('achromatomaly')") Achromatomaly
+              a(href="#",ng-click="colorblind.set('achromatomaly')",
+              data-track="ChartEditor,Colorblind,Achromatomaly") Achromatomaly
         #editor-rwdtest-dropup.dropup.btn-group
-          .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+          .btn.btn-default.dropdown-toggle(data-toggle="dropdown",data-track="ChartEditor,Responsive,Toggle")
             span(ng-show="rwdtest.val=='default'")
               i.fa.fa-desktop.grayed
               span &nbsp;responsive #[span.caret]
@@ -258,15 +271,20 @@ include /widget/palette-edit-modal.jade
               span &nbsp;{{rwdtest.val}} #[span.caret]
           ul.dropdown-menu
             li(ng-class="{'active':rwdtest.val=='default'}")
-              a(href="#",ng-click="rwdtest.set('default')") Default
+              a(href="#",ng-click="rwdtest.set('default')",
+              data-track="ChartEditor,Responsive,Default") Default
             li(ng-class="{'active':rwdtest.val=='QVGA'}")
-              a(href="#",ng-click="rwdtest.set('QVGA')") QVGA #[small.grayed (240x320)]
+              a(href="#",ng-click="rwdtest.set('QVGA')",
+              data-track="ChartEditor,Responsive,QVGA") QVGA #[small.grayed (240x320)]
             li(ng-class="{'active':rwdtest.val=='HVGA'}")
-              a(href="#",ng-click="rwdtest.set('HVGA')") HVGA #[small.grayed (320x480)]
+              a(href="#",ng-click="rwdtest.set('HVGA')",
+              data-track="ChartEditor,Responsive,HVGA") HVGA #[small.grayed (320x480)]
             li(ng-class="{'active':rwdtest.val=='Thumb'}")
-              a(href="#",ng-click="rwdtest.set('Thumb')") Thumb#[small.grayed (308x229)]
+              a(href="#",ng-click="rwdtest.set('Thumb')",
+              data-track="ChartEditor,Responsive,Thumb") Thumb#[small.grayed (308x229)]
             li(ng-class="{'active':rwdtest.val=='Custom'}")
-              a(href="#",ng-click="rwdtest.set('Custom')")
+              a(href="#",ng-click="rwdtest.set('Custom')",
+              data-track="ChartEditor,Responsive,Custom")
                 div Custom
                 input.form-control-inline.input-xs.dimension(ng-model="rwdtest.custom.width",
                 type="text",placeholder="width")

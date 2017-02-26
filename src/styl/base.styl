@@ -68,6 +68,9 @@ li.disabled a
 .grayed
  color: rgba(0,0,0,0.5)
 
+.light
+  color: rgba(0,0,0,0.3)
+
 .dropdown-menu > li > a
   cursor: pointer
 
@@ -81,6 +84,28 @@ li.disabled a
   height: 20px
   font-size: 12px
   text-align: center
+
++keyframes(bounce)
+  0%
+    transform: translate(0,0)
+  10%
+    transform: translate(0,-3px)
+  25%
+    transform: translate(0,-7px)
+  37.5%
+    transform: translate(0,-3px)
+  50%
+    transform: translate(0,-0px)
+  60%
+    transform: translate(0,-1px)
+  70%
+    transform: translate(0,-3px)
+  80%
+    transform: translate(0,-1px)
+  90%
+    transform: translate(0,0)
+  100%
+    transform: translate(0,0)
 
 +keyframes(jump)
   0%
@@ -101,6 +126,11 @@ li.disabled a
     transform: translate(0,-2px)
   100%
     transform: translate(0,0)
+
+.bounce-once
+  animation(bounce 0.7s 1 ease-out)
+.jump
+  animation(bounce 1s infinite ease-out)
 
 #alertbox
   position: fixed
@@ -239,6 +269,9 @@ a.dropdown-toggle
   span
     margin-left: 10px
     text-shadow: 0 1px 2px rgba(0,0,0,0.1)
+
+.row.gap
+  margin-bottom: 5px
 
 #root.narrow
   max-width: 1200px
@@ -449,3 +482,29 @@ ul.dropdown-menu li a.toggle-filepick
 
 ul.dropdown-menu
   z-index: index(order, 'dropdown-menu')
+  li
+    position: relative
+  li .hover-tip
+    background: #000
+    border-radius: 3px
+    position: absolute
+    top: 40px
+    left: 0
+    color: #fff
+    width: 100%
+    padding: 5px 10px
+    text-align: center
+    display: none
+    &:before
+      width: 10px
+      height: 10px
+      position: absolute
+      top: -5px
+      left: 50%
+      margin-left: -7px
+      background: #000
+      display: block
+      content: " "
+      transform(rotate(45deg))
+  li:hover .hover-tip
+    display: block

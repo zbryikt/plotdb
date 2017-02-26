@@ -1,6 +1,6 @@
 angular.module \plotDB
   ..controller \plEditor,
-  <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify eventBus permService]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify,eventBus,permService) ->
+  <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify eventBus permService license]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify,eventBus,permService,license) ->
     #########  Variables  ################################################################
     $scope.isIE = /MSIE |Trident\/|Edge\//.exec(window.navigator.userAgent)
     $scope <<< do
@@ -94,11 +94,15 @@ angular.module \plotDB
           if key => @target! <<< {parent: key}
         refresh = if !@target!.key => true else false
         if @target!.dimension => @target!.dimlen = [k for k of @target!.dimension or {}].length
+        data = null
         @local.get!
           .then (local) ~>
             @target!local = local
+            data := @target!data # prevent data to be sent
+            @target!data = null
             @target!save!
           .then (ret) ~>
+            @target!data = data
             <~ @$apply
             if refresh => eventBus.fire \loading.dimmer.on
             if nothumb => plNotify.send \warning, "#{@type} saved, but thumbnail failed to update"
@@ -250,6 +254,7 @@ angular.module \plotDB
         @target![it].lines = (@target![it].content or "").split(\\n).length
         @target![it].size = (@target![it].content or "").length
       download: do
+        track: (item) -> ga \send, \event, \ChartEditor, \Download, item.name, $scope.target!key
         prepare: -> @queue = <[png svg plotdb png-hd]>.map (n,i) ~>
           name = {png: \PNG, svg: \SVG, plotdb: \PLOTDB, "png-hd": \PNG}
           alt = {"png-hd": "High Res"}
@@ -970,6 +975,15 @@ angular.module \plotDB
             @communicate.parse-theme-handler = null
             $scope.parse.theme!
           ), 500
+        @$watch 'chart.license.options', (->
+          if !it => $scope.chart.{}license.options = license.init!
+          $scope.chart.{}license.name = license.match $scope.chart.{}license.options
+        ), true
+        @$watch 'chart.license.name', (->
+          if $scope.chart.{}license.name != 'Custom License' =>
+            $scope.chart.{}license.options = license.get $scope.chart.license.name
+            console.log $scope.chart.license.options
+        ), true
         @$watch 'chart.config', ((n,o={}) ~>
           ret = !!([[k,v] for k,v of n]
             .filter(([k,v]) -> !o[k] or (v.value != o[k].value))
@@ -1001,9 +1015,9 @@ angular.module \plotDB
         else if data.type == \parse-chart =>
           $scope.parse.chart.pending = false
           {config,dimension} = JSON.parse(data.payload)
-          for k,v of @chart.dimension => if dimension[k]? => dimension[k].fields = v.fields
-          for k,v of @chart.config => if config[k]? => config[k].value = v.value
-          for k,v of config => if !(v.value?) => v.value = v.default
+          if dimension => for k,v of (@chart.dimension or {}) => if dimension[k]? => dimension[k].fields = v.fields
+          if config => for k,v of (@chart.config or {}) => if config[k]? => config[k].value = v.value
+          for k,v of (config or {}) => if !(v.value?) => v.value = v.default
           @chart <<< {config, dimension}
           hash = {}
           for k,v of @chart.config => hash{}[v.category or \Other][k] = v

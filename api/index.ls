@@ -11,4 +11,4 @@ module.exports = (engine, io) ->
   palette engine, io
   payment engine, io
   admin engine, io
-  #folder engine, io
+  folder engine, io

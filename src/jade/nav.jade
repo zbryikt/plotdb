@@ -39,11 +39,14 @@
               //-li: a(href="/palette/editor.html",ng-cloak,ng-show="user.data") Palette Editor
               li.divider
               li: a(href="/theme/") Make New Theme
-          li#nav-palette: a(href="/palette/editor.html",ng-cloak,ng-show="user.data")
-            img(src="/assets/img/palette2.svg",style="vertical-align:text-top;width:14px;margin-top:2px;")
-            span.name &nbsp;PALETTE EDITOR
+          li#nav-collection: a(href="/collection/") COLLECTIONS
+          li#nav-palette
+            a(href="/palette/")
+              img(src="/assets/img/palette2.svg",style="vertical-align:text-top;width:14px;margin-top:2px;")
+              span.name &nbsp;PALETTE
+              //li: a(href="/palette/editor.html",ng-cloak,ng-show="user.data") Advanced Editor
           li#nav-showcase: a(href="/showcase/",ng-cloak)
-            span.name &nbsp;SHOW CASE
+            span.name &nbsp;SHOWCASE
 
         ul.nav.navbar-nav.pull-right
           //- temporarily hide 'request' button

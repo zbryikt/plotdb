@@ -6,6 +6,8 @@ angular.module \plotDB
       $scope.type = type
       $scope.scope = scope
       $scope.portal.config = $scope.config = {multiple: true} <<< (config or {})
+    $scope.create = ->
+      if $scope.config.create => $scope[$scope.config.create] $scope.portal.keyword
     $scope.get-idx = (item)->
       idx = $scope.portal.data.indexOf(item)
       return if idx < 0 =>
@@ -57,6 +59,7 @@ angular.module \plotDB
       s.$watch 'portal.data', (-> sync!), true
       s.$watch 'portal.options', (-> sync!), true
       fetch = (keyword,reset = false) ->
+        s.portal.keyword = keyword
         if handler =>
           $timeout.cancel handler
         else s.portal.loading = ((s.portal.loading or 0) + 1) or 1
@@ -105,8 +108,7 @@ angular.module \plotDB
           close.closing = 0
           dropdown.hide!
           e.removeClass \open
-          #if auto-hide-input and repos.newline => hide-input!
-          if auto-hide-input => hide-input!
+          if auto-hide-input and s.portal.data and s.portal.data.length => hide-input!
         ), delay
       close.closing = 0
       close.cancel = ->
