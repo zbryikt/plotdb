@@ -464,9 +464,9 @@ $(document).ready(function(){
             ? margin - 10
             : margin / 2;
           import$(node.style, {
-            background: conf.background.value,
-            color: conf.textFill.value,
-            "font-size": conf.fontSize.value + "px",
+            background: conf.background ? conf.background.value : void 8,
+            color: conf.textFill ? conf.textFill.value : void 8,
+            "font-size": conf.fontSize ? conf.fontSize.value + "px" : void 8,
             "font-family": (conf.fontFamily || {
               value: "initial"
             }).value

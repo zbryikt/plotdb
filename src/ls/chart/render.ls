@@ -287,9 +287,9 @@ render = (payload, rebind = true) ->
         margin =( conf.margin or {value: 10}).value
         margin-vertical = if margin - 10 > 10 => margin - 10 else margin/2
         node.style <<< do
-          background: conf.background.value
-          color: conf.textFill.value
-          "font-size": conf.fontSize.value + "px"
+          background: conf.background.value if conf.background
+          color: conf.textFill.value if conf.textFill
+          "font-size": conf.fontSize.value + "px" if conf.fontSize
           "font-family": (conf.fontFamily or {value: "initial"}).value
         head.style <<< do
           position: "relative"
