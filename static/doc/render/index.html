@@ -3,11 +3,11 @@
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 ga('create', 'UA-77722201-1', 'auto');
-ga('send', 'pageview');</script><script src="/js/pack/frameworks.js?42"></script><script type="text/javascript" src="/global"></script><script type="text/javascript" src="/js/pack/base.js?42"></script></head><body id="" ng-app="plotDB" ng-controller="plSite"><div id="beta-ribbon"></div><div id="confirmbox"><div ng-show="confirmbox.toggled" ng-cloak class="cover-modal ng-hide-animate ng-hide"></div><div ng-show="confirmbox.toggled" ng-cloak class="cover-modal-inner ng-hide-animate ng-hide"><div class="panel panel-default"><div class="panel-body"><h3 ng-show="confirmbox.config.title">{{confirmbox.config.title}}</h3><p>{{confirmbox.config.message}}</p><div ng-repeat="option in confirmbox.config.options" ng-click="confirmbox.handle($index)" class="btn btn-default">{{option}}</div></div></div></div></div><div id="loading-dimmer" ng-class="{'active':loading.dimmer, 'show-progress':loading.progress}"><div class="progress"><div aria-valuemin="0" aria-valuemax="100" ng-attr-style="width:{{loading.progress}}%" class="progress-bar progress-bar-striped active"></div></div></div><div style="height:0">&nbsp;</div><div id="nav-top"><nav role="navigation" class="navbar navbar-default"><div class="container-fluid"><div class="navbar-header"><a href="/" class="navbar-brand"><img src="/assets/img/plotdb.png" style="height:100%"></a></div><div><ul class="nav navbar-nav"><li id="nav-chart" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-bar-chart"></i><span class="name">&nbsp;CHARTS</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/chart/explore/">Explore</a></li><li ng-show="user.data" ng-cloak><a href="/chart/me">My Charts</a></li><li class="divider"></li><li><a href="/chart/">from scratch</a></li></ul></li><li id="nav-dataset" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-table"></i><span class="name">&nbsp;DATASET</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/dataset/me/" ng-cloak ng-show="user.data">My Dataset</a></li><li class="divider"></li><li><a href="/dataset/">New Dataset</a></li></ul></li><li id="nav-theme" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-paint-brush"></i><span class="name">&nbsp;THEME</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/theme/explore/">Explore</a></li><li><a href="/theme/me/" ng-cloak ng-show="user.data">My Theme</a></li><li class="divider"></li><li><a href="/theme/">Make New Theme</a></li></ul></li><li id="nav-collection"><a href="/collection/">COLLECTIONS</a></li><li id="nav-palette"><a href="/palette/"><img src="/assets/img/palette2.svg" style="vertical-align:text-top;width:14px;margin-top:2px;"><span class="name">&nbsp;PALETTE</span><!--li: a(href="/palette/editor.html",ng-cloak,ng-show="user.data") Advanced Editor--></a></li><li id="nav-showcase"><a href="/showcase/" ng-cloak><span class="name">&nbsp;SHOWCASE</span></a></li></ul><ul class="nav navbar-nav pull-right"><!--li#nav-request: a(href="/request/")i.fa.fa-comment
+ga('send', 'pageview');</script><script src="/js/pack/frameworks.js?42"></script><script type="text/javascript" src="/global"></script><script type="text/javascript" src="/js/pack/base.js?42"></script></head><body id="" ng-app="plotDB" ng-controller="plSite" data-spy="scroll" data-target=".scrollspy"><div id="beta-ribbon"></div><div id="confirmbox"><div ng-show="confirmbox.toggled" ng-cloak class="cover-modal ng-hide-animate ng-hide"></div><div ng-show="confirmbox.toggled" ng-cloak class="cover-modal-inner ng-hide-animate ng-hide"><div class="panel panel-default"><div class="panel-body"><h3 ng-show="confirmbox.config.title">{{confirmbox.config.title}}</h3><p>{{confirmbox.config.message}}</p><div ng-repeat="option in confirmbox.config.options" ng-click="confirmbox.handle($index)" class="btn btn-default">{{option}}</div></div></div></div></div><div id="loading-dimmer" ng-class="{'active':loading.dimmer, 'show-progress':loading.progress}"><div class="progress"><div aria-valuemin="0" aria-valuemax="100" ng-attr-style="width:{{loading.progress}}%" class="progress-bar progress-bar-striped active"></div></div></div><div style="height:0">&nbsp;</div><div id="nav-top"><nav role="navigation" class="navbar navbar-default"><div class="container-fluid"><div class="navbar-header"><a href="/" class="navbar-brand"><img src="/assets/img/plotdb.png" style="height:100%"></a></div><div><ul class="nav navbar-nav"><li id="nav-chart" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-bar-chart"></i><span class="name">&nbsp;CHARTS</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/chart/explore/">Explore</a></li><li ng-show="user.data" ng-cloak><a href="/chart/me">My Charts</a></li><li class="divider"></li><li><a href="/chart/">from scratch</a></li></ul></li><li id="nav-dataset" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-table"></i><span class="name">&nbsp;DATASET</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/dataset/me/" ng-cloak ng-show="user.data">My Dataset</a></li><li class="divider"></li><li><a href="/dataset/">New Dataset</a></li></ul></li><li id="nav-theme" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-paint-brush"></i><span class="name">&nbsp;THEME</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/theme/explore/">Explore</a></li><li><a href="/theme/me/" ng-cloak ng-show="user.data">My Theme</a></li><li class="divider"></li><li><a href="/theme/">Make New Theme</a></li></ul></li><li id="nav-collection"><a href="/collection/">COLLECTIONS</a></li><li id="nav-palette"><a href="/palette/"><img src="/assets/img/palette2.svg" style="vertical-align:text-top;width:14px;margin-top:2px;"><span class="name">&nbsp;PALETTE</span><!--li: a(href="/palette/editor.html",ng-cloak,ng-show="user.data") Advanced Editor--></a></li><li id="nav-showcase"><a href="/showcase/" ng-cloak><span class="name">&nbsp;SHOWCASE</span></a></li></ul><ul class="nav navbar-nav pull-right"><!--li#nav-request: a(href="/request/")i.fa.fa-comment
 | &nbsp;
-span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login" href="#" ng-click="auth.show = !!!auth.show"><i class="fa fa-sign-in"></i>&nbsp; <span>LOGIN / SIGNUP</span></a></li><li id="nav-profile" ng-cloak ng-show="user.data" class="dropdown"><div data-toggle="dropdown" class="btn"><div ng-attr-style="background-image:url(/s/avatar/{{user.data.avatar || '0'}}.jpg)" class="avatar"></div><span class="caret"></span></div><ul class="dropdown-menu"><li ng-show="user.data" ng-cloak><a href="/user/{{user.data.key}}"><b style="vertical-align:middle">{{user.data.displayname}}&nbsp;</b><label ng-show="!user.data.payment.plan" class="label label-default">Free</label><label ng-show="user.data.payment.plan==1" class="label label-info">Basic</label><label ng-show="user.data.payment.plan==2" class="label label-info">Expert</label></a></li><li class="divider"></li><li><a href="#"><label class="grayed">Storage Usage</label><div style="width:120px;margin:0" class="progress"><div ng-class="{'progress-bar-info': ((user.data.datasize || 0) / 100000 &lt; 50), 'progress-bar-warning': ((user.data.datasize || 0) / 100000 &gt; 50)}" ng-attr-style="width:{{(user.data.datasize || 0)/ 100000}}%" class="progress-bar progress-bar-info"><span ng-cloak>{{user.data.datasize|size}}</span></div></div></a></li><li class="divider"></li><li><a href="/team/">Teams</a></li><li><a href="/me/edit/">Settings</a></li><li class="divider"></li><li><a href="#" ng-click="auth.logout()">Logout</a></li></ul></li></ul></div></div></nav></div><div id="authpanel" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><div data-dismiss="modal" style="border-radius:50%;background:#222;" class="closebtn"></div><h4 class="modal-title text-center">Login to PlotDB</h4></div><div style="padding:20px" class="moda-body"><form class="form"><div ng-class="{'has-error':auth.error.email,'has-feedback':auth.error.email}" class="form-group"><input type="text" placeholder="Email" ng-model="auth.email" ng-keypress="auth.keyHandler($event)" class="form-control"><div ng-show="auth.error.email" class="form-control-feedback with-text">{{auth.error.email}} <i class="fa fa-close"></i></div></div><div ng-class="{'has-error':auth.error.passwd,'has-feedback':auth.error.passwd}" class="form-group"><input type="password" placeholder="Password" ng-model="auth.passwd" ng-keypress="auth.keyHandler($event)" class="form-control"><div ng-show="auth.error.passwd" class="form-control-feedback with-text">{{auth.error.passwd}} <i class="fa fa-close"></i></div></div><div ng-click="auth.login()" ng-cloak ng-class="{'loading':auth.loading}" class="btn btn-block btn-success btn-lg loader loading-success"><span ng-show="!auth.isSignIn">SIGNUP</span><span ng-show="auth.isSignIn">LOGIN</span></div><a href="/auth/reset/" style="margin-top:12px;font-size:12px;" class="pull-right">forgot password? &#xbb;</a><div class="checkbox"><label><input type="checkbox"> remember me</label></div></form><div style="position:relative"><hr><div ng-show="auth.failed" ng-cloak class="error">{{auth.failed}}</div><div ng-show="auth.succeed" ng-cloak class="success">{{auth.succeed}}</div></div><div id="authpanel-social-login" class="row"><div class="col-xs-6"><a ng-attr-href="/u/auth/facebook?nexturl={{nexturl}}" target="_blank" style="font-size:12px" class="btn btn-default btn-block"><i class="fa fa-facebook-official"></i><span>Sign in</span></a></div><div class="col-xs-6"><a ng-attr-href="/u/auth/google?nexturl={{nexturl}}" target="_blank" style="font-size:12px" href="#" class="btn btn-default btn-block"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 48 48"><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg><span>Sign in</span></a></div></div></div><div ng-cloak class="modal-footer text-center"><span ng-show="auth.isSignIn">Newcomer here? <a href="#" ng-click="auth.isSignIn=false">Sign up &#xbb;</a></span><span ng-show="!auth.isSignIn">Already a member? <a href="#" ng-click="auth.isSignIn=true">Sign In &#xbb;</a></span></div></div></div></div><div id="notifications"><div ng-repeat="n in notifications" ng-class="'notify-'+n.type" ng-cloak class="notify">{{n.message}}</div></div><div id="alertbox" ng-cloak ng-show="alert.toggled"><div class="ib"><br><div ng-cloak class="text-center">{{alert.msg}}</div><div class="footer"><div ng-click="alert.toggled=false" class="btn btn-default btn-sm">OK</div></div></div></div><link rel="stylesheet" type="text/css" href="/css/render/pdb.css"><script type="text/javascript" src="/js/pack/view.js"></script><script type="text/javascript" src="/lib/plotd3/0.1.0/index.js"></script><style type="text/css">html,body {background: #fff!important}</style><div id="root" class="doc-root"><div class="doc-content"><h1>PlotDB Renderer API</h1>
+span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login" href="#" ng-click="auth.show = !!!auth.show"><i class="fa fa-sign-in"></i>&nbsp; <span>LOGIN / SIGNUP</span></a></li><li id="nav-profile" ng-cloak ng-show="user.data" class="dropdown"><div data-toggle="dropdown" class="btn"><div ng-attr-style="background-image:url(/s/avatar/{{user.data.avatar || '0'}}.jpg)" class="avatar"></div><span class="caret"></span></div><ul class="dropdown-menu"><li ng-show="user.data" ng-cloak><a href="/user/{{user.data.key}}"><b style="vertical-align:middle">{{user.data.displayname}}&nbsp;</b><label ng-show="!user.data.payment.plan" class="label label-default">Free</label><label ng-show="user.data.payment.plan==1" class="label label-info">Basic</label><label ng-show="user.data.payment.plan==2" class="label label-info">Expert</label></a></li><li class="divider"></li><li><a href="#"><label class="grayed">Storage Usage</label><div style="width:120px;margin:0" class="progress"><div ng-class="{'progress-bar-info': ((user.data.datasize || 0) / 100000 &lt; 50), 'progress-bar-warning': ((user.data.datasize || 0) / 100000 &gt; 50)}" ng-attr-style="width:{{(user.data.datasize || 0)/ 100000}}%" class="progress-bar progress-bar-info"><span ng-cloak>{{user.data.datasize|size}}</span></div></div></a></li><li class="divider"></li><li><a href="/team/">Teams</a></li><li><a href="/me/edit/">Settings</a></li><li class="divider"></li><li><a href="#" ng-click="auth.logout()">Logout</a></li></ul></li></ul></div></div></nav></div><div id="authpanel" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><div data-dismiss="modal" style="border-radius:50%;background:#222;" class="closebtn"></div><h4 class="modal-title text-center">Login to PlotDB</h4></div><div style="padding:20px" class="moda-body"><form class="form"><div ng-class="{'has-error':auth.error.email,'has-feedback':auth.error.email}" class="form-group"><input type="text" placeholder="Email" ng-model="auth.email" ng-keypress="auth.keyHandler($event)" class="form-control"><div ng-show="auth.error.email" class="form-control-feedback with-text">{{auth.error.email}} <i class="fa fa-close"></i></div></div><div ng-class="{'has-error':auth.error.passwd,'has-feedback':auth.error.passwd}" class="form-group"><input type="password" placeholder="Password" ng-model="auth.passwd" ng-keypress="auth.keyHandler($event)" class="form-control"><div ng-show="auth.error.passwd" class="form-control-feedback with-text">{{auth.error.passwd}} <i class="fa fa-close"></i></div></div><div ng-click="auth.login()" ng-cloak ng-class="{'loading':auth.loading}" class="btn btn-block btn-success btn-lg loader loading-success"><span ng-show="!auth.isSignIn">SIGNUP</span><span ng-show="auth.isSignIn">LOGIN</span></div><a href="/auth/reset/" style="margin-top:12px;font-size:12px;" class="pull-right">forgot password? &#xbb;</a><div class="checkbox"><label><input type="checkbox"> remember me</label></div></form><div style="position:relative"><hr><div ng-show="auth.failed" ng-cloak class="error">{{auth.failed}}</div><div ng-show="auth.succeed" ng-cloak class="success">{{auth.succeed}}</div></div><div id="authpanel-social-login" class="row"><div class="col-xs-6"><a ng-attr-href="/u/auth/facebook?nexturl={{nexturl}}" target="_blank" style="font-size:12px" class="btn btn-default btn-block"><i class="fa fa-facebook-official"></i><span>Sign in</span></a></div><div class="col-xs-6"><a ng-attr-href="/u/auth/google?nexturl={{nexturl}}" target="_blank" style="font-size:12px" href="#" class="btn btn-default btn-block"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 48 48"><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg><span>Sign in</span></a></div></div></div><div ng-cloak class="modal-footer text-center"><span ng-show="auth.isSignIn">Newcomer here? <a href="#" ng-click="auth.isSignIn=false">Sign up &#xbb;</a></span><span ng-show="!auth.isSignIn">Already a member? <a href="#" ng-click="auth.isSignIn=true">Sign In &#xbb;</a></span></div></div></div></div><div id="notifications"><div ng-repeat="n in notifications" ng-class="'notify-'+n.type" ng-cloak class="notify">{{n.message}}</div></div><div id="alertbox" ng-cloak ng-show="alert.toggled"><div class="ib"><br><div ng-cloak class="text-center">{{alert.msg}}</div><div class="footer"><div ng-click="alert.toggled=false" class="btn btn-default btn-sm">OK</div></div></div></div><link rel="stylesheet" type="text/css" href="/css/render/pdb.css"><script type="text/javascript" src="/js/pack/view.js"></script><script type="text/javascript" src="/lib/plotd3/0.1.0/index.js"></script><style type="text/css">html,body {background: #fff!important}</style><div id="root" class="doc-root"><div class="doc-content"><div class="row"><div class="col-sm-9"><h1>PlotDB Renderer API <a data-anchor="plotdb-renderer-api" data-text="Basic" class="affix-anchor-info"></a><h6 id="plotdb-renderer-api" class="affix-anchor"></h6></h1>
 
-<h3>Overview</h3>
+<h3>Overview <a data-anchor="overview" data-text="" class="affix-anchor-info"></a><h6 id="overview" class="affix-anchor"></h6></h3>
 
 <p><strong>Visworks</strong> including charts, visualizations or interactive contents on PlotDB are all designed to be executed independently. You can download their corresponding PlotDB.json and render it in any website with PlotDB API. PlotDB API also enpowers you to update their configuration, data, and even reuse them in multiple container simultaneously.</p>
 
@@ -15,16 +15,20 @@ span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login
 
 <p><em>( In this document, we will both use the term <strong>viswork</strong> and <strong>chart</strong>, but they all refer to the same concept. )</em></p>
 
-<h3>License</h3>
+<h3>License <a data-anchor="license" data-text="" class="affix-anchor-info"></a><h6 id="license" class="affix-anchor"></h6></h3>
 
 <p>Every viswork has its own license. Some are free of charge like <em>MIT License</em>, and some require subscription of PlotDB for commercial use (the <em>PlotDB License</em>), and some need you to purchase before using. Check each viswork for its license in <em>settings -> library</em> tab.</p>
 
-<h3>Installation</h3>
+<h2>Sample Usage <a data-anchor="sample-usage" data-text="" class="affix-anchor-info"></a><h6 id="sample-usage" class="affix-anchor"></h6></h2>
 
-<p>Include <a href="https://plotdb.com/js/pack/view.js">plotdb.js</a> and <a href="https://plotdb.com/css/render/pdb.css">pdb.css</a> in your website:</p>
+<p>In this section, we will step-by-step walk through the whole life cycle of a plotdb viswork.</p>
 
-<pre><code>&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;pdb.css&quot;/&gt;
-&lt;script type=&quot;text/javascript&quot; src=&quot;plotdb.js&quot;&gt;&lt;/script&gt;</code></pre>
+<h3>Installation <a data-anchor="installation" data-text="" class="affix-anchor-info"></a><h6 id="installation" class="affix-anchor"></h6></h3>
+
+<p>Include <a href="https://plotdb.com/dist/0.1.0/plotdb.min.js">plotdb.js</a> and <a href="https://plotdb.com/dist/0.1.0/plotdb.min.css">pdb.css</a> in your website:</p>
+
+<pre><code>&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;plotdb.min.css&quot;/&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;plotdb.min.js&quot;&gt;&lt;/script&gt;</code></pre>
 
 <p>additionally, some charts depends on other external library like <em>d3js</em>, so we have to include them as well. To work with examples in this documentation, include following two JavaScript library:</p>
 
@@ -33,7 +37,7 @@ span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login
 
 <p>To find whih library to include for any chart, check <code>settings -&gt; library</code> tab in each viswork.</p>
 
-<h3>A Simple Usage</h3>
+<h3>Load Viswork <a data-anchor="load" data-text="" class="affix-anchor-info"></a><h6 id="load" class="affix-anchor"></h6></h3>
 
 <p>The most simple way to render a PlotDB chart is using visworks ID:</p>
 
@@ -58,7 +62,7 @@ span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login
   });
 </script></p>
 
-<h3>Offline Rendering</h3>
+<h3>Offline Rendering <a data-anchor="offline-rendering" data-text="" class="affix-anchor-info"></a><h6 id="offline-rendering" class="affix-anchor"></h6></h3>
 
 <p>Working with ID is convenient, yet it send an ajax request to PlotDB, so you need internet connect and your website will depend on PlotDB server for its content. To render a offline chart, download its PlotDB.json and use its URL to replace the viswork ID:</p>
 
@@ -66,7 +70,7 @@ span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login
   /* ... */
 });</code></pre>
 
-<h3>Customize Data</h3>
+<h3>Customize Data <a data-anchor="customize-data" data-text="" class="affix-anchor-info"></a><h6 id="customize-data" class="affix-anchor"></h6></h3>
 
 <p>To render with customized data, use the <code>data</code> method:</p>
 
@@ -146,7 +150,7 @@ plotdb.load(2008, function(chart) {
 });
 </script></p>
 
-<h3>Configuration</h3>
+<h3>Configuration <a data-anchor="configuration" data-text="" class="affix-anchor-info"></a><h6 id="configuration" class="affix-anchor"></h6></h3>
 
 <p>Once we have our data in viswork, we may want to customize the style or settings in our viswork. To do so use the <code>config</code> method:</p>
 
@@ -212,7 +216,7 @@ plotdb.load(2008, function(chart) {
 
 <p>PlotDB also provides predefined configurations for creating viswork, to know more about configration, check the <a href="/doc/spec">PlotDB Viswork Specification</a>.</p>
 
-<h3>Resizing and re-rendering</h3>
+<h3>Resizing and re-rendering <a data-anchor="resizing-and-rerendering" data-text="" class="affix-anchor-info"></a><h6 id="resizing-and-rerendering" class="affix-anchor"></h6></h3>
 
 <p>PlotDB viswork will automatically render again if you resize the container. However, sometimes we want to render it manually, and this can be done by calling <code>render</code> method:</p>
 
@@ -278,7 +282,7 @@ plotdb.load(2008, function(chart) {
   });
 </script></p>
 
-<h3>Reusing Viswork</h3>
+<h3>Reusing Viswork <a data-anchor="reusing-viswork" data-text="" class="affix-anchor-info"></a><h6 id="reusing-viswork" class="affix-anchor"></h6></h3>
 
 <p>Every viswork object is dedicated to its container and can not be reusable in other container. However, you can make a copy of viswork object to reuse it by calling <code>clone</code> method:</p>
 
@@ -288,7 +292,7 @@ plotdb.load(2008, function(chart) {
   chart2.attach(&quot;#another-container&quot;);
 });</code></pre>
 
-<h3>Viswork Library</h3>
+<h3>Viswork Library <a data-anchor="viswork-library" data-text="" class="affix-anchor-info"></a><h6 id="viswork-library" class="affix-anchor"></h6></h3>
 
 <p>In most case, you may want to load viswork with JSONP style - to load all your visworks within a single <code>&lt;script&gt;</code> tag instead of through lots of ajax call. the Plotdb Collection mechanism can help you to bundle all visworks together, yet you can still do it yourself.</p>
 
@@ -321,15 +325,15 @@ chart2.attach(&quot;#another-container&quot;);</code></pre>
 
 <p><br/> <br/></p>
 
-<h2>Renderer API Reference</h2>
+<h2>Renderer API Reference <a data-anchor="api-reference" data-text="API Reference" class="affix-anchor-info"></a><h6 id="api-reference" class="affix-anchor"></h6></h2>
 
 <p>in both <code>plotdb.chart.get</code> and <code>plotdb.load</code> we get a viswork object, which provides following methods:</p>
 
-<h3>clone()</h3>
+<h3>clone() <a data-anchor="api-clone" data-text="" class="affix-anchor-info"></a><h6 id="api-clone" class="affix-anchor"></h6></h3>
 
 <p>Make a copy of this chart. If you need multiple instance of this chart to render different data, you can use <code>clone()</code> to make multiple copies of the chart object, and render them to different containers respectively.</p>
 
-<h3>data(objArray, refresh, mapping)</h3>
+<h3>data(objArray, refresh, mapping) <a data-anchor="api-data" data-text="data(...)" class="affix-anchor-info"></a><h6 id="api-data" class="affix-anchor"></h6></h3>
 
 <p>Bind data with this chart. <code>data()</code> accepts an object array as the 1st parameter <code>objArray</code>, such as:</p>
 
@@ -362,7 +366,7 @@ dimension: {
 
 <p>With above code we have 2 dimensions: <code>value</code> and <code>order</code>. <code>value</code> accepts multiple fields with number data type and is required, <code>order</code> accepts single field with ordinal data type, and is optional.</p>
 
-<h3>config(configObject)</h3>
+<h3>config(configObject) <a data-anchor="api-config" data-text="" class="affix-anchor-info"></a><h6 id="api-config" class="affix-anchor"></h6></h3>
 
 <p>Update configurations of this chart. <code>configObject</code> is a Javascript object containing configurations to update; for example, to set font family of this chart:</p>
 
@@ -390,7 +394,7 @@ chart.bind();
 chart.resize();
 chart.render();</code></pre>
 
-<h3>attach(htmlNode)</h3>
+<h3>attach(htmlNode) <a data-anchor="api-attach" data-text="" class="affix-anchor-info"></a><h6 id="api-attach" class="affix-anchor"></h6></h3>
 
 <p>connect this chart with specific htmlNode. This will also render the chart into it. htmlNode should be a DOM element, so if you use jQuery to retrieve a node, pull its native DOM element out of the jQuery object at first:</p>
 
@@ -398,27 +402,33 @@ chart.render();</code></pre>
 
 <p>PlotDB listens to window resize event to update chart, so if you adjust the dimension of the htmlNode programmatically, be sure to invoke <code>resize()</code> and <code>render()</code> to reflect the change to your chart.</p>
 
-<h3>init()</h3>
+<h3>init() <a data-anchor="api-init" data-text="" class="affix-anchor-info"></a><h6 id="api-init" class="affix-anchor"></h6></h3>
 
 <p>Initialize this chart. <code>attach()</code> will call <code>init()</code> so usually we dont have to call it manually.</p>
 
-<h3>parse()</h3>
+<h3>parse() <a data-anchor="api-parse" data-text="" class="affix-anchor-info"></a><h6 id="api-parse" class="affix-anchor"></h6></h3>
 
 <p>Parse data before use in this chart. <code>attach()</code> will call <code>parse()</code> so usually we dont have to call it manually.</p>
 
-<h3>bind()</h3>
+<h3>bind() <a data-anchor="api-bind" data-text="" class="affix-anchor-info"></a><h6 id="api-bind" class="affix-anchor"></h6></h3>
 
 <p>Bind data to DOM element. <code>attach()</code> will call <code>bind()</code> so usually we dont have to call it manually.</p>
 
-<h3>resize()</h3>
+<h3>resize() <a data-anchor="api-resize" data-text="" class="affix-anchor-info"></a><h6 id="api-resize" class="affix-anchor"></h6></h3>
 
 <p>Update according to change in dimensions of container. PlotDB listens to window resize event and invoke <code>resize()</code> automatically, so if you manually change the dimension of container, you should also call <code>resize()</code> afterward.</p>
 
-<h3>render()</h3>
+<h3>render() <a data-anchor="api-render" data-text="" class="affix-anchor-info"></a><h6 id="api-render" class="affix-anchor"></h6></h3>
 
 <p>Render this chart. This should be called every time a chart needs update, for eaxmple, after <code>resize()</code> being called.</p>
 
-<p><br/></p><div id="disqus_thread"></div></div></div><script>var disqus_config = function () {
+<h3>destroy() <a data-anchor="api-destroy" data-text="" class="affix-anchor-info"></a><h6 id="api-destroy" class="affix-anchor"></h6></h3>
+
+<p>Destroy this chart. This should be called when this chart is no longer needed, to finalize and clear any persistent resources it allocated.</p>
+
+<p><br/></p>
+
+<h2>Discussion <a data-anchor="discussion" data-text="" class="affix-anchor-info"></a><h6 id="discussion" class="affix-anchor"></h6></h2><div id="disqus_thread"></div></div><div class="col-sm-3 scrollspy"><ul id="affix" data-spy="affix" class="nav hidden-xs hidden-sm"><li><a href="#plotdb-renderer-api">Basic &#xbb;</a><ul class="nav subnav"><li><a href="#overview">Overview </a></li><li><a href="#license">License </a></li></ul></li><li><a href="#sample-usage">Sample Usage  &#xbb;</a><ul class="nav subnav"><li><a href="#installation">Installation </a></li><li><a href="#load">Load Viswork </a></li><li><a href="#offline-rendering">Offline Rendering </a></li><li><a href="#customize-data">Customize Data </a></li><li><a href="#configuration">Configuration </a></li><li><a href="#resizing-and-rerendering">Resizing and re-rendering </a></li><li><a href="#reusing-viswork">Reusing Viswork </a></li><li><a href="#viswork-library">Viswork Library </a></li></ul></li><li><a href="#api-reference">API Reference &#xbb;</a><ul class="nav subnav"><li><a href="#api-clone">clone() </a></li><li><a href="#api-data">data(...)</a></li><li><a href="#api-config">config(configObject) </a></li><li><a href="#api-attach">attach(htmlNode) </a></li><li><a href="#api-init">init() </a></li><li><a href="#api-parse">parse() </a></li><li><a href="#api-bind">bind() </a></li><li><a href="#api-resize">resize() </a></li><li><a href="#api-render">render() </a></li><li><a href="#api-destroy">destroy() </a></li></ul></li><li><a href="#discussion">Discussion  &#xbb;</a></li></ul></div></div></div></div><script>var disqus_config = function () {
 this.page.url = "https://plotdb.com/doc/"; /* TODO */
 this.page.identifier = "/doc/"; /* PAGE IDENTIFIER */
 };
@@ -427,7 +437,9 @@ var d = document, s = d.createElement('script');
 s.src = '//plotdb.disqus.com/embed.js';
 s.setAttribute('data-timestamp', +new Date());
 (d.head || d.body).appendChild(s);
-})();</script><div id="user-feedback" ng-click="gfbt=!!!gfbt"><i class="fa fa-commenting"></i><span>send feedback</span></div><div ng-cloak ng-show="gfbt" ng-click="gfbt=false" class="cover-modal ng-hide-animate ng-hide"></div><div ng-cloak ng-show="gfbt" class="cover-modal-inner ng-hide-animate ng-hide"><div class="panel panel-default"><div style="height:500px;overflow-y:scroll" class="panel-body"><div data-href="http://plotdb.com/feedback/" data-width="100%" data-numposts="5" data-colorscheme="light" class="fb-comments"></div></div><div class="panel-footer text-right"><div ng-click="gfbt=false" class="btn btn-default">Close</div></div></div></div><div id="fb-root"></div><script>window.fbAsyncInit = function() {
+})();</script><script>$(document).ready(function() {
+$('#affix').affix({ offset: { top: $('#affix').offset().top - 100} });
+});</script><div id="user-feedback" ng-click="gfbt=!!!gfbt"><i class="fa fa-commenting"></i><span>send feedback</span></div><div ng-cloak ng-show="gfbt" ng-click="gfbt=false" class="cover-modal ng-hide-animate ng-hide"></div><div ng-cloak ng-show="gfbt" class="cover-modal-inner ng-hide-animate ng-hide"><div class="panel panel-default"><div style="height:500px;overflow-y:scroll" class="panel-body"><div data-href="http://plotdb.com/feedback/" data-width="100%" data-numposts="5" data-colorscheme="light" class="fb-comments"></div></div><div class="panel-footer text-right"><div ng-click="gfbt=false" class="btn btn-default">Close</div></div></div></div><div id="fb-root"></div><script>window.fbAsyncInit = function() {
   FB.init({
     appId      : '1546734828988373',
     xfbml      : true,

@@ -7,7 +7,7 @@
   font-family: lato
   color: #444
   background: #fff
-  max-width: 1024px
+  max-width: 1280px
   padding: 50px 40px 30px 40px
   margin: 0 auto
   font-weight: 300
@@ -40,7 +40,7 @@
     padding: 20px
     border: none
   code
-    font-size: 0.8em
+    font-size: 0.75em
     color: #222
   .chart-demo
     border: 1px solid #ccc
@@ -50,3 +50,31 @@
     padding: 10px
     width: 100%
     height: 200px
+  #affix, .affix, .affix-top
+    min-width: 380px
+    margin-top: 40px
+    a
+      color: #444
+      font-size: 0.9em
+      border-left: 4px solid transparent
+    .nav > li > a
+      padding: 0 0 4px 40px
+      font-size: 0.8em
+    & > li > ul.nav.subnav
+      display: none
+    & > li.active > ul.nav.subnav
+      display: block
+    li.active > a
+      border-left: 4px solid #777
+      font-weight: 600
+      color: color['primary']
+  .affix-anchor, .affix-anchor-info
+    visibility: hidden
+    height: 0
+    margin: 0
+    padding: 0
+  .affix-anchor
+    position: relative
+    top: -150px
+
+

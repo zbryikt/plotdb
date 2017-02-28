@@ -1,4 +1,4 @@
-require! <[fs fs-extra path chokidar child_process jade stylus require-reload markdown]>
+require! <[fs fs-extra path chokidar child_process jade stylus require-reload markdown jsdom bluebird]>
 require! 'uglify-js': uglify-js, LiveScript: lsc, 'uglifycss': uglify-css
 require! <[./share/scriptpack]>
 reload = require-reload require
@@ -20,6 +20,39 @@ mkdir-recurse = ->
   if !fs.exists-sync(it) =>
     mkdir-recurse path.dirname it
     fs.mkdir-sync it
+
+affix-anchor = (input="") ->
+  re = /\#\[([^\]]*?)\]\(([^\)]*?)\)/g
+  matches = input.match(re) or []
+  for item in matches =>
+    ret = /\#\[([^\]]*?)\]\(([^\)]*?)\)/.exec(item)
+    [text, content, id] = ret
+    input = input.replace(item, """<a data-anchor="#id" data-text="#content" class="affix-anchor-info"></a><h6 id="#id" class="affix-anchor"></h6>""")
+  input
+
+affix = (code) -> new bluebird (res, rej) ->
+  ret =  markdown.toHTML(code)
+  jsdom.env ret, (e,w) ->
+    node = w.document.querySelectorAll("h1,h2,h3,h4")
+    output = ['ul#affix.nav.hidden-xs.hidden-sm(data-spy="affix")']
+    count = 0
+    for i from 0 til node.length
+      nodeName = node[i].nodeName.toLowerCase!
+      anchor = node[i].querySelector("a")
+      if !anchor => anchor = node[i]
+      id = anchor.getAttribute("data-anchor")
+      content = anchor.getAttribute("data-text")
+      if !content => content = node[i].innerHTML.replace(/<.*$/g,'')
+      if <[h1 h2]>.indexOf(nodeName)>=0 =>
+        output.push '  li'
+        output.push """    a(href="\##id") #content &\#xbb;"""
+        count = 0
+      else if nodeName == \h3 =>
+        if !count => output.push '    ul.nav.subnav'
+        output.push """      li: a(href="\##id") #content"""
+        count += 1
+    result = output.map(->"  #it").join('\n')
+    res result
 
 src-tree = (matcher, morpher) ->
   ret = {} <<< do
@@ -136,17 +169,23 @@ base = do
     if type == \md =>
       try
         des = src.replace(/src\/md/, "static/doc").replace(/.md/, ".html")
-        markdown = fs.read-file-sync src .toString!
-        content = ([
-          """extends /doc.jade
-          block markdown
-            :markdown
-          """,
-        ] ++ markdown.split \\n .map -> "   #it").join(\\n)
-        result = jade.render content, {filename: src, basedir: path.join(cwd,\src/jade/)} <<< {config: data}
-        <- fs-extra.mkdirs path.dirname(des), _
-        fs.write-file-sync des, result
-        console.log "[BUILD]   #src --> #des"
+        markdown = affix-anchor(fs.read-file-sync src .toString!)
+        affix markdown .then (affix-code) ->
+          content = ([
+            """extends /doc.jade
+            block markdown
+              :markdown
+            """,
+          ] ++ markdown.split \\n .map -> "   #it")
+          content ++= ["block affix"]
+          content ++= affix-code
+          content = content.join(\\n)
+        
+          result = jade.render content, {filename: src, basedir: path.join(cwd,\src/jade/)} <<< {config: data}
+          <- fs-extra.mkdirs path.dirname(des), _
+          fs.write-file-sync des, result
+          console.log "[BUILD]   #src --> #des"
+
       catch
         console.log "[BUILD]   #src failed: "
         console.log e.message

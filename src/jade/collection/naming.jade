@@ -10,7 +10,7 @@ div(ng-controller="folderEdit")
         .btn-group.pull-right
           .btn.btn-default(ng-if="!folder.key", ng-click="save()") Create
           .btn.btn-default(ng-if="folder.key", ng-click="save()") Save
-          .btn.btn-default(ng-click="edit.toggle(false,'description')") Cancel
+          .btn.btn-default(ng-click="edit.toggle(false,'name')") Cancel
   +cover-modal("edit.toggled.description", "edit.description.toggle(false, 'description')")
     .panel.panel-default(style="width:500px;margin:auto")
       .panel-body(style="height:165px;min-height:135px")

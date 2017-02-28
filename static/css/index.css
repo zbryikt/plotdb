@@ -5491,7 +5491,7 @@ small.hint {
   font-family: lato;
   color: #444;
   background: #fff;
-  max-width: 1024px;
+  max-width: 1280px;
   padding: 50px 40px 30px 40px;
   margin: 0 auto;
   font-weight: 300;
@@ -5533,7 +5533,7 @@ small.hint {
   border: none;
 }
 #root.doc-root code {
-  font-size: 0.8em;
+  font-size: 0.75em;
   color: #222;
 }
 #root.doc-root .chart-demo {
@@ -5544,6 +5544,53 @@ small.hint {
   padding: 10px;
   width: 100%;
   height: 200px;
+}
+#root.doc-root #affix,
+#root.doc-root .affix,
+#root.doc-root .affix-top {
+  min-width: 380px;
+  margin-top: 40px;
+}
+#root.doc-root #affix a,
+#root.doc-root .affix a,
+#root.doc-root .affix-top a {
+  color: #444;
+  font-size: 0.9em;
+  border-left: 4px solid transparent;
+}
+#root.doc-root #affix .nav > li > a,
+#root.doc-root .affix .nav > li > a,
+#root.doc-root .affix-top .nav > li > a {
+  padding: 0 0 4px 40px;
+  font-size: 0.8em;
+}
+#root.doc-root #affix > li > ul.nav.subnav,
+#root.doc-root .affix > li > ul.nav.subnav,
+#root.doc-root .affix-top > li > ul.nav.subnav {
+  display: none;
+}
+#root.doc-root #affix > li.active > ul.nav.subnav,
+#root.doc-root .affix > li.active > ul.nav.subnav,
+#root.doc-root .affix-top > li.active > ul.nav.subnav {
+  display: block;
+}
+#root.doc-root #affix li.active > a,
+#root.doc-root .affix li.active > a,
+#root.doc-root .affix-top li.active > a {
+  border-left: 4px solid #777;
+  font-weight: 600;
+  color: #ed1d78;
+}
+#root.doc-root .affix-anchor,
+#root.doc-root .affix-anchor-info {
+  visibility: hidden;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+#root.doc-root .affix-anchor {
+  position: relative;
+  top: -150px;
 }
 span.select2-container--default .select2-selection--multiple {
   box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);

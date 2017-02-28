@@ -1,7 +1,12 @@
 (->
   config = do
     css: do
-      frameworks: <[
+      plotdb:
+        <[
+          /css/render/pdb.css
+        ]>
+      frameworks:
+        <[
           /assets/bootstrap/3.3.7/css/bootstrap.min.css
           /assets/fontawesome/4.6.1/css/font-awesome.min.css
           /assets/select2/4.0.1/css/select2.min.css
@@ -35,9 +40,9 @@
           /js/share/config.js
           /js/chart/render.js
         ]>
-      view:
+
+      view: # should also update plotdb
         <[
-          /js/sched.js
           /js/plotdb/main.js
           /js/plotdb/type.js
           /js/plotdb/chart.js
@@ -48,6 +53,20 @@
           /js/share/config.js
           /js/chart/view.js
         ]>
+
+      plotdb: #should also update view ( alias of view )
+        <[
+          /js/plotdb/main.js
+          /js/plotdb/type.js
+          /js/plotdb/chart.js
+          /js/plotdb/theme.js
+          /js/plotdb/data.js
+          /js/plotdb/config.js
+          /js/plotdb/util.js
+          /js/share/config.js
+          /js/chart/view.js
+        ]>
+
       loader:
         <[
           /js/plotdb/main.js

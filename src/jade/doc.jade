@@ -7,8 +7,13 @@ block body
     html,body {background: #fff!important}
   #root.doc-root
     .doc-content
-      block markdown
-      #disqus_thread
+      .row
+        .col-sm-9
+          block markdown
+          #disqus_thread
+        .col-sm-3.scrollspy
+          block affix
+
 
   script.
     var disqus_config = function () {
@@ -29,3 +34,7 @@ block body
       li: a Writing Vis
       li: a Work with Theme
       li: a External API
+  script.
+    $(document).ready(function() {
+    $('#affix').affix({ offset: { top: $('#affix').offset().top - 100} });
+    });

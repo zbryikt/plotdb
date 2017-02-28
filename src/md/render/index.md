@@ -1,6 +1,6 @@
-# PlotDB Renderer API
+# PlotDB Renderer API #[Basic](plotdb-renderer-api)
 
-### Overview
+### Overview #[](overview)
 
 **Visworks** including charts, visualizations or interactive contents on PlotDB are all designed to be executed independently. You can download their corresponding PlotDB.json and render it in any website with PlotDB API. PlotDB API also enpowers you to update their configuration, data, and even reuse them in multiple container simultaneously.
 
@@ -8,16 +8,21 @@ Additionally, visworks can be bundled into one single javascript library using C
 
 *( In this document, we will both use the term **viswork** and **chart**, but they all refer to the same concept. )*
 
-### License
+### License #[](license)
 
 Every viswork has its own license. Some are free of charge like *MIT License*, and some require subscription of PlotDB for commercial use (the *PlotDB License*), and some need you to purchase before using. Check each viswork for its license in *settings -> library* tab.
 
-### Installation
 
-Include [plotdb.js](https://plotdb.com/js/pack/view.js) and [pdb.css](https://plotdb.com/css/render/pdb.css) in your website:
+## Sample Usage #[](sample-usage)
 
-    <link rel="stylesheet" type="text/css" href="pdb.css"/>
-    <script type="text/javascript" src="plotdb.js"></script>
+In this section, we will step-by-step walk through the whole life cycle of a plotdb viswork.
+
+### Installation #[](installation)
+
+Include [plotdb.js](https://plotdb.com/dist/0.1.0/plotdb.min.js) and [pdb.css](https://plotdb.com/dist/0.1.0/plotdb.min.css) in your website:
+
+    <link rel="stylesheet" type="text/css" href="plotdb.min.css"/>
+    <script type="text/javascript" src="plotdb.min.js"></script>
 
 additionally, some charts depends on other external library like *d3js*, so we have to include them as well. To work with examples in this documentation, include following two JavaScript library:
 
@@ -27,7 +32,7 @@ additionally, some charts depends on other external library like *d3js*, so we h
 To find whih library to include for any chart, check `settings -> library` tab in each viswork.
 
 
-### A Simple Usage
+### Load Viswork #[](load)
 
 The most simple way to render a PlotDB chart is using visworks ID:
 
@@ -53,7 +58,7 @@ By default it renders with a sample data, like following:
 </script>
 
 
-### Offline Rendering
+### Offline Rendering #[](offline-rendering)
 
 Working with ID is convenient, yet it send an ajax request to PlotDB, so you need internet connect and your website will depend on PlotDB server for its content. To render a offline chart, download its PlotDB.json and use its URL to replace the viswork ID:
 
@@ -62,7 +67,7 @@ Working with ID is convenient, yet it send an ajax request to PlotDB, so you nee
     });
 
 
-### Customize Data
+### Customize Data #[](customize-data)
 
 To render with customized data, use the `data` method:
 
@@ -145,7 +150,7 @@ plotdb.load(2008, function(chart) {
 </script>
 
 
-### Configuration
+### Configuration #[](configuration)
 
 Once we have our data in viswork, we may want to customize the style or settings in our viswork. To do so use the `config` method:
 
@@ -212,7 +217,7 @@ similarly, author of viswork can design and name his/her config of viswork. Thes
 
 PlotDB also provides predefined configurations for creating viswork, to know more about configration, check the [PlotDB Viswork Specification](/doc/spec).
 
-### Resizing and re-rendering
+### Resizing and re-rendering #[](resizing-and-rerendering)
 
 PlotDB viswork will automatically render again if you resize the container. However, sometimes we want to render it manually, and this can be done by calling `render` method:
 
@@ -278,7 +283,7 @@ which looks like:
   });
 </script>
 
-### Reusing Viswork
+### Reusing Viswork #[](reusing-viswork)
 
 Every viswork object is dedicated to its container and can not be reusable in other container. However, you can make a copy of viswork object to reuse it by calling `clone` method:
 
@@ -288,7 +293,7 @@ Every viswork object is dedicated to its container and can not be reusable in ot
       chart2.attach("#another-container");
     });
 
-### Viswork Library
+### Viswork Library #[](viswork-library)
 
 In most case, you may want to load viswork with JSONP style - to load all your visworks within a single `<script>` tag instead of through lots of ajax call. the Plotdb Collection mechanism can help you to bundle all visworks together, yet you can still do it yourself.
 
@@ -321,16 +326,16 @@ Again, PlotDB Collection can help you bundle your own viswork library, so you do
 
 <br/> <br/>
 
-## Renderer API Reference
+## Renderer API Reference #[API Reference](api-reference)
 
 in both `plotdb.chart.get` and `plotdb.load` we get a viswork object, which provides following methods:
 
-### clone()
+### clone() #[](api-clone)
 
 Make a copy of this chart. If you need multiple instance of this chart to render different data, you can use `clone()` to make multiple copies of the chart object, and render them to different containers respectively.
 
 
-### data(objArray, refresh, mapping)
+### data(objArray, refresh, mapping) #[data(...)](api-data)
 
 Bind data with this chart. `data()` accepts an object array as the 1st parameter `objArray`, such as:
 
@@ -365,7 +370,7 @@ Every chart uses different visual encoding, check the `dimension` section in the
 With above code we have 2 dimensions: `value` and `order`. `value` accepts multiple fields with number data type and is required, `order` accepts single field with ordinal data type, and is optional.
 
 
-### config(configObject)
+### config(configObject) #[](api-config)
 
 Update configurations of this chart. `configObject` is a Javascript object containing configurations to update; for example, to set font family of this chart:
 
@@ -394,7 +399,7 @@ Be sure to invoke `resize()` and `render()` after updating configurations. If yo
     chart.render();
 
 
-### attach(htmlNode)
+### attach(htmlNode) #[](api-attach)
 
 connect this chart with specific htmlNode. This will also render the chart into it. htmlNode should be a DOM element, so if you use jQuery to retrieve a node, pull its native DOM element out of the jQuery object at first:
 
@@ -403,31 +408,35 @@ connect this chart with specific htmlNode. This will also render the chart into 
 PlotDB listens to window resize event to update chart, so if you adjust the dimension of the htmlNode programmatically, be sure to invoke `resize()` and `render()` to reflect the change to your chart.
 
 
-### init()
+### init() #[](api-init)
 
 Initialize this chart. `attach()` will call `init()` so usually we dont have to call it manually.
 
 
-### parse()
+### parse() #[](api-parse)
 
 Parse data before use in this chart. `attach()` will call `parse()` so usually we dont have to call it manually.
 
 
-### bind()
+### bind() #[](api-bind)
 
 Bind data to DOM element. `attach()` will call `bind()` so usually we dont have to call it manually.
 
 
-### resize()
+### resize() #[](api-resize)
 
 Update according to change in dimensions of container. PlotDB listens to window resize event and invoke `resize()` automatically, so if you manually change the dimension of container, you should also call `resize()` afterward.
 
 
-### render()
+### render() #[](api-render)
 
 Render this chart. This should be called every time a chart needs update, for eaxmple, after `resize()` being called.
 
 
+### destroy() #[](api-destroy)
+
+Destroy this chart. This should be called when this chart is no longer needed, to finalize and clear any persistent resources it allocated.
 
 
 <br/>
+## Discussion #[](discussion)

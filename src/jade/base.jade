@@ -26,7 +26,7 @@ html(lang="en")
     script(type="text/javascript",src="/global")
     script(type="text/javascript",src="/js/pack/base.js?" + version)
     block head
-  body(id=rootid,ng-app="plotDB",ng-controller="plSite")
+  body(id=rootid,ng-app="plotDB",ng-controller="plSite",data-spy="scroll",data-target=".scrollspy")
     #beta-ribbon
     #confirmbox
       .cover-modal.ng-hide-animate.ng-hide(ng-show="confirmbox.toggled",ng-cloak)
