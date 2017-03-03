@@ -1,10 +1,10 @@
-# PlotDB Viswork Specification
+# PlotDB Viswork Specification #[Overview](viswork-sec)
 
 This document describes and guide you step by step to create a PlotDB-compatible **viswork** ( chart, visualization or interactive content ), which can be easily reused by others and even embedded into other websites.
 
 *( In this document, we will both use the term **viswork** and **chart**, but they all refer to the same concept. )*
 
-## First Step
+## First Step #[](first-step)
 
 Viswork has a set of predefined interface so it can communicate with PlotDB online editor and PlotDB renderer API. It is, however, just a simple JavaScript Object. for example, following example will print "hello world" in dev console:
 
@@ -24,7 +24,7 @@ For eaxmple, to render 'hello world' in the DOM element:
       }
     }
 
-### Initialization
+### Initialization #[](init)
 
 Note that `render` will be called every time we need a redraw ( e.g., when container size changes ), so we will want to keep initialization or computing-intensive code out of `render`; for this purpose, we have `init` method:
 
@@ -38,7 +38,7 @@ Note that `render` will be called every time we need a redraw ( e.g., when conta
       }
     }
 
-### Resizing
+### Resizing #[](resize)
 
 `init` will only and should only be called once in the life time of viswork, unless you manually call it intentionally.
 
@@ -55,7 +55,7 @@ There are other methods which serves for different purposes. For example, `resiz
 
 Note that resize will be called if any configuration is updated.
 
-### Data Parsing
+### Data Parsing #[](parse)
 
 `data` stores the input data as an array of object, and `parse` is called when input data is updated:
 
@@ -68,7 +68,7 @@ Note that resize will be called if any configuration is updated.
       }
     }
 
-### Data Binding
+### Data Binding #[](bind)
 
 `bind` is called after `parse`, for binding between data and DOM element. This may be optional if you are not using libraries like d3js, which separate data binding from rendering:
 
@@ -81,7 +81,7 @@ Note that resize will be called if any configuration is updated.
     }
 
 
-### Finalize
+### Finalize #[](finalize)
 
 If your viswork uses resources like `setInterval`, recursive calls of `requestAnimationFrame` or anything that should be destroyed after lifecycle of this viswork, you should do it in `destroy` method:
 
@@ -96,7 +96,7 @@ If your viswork uses resources like `setInterval`, recursive calls of `requestAn
       }
     }
 
-### Wrap up
+### Wrap up #[](wrap-up)
 
 In short, lifecycle of a viswork will be like this:
 
@@ -183,7 +183,7 @@ chart.attach("#container1");
 
 you can copy above example code and paste into the **code panel** in the [PlotDB online editor](https://plotdb.com/chart/) to see how it works.
 
-## Configuration
+## Configuration #[](configuration)
 
 Once you create your first viswork, you may want to accept input data and let the viswork configurable for other people to use. In this section we covers the **configuration** part.
 
@@ -218,7 +218,7 @@ To use this config in code, look up `config` member for "barCode" property:
 
 note again that config change will both trigger `resize` and `render` to be called in [PlotDB renderer](https://plotdb.com/doc/render/).
 
-### Predefined Configurations and Inheritance
+### Predefined Configurations and Inheritance #[Predefined Configuration](predefined-config)
 
 Sometimes it is tedious to write again and again all these configurations in different viswork. You can let a config to use settings from another config by using `extend` attribute:
 
@@ -248,7 +248,7 @@ and inheritance directly from predefined configuration is also possible:
       myStroke: { extend: "stroke" } // extend a predefined configuration `stroke`
     }
 
-### Re-bind on Change
+### Re-bind on Change #[Re-bind on Change](rebind)
 
 Configuration changes trigger `resize` and `render` methods to be called, but if your config need rebind in data, you can set `rebindOnChange` to true:
 
@@ -258,7 +258,7 @@ Configuration changes trigger `resize` and `render` methods to be called, but if
 
 then it will trigger `bind -> resize -> render` when bindMethod is changed.
 
-### Configuration Data Types
+### Configuration Data Types #[](config-datatype)
 
 For now, PlotDB provides following data type:
 
@@ -354,7 +354,7 @@ chart.attach("#container2");
 
 <br/>
 
-## Data and Dimension
+## Data and Dimension #[](data-dim)
 
 As mentioned before,  we can use `data` member to access input data:
 
@@ -387,7 +387,7 @@ However, we need to define the **field name** and **data type* of fields in each
 
 above example adds a new viswork *dimension* named **label**, with data type `plotdb.Number` and marked as required. it will then appear in the *Data Binding* section for user to drop their data field. This dimensin is also used in PlotDB Renderer API when calling `chart.data` API, check [PlotDB Renderer API Documentation](https://plotdb.com/doc/render/) for more detail.
 
-### Multiple Value
+### Multiple Value #[](multi-value)
 
 If we define a dimension to be multiple, it will become an array in `data` member; following example prints all values with in input data into dev console:
 
@@ -404,7 +404,7 @@ If we define a dimension to be multiple, it will become an array in `data` membe
       }
 
 
-### Additional Information about Dimension
+### Additional Information about Dimension #[Additional Information](additional-info)
 
 `dimension` member provides us additional information about input data, such as data field name and field count:
 
@@ -417,7 +417,7 @@ If we define a dimension to be multiple, it will become an array in `data` membe
 
 Sometimes these information are quite useful when making legend or labels.
 
-## Data Types
+## Data Types Reference #[](ref-type)
 
 PlotDB defines several common data types which can be used in defing viswork dimension and configuration. They are:
 
@@ -432,7 +432,7 @@ PlotDB defines several common data types which can be used in defing viswork dim
 
 some of theme have different interface and usage, which are described below.
 
-### plotdb.Choice
+### plotdb.Choice #[](ref-type-choice)
 
 `plotdb.Choice` is dedicated for defining select options in a configuration. Following example demonstrates the usage of `plotdb.Choice`:
 
@@ -447,7 +447,7 @@ some of theme have different interface and usage, which are described below.
 this example will show an selection box in config with two options "Yes" and "No" for users to choose. the selected data in `this.config` will be either "Yes" and "No" with `string` type in JavaScript.
 
 
-### plotdb.Palette
+### plotdb.Palette #[](ref-type-palette)
 
 Palette is dedicated for define palette in a configuration. It lets users design and use colors in a set. Following example demonstrates how to use 'plotdb.Palette':
 
@@ -468,14 +468,14 @@ the `hex` and `keyword` defines the color and the corresponding value to map to 
     config.palette.colors[n].hex
 
 
-### plotdb.Order
+### plotdb.Order #[](ref-type-order)
 
 `plotdb.Order` is the base type of all ordinal data type. It provides a handy function for you to sort `data` in desired direction:
 
     plotdb.Order.sort(this.data, "someField", isAscending);
 
 
-### plotdb.Date
+### plotdb.Date #[](ref-type-date)
 
 
 `plotdb.Date` by default parses input date into an object in following format:
@@ -487,11 +487,11 @@ the `hex` and `keyword` defines the color and the corresponding value to map to 
     }
 
 
-## Predefined Configurations
+## Predefined Config Reference #[](ref-config)
 
 Follow and directly inherit from these configurations can make your viswork more compatible with other visworks, yet it is not a requirement.
 
-### Global Settings
+### Global Settings #[](ref-config-global)
     language:
       name: "Language"
       type: [plotdb.Choice([{name: "正體中文", value: "zh-tw"}, {name: "English", value: "en"}])]
@@ -626,7 +626,7 @@ Follow and directly inherit from these configurations can make your viswork more
       desc: "SVG style dash array. '2 4' means 2px line and 4px space."
       category: "Global Settings"
 
-### Animation
+### Animation #[](ref-config-animation)
 
     animationDuration:
       name: "Animation Duration"
@@ -635,7 +635,7 @@ Follow and directly inherit from these configurations can make your viswork more
       desc: "Animation Duration, in millisecond (e.g., 500)"
       category: "Animation"
 
-### Layout
+### Layout #[](ref-config-layout)
 
     aspectRatio:
       name: "Aspect Ratio"
@@ -643,7 +643,7 @@ Follow and directly inherit from these configurations can make your viswork more
       default: true
       category: "Layout"
 
-### Popup
+### Popup #[](ref-config-popup)
 
     popupShow:
       name: "show Popup"
@@ -653,7 +653,7 @@ Follow and directly inherit from these configurations can make your viswork more
       category: "Popup"
       rebindOnChange: true
 
-### Geography
+### Geography #[](ref-config-geography)
 
     geoFill:
       name: "Fill Color"
@@ -676,7 +676,7 @@ Follow and directly inherit from these configurations can make your viswork more
       default: 1
       category: "Geography"
 
-### Color
+### Color #[](ref-config-color)
 
     hoverFill:
       name: "Hovering Fill Color"
@@ -692,7 +692,7 @@ Follow and directly inherit from these configurations can make your viswork more
       default: "#fff"
       category: "Color"
 
-### Line
+### Line #[](ref-config-line)
 
     connectFill:
       name: "Fill Color"
@@ -748,7 +748,7 @@ Follow and directly inherit from these configurations can make your viswork more
       default: "4 4"
       category: "Line"
 
-### Grid
+### Grid #[](ref-config-grid)
 
     gridShow:
       name: "Show Grid"
@@ -793,7 +793,7 @@ Follow and directly inherit from these configurations can make your viswork more
       category: "Grid"
       desc: "SVG style dash array. '2 4' means 2px line and 4px space."
 
-### Bubble
+### Bubble #[](ref-config-bubble)
 
     bubbleSizeMin:
       name: "Min Size"
@@ -837,7 +837,7 @@ Follow and directly inherit from these configurations can make your viswork more
       default: 5
       category: "Bubble"
 
-### TBD
+### TBD #[](ref-config-TBD)
 
     barThick:
       name: "Bar Thickness"
@@ -851,7 +851,7 @@ Follow and directly inherit from these configurations can make your viswork more
       default: 10
       category: "Layout"
 
-### Legend
+### Legend #[](ref-config-legend)
 
     legendShow:
       name: "Show Legend"
@@ -870,7 +870,7 @@ Follow and directly inherit from these configurations can make your viswork more
       default: "right"
       category: "Legend"
 
-### Label
+### Label #[](ref-config-label)
 
     otherLabel:
       name: "Label for 'other'"
@@ -924,7 +924,7 @@ Follow and directly inherit from these configurations can make your viswork more
       default: true
       category: "Label"
 
-### Dot
+### Dot #[](ref-config-dot)
 
     nodeShow:
       name: "Show Data Dot"
@@ -958,7 +958,7 @@ Follow and directly inherit from these configurations can make your viswork more
       default: 1
       category: "Dot"
 
-### Value
+### Value #[](ref-config-value)
 
     unit:
       name: "Unit"
@@ -1015,3 +1015,4 @@ Follow and directly inherit from these configurations can make your viswork more
       default: 0
       category: "Value"
 
+## Discussion #[](discussion)

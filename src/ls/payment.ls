@@ -2,8 +2,8 @@ angular.module \plotDB
   ..controller \payment,
   <[$scope $http $timeout plNotify eventBus]> ++
   ($scope, $http, $timeout, plNotify, eventBus) ->
-    if !(Stripe?) => return
-    Stripe.setPublishableKey \pk_test_DE53QFrgknntLkCNsVr1MqrV
+    #if !(Stripe?) => return
+    #Stripe.setPublishableKey \pk_test_DE53QFrgknntLkCNsVr1MqrV
     $scope.payinfo = {cvc:null,exp_month:null,exp_year:null,number:null}
     #$scope.payinfo = {cvc:'123',exp_month:'02',exp_year:'18',number:'4242424242424242'}
     $scope.error = {all: true}
@@ -32,6 +32,12 @@ angular.module \plotDB
         )
       ), 500
     $scope.settings = do
+      choose: (plan, period) ->
+        if plan? =>
+          if @plan != plan =>
+            $scope.scrollto $('#payment-your-choice') 
+          @plan = plan
+        if peroid? => @peroid = peroid
       plan: 1
       period: 0
 
@@ -78,4 +84,4 @@ angular.module \plotDB
           plNotify.send \danger, "payment failed."
           return
         _subscribe token
-
+    $("[data-toggle='tooltip']").tooltip!

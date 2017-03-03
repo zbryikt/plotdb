@@ -2,10 +2,6 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus'].concat(function($scope, $http, $timeout, plNotify, eventBus){
-  if (!(typeof Stripe != 'undefined' && Stripe !== null)) {
-    return;
-  }
-  Stripe.setPublishableKey('pk_test_DE53QFrgknntLkCNsVr1MqrV');
   $scope.payinfo = {
     cvc: null,
     exp_month: null,
@@ -62,6 +58,17 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
     }, 500);
   };
   $scope.settings = {
+    choose: function(plan, period){
+      if (plan != null) {
+        if (this.plan !== plan) {
+          $scope.scrollto($('#payment-your-choice'));
+        }
+        this.plan = plan;
+      }
+      if (typeof peroid != 'undefined' && peroid !== null) {
+        return this.peroid = peroid;
+      }
+    },
     plan: 1,
     period: 0
   };
@@ -93,7 +100,7 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
       });
     });
   };
-  return $scope.subscribe = function(){
+  $scope.subscribe = function(){
     var _subscribe;
     if ($scope.settings.plan && $scope.error.all) {
       return;
@@ -136,6 +143,7 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
       });
     });
   };
+  return $("[data-toggle='tooltip']").tooltip();
 }));
 function import$(obj, src){
   var own = {}.hasOwnProperty;

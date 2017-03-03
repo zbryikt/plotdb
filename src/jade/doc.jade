@@ -13,7 +13,8 @@ block body
           #disqus_thread
         .col-sm-3.scrollspy
           block affix
-
+  script.
+    $('#affix').affix({ offset: { top: $('#affix').offset().top - 100} });
 
   script.
     var disqus_config = function () {
@@ -34,7 +35,3 @@ block body
       li: a Writing Vis
       li: a Work with Theme
       li: a External API
-  script.
-    $(document).ready(function() {
-    $('#affix').affix({ offset: { top: $('#affix').offset().top - 100} });
-    });

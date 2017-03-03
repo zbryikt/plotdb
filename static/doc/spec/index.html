@@ -5,13 +5,13 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-77722201-1', 'auto');
 ga('send', 'pageview');</script><script src="/js/pack/frameworks.js?42"></script><script type="text/javascript" src="/global"></script><script type="text/javascript" src="/js/pack/base.js?42"></script></head><body id="" ng-app="plotDB" ng-controller="plSite" data-spy="scroll" data-target=".scrollspy"><div id="beta-ribbon"></div><div id="confirmbox"><div ng-show="confirmbox.toggled" ng-cloak class="cover-modal ng-hide-animate ng-hide"></div><div ng-show="confirmbox.toggled" ng-cloak class="cover-modal-inner ng-hide-animate ng-hide"><div class="panel panel-default"><div class="panel-body"><h3 ng-show="confirmbox.config.title">{{confirmbox.config.title}}</h3><p>{{confirmbox.config.message}}</p><div ng-repeat="option in confirmbox.config.options" ng-click="confirmbox.handle($index)" class="btn btn-default">{{option}}</div></div></div></div></div><div id="loading-dimmer" ng-class="{'active':loading.dimmer, 'show-progress':loading.progress}"><div class="progress"><div aria-valuemin="0" aria-valuemax="100" ng-attr-style="width:{{loading.progress}}%" class="progress-bar progress-bar-striped active"></div></div></div><div style="height:0">&nbsp;</div><div id="nav-top"><nav role="navigation" class="navbar navbar-default"><div class="container-fluid"><div class="navbar-header"><a href="/" class="navbar-brand"><img src="/assets/img/plotdb.png" style="height:100%"></a></div><div><ul class="nav navbar-nav"><li id="nav-chart" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-bar-chart"></i><span class="name">&nbsp;CHARTS</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/chart/explore/">Explore</a></li><li ng-show="user.data" ng-cloak><a href="/chart/me">My Charts</a></li><li class="divider"></li><li><a href="/chart/">from scratch</a></li></ul></li><li id="nav-dataset" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-table"></i><span class="name">&nbsp;DATASET</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/dataset/me/" ng-cloak ng-show="user.data">My Dataset</a></li><li class="divider"></li><li><a href="/dataset/">New Dataset</a></li></ul></li><li id="nav-theme" class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-paint-brush"></i><span class="name">&nbsp;THEME</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="/theme/explore/">Explore</a></li><li><a href="/theme/me/" ng-cloak ng-show="user.data">My Theme</a></li><li class="divider"></li><li><a href="/theme/">Make New Theme</a></li></ul></li><li id="nav-collection"><a href="/collection/">COLLECTIONS</a></li><li id="nav-palette"><a href="/palette/"><img src="/assets/img/palette2.svg" style="vertical-align:text-top;width:14px;margin-top:2px;"><span class="name">&nbsp;PALETTE</span><!--li: a(href="/palette/editor.html",ng-cloak,ng-show="user.data") Advanced Editor--></a></li><li id="nav-showcase"><a href="/showcase/" ng-cloak><span class="name">&nbsp;SHOWCASE</span></a></li></ul><ul class="nav navbar-nav pull-right"><!--li#nav-request: a(href="/request/")i.fa.fa-comment
 | &nbsp;
-span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login" href="#" ng-click="auth.show = !!!auth.show"><i class="fa fa-sign-in"></i>&nbsp; <span>LOGIN / SIGNUP</span></a></li><li id="nav-profile" ng-cloak ng-show="user.data" class="dropdown"><div data-toggle="dropdown" class="btn"><div ng-attr-style="background-image:url(/s/avatar/{{user.data.avatar || '0'}}.jpg)" class="avatar"></div><span class="caret"></span></div><ul class="dropdown-menu"><li ng-show="user.data" ng-cloak><a href="/user/{{user.data.key}}"><b style="vertical-align:middle">{{user.data.displayname}}&nbsp;</b><label ng-show="!user.data.payment.plan" class="label label-default">Free</label><label ng-show="user.data.payment.plan==1" class="label label-info">Basic</label><label ng-show="user.data.payment.plan==2" class="label label-info">Expert</label></a></li><li class="divider"></li><li><a href="#"><label class="grayed">Storage Usage</label><div style="width:120px;margin:0" class="progress"><div ng-class="{'progress-bar-info': ((user.data.datasize || 0) / 100000 &lt; 50), 'progress-bar-warning': ((user.data.datasize || 0) / 100000 &gt; 50)}" ng-attr-style="width:{{(user.data.datasize || 0)/ 100000}}%" class="progress-bar progress-bar-info"><span ng-cloak>{{user.data.datasize|size}}</span></div></div></a></li><li class="divider"></li><li><a href="/team/">Teams</a></li><li><a href="/me/edit/">Settings</a></li><li class="divider"></li><li><a href="#" ng-click="auth.logout()">Logout</a></li></ul></li></ul></div></div></nav></div><div id="authpanel" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><div data-dismiss="modal" style="border-radius:50%;background:#222;" class="closebtn"></div><h4 class="modal-title text-center">Login to PlotDB</h4></div><div style="padding:20px" class="moda-body"><form class="form"><div ng-class="{'has-error':auth.error.email,'has-feedback':auth.error.email}" class="form-group"><input type="text" placeholder="Email" ng-model="auth.email" ng-keypress="auth.keyHandler($event)" class="form-control"><div ng-show="auth.error.email" class="form-control-feedback with-text">{{auth.error.email}} <i class="fa fa-close"></i></div></div><div ng-class="{'has-error':auth.error.passwd,'has-feedback':auth.error.passwd}" class="form-group"><input type="password" placeholder="Password" ng-model="auth.passwd" ng-keypress="auth.keyHandler($event)" class="form-control"><div ng-show="auth.error.passwd" class="form-control-feedback with-text">{{auth.error.passwd}} <i class="fa fa-close"></i></div></div><div ng-click="auth.login()" ng-cloak ng-class="{'loading':auth.loading}" class="btn btn-block btn-success btn-lg loader loading-success"><span ng-show="!auth.isSignIn">SIGNUP</span><span ng-show="auth.isSignIn">LOGIN</span></div><a href="/auth/reset/" style="margin-top:12px;font-size:12px;" class="pull-right">forgot password? &#xbb;</a><div class="checkbox"><label><input type="checkbox"> remember me</label></div></form><div style="position:relative"><hr><div ng-show="auth.failed" ng-cloak class="error">{{auth.failed}}</div><div ng-show="auth.succeed" ng-cloak class="success">{{auth.succeed}}</div></div><div id="authpanel-social-login" class="row"><div class="col-xs-6"><a ng-attr-href="/u/auth/facebook?nexturl={{nexturl}}" target="_blank" style="font-size:12px" class="btn btn-default btn-block"><i class="fa fa-facebook-official"></i><span>Sign in</span></a></div><div class="col-xs-6"><a ng-attr-href="/u/auth/google?nexturl={{nexturl}}" target="_blank" style="font-size:12px" href="#" class="btn btn-default btn-block"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 48 48"><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg><span>Sign in</span></a></div></div></div><div ng-cloak class="modal-footer text-center"><span ng-show="auth.isSignIn">Newcomer here? <a href="#" ng-click="auth.isSignIn=false">Sign up &#xbb;</a></span><span ng-show="!auth.isSignIn">Already a member? <a href="#" ng-click="auth.isSignIn=true">Sign In &#xbb;</a></span></div></div></div></div><div id="notifications"><div ng-repeat="n in notifications" ng-class="'notify-'+n.type" ng-cloak class="notify">{{n.message}}</div></div><div id="alertbox" ng-cloak ng-show="alert.toggled"><div class="ib"><br><div ng-cloak class="text-center">{{alert.msg}}</div><div class="footer"><div ng-click="alert.toggled=false" class="btn btn-default btn-sm">OK</div></div></div></div><link rel="stylesheet" type="text/css" href="/css/render/pdb.css"><script type="text/javascript" src="/js/pack/view.js"></script><script type="text/javascript" src="/lib/plotd3/0.1.0/index.js"></script><style type="text/css">html,body {background: #fff!important}</style><div id="root" class="doc-root"><div class="doc-content"><div class="row"><div class="col-sm-9"><h1>PlotDB Viswork Specification</h1>
+span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login" href="#" ng-click="auth.show = !!!auth.show"><i class="fa fa-sign-in"></i>&nbsp; <span>LOGIN / SIGNUP</span></a></li><li id="nav-profile" ng-cloak ng-show="user.data" class="dropdown"><div data-toggle="dropdown" class="btn"><div ng-attr-style="background-image:url(/s/avatar/{{user.data.avatar || '0'}}.jpg)" class="avatar"></div><span class="caret"></span></div><ul class="dropdown-menu"><li ng-show="user.data" ng-cloak><a href="/user/{{user.data.key}}"><b style="vertical-align:middle">{{user.data.displayname}}&nbsp;</b><label ng-show="!user.data.payment.plan" class="label label-default">Free</label><label ng-show="user.data.payment.plan==1" class="label label-info">Basic</label><label ng-show="user.data.payment.plan==2" class="label label-info">Expert</label></a></li><li class="divider"></li><li><a href="#"><label class="grayed">Storage Usage</label><div style="width:120px;margin:0" class="progress"><div ng-class="{'progress-bar-info': ((user.data.datasize || 0) / 100000 &lt; 50), 'progress-bar-warning': ((user.data.datasize || 0) / 100000 &gt; 50)}" ng-attr-style="width:{{(user.data.datasize || 0)/ 100000}}%" class="progress-bar progress-bar-info"><span ng-cloak>{{user.data.datasize|size}}</span></div></div></a></li><li class="divider"></li><li><a href="/team/">Teams</a></li><li><a href="/me/edit/">Settings</a></li><li><a href="/me/billing/">Billing</a></li><li class="divider"></li><li><a href="#" ng-click="auth.logout()">Logout</a></li></ul></li></ul></div></div></nav></div><div id="authpanel" class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><div data-dismiss="modal" style="border-radius:50%;background:#222;" class="closebtn"></div><h4 class="modal-title text-center">Login to PlotDB</h4></div><div style="padding:20px" class="moda-body"><form class="form"><div ng-class="{'has-error':auth.error.email,'has-feedback':auth.error.email}" class="form-group"><input type="text" placeholder="Email" ng-model="auth.email" ng-keypress="auth.keyHandler($event)" class="form-control"><div ng-show="auth.error.email" class="form-control-feedback with-text">{{auth.error.email}} <i class="fa fa-close"></i></div></div><div ng-class="{'has-error':auth.error.passwd,'has-feedback':auth.error.passwd}" class="form-group"><input type="password" placeholder="Password" ng-model="auth.passwd" ng-keypress="auth.keyHandler($event)" class="form-control"><div ng-show="auth.error.passwd" class="form-control-feedback with-text">{{auth.error.passwd}} <i class="fa fa-close"></i></div></div><div ng-click="auth.login()" ng-cloak ng-class="{'loading':auth.loading}" class="btn btn-block btn-success btn-lg loader loading-success"><span ng-show="!auth.isSignIn">SIGNUP</span><span ng-show="auth.isSignIn">LOGIN</span></div><a href="/auth/reset/" style="margin-top:12px;font-size:12px;" class="pull-right">forgot password? &#xbb;</a><div class="checkbox"><label><input type="checkbox"> remember me</label></div></form><div style="position:relative"><hr><div ng-show="auth.failed" ng-cloak class="error">{{auth.failed}}</div><div ng-show="auth.succeed" ng-cloak class="success">{{auth.succeed}}</div></div><div id="authpanel-social-login" class="row"><div class="col-xs-6"><a ng-attr-href="/u/auth/facebook?nexturl={{nexturl}}" target="_blank" style="font-size:12px" class="btn btn-default btn-block"><i class="fa fa-facebook-official"></i><span>Sign in</span></a></div><div class="col-xs-6"><a ng-attr-href="/u/auth/google?nexturl={{nexturl}}" target="_blank" style="font-size:12px" href="#" class="btn btn-default btn-block"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 48 48"><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg><span>Sign in</span></a></div></div></div><div ng-cloak class="modal-footer text-center"><span ng-show="auth.isSignIn">Newcomer here? <a href="#" ng-click="auth.isSignIn=false">Sign up &#xbb;</a></span><span ng-show="!auth.isSignIn">Already a member? <a href="#" ng-click="auth.isSignIn=true">Sign In &#xbb;</a></span></div></div></div></div><div id="notifications"><div ng-repeat="n in notifications" ng-class="'notify-'+n.type" ng-cloak class="notify">{{n.message}}</div></div><div id="alertbox" ng-cloak ng-show="alert.toggled"><div class="ib"><br><div ng-cloak class="text-center">{{alert.msg}}</div><div class="footer"><div ng-click="alert.toggled=false" class="btn btn-default btn-sm">OK</div></div></div></div><link rel="stylesheet" type="text/css" href="/css/render/pdb.css"><script type="text/javascript" src="/js/pack/view.js"></script><script type="text/javascript" src="/lib/plotd3/0.1.0/index.js"></script><style type="text/css">html,body {background: #fff!important}</style><div id="root" class="doc-root"><div class="doc-content"><div class="row"><div class="col-sm-9"><h1>PlotDB Viswork Specification <a data-anchor="viswork-sec" data-text="Overview" class="affix-anchor-info"></a><h6 id="viswork-sec" class="affix-anchor"></h6></h1>
 
 <p>This document describes and guide you step by step to create a PlotDB-compatible <strong>viswork</strong> ( chart, visualization or interactive content ), which can be easily reused by others and even embedded into other websites.</p>
 
 <p><em>( In this document, we will both use the term <strong>viswork</strong> and <strong>chart</strong>, but they all refer to the same concept. )</em></p>
 
-<h2>First Step</h2>
+<h2>First Step <a data-anchor="first-step" data-text="" class="affix-anchor-info"></a><h6 id="first-step" class="affix-anchor"></h6></h2>
 
 <p>Viswork has a set of predefined interface so it can communicate with PlotDB online editor and PlotDB renderer API. It is, however, just a simple JavaScript Object. for example, following example will print "hello world" in dev console:</p>
 
@@ -31,7 +31,7 @@ span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login
   }
 }</code></pre>
 
-<h3>Initialization</h3>
+<h3>Initialization <a data-anchor="init" data-text="" class="affix-anchor-info"></a><h6 id="init" class="affix-anchor"></h6></h3>
 
 <p>Note that <code>render</code> will be called every time we need a redraw ( e.g., when container size changes ), so we will want to keep initialization or computing-intensive code out of <code>render</code>; for this purpose, we have <code>init</code> method:</p>
 
@@ -45,7 +45,7 @@ span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login
   }
 }</code></pre>
 
-<h3>Resizing</h3>
+<h3>Resizing <a data-anchor="resize" data-text="" class="affix-anchor-info"></a><h6 id="resize" class="affix-anchor"></h6></h3>
 
 <p><code>init</code> will only and should only be called once in the life time of viswork, unless you manually call it intentionally.</p>
 
@@ -62,7 +62,7 @@ span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login
 
 <p>Note that resize will be called if any configuration is updated.</p>
 
-<h3>Data Parsing</h3>
+<h3>Data Parsing <a data-anchor="parse" data-text="" class="affix-anchor-info"></a><h6 id="parse" class="affix-anchor"></h6></h3>
 
 <p><code>data</code> stores the input data as an array of object, and <code>parse</code> is called when input data is updated:</p>
 
@@ -75,7 +75,7 @@ span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login
   }
 }</code></pre>
 
-<h3>Data Binding</h3>
+<h3>Data Binding <a data-anchor="bind" data-text="" class="affix-anchor-info"></a><h6 id="bind" class="affix-anchor"></h6></h3>
 
 <p><code>bind</code> is called after <code>parse</code>, for binding between data and DOM element. This may be optional if you are not using libraries like d3js, which separate data binding from rendering:</p>
 
@@ -87,7 +87,7 @@ span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login
   }
 }</code></pre>
 
-<h3>Finalize</h3>
+<h3>Finalize <a data-anchor="finalize" data-text="" class="affix-anchor-info"></a><h6 id="finalize" class="affix-anchor"></h6></h3>
 
 <p>If your viswork uses resources like <code>setInterval</code>, recursive calls of <code>requestAnimationFrame</code> or anything that should be destroyed after lifecycle of this viswork, you should do it in <code>destroy</code> method:</p>
 
@@ -102,7 +102,7 @@ span: small Request a Chart--><li ng-cloak ng-show="!user.data"><a id="nav-login
   }
 }</code></pre>
 
-<h3>Wrap up</h3>
+<h3>Wrap up <a data-anchor="wrap-up" data-text="" class="affix-anchor-info"></a><h6 id="wrap-up" class="affix-anchor"></h6></h3>
 
 <p>In short, lifecycle of a viswork will be like this:</p>
 
@@ -185,7 +185,7 @@ chart.attach("#container1");
 
 <p>you can copy above example code and paste into the <strong>code panel</strong> in the <a href="https://plotdb.com/chart/">PlotDB online editor</a> to see how it works.</p>
 
-<h2>Configuration</h2>
+<h2>Configuration <a data-anchor="configuration" data-text="" class="affix-anchor-info"></a><h6 id="configuration" class="affix-anchor"></h6></h2>
 
 <p>Once you create your first viswork, you may want to accept input data and let the viswork configurable for other people to use. In this section we covers the <strong>configuration</strong> part.</p>
 
@@ -220,7 +220,7 @@ chart.attach("#container1");
 
 <p>note again that config change will both trigger <code>resize</code> and <code>render</code> to be called in <a href="https://plotdb.com/doc/render/">PlotDB renderer</a>.</p>
 
-<h3>Predefined Configurations and Inheritance</h3>
+<h3>Predefined Configurations and Inheritance <a data-anchor="predefined-config" data-text="Predefined Configuration" class="affix-anchor-info"></a><h6 id="predefined-config" class="affix-anchor"></h6></h3>
 
 <p>Sometimes it is tedious to write again and again all these configurations in different viswork. You can let a config to use settings from another config by using <code>extend</code> attribute:</p>
 
@@ -250,7 +250,7 @@ chart.attach("#container1");
   myStroke: { extend: &quot;stroke&quot; } // extend a predefined configuration `stroke`
 }</code></pre>
 
-<h3>Re-bind on Change</h3>
+<h3>Re-bind on Change <a data-anchor="rebind" data-text="Re-bind on Change" class="affix-anchor-info"></a><h6 id="rebind" class="affix-anchor"></h6></h3>
 
 <p>Configuration changes trigger <code>resize</code> and <code>render</code> methods to be called, but if your config need rebind in data, you can set <code>rebindOnChange</code> to true:</p>
 
@@ -260,7 +260,7 @@ chart.attach("#container1");
 
 <p>then it will trigger <code>bind -&gt; resize -&gt; render</code> when bindMethod is changed.</p>
 
-<h3>Configuration Data Types</h3>
+<h3>Configuration Data Types <a data-anchor="config-datatype" data-text="" class="affix-anchor-info"></a><h6 id="config-datatype" class="affix-anchor"></h6></h3>
 
 <p>For now, PlotDB provides following data type:</p>
 
@@ -351,7 +351,7 @@ chart.attach("#container2");
 
 <p><br/></p>
 
-<h2>Data and Dimension</h2>
+<h2>Data and Dimension <a data-anchor="data-dim" data-text="" class="affix-anchor-info"></a><h6 id="data-dim" class="affix-anchor"></h6></h2>
 
 <p>As mentioned before,  we can use <code>data</code> member to access input data:</p>
 
@@ -384,7 +384,7 @@ chart.attach("#container2");
 
 <p>above example adds a new viswork <em>dimension</em> named <strong>label</strong>, with data type <code>plotdb.Number</code> and marked as required. it will then appear in the <em>Data Binding</em> section for user to drop their data field. This dimensin is also used in PlotDB Renderer API when calling <code>chart.data</code> API, check <a href="https://plotdb.com/doc/render/">PlotDB Renderer API Documentation</a> for more detail.</p>
 
-<h3>Multiple Value</h3>
+<h3>Multiple Value <a data-anchor="multi-value" data-text="" class="affix-anchor-info"></a><h6 id="multi-value" class="affix-anchor"></h6></h3>
 
 <p>If we define a dimension to be multiple, it will become an array in <code>data</code> member; following example prints all values with in input data into dev console:</p>
 
@@ -400,7 +400,7 @@ chart.attach("#container2");
     }
   }</code></pre>
 
-<h3>Additional Information about Dimension</h3>
+<h3>Additional Information about Dimension <a data-anchor="additional-info" data-text="Additional Information" class="affix-anchor-info"></a><h6 id="additional-info" class="affix-anchor"></h6></h3>
 
 <p><code>dimension</code> member provides us additional information about input data, such as data field name and field count:</p>
 
@@ -413,7 +413,7 @@ chart.attach("#container2");
 
 <p>Sometimes these information are quite useful when making legend or labels.</p>
 
-<h2>Data Types</h2>
+<h2>Data Types Reference <a data-anchor="ref-type" data-text="" class="affix-anchor-info"></a><h6 id="ref-type" class="affix-anchor"></h6></h2>
 
 <p>PlotDB defines several common data types which can be used in defing viswork dimension and configuration. They are:</p>
 
@@ -421,7 +421,7 @@ chart.attach("#container2");
 
 <p>some of theme have different interface and usage, which are described below.</p>
 
-<h3>plotdb.Choice</h3>
+<h3>plotdb.Choice <a data-anchor="ref-type-choice" data-text="" class="affix-anchor-info"></a><h6 id="ref-type-choice" class="affix-anchor"></h6></h3>
 
 <p><code>plotdb.Choice</code> is dedicated for defining select options in a configuration. Following example demonstrates the usage of <code>plotdb.Choice</code>:</p>
 
@@ -435,7 +435,7 @@ chart.attach("#container2");
 
 <p>this example will show an selection box in config with two options "Yes" and "No" for users to choose. the selected data in <code>this.config</code> will be either "Yes" and "No" with <code>string</code> type in JavaScript.</p>
 
-<h3>plotdb.Palette</h3>
+<h3>plotdb.Palette <a data-anchor="ref-type-palette" data-text="" class="affix-anchor-info"></a><h6 id="ref-type-palette" class="affix-anchor"></h6></h3>
 
 <p>Palette is dedicated for define palette in a configuration. It lets users design and use colors in a set. Following example demonstrates how to use 'plotdb.Palette':</p>
 
@@ -455,13 +455,13 @@ chart.attach("#container2");
 
 <pre><code>config.palette.colors[n].hex</code></pre>
 
-<h3>plotdb.Order</h3>
+<h3>plotdb.Order <a data-anchor="ref-type-order" data-text="" class="affix-anchor-info"></a><h6 id="ref-type-order" class="affix-anchor"></h6></h3>
 
 <p><code>plotdb.Order</code> is the base type of all ordinal data type. It provides a handy function for you to sort <code>data</code> in desired direction:</p>
 
 <pre><code>plotdb.Order.sort(this.data, &quot;someField&quot;, isAscending);</code></pre>
 
-<h3>plotdb.Date</h3>
+<h3>plotdb.Date <a data-anchor="ref-type-date" data-text="" class="affix-anchor-info"></a><h6 id="ref-type-date" class="affix-anchor"></h6></h3>
 
 <p><code>plotdb.Date</code> by default parses input date into an object in following format:</p>
 
@@ -471,11 +471,11 @@ chart.attach("#container2");
   type: &quot;Date&quot;
 }</code></pre>
 
-<h2>Predefined Configurations</h2>
+<h2>Predefined Config Reference <a data-anchor="ref-config" data-text="" class="affix-anchor-info"></a><h6 id="ref-config" class="affix-anchor"></h6></h2>
 
 <p>Follow and directly inherit from these configurations can make your viswork more compatible with other visworks, yet it is not a requirement.</p>
 
-<h3>Global Settings</h3>
+<h3>Global Settings <a data-anchor="ref-config-global" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-global" class="affix-anchor"></h6></h3>
 
 <pre><code>language:
   name: &quot;Language&quot;
@@ -611,7 +611,7 @@ strokeDashArray:
   desc: &quot;SVG style dash array. &#39;2 4&#39; means 2px line and 4px space.&quot;
   category: &quot;Global Settings&quot;</code></pre>
 
-<h3>Animation</h3>
+<h3>Animation <a data-anchor="ref-config-animation" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-animation" class="affix-anchor"></h6></h3>
 
 <pre><code>animationDuration:
   name: &quot;Animation Duration&quot;
@@ -620,7 +620,7 @@ strokeDashArray:
   desc: &quot;Animation Duration, in millisecond (e.g., 500)&quot;
   category: &quot;Animation&quot;</code></pre>
 
-<h3>Layout</h3>
+<h3>Layout <a data-anchor="ref-config-layout" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-layout" class="affix-anchor"></h6></h3>
 
 <pre><code>aspectRatio:
   name: &quot;Aspect Ratio&quot;
@@ -628,7 +628,7 @@ strokeDashArray:
   default: true
   category: &quot;Layout&quot;</code></pre>
 
-<h3>Popup</h3>
+<h3>Popup <a data-anchor="ref-config-popup" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-popup" class="affix-anchor"></h6></h3>
 
 <pre><code>popupShow:
   name: &quot;show Popup&quot;
@@ -638,7 +638,7 @@ strokeDashArray:
   category: &quot;Popup&quot;
   rebindOnChange: true</code></pre>
 
-<h3>Geography</h3>
+<h3>Geography <a data-anchor="ref-config-geography" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-geography" class="affix-anchor"></h6></h3>
 
 <pre><code>geoFill:
   name: &quot;Fill Color&quot;
@@ -661,7 +661,7 @@ geoStrokeWidth:
   default: 1
   category: &quot;Geography&quot;</code></pre>
 
-<h3>Color</h3>
+<h3>Color <a data-anchor="ref-config-color" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-color" class="affix-anchor"></h6></h3>
 
 <pre><code>hoverFill:
   name: &quot;Hovering Fill Color&quot;
@@ -677,7 +677,7 @@ hoverStroke:
   default: &quot;#fff&quot;
   category: &quot;Color&quot;</code></pre>
 
-<h3>Line</h3>
+<h3>Line <a data-anchor="ref-config-line" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-line" class="affix-anchor"></h6></h3>
 
 <pre><code>connectFill:
   name: &quot;Fill Color&quot;
@@ -733,7 +733,7 @@ lineDashArray:
   default: &quot;4 4&quot;
   category: &quot;Line&quot;</code></pre>
 
-<h3>Grid</h3>
+<h3>Grid <a data-anchor="ref-config-grid" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-grid" class="affix-anchor"></h6></h3>
 
 <pre><code>gridShow:
   name: &quot;Show Grid&quot;
@@ -778,7 +778,7 @@ gridDashArray:
   category: &quot;Grid&quot;
   desc: &quot;SVG style dash array. &#39;2 4&#39; means 2px line and 4px space.&quot;</code></pre>
 
-<h3>Bubble</h3>
+<h3>Bubble <a data-anchor="ref-config-bubble" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-bubble" class="affix-anchor"></h6></h3>
 
 <pre><code>bubbleSizeMin:
   name: &quot;Min Size&quot;
@@ -822,7 +822,7 @@ bubblePadding:
   default: 5
   category: &quot;Bubble&quot;</code></pre>
 
-<h3>TBD</h3>
+<h3>TBD <a data-anchor="ref-config-TBD" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-TBD" class="affix-anchor"></h6></h3>
 
 <pre><code>barThick:
   name: &quot;Bar Thickness&quot;
@@ -836,7 +836,7 @@ lineThick:
   default: 10
   category: &quot;Layout&quot;</code></pre>
 
-<h3>Legend</h3>
+<h3>Legend <a data-anchor="ref-config-legend" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-legend" class="affix-anchor"></h6></h3>
 
 <pre><code>legendShow:
   name: &quot;Show Legend&quot;
@@ -855,7 +855,7 @@ legendPosition:
   default: &quot;right&quot;
   category: &quot;Legend&quot;</code></pre>
 
-<h3>Label</h3>
+<h3>Label <a data-anchor="ref-config-label" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-label" class="affix-anchor"></h6></h3>
 
 <pre><code>otherLabel:
   name: &quot;Label for &#39;other&#39;&quot;
@@ -909,7 +909,7 @@ showPercent:
   default: true
   category: &quot;Label&quot;</code></pre>
 
-<h3>Dot</h3>
+<h3>Dot <a data-anchor="ref-config-dot" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-dot" class="affix-anchor"></h6></h3>
 
 <pre><code>nodeShow:
   name: &quot;Show Data Dot&quot;
@@ -943,7 +943,7 @@ nodeStrokeWidth:
   default: 1
   category: &quot;Dot&quot;</code></pre>
 
-<h3>Value</h3>
+<h3>Value <a data-anchor="ref-config-value" data-text="" class="affix-anchor-info"></a><h6 id="ref-config-value" class="affix-anchor"></h6></h3>
 
 <pre><code>unit:
   name: &quot;Unit&quot;
@@ -998,7 +998,10 @@ otherLimit:
   type: [plotdb.Number]
   desc: &quot;Data smaller than this value will be clustered into one set of data&quot;
   default: 0
-  category: &quot;Value&quot;</code></pre></div><div class="col-sm-3 scrollspy"><ul id="affix" data-spy="affix" class="nav hidden-xs hidden-sm"><li><a href="#null">PlotDB Viswork Specification &#xbb;</a></li><li><a href="#null">First Step &#xbb;</a><ul class="nav subnav"><li><a href="#null">Initialization</a></li><li><a href="#null">Resizing</a></li><li><a href="#null">Data Parsing</a></li><li><a href="#null">Data Binding</a></li><li><a href="#null">Finalize</a></li><li><a href="#null">Wrap up</a></li></ul></li><li><a href="#null">Configuration &#xbb;</a><ul class="nav subnav"><li><a href="#null">Predefined Configurations and Inheritance</a></li><li><a href="#null">Re-bind on Change</a></li><li><a href="#null">Configuration Data Types</a></li></ul></li><li><a href="#null">Data and Dimension &#xbb;</a><ul class="nav subnav"><li><a href="#null">Multiple Value</a></li><li><a href="#null">Additional Information about Dimension</a></li></ul></li><li><a href="#null">Data Types &#xbb;</a><ul class="nav subnav"><li><a href="#null">plotdb.Choice</a></li><li><a href="#null">plotdb.Palette</a></li><li><a href="#null">plotdb.Order</a></li><li><a href="#null">plotdb.Date</a></li></ul></li><li><a href="#null">Predefined Configurations &#xbb;</a><ul class="nav subnav"><li><a href="#null">Global Settings</a></li><li><a href="#null">Animation</a></li><li><a href="#null">Layout</a></li><li><a href="#null">Popup</a></li><li><a href="#null">Geography</a></li><li><a href="#null">Color</a></li><li><a href="#null">Line</a></li><li><a href="#null">Grid</a></li><li><a href="#null">Bubble</a></li><li><a href="#null">TBD</a></li><li><a href="#null">Legend</a></li><li><a href="#null">Label</a></li><li><a href="#null">Dot</a></li><li><a href="#null">Value</a></li></ul></li></ul></div></div><div id="disqus_thread"></div></div></div><script>var disqus_config = function () {
+  category: &quot;Value&quot;</code></pre>
+
+<h2>Discussion <a data-anchor="discussion" data-text="" class="affix-anchor-info"></a><h6 id="discussion" class="affix-anchor"></h6></h2><div id="disqus_thread"></div></div><div class="col-sm-3 scrollspy"><ul id="affix" data-spy="affix" class="nav hidden-xs hidden-sm"><li><a href="#viswork-sec">Overview &#xbb;</a></li><li><a href="#first-step">First Step  &#xbb;</a><ul class="nav subnav"><li><a href="#init">Initialization </a></li><li><a href="#resize">Resizing </a></li><li><a href="#parse">Data Parsing </a></li><li><a href="#bind">Data Binding </a></li><li><a href="#finalize">Finalize </a></li><li><a href="#wrap-up">Wrap up </a></li></ul></li><li><a href="#configuration">Configuration  &#xbb;</a><ul class="nav subnav"><li><a href="#predefined-config">Predefined Configuration</a></li><li><a href="#rebind">Re-bind on Change</a></li><li><a href="#config-datatype">Configuration Data Types </a></li></ul></li><li><a href="#data-dim">Data and Dimension  &#xbb;</a><ul class="nav subnav"><li><a href="#multi-value">Multiple Value </a></li><li><a href="#additional-info">Additional Information</a></li></ul></li><li><a href="#ref-type">Data Types Reference  &#xbb;</a><ul class="nav subnav"><li><a href="#ref-type-choice">plotdb.Choice </a></li><li><a href="#ref-type-palette">plotdb.Palette </a></li><li><a href="#ref-type-order">plotdb.Order </a></li><li><a href="#ref-type-date">plotdb.Date </a></li></ul></li><li><a href="#ref-config">Predefined Config Reference  &#xbb;</a><ul class="nav subnav"><li><a href="#ref-config-global">Global Settings </a></li><li><a href="#ref-config-animation">Animation </a></li><li><a href="#ref-config-layout">Layout </a></li><li><a href="#ref-config-popup">Popup </a></li><li><a href="#ref-config-geography">Geography </a></li><li><a href="#ref-config-color">Color </a></li><li><a href="#ref-config-line">Line </a></li><li><a href="#ref-config-grid">Grid </a></li><li><a href="#ref-config-bubble">Bubble </a></li><li><a href="#ref-config-TBD">TBD </a></li><li><a href="#ref-config-legend">Legend </a></li><li><a href="#ref-config-label">Label </a></li><li><a href="#ref-config-dot">Dot </a></li><li><a href="#ref-config-value">Value </a></li></ul></li><li><a href="#discussion">Discussion  &#xbb;</a></li></ul></div></div></div></div><script>$('#affix').affix({ offset: { top: $('#affix').offset().top - 100} });
+</script><script>var disqus_config = function () {
 this.page.url = "https://plotdb.com/doc/"; /* TODO */
 this.page.identifier = "/doc/"; /* PAGE IDENTIFIER */
 };
@@ -1007,9 +1010,7 @@ var d = document, s = d.createElement('script');
 s.src = '//plotdb.disqus.com/embed.js';
 s.setAttribute('data-timestamp', +new Date());
 (d.head || d.body).appendChild(s);
-})();</script><script>$(document).ready(function() {
-$('#affix').affix({ offset: { top: $('#affix').offset().top } });
-});</script><div id="user-feedback" ng-click="gfbt=!!!gfbt"><i class="fa fa-commenting"></i><span>send feedback</span></div><div ng-cloak ng-show="gfbt" ng-click="gfbt=false" class="cover-modal ng-hide-animate ng-hide"></div><div ng-cloak ng-show="gfbt" class="cover-modal-inner ng-hide-animate ng-hide"><div class="panel panel-default"><div style="height:500px;overflow-y:scroll" class="panel-body"><div data-href="http://plotdb.com/feedback/" data-width="100%" data-numposts="5" data-colorscheme="light" class="fb-comments"></div></div><div class="panel-footer text-right"><div ng-click="gfbt=false" class="btn btn-default">Close</div></div></div></div><div id="fb-root"></div><script>window.fbAsyncInit = function() {
+})();</script><div id="user-feedback" ng-click="gfbt=!!!gfbt"><i class="fa fa-commenting"></i><span>send feedback</span></div><div ng-cloak ng-show="gfbt" ng-click="gfbt=false" class="cover-modal ng-hide-animate ng-hide"></div><div ng-cloak ng-show="gfbt" class="cover-modal-inner ng-hide-animate ng-hide"><div class="panel panel-default"><div style="height:500px;overflow-y:scroll" class="panel-body"><div data-href="http://plotdb.com/feedback/" data-width="100%" data-numposts="5" data-colorscheme="light" class="fb-comments"></div></div><div class="panel-footer text-right"><div ng-click="gfbt=false" class="btn btn-default">Close</div></div></div></div><div id="fb-root"></div><script>window.fbAsyncInit = function() {
   FB.init({
     appId      : '1546734828988373',
     xfbml      : true,

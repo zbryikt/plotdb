@@ -2,8 +2,28 @@ require! <[fs bluebird]>
 require! <[../engine/aux ../engine/share/model/ ./thumb ./perm]>
 (engine,io) <- (->module.exports = it)  _
 
-stripe = require(\stripe) engine.config.stripe.secret
+#stripe = require(\stripe) engine.config.stripe.secret
 
+/*
+upgrade = ->
+  pay-by-prime <amount>
+    .then ->
+      keep transaction-info
+      keep cardinfo, cardsecret
+      update plan
+    .catch 
+
+update-payment-method = ->
+  pay-by-prime 1ntd
+    .then ({retradeid,cardinfo,cardsecret}) ->
+      keep transaction-info
+      keep cardinfo,cardsecret
+    .then ->
+      refund retradeid
+    .then ->
+    .catch ->
+*/
+/*
 date-offset = (date, year=0, month=0, day=0, hour=0, minute=0) ->
   now = if date => new Date(date) else new Date!
   now = new Date!
@@ -118,6 +138,12 @@ engine.router.api.post \/subscribe/, (req, res) ->
       req.login req.user, -> res.send {payment: req.user.payment}
       return null
     .catch aux.error-handler res
+*/
+
+engine.api.post \/plan/change, (req, res) ->
+
+engine.api.post \/pay/change, (req, res) ->
+
 
 engine.app.get \/me/billing/, (req, res) ->
   if !req.user => return aux.r403 res, "", true

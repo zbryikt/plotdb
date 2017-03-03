@@ -1,4 +1,33 @@
+window.lang = 'zh'
 angular.module \plotDB
+  ..service \i18n, <[$rootScope]> ++ ($rootScope) ->
+    ret = do
+      'Pricing': zh: '方案與定價', en: 'Pricing'
+      'pricing-desc': zh: "提升您的視覺力", en: "empower you with visualizations"
+      'price-free-desc': zh: "所有用戶都能享有", en: "for all users to evaluation PlotDB"
+      'price-basic-desc': zh: "適合個人快速製圖", en: "Best for individual expertise"
+      'price-expert-desc': zh: "團隊功能與私人內容", en: "privacy, team and enterprise"
+      'Your Choice': zh: "您的選擇"
+      'Select': zh: "選取"
+      'annually': zh: "年繳"
+      'or': zh: "或"
+      'SHOWCASE': zh: "使用案例"
+      'PALETTE': zh: "配色"
+      'COLLECTIONS': zh: "作品集"
+      'THEME': zh: "設計主題"
+      'DATASET': zh: "資料集"
+      'VISWORK': zh: "視覺化"
+      'Storage Usage': zh: "空間用量"
+      'Teams': zh: "團隊"
+      'Settings': zh: "設定"
+      'Billing': zh: "付款資訊"
+      'Logout': zh: "登出"
+      'Plan': zh: "方案"
+      'Credit Card Number': zh: "您的信用卡號"
+      'Subscribe': zh: "購買"
+      'Expiration Date': zh: "卡片到期日"
+      'CVC Code': zh: "檢查碼"
+  ..filter \i18n, <[i18n]> ++ (i18n)-> -> (i18n[it] and i18n[it][window.lang]) or it
   ..filter \tags, -> -> if Array.isArray(it) => it else (it or "").split(\,)
   ..filter \nicedate, -> ->
     date = new Date(it)

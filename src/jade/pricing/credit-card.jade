@@ -8,7 +8,7 @@ mixin credit-card-panel(toggle)
           i.fa.fa-cc-mastercard(ng-class="{'text-primary':cardtype=='Mastercard'}")
           i.fa.fa-cc-amex(ng-class="{'text-primary':cardtype=='American Express'}")
           i.fa.fa-cc-jcb(ng-class="{'text-primary':cardtype=='JCB'}")
-          i.fa.fa-cc-stripe
+          //-i.fa.fa-cc-stripe
         label Credit Card Number
         .form-group(ng-class="{'has-feedback has-error':error.number}",style="margin-bottom:13px")
           input.form-control(type="input",placeholder="Card Number",ng-model="payinfo.number",
@@ -43,5 +43,5 @@ mixin credit-card-panel(toggle)
         span Update
     .pull-right
       img(src="/assets/img/ssl-secure-light.png",style="margin:5px 5px 0 0")
-      img(src="/assets/img/pricing/stripe-powered-light.png",style="margin:5px 0 0")
+      //-img(src="/assets/img/pricing/stripe-powered-light.png",style="margin:5px 0 0")
 

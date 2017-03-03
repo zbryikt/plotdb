@@ -198,6 +198,7 @@ x$.service('plNotify', ['$rootScope', '$timeout'].concat(function($rootScope, $t
 }));
 x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', 'plConfig', 'dataService', 'chartService', 'eventBus', 'Modal'].concat(function($scope, $http, $interval, global, plNotify, plConfig, dataService, chartService, eventBus, Modal){
   var that, ref$, ret, x$, tracks, i$, to$, i, results$ = [];
+  $scope.lang = window.lang;
   $scope.trackEvent = function(cat, act, label, value){
     return ga('send', 'event', cat, act, label, value);
   };
@@ -207,6 +208,7 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
     ? that[1]
     : window.location.href;
   $scope.plConfig = plConfig;
+  $scope.lang = window.lang;
   $scope.user = {
     data: global.user,
     authed: function(){

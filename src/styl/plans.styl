@@ -1,0 +1,63 @@
+@import 'vars'
+@import 'basic'
+@import 'fontface'
+
+#plans
+  font-size: 1.2em
+  .price
+    small
+      font-size: 0.5em
+    small:nth-of-type(1), small:nth-of-type(2)
+      vertical-align: top
+      color: color.success
+    small:nth-of-type(2)
+      font-size: 0.7em
+      line-height: 0.7em
+    small:nth-of-type(3)
+      margin-left: -35px
+    big
+      font-size: 2em
+      color: color.success
+  ul
+    min-height: 210px
+  h3
+    margin: -20px auto 10px
+    padding: 5px
+    border: 3px solid #000
+    border-radius: 10px
+    font-size: 1.1em
+    font-weight: 800
+    background: #fff
+    width: 86px
+    cursor: pointer
+    position: relative
+  h3.selected
+    color: #fff
+    background: #8cc63f
+    border-color: #5c960f
+    &:after
+      content: "\f00c"
+      font: normal normal normal 12px FontAwesome
+      display: block
+      width: 20px
+      height: 20px
+      border-radius: 50%
+      background: #8cc63f
+      border: 3px solid #5c960f
+      position: absolute
+      top: -10px
+      right: -10px
+      line-height: 14px
+
+  p.desc
+    margin: 0px 0 20px
+  h2
+    margin: 25px 0 25px
+    line-height: 32px
+  .question
+    display: inline-block
+    border-bottom: 1px dashed #444
+    cursor: pointer
+    i.fa
+      opacity: 0.5
+      font-size: 0.8em
