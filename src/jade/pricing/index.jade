@@ -22,17 +22,45 @@ mixin block(i,j)
       br
       span= features[i][j - 1][1]
 mixin selectbtn(current,value)
-  div(ng-cloak)
+  div
     .btn.btn-link.btn-lg.disabled(ng-if=current) Current Plan&nbsp; #[i.fa.fa-dot-circle-o]
     .btn.btn-lg.btn-success.btn-block(
       ng-if="!(" + current +") && settings.plan == " + value) {{'Your Choice'|i18n}} &nbsp; #[i.fa.fa-check-circle]
     .btn.btn-lg.btn-default.btn-block(ng-if="!(" + current +") && settings.plan != " + value, ng-click="settings.choose(" + value + ")")  {{'Select'|i18n}} &nbsp; #[i.fa.fa-circle-thin]
 block body
   .spc1
-  #root(ng-controller="payment",ng-init="settings.plan="+current+" || 0")
+  #root(ng-controller="payment",ng-cloak)
+    +cover-modal("paymentNote","paymentNote=false")
+      .panel.panel-default
+        .panel-body
+          h3.text-center 關於付款的細節
+          .sep.gap
+          h4 Q: 如果我付費了卻不滿意，我可以選擇退費嗎？
+          p A: 可以。我們提供七日內無條件退費，或者三十日內部份依天數比例退費。
+          br
+          h4 Q: 若我使用到一半再次升級了我的方案，原有的方案會退費嗎？
+          p A: 我們會依使用天數的比例退還原本方案的費用，新的方案則會自付費起重新計時。
+          br
+          h4 Q: 我可以購買一個帳號後與很多個人共用嗎？
+          p A: 我們鼓勵使用者設立自己的帳號，但並不會禁止使用者共用帳號。不過，一個帳號的流量與儲存空間上限是固定的。
+          br
+          h4 Q: 若我的流量超過了使用上限，會發生什麼事？
+          p A: 我們會先發信提醒您流量已超過，但不會立刻停止服務，給您升級帳號的緩衝時間。若您在三天之內沒有進行對應的處置，我們才會暫停您的網路瀏覽，直到下個月計費週期之後再重新開始計算。
+          br
+          h4 Q: 若我的儲存空間超過了使用上限，會發生什麼事？
+          p A: 一但用量超過上限，您便無法繼續增加資料，直到您升級您的帳號。因此，您並不會因為用量超過而需要被直接扣款。
+          br
+          h4 Q: 源碼授權在我停止訂閱之後還會持續嗎？
+          p A: 源碼授權在停止訂閱後即終止。您亦可以選擇長期授權方案。
+          br
+
+
+        .panel-footer
+          .btn.btn-default(ng-click="paymentNote=false") 我了解了
+
     #plans(style="max-width:800px;margin:auto")
-      h1.text-center(ng-cloak) {{'Pricing'|i18n}}
-      p.text-center(ng-cloak) {{'pricing-desc'|i18n}}
+      h1.text-center {{'Pricing'|i18n}}
+      p.text-center {{'pricing-desc'|i18n}}
       br
       .row
         .col-sm-4(style="border-right:2px solid #ccc")
@@ -40,7 +68,7 @@ block body
           .text-center(ng-click="settings.choose(0)")
             h3(ng-class="{'selected':settings.plan==0}",style="margin-bottom:2px") FREE
             h2(style="line-height:43px") 就是免費.
-            p.desc(ng-cloak) {{'price-free-desc'|i18n}}
+            p.desc {{'price-free-desc'|i18n}}
             ul.text-left
               li 免費 PNG 下載
               li 5MB 基本儲存空間
@@ -58,7 +86,7 @@ block body
           .text-center(ng-click="settings.choose(1)")
             h3(ng-class="{'selected':settings.plan==1}",style="margin-bottom:2px") BASIC
             h2.price #[small US$] #[big 19] #[small .95] #[small.grayed 每月]
-            p.desc(ng-cloak) {{'price-basic-desc'|i18n}}
+            p.desc {{'price-basic-desc'|i18n}}
             ul.text-left
               li SVG 向量檔下載
               li 50MB 進階儲存空間
@@ -78,7 +106,7 @@ block body
           .text-center(ng-click="settings.choose(2)")
             h3(ng-class="{'selected':settings.plan==2}",style="margin-bottom:2px") EXPERT
             h2.price #[small US$] #[big 49] #[small .95] #[small.grayed 每月]
-            p.desc(ng-cloak) {{'price-expert-desc'|i18n}}
+            p.desc {{'price-expert-desc'|i18n}}
 
             ul.text-left
               li 高解析度 PNG 下載
@@ -113,7 +141,7 @@ block body
         .col-sm-4
           br
           small {{'Your Choice'|i18n}}:
-          .text-center(ng-cloak)
+          .text-center
             h2
               span(ng-show="!settings.plan") Free
               span(ng-show="settings.plan==1") Basic
@@ -127,7 +155,7 @@ block body
             br
             small.grayed 怕反悔？我們提供七日內無條件退費！
             br
-            small.grayed: a(href="/faq/#pricing") 更多關於付費的權益
+            small.grayed: a.clickable(ng-click="paymentNote=true") 更多關於付費的權益
             br
             small.grayed(ng-if="user.data.payment.plan==1 && settings.plan==2") * we will only ${{prices[settings.period][2] - prices[settings.period][1]}} will be charged for an upgrade in the first #[span(ng-show="settings.period==0") month]#[span(ng-show="settings.period==1") year]
             br
@@ -135,7 +163,7 @@ block body
         .col-sm-8
           #prc-cc.panel.panel-default(style="max-width:480px;margin:auto;background:#f9f9f9")
             .panel-body.relpos
-              #prc-cc-free(ng-cloak,ng-show="settings.plan < " + current): .inner
+              #prc-cc-free(ng-show="settings.plan < " + current): .inner
                 .btn.btn-default.btn-lg.btn-block(ng-click="subscribe()") Downgrade to Free Plan
               .form
                 .pull-right: big: big
@@ -149,33 +177,33 @@ block body
                   .hover-tip.danger.top 卡號有問題喔！範例卡號： #[br] 1010101010101010
                   input.form-control(type="input",placeholder="Card Number, xxxx-xxxx-xxxx-xxxx",ng-model="payinfo.number",
                   ng-keydown="check('number')")
-                  //-.form-control-feedback.with-text(ng-show="error.number",ng-cloak,style="margin-top:3px")
+                  //-.form-control-feedback.with-text(ng-show="error.number",style="margin-top:3px")
                     small incorrect number. correct example: 1000200030004000
                 .row(style="margin-bottom:13px")
                   .col-sm-7
-                    label(ng-cloak) {{'Expiration Date'|i18n}}
+                    label {{'Expiration Date'|i18n}}
                     div
                     .form-group(ng-class="{'has-feedback has-error':error.exp_month}",style="display:inline;margin-bottom:0;position:relative")
                       input.form-control(type="input",placeholder="Month",ng-model="payinfo.exp_month",
                       style="display:inline;width:50%;border-right:0;border-radius:3px 0 0 3px",
                       ng-keydown="check('exp_month')")
                       .hover-tip.danger.bottom 兩位數數字，#[br] 如 08
-                      //-.form-control-feedback.with-text(ng-show="error.exp_month",style="margin-top:15px",ng-cloak)
+                      //-.form-control-feedback.with-text(ng-show="error.exp_month",style="margin-top:15px")
                         small 01 ~ 12, like: 08
                     .form-group(ng-class="{'has-feedback has-error':error.exp_year}",style="display:inline;margin-bottom:0;position:relative")
                       input.form-control(type="input",placeholder="Year",ng-model="payinfo.exp_year",
                       style="display:inline;width:50%;border-radius:0 3px 3px 0",
                       ng-keydown="check('exp_year')")
                       .hover-tip.danger.bottom 西元年份，#[br] 如 2018
-                      //-.form-control-feedback.with-text(ng-show="error.exp_year",style="margin-top:15px",ng-cloak)
+                      //-.form-control-feedback.with-text(ng-show="error.exp_year",style="margin-top:15px")
                         small future year, like: 2018
                   .col-sm-5
-                    label(ng-cloak) {{'CVC Code'|i18n}} #[small.light: i.fa.fa-question-circle]
+                    label {{'CVC Code'|i18n}} #[small.light: i.fa.fa-question-circle]
                     .form-group(ng-class="{'has-feedback has-error':error.cvc}",style="margin-bottom:0;position:relative")
                       input.form-control(type="input",placeholder="CVC",style="display:inline",
                       ng-model="payinfo.cvc",ng-keydown="check('cvc')")
                       .hover-tip.danger.bottom 三位數字，如：#[br] 476
-                      //.form-control-feedback.with-text(ng-show="error.cvc",ng-cloak)
+                      //.form-control-feedback.with-text(ng-show="error.cvc")
                         small 3 digit number, like: 476
                 //-
                   small.grayed Have a coupon code? (optional)

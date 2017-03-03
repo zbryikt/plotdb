@@ -307,8 +307,9 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
   eventBus.listen('loading.dimmer.progress', function(it){
     return $scope.loading.progress = it;
   });
-  $scope.scrollto = function(sel){
+  $scope.scrollto = function(sel, delay){
     sel == null && (sel = null);
+    delay == null && (delay = 0);
     return setTimeout(function(){
       var top;
       top = sel ? $(sel).offset().top - 60 : 0;
@@ -318,7 +319,7 @@ x$.controller('plSite', ['$scope', '$http', '$interval', 'global', 'plNotify', '
       return $("html").animate({
         scrollTop: top
       }, '500', 'swing', function(){});
-    }, 0);
+    }, delay);
   };
   $scope.auth = {
     email: '',

@@ -32,8 +32,7 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
         $scope.error.cvc = !/^[0-9][0-9][0-9]$/.exec($scope.payinfo.cvc);
       }
       if (!target || target === 'number') {
-        $scope.error.number = !/^[0-9]{16}$/.exec($scope.payinfo.number) || !Stripe.card.validateCardNumber($scope.payinfo.number);
-        $scope.cardtype = Stripe.card.cardType($scope.payinfo.number);
+        $scope.error.number = !/^[0-9]{16}$/.exec($scope.payinfo.number);
       }
       $scope.error.all = false;
       return $scope.error.all = (function(){
@@ -59,10 +58,12 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
   };
   $scope.settings = {
     choose: function(plan, period){
+      var ref$;
+      if ($scope.user.data && plan === ((ref$ = $scope.user.data).payment || (ref$.payment = {})).plan) {
+        return;
+      }
       if (plan != null) {
-        if (this.plan !== plan) {
-          $scope.scrollto($('#payment-your-choice'));
-        }
+        $scope.scrollto($('#payment-your-choice'), 500);
         this.plan = plan;
       }
       if (typeof peroid != 'undefined' && peroid !== null) {
@@ -70,8 +71,13 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
       }
     },
     plan: 1,
-    period: 0
+    period: 0,
+    init: function(){
+      var ref$;
+      return this.plan = ($scope.user.data ? ((ref$ = $scope.user.data).payment || (ref$.payment = {})).plan : null) || 0;
+    }
   };
+  $scope.settings.init();
   $scope.update = function(){
     eventBus.fire('loading.dimmer.on');
     return Stripe.card.createToken($scope.payinfo, function(state, token){

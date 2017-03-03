@@ -21,10 +21,10 @@ angular.module \plotDB
           $scope.error.cvc = !!!(/^[0-9][0-9][0-9]$/.exec($scope.payinfo.cvc))
         if !target or target == \number =>
           $scope.error.number = (
-            !!!(/^[0-9]{16}$/.exec($scope.payinfo.number)) or
-            !Stripe.card.validateCardNumber($scope.payinfo.number)
+            !!!(/^[0-9]{16}$/.exec($scope.payinfo.number)) #or
+            #!Stripe.card.validateCardNumber($scope.payinfo.number)
           )
-          $scope.cardtype = Stripe.card.cardType $scope.payinfo.number
+          #$scope.cardtype = Stripe.card.cardType $scope.payinfo.number
         $scope.error.all = false
         $scope.error.all = (
           [v for k,v of $scope.error].filter(->it).length or
@@ -33,14 +33,15 @@ angular.module \plotDB
       ), 500
     $scope.settings = do
       choose: (plan, period) ->
+        if $scope.user.data and plan == $scope.user.data.{}payment.plan => return
         if plan? =>
-          if @plan != plan =>
-            $scope.scrollto $('#payment-your-choice') 
+          $scope.scrollto $('#payment-your-choice'), 500
           @plan = plan
         if peroid? => @peroid = peroid
       plan: 1
       period: 0
-
+      init: -> @plan = (if $scope.user.data => $scope.user.data.{}payment.plan else null) or 0
+    $scope.settings.init!
     $scope.update = ->
       eventBus.fire \loading.dimmer.on
       Stripe.card.create-token $scope.payinfo, (state, token) -> $scope.$apply ->

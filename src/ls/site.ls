@@ -154,8 +154,8 @@ angular.module \plotDB
       $scope.loading.progress = if it? => it else 0
     eventBus.listen 'loading.dimmer.off', -> $scope.loading.dimmer = false
     eventBus.listen 'loading.dimmer.progress', -> $scope.loading.progress = it
-    $scope.scrollto = (sel = null) ->
-      <- setTimeout _, 0
+    $scope.scrollto = (sel = null,delay=0) ->
+      <- setTimeout _, delay
       top = if sel => ( $(sel).offset!top - 60 ) else 0
       $(document.body).animate {scrollTop: top}, '500', 'swing', ->
       $("html").animate {scrollTop: top}, '500', 'swing', ->
