@@ -6050,12 +6050,18 @@ ul.dropdown-menu li a.toggle-filepick input {
   background: #000;
   border-radius: 3px;
   position: absolute;
-  left: 0;
+  left: 50%;
+  -ms-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+  -o-transform: translateX(-50%);
+  transform: translateX(-50%);
+  min-width: 100px;
   color: #fff;
   padding: 5px 10px;
   text-align: center;
   z-index: 3;
-  font-size: 0.75em;
+  font-size: 13px;
 }
 .hover-tip:before {
   width: 10px;
@@ -6090,6 +6096,15 @@ ul.dropdown-menu li a.toggle-filepick input {
 }
 .hover-tip.danger:before {
   background: #ed1d78;
+}
+.hover-tip-host {
+  cursor: pointer;
+}
+.hover-tip-host .hover-tip {
+  display: none;
+}
+.hover-tip-host:hover .hover-tip {
+  display: block;
 }
 .form-group .hover-tip {
   display: none;
@@ -9788,9 +9803,13 @@ small.hint {
   position: absolute;
   bottom: 0;
 }
-#prc-cc .fa {
-  vertical-align: top;
+#prc-cc-cardtype i.fa {
+  opacity: 0.5;
   margin-left: 5px;
+  vertical-align: top;
+}
+#prc-cc-cardtype i.fa.text-success {
+  opacity: 1;
 }
 #prc-widget {
   max-width: 500px;

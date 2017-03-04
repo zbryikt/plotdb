@@ -2,6 +2,7 @@ extends /base.jade
 block vars
   - var rootid = "payview"
   - var url = "https://plotdb.com/dev/pay/"
+  - use.tappay = true;
 block head
   //-script(type="text/javascript",src="https://js.stripe.com/v2/")
   style(type="text/css").
@@ -124,15 +125,17 @@ block body
               br
             +selectbtn("user.data.payment.plan == 2", 2)
 
-      br
-      br
-      .text-center
-        label.radio-inline
-          input(type="radio",name="period",checked,ng-model="settings.period",value="0")
-          span monthly
-        label.radio-inline
-          input(type="radio",name="period",ng-model="settings.period",value="1")
-          span {{'annually'|i18n}} ( save 17% )
+      //-
+        br
+        br
+        .text-center
+          label.radio-inline
+            input(type="radio",name="period",checked,ng-model="settings.period",value="0")
+            span monthly
+          label.radio-inline
+            input(type="radio",name="period",ng-model="settings.period",value="1")
+            span {{'annually'|i18n}} ( save 17% )
+
       #payment-your-choice
       br
       .sep.gap
@@ -166,11 +169,11 @@ block body
               #prc-cc-free(ng-show="settings.plan < " + current): .inner
                 .btn.btn-default.btn-lg.btn-block(ng-click="subscribe()") Downgrade to Free Plan
               .form
-                .pull-right: big: big
-                  i.fa.fa-cc-visa(ng-class="{'text-primary':cardtype=='Visa'}")
-                  i.fa.fa-cc-mastercard(ng-class="{'text-primary':cardtype=='Mastercard'}")
-                  i.fa.fa-cc-amex(ng-class="{'text-primary':cardtype=='American Express'}")
-                  i.fa.fa-cc-jcb(ng-class="{'text-primary':cardtype=='JCB'}")
+                #prc-cc-cardtype.pull-right: big: big
+                  i.fa.fa-cc-visa(ng-class="{'text-success':cardtype=='Visa'}")
+                  i.fa.fa-cc-mastercard(ng-class="{'text-success':cardtype=='Mastercard'}")
+                  i.fa.fa-cc-amex(ng-class="{'text-success':cardtype=='American Express'}")
+                  i.fa.fa-cc-jcb(ng-class="{'text-success':cardtype=='JCB'}")
                   //-i.fa.fa-cc-stripe
                 label {{'Credit Card Number'|i18n}}
                 .form-group(ng-class="{'has-feedback has-error':error.number}",style="margin-bottom:13px;position:relative")
@@ -187,19 +190,26 @@ block body
                       input.form-control(type="input",placeholder="Month",ng-model="payinfo.exp_month",
                       style="display:inline;width:50%;border-right:0;border-radius:3px 0 0 3px",
                       ng-keydown="check('exp_month')")
-                      .hover-tip.danger.bottom 兩位數數字，#[br] 如 08
+                      .hover-tip.danger.bottom 兩位數月份#[br]如 08
                       //-.form-control-feedback.with-text(ng-show="error.exp_month",style="margin-top:15px")
                         small 01 ~ 12, like: 08
                     .form-group(ng-class="{'has-feedback has-error':error.exp_year}",style="display:inline;margin-bottom:0;position:relative")
                       input.form-control(type="input",placeholder="Year",ng-model="payinfo.exp_year",
                       style="display:inline;width:50%;border-radius:0 3px 3px 0",
                       ng-keydown="check('exp_year')")
-                      .hover-tip.danger.bottom 西元年份，#[br] 如 2018
+                      .hover-tip.danger.bottom 西元年份#[br]如 2018
                       //-.form-control-feedback.with-text(ng-show="error.exp_year",style="margin-top:15px")
                         small future year, like: 2018
                   .col-sm-5
-                    label {{'CVC Code'|i18n}} #[small.light: i.fa.fa-question-circle]
-                    .form-group(ng-class="{'has-feedback has-error':error.cvc}",style="margin-bottom:0;position:relative")
+                    label
+                      span {{'CVC Code'|i18n}}
+                      small.light.hover-tip-host(style="position:relative;margin-left:5px")
+                        i.fa.fa-question-circle
+                        .hover-tip.top(style="color:#fff;width:200px")
+                          img(src="/assets/img/pricing/cvc.svg",style="width:140px")
+                          div {{'cvc-desc'|i18n}}
+                    .form-group(ng-class="{'has-feedback has-error':error.cvc}",
+                    style="margin-bottom:0;position:relative")
                       input.form-control(type="input",placeholder="CVC",style="display:inline",
                       ng-model="payinfo.cvc",ng-keydown="check('cvc')")
                       .hover-tip.danger.bottom 三位數字，如：#[br] 476

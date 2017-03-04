@@ -27,6 +27,7 @@ angular.module \plotDB
       'Subscribe': zh: "購買"
       'Expiration Date': zh: "卡片到期日"
       'CVC Code': zh: "檢查碼"
+      'cvc-desc': zh: "卡片背面簽名區旁的三位數字", en: "3 digits number on back of card"
   ..filter \i18n, <[i18n]> ++ (i18n)-> -> (i18n[it] and i18n[it][window.lang]) or it
   ..filter \tags, -> -> if Array.isArray(it) => it else (it or "").split(\,)
   ..filter \nicedate, -> ->

@@ -11,7 +11,7 @@ include mixin.jade
 - var favicon = assets + "/img/favicon-16.png"
 - var rootid = ""
 - var url = "https://plotdb.com/"
-- var use = {stripe: false};
+- var use = {stripe: false, tappay: false};
 html(lang="en")
   block vars
   head(prefix="og: http://ogp.me/ns#")
@@ -58,3 +58,5 @@ html(lang="en")
     include /fb.jade
   //-if use.stripe
     script(type="text/javascript",src="https://js.stripe.com/v2/")
+  if use.tappay
+    script(type="text/javascript",src="https://portal.cherritech.net/tpDirect/v1")

@@ -140,10 +140,8 @@ engine.router.api.post \/subscribe/, (req, res) ->
     .catch aux.error-handler res
 */
 
-engine.api.post \/plan/change, (req, res) ->
-
-engine.api.post \/pay/change, (req, res) ->
-
+engine.router.api.post \/plan/change, (req, res) ->
+engine.router.api.post \/pay/change, (req, res) ->
 
 engine.app.get \/me/billing/, (req, res) ->
   if !req.user => return aux.r403 res, "", true

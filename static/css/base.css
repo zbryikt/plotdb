@@ -11,7 +11,7 @@ big.xl {
   position: fixed;
   bottom: 10px;
   left: 10px;
-  z-index: 40;
+  z-index: 41;
 }
 .notify {
   border-radius: 2px;
@@ -35,7 +35,7 @@ big.xl {
   float: right;
   margin: -2px -2px 0 0;
   cursor: pointer;
-  z-index: 15;
+  z-index: 16;
 }
 .closebtn:after {
   content: "\0000d7";
@@ -1215,7 +1215,7 @@ width: 100%;
   top: 0;
   left: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 39;
+  z-index: 40;
 }
 #alertbox .ib {
   position: relative;
@@ -1255,12 +1255,12 @@ width: 100%;
 .loader.floating {
   position: absolute;
   left: 50%;
-  z-index: 41;
+  z-index: 42;
 }
 .loader.fixed.scrolling {
   position: fixed;
   left: 50%;
-  z-index: 41;
+  z-index: 42;
   bottom: 20px;
 }
 .loader.floating.lg,
@@ -1404,7 +1404,7 @@ a.dropdown-toggle {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 37;
+  z-index: 38;
   background: rgba(255,255,255,0.9);
 }
 .panel-lock > div {
@@ -1434,10 +1434,10 @@ a.dropdown-toggle {
   text-align: center;
 }
 .modal-backdrop {
-  z-index: 35 !important;
+  z-index: 36 !important;
 }
 .high-modal {
-  z-index: 36 !important;
+  z-index: 37 !important;
 }
 .form-control-feedback.with-text {
   width: auto;
@@ -1667,7 +1667,7 @@ ul.dropdown-menu li a.toggle-filepick input {
   left: 0;
   width: 80px;
   height: 80px;
-  z-index: 36;
+  z-index: 37;
   background: url("/assets/img/land/beta-ribbon.png") bottom right no-repeat;
 }
 @media (max-width: 1200px) {
@@ -1696,25 +1696,24 @@ ul.dropdown-menu li a.toggle-filepick input {
     margin: 4px;
   }
 }
-ul.dropdown-menu {
-  z-index: 31;
-}
-ul.dropdown-menu li {
-  position: relative;
-}
-ul.dropdown-menu li .hover-tip {
+.hover-tip {
   background: #000;
   border-radius: 3px;
   position: absolute;
-  top: 40px;
-  left: 0;
+  left: 50%;
+  -ms-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+  -o-transform: translateX(-50%);
+  transform: translateX(-50%);
+  min-width: 100px;
   color: #fff;
-  width: 100%;
   padding: 5px 10px;
   text-align: center;
-  display: none;
+  z-index: 3;
+  font-size: 13px;
 }
-ul.dropdown-menu li .hover-tip:before {
+.hover-tip:before {
   width: 10px;
   height: 10px;
   position: absolute;
@@ -1729,6 +1728,57 @@ ul.dropdown-menu li .hover-tip:before {
   -webkit-transform: rotate(45deg);
   -o-transform: rotate(45deg);
   transform: rotate(45deg);
+}
+.hover-tip.bottom {
+  top: 100%;
+  margin-top: 14px;
+}
+.hover-tip.top {
+  top: auto;
+  bottom: 100%;
+}
+.hover-tip.top:before {
+  top: auto;
+  bottom: -5px;
+}
+.hover-tip.danger {
+  background: #ed1d78;
+}
+.hover-tip.danger:before {
+  background: #ed1d78;
+}
+.hover-tip-host {
+  cursor: pointer;
+}
+.hover-tip-host .hover-tip {
+  display: none;
+}
+.hover-tip-host:hover .hover-tip {
+  display: block;
+}
+.form-group .hover-tip {
+  display: none;
+  opacity: 0;
+}
+.form-group.has-error .hover-tip {
+  display: block;
+  opacity: 1;
+  -ms-transition: opacity 1s linear;
+  -moz-transition: opacity 1s linear;
+  -webkit-transition: opacity 1s linear;
+  -o-transition: opacity 1s linear;
+  transition: opacity 1s linear;
+}
+ul.dropdown-menu {
+  z-index: 32;
+}
+ul.dropdown-menu li {
+  position: relative;
+}
+ul.dropdown-menu li .hover-tip {
+  width: 100%;
+  display: none;
+  top: 40px;
 }
 ul.dropdown-menu li:hover .hover-tip {
   display: block;

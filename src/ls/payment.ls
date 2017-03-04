@@ -24,6 +24,14 @@ angular.module \plotDB
             !!!(/^[0-9]{16}$/.exec($scope.payinfo.number)) #or
             #!Stripe.card.validateCardNumber($scope.payinfo.number)
           )
+          d6 = +($scope.payinfo.number or "").substring(0,6)
+          d4 = +($scope.payinfo.number or "").substring(0,4)
+
+          if /^4/.exec($scope.payinfo.number) => $scope.cardtype = \Visa
+          else if /^3[47]/.exec($scope.payinfo.number) => $scope.cardtype = 'American Express'
+          else if d4 >= 3528 and d4 <= 3589 => $scope.cardtype= \JCB
+          else if (d6 >= 510000 and d6 <= 559999) or (d6 >= 222100 and d6 <= 272099) => $scope.cardtype = \MasterCard
+          else $scope.cardtype = ''
           #$scope.cardtype = Stripe.card.cardType $scope.payinfo.number
         $scope.error.all = false
         $scope.error.all = (
@@ -77,6 +85,13 @@ angular.module \plotDB
           plNotify.send \danger, "something wrong, try again later? "
           eventBus.fire \loading.dimmer.off
       if $scope.settings.plan == 0 => return _subscribe!
+
+      TPDirect.setPublishableKey(10289, "90Ymc8w2YK4ANT8UOhIdH70F7L959dY93KurOhtT", 'sandbox')
+      TPDirect.card.createToken("4242424242424242", "04", "22", "955", (result) ->
+        console.log(result);
+      )
+
+      /*
       Stripe.card.create-token $scope.payinfo, (state, token) -> $scope.$apply ->
         if state != 200 =>
           #TODO detail error handling
@@ -85,4 +100,5 @@ angular.module \plotDB
           plNotify.send \danger, "payment failed."
           return
         _subscribe token
+      */
     $("[data-toggle='tooltip']").tooltip!

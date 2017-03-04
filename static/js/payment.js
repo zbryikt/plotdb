@@ -17,7 +17,7 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
       $timeout.cancel($scope.check.handler);
     }
     return $scope.check.handler = $timeout(function(){
-      var year, k, v;
+      var year, d6, d4, k, v;
       if (!target || target === 'exp_month') {
         $scope.error.exp_month = !/^0[1-9]|1[0-2]$/.exec($scope.payinfo.exp_month);
       }
@@ -33,6 +33,19 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
       }
       if (!target || target === 'number') {
         $scope.error.number = !/^[0-9]{16}$/.exec($scope.payinfo.number);
+        d6 = +($scope.payinfo.number || "").substring(0, 6);
+        d4 = +($scope.payinfo.number || "").substring(0, 4);
+        if (/^4/.exec($scope.payinfo.number)) {
+          $scope.cardtype = 'Visa';
+        } else if (/^3[47]/.exec($scope.payinfo.number)) {
+          $scope.cardtype = 'American Express';
+        } else if (d4 >= 3528 && d4 <= 3589) {
+          $scope.cardtype = 'JCB';
+        } else if ((d6 >= 510000 && d6 <= 559999) || (d6 >= 222100 && d6 <= 272099)) {
+          $scope.cardtype = 'MasterCard';
+        } else {
+          $scope.cardtype = '';
+        }
       }
       $scope.error.all = false;
       return $scope.error.all = (function(){
@@ -137,16 +150,9 @@ x$.controller('payment', ['$scope', '$http', '$timeout', 'plNotify', 'eventBus']
     if ($scope.settings.plan === 0) {
       return _subscribe();
     }
-    return Stripe.card.createToken($scope.payinfo, function(state, token){
-      return $scope.$apply(function(){
-        if (state !== 200) {
-          alert("failed to make payment, please check if the information you provided is correct.");
-          eventBus.fire('loading.dimmer.off');
-          plNotify.send('danger', "payment failed.");
-          return;
-        }
-        return _subscribe(token);
-      });
+    TPDirect.setPublishableKey(10289, "90Ymc8w2YK4ANT8UOhIdH70F7L959dY93KurOhtT", 'sandbox');
+    return TPDirect.card.createToken("4242424242424242", "04", "22", "955", function(result){
+      return console.log(result);
     });
   };
   return $("[data-toggle='tooltip']").tooltip();

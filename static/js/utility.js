@@ -84,6 +84,10 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
     },
     'CVC Code': {
       zh: "檢查碼"
+    },
+    'cvc-desc': {
+      zh: "卡片背面簽名區旁的三位數字",
+      en: "3 digits number on back of card"
     }
   };
 }));

@@ -23,6 +23,7 @@ content-security-policy = [
     apis.google.com
     plotdb.disqus.com
     a.disquscdn.com
+    portal.cherritech.net
   ]>
   <[style-src
     'self'
@@ -57,7 +58,7 @@ content-security-policy = [
     disqus.com
   ]>
   <[connect-src
-    'self' data: blob: plotdb.com links.services.disqus.com
+    'self' data: blob: plotdb.com links.services.disqus.com *.tappayapis.com
   ]>
 ]
 
