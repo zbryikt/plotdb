@@ -7,44 +7,44 @@ include panel.jade
   .iframe(style="width:100%;height:100%;border:none")
 include /widget/palette-edit-modal.jade
 #fullscreen-dimmer(ng-class="{'fullscreen':editor.fullscreen.toggled}")
-#code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}")
+#code-panel(ng-class="{'mini':vis!='code' && vis!='stylesheet' && vis!='document'}",ng-cloak)
   #code-tabs
     .pull-right
-      .tab.action(ng-click="settingPanel.toggle('permission')") #[i.fa.fa-cog] #[span settings]
-      .tab.action(ng-click="settingPanel.toggle('publish')") #[i.fa.fa-user] #[span share]
+      .tab.action(ng-click="settingPanel.toggle('permission')") #[i.fa.fa-cog] #[span {{'settings'|i18n}}]
+      .tab.action(ng-click="settingPanel.toggle('publish')") #[i.fa.fa-user] #[span {{'share'|i18n}}]
     .tab.cat.shown(ng-click="showsrc=!!!showsrc")
       div.text-right #[span src]
       .desc.text-right
         i.fa.fa-chevron-right(ng-cloak,ng-show="!showsrc")
         i.fa.fa-chevron-left(ng-show="showsrc")
     .tab.shown(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'",ng-cloak)
-      div #[span preview]
+      div #[span {{'Preview'|i18n}}]
       .desc {{target().dimension|length}} dimensions
     .tab.src(ng-class="{'active':vis=='code','shown':showsrc}",ng-click="vis='code'",ng-cloak)
-      div #[span code] #[small javascript]
-      .desc {{target().code.size|size}}, {{target().code.lines}} lines
+      div #[span {{'Code'|i18n}}] #[small javascript]
+      .desc {{target().code.size|size}}, {{target().code.lines}} {{'lines'|i18n}}
     .tab.src(ng-class="{'active':vis=='stylesheet','shown':showsrc}",ng-click="vis='stylesheet'",ng-cloak)
-      div #[span stylesheet] #[small css]
-      .desc {{target().style.size|size}}, {{target().style.lines}} lines
+      div #[span {{'Stylesheet'|i18n}}] #[small css]
+      .desc {{target().style.size|size}}, {{target().style.lines}} {{'lines'|i18n}}
     .tab.src(ng-class="{'active':vis=='document','shown':showsrc}",ng-click="vis='document'",ng-cloak)
-      div #[span document] #[small html]
-      .desc {{target().doc.size|size}}, {{target().doc.lines}} lines
+      div #[span {{'Document'|i18n}}] #[small html]
+      .desc {{target().doc.size|size}}, {{target().doc.lines}} {{'lines'|i18n}}
     .tab.src(ng-class="{'active':vis=='assets','shown':showsrc}",ng-click="vis='assets'",ng-cloak)
-      div #[span assets] #[small]
+      div #[span {{'Assets'|i18n}}] #[small]
       .desc
-        span(ng-cloak,ng-if="!target().assets.length") no file
-        span(ng-cloak,ng-if="target().assets.length") {{target().assets.length}} files, {{target().assets.size|size}}
+        span(ng-cloak,ng-if="!target().assets.length") {{'no assets file'|i18n}}
+        span(ng-cloak,ng-if="target().assets.length") {{target().assets.length}} {{'files'|i18n}}, {{target().assets.size|size}}
     //-.tab.src(ng-class="{'active':vis=='writer','shown':showsrc}",ng-click="vis='writer'",ng-cloak)
       div #[span writer] #[small]
       .desc
         span WYSIWYG
-.row
+.row(ng-cloak)
   .col-sm-3
     #config-panel.plpanel
       #chart-settings
         #chart-name
           input.form-control(type="text",ng-model="target().name",placeholder="Project Name")
-          span name
+          span {{'Chart Name'|i18n}}
         #chart-action.btn-group(style="width:100%")
           .btn.btn-default.loader(ng-disabled="!target().name",ng-click="save()",
           ng-class="{'loading':save.handle || save.pending}")
@@ -64,7 +64,7 @@ include /widget/palette-edit-modal.jade
                     | &nbsp;
                   img(src="/assets/img/loading.gif")
                   i.fa.fa-warning
-                  .label.label-info Need Pro
+                  .label.label-info {{'Need Pro'|i18n}}
                 a.link(ng-attr-download="{{item.filename}}",ng-click="download.track(item)",
                 ng-attr-href="{{item.url}}")
                   | {{item.name}} 
@@ -73,8 +73,8 @@ include /widget/palette-edit-modal.jade
                   small {{item.size|size}}
 
       #chart-config-header
-        .pull-right: a(href="#",ng-click="resetConfig()") reset
-        label Config
+        .pull-right: a(href="#",ng-click="resetConfig()") {{'reset'|i18n}}
+        label {{'Config'|i18n}}
       #chart-configs: .ib
         .chart-config(ng-cloak)
           .btn-group(ng-show="type=='chart'")
@@ -149,19 +149,19 @@ include /widget/palette-edit-modal.jade
       .closebtn.inner(ng-cloak,ng-click="editor.fullscreen.toggle()",ng-show="editor.fullscreen.toggled")
       #code-header(ng-cloak,ng-class="{'fullscreen':editor.fullscreen.toggled}",ng-show="inited")
         .tabs
-          span(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'") #[i.fa.fa-pie-chart] Preview
-          span(ng-class="{'active':vis=='code'}",ng-click="vis='code'") #[i.fa.fa-terminal] Code
-          span(ng-class="{'active':vis=='stylesheet'}",ng-click="vis='stylesheet'") #[i.fa.fa-paint-brush] Stylesheet
-          span(ng-class="{'active':vis=='document'}",ng-click="vis='document'") #[i.fa.fa-code] Document
-          span(ng-class="{'active':vis=='assets'}",ng-click="vis='assets'") #[i.fa.fa-files-o] Assets
+          span(ng-class="{'active':vis=='preview'}",ng-click="vis='preview'") #[i.fa.fa-pie-chart] {{'Preview'|i18n}}
+          span(ng-class="{'active':vis=='code'}",ng-click="vis='code'") #[i.fa.fa-terminal] {{'Code'|i18n}}
+          span(ng-class="{'active':vis=='stylesheet'}",ng-click="vis='stylesheet'") #[i.fa.fa-paint-brush] {{'Stylesheet'|i18n}}
+          span(ng-class="{'active':vis=='document'}",ng-click="vis='document'") #[i.fa.fa-code] {{'Document'|i18n}}
+          span(ng-class="{'active':vis=='assets'}",ng-click="vis='assets'") #[i.fa.fa-files-o] {{'Assets'|i18n}}
           //-span(ng-class="{'active':vis=='writer'}",ng-click="vis='writer'") #[i.fa.fa-files-o] Writer
       #code-inherit.box.text-center(ng-class="{'active':chart.inherit.indexOf(vis)>=0}")
         br
         br
-        span code inherited from parent chart.
+        span {{'code inherited from parent chart'|i18n}}.
         br
         br
-        .btn.btn-default(ng-click="inheritHandle.toggle(vis)") make a copy
+        .btn.btn-default(ng-click="inheritHandle.toggle(vis)") {{'make a copy'|i18n}}
       #code-editor-code.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.code",
       ng-model="target().code.content",ui-refresh="vis",ng-class="{'active':vis=='code'}")
       #code-editor-style.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.style",
@@ -169,24 +169,24 @@ include /widget/palette-edit-modal.jade
       #code-editor-doc.box(ui-codemirror="{onLoad: codemirrored}",ui-codemirror-opts="codemirror.doc",
       ng-model="target().doc.content",ui-refresh="vis",ng-class="{'active':vis=='document'}")
       #code-editor-assets.box(ng-cloak,ng-class="{'active':vis=='assets'}")
-        .file.uploader Upload ... #[input(type="file",multiple)]
+        .file.uploader {{'Upload'|i18n}} ... #[input(type="file",multiple)]
         .file(ng-repeat="f in target().assets",ng-click="assets.preview(f)")
           .closebtn.outer(ng-click="target().removeFile(f)")
           .title {{f.name}}
           .type #[i {{f.type}}] #[small.pull-right {{(f.content || "").length|size}}]
       #code-ctrl(ng-cloak,ng-show="inited")
-        .btn.btn-default(ng-click="scrollto('#binding-panel')",ng-show="!editor.fullscreen.toggled",style="margin-right:10px") #[i.fa.fa-table] use my data
+        .btn.btn-default(ng-click="scrollto('#binding-panel')",ng-show="!editor.fullscreen.toggled",style="margin-right:10px") #[i.fa.fa-table] {{'use my data'|i18n}}
         .btn-group
-          .btn.btn-default(ng-click="editor.color.toggle()") Editor Style
-          .btn.btn-default(ng-click="reset()") Reload
+          .btn.btn-default(ng-click="editor.color.toggle()") {{'Editor Style'|i18n}}
+          .btn.btn-default(ng-click="reset()") {{'Reload'|i18n}}
           .btn.btn-default(ng-click="editor.fullscreen.toggle()",
           data-track="ChartEditor,Fullscreen")
-            span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave 
+            span(ng-cloak,ng-if="editor.fullscreen.toggled") {{'Leave'|i18n}} 
             span
-              | Fullscreen 
+              | {{'Fullscreen'|i18n}} 
               i.fa.fa-arrows-alt(ng-show="!editor.fullscreen.toggled")
               i.fa.fa-compress(ng-show="editor.fullscreen.toggled")
-          .btn.btn-default(ng-click="vis='preview'") Preview #[small.hint Alt-Enter]
+          .btn.btn-default(ng-click="vis='preview'") {{'Preview'|i18n}} #[small.hint Alt-Enter]
     #visualization-canvas2.plpanel(ng-show="inited",
     ng-class="{'fullscreen':editor.fullscreen.toggled,'active':vis=='preview' || vis=='writer'}")
       .closebtn.inner(ng-click="editor.fullscreen.toggle()")
@@ -201,42 +201,42 @@ include /widget/palette-edit-modal.jade
               span {{item.name}}&nbsp;
               img(src="/assets/img/loading.gif")
               i.fa.fa-warning
-              .label.label-info Need Pro
+              .label.label-info {{'Need Pro'|i18n}}
             a.link(ng-attr-download="{{item.filename}}",
             ng-attr-href="{{item.url}}") {{item.name}} #[small {{item.size|size}}]
 
       .btn.btn-default(style="position:absolute;bottom:5px;left:5px;",ng-show="!editor.fullscreen.toggled",
-        ng-click="scrollto('#binding-panel')") #[i.fa.fa-table] use my data
+      ng-click="scrollto('#binding-panel')") #[i.fa.fa-table] {{'use my data'|i18n}}
       .btn-group
-        .btn.btn-default(ng-click="reset()") Reload
+        .btn.btn-default(ng-click="reset()") {{'Reload'|i18n}}
         .btn.btn-default(ng-click="editor.fullscreen.toggle()")
-          span(ng-cloak,ng-if="editor.fullscreen.toggled") Leave 
+          span(ng-cloak,ng-if="editor.fullscreen.toggled") {{'Leave'|i18n}} 
           span
-            | Fullscreen 
+            | {{'Fullscreen'|i18n}} 
             i.fa.fa-arrows-alt(ng-show="!editor.fullscreen.toggled")
             i.fa.fa-compress(ng-show="editor.fullscreen.toggled")
-        .btn.btn-default(ng-click="vis='code'") Edit Code #[small.hint Alt-Enter]
+        .btn.btn-default(ng-click="vis='code'") {{'Edit Code'|i18n}} #[small.hint Alt-Enter]
       .btn-group(style="right:auto;left:120px;bottom:0")
         #editor-colorblind-dropup.dropup.btn-group
           .btn.btn-default.dropdown-toggle(data-toggle="dropdown",data-track='ChartEditor,Colorblind,Toggle')
             span(ng-show="colorblind.val=='normal'")
               i.fa.fa-eye-slash.grayed
-              span &nbsp;colorblind #[span.caret]
+              span &nbsp;{{'colorblind'|i18n}} #[span.caret]
             span(ng-cloak,ng-show="colorblind.val!='normal'")
               i.fa.fa-eye
               span &nbsp;{{colorblind.val}} #[span.caret]
           ul.dropdown-menu
             li(ng-class="{'active':colorblind.val=='normal'}")
               a(href="#",ng-click="colorblind.set('normal')",
-              data-track="ChartEditor,Colorblind,Normal") Normal People
+              data-track="ChartEditor,Colorblind,Normal") {{'Normal People'|i18n}}
             li(ng-class="{'active':colorblind.val=='deuteranopia'}")
               a(href="#",ng-click="colorblind.set('deuteranopia')",
-              data-track="ChartEditor,Colorblind,Red-Green") Red-Green #[small.grayed (9%)]
+              data-track="ChartEditor,Colorblind,Red-Green") {{'Red-Green'|i18n}} #[small.grayed (9%)]
             li(ng-class="{'active':colorblind.val=='achromatopsia'}")
               a(href="#",ng-click="colorblind.set('achromatopsia')",
-              data-track="ChartEditor,Colorblind,Monochromasy") Monochromasy #[small.grayed (0.003%)]
+              data-track="ChartEditor,Colorblind,Monochromasy") {{'Monochromasy'|i18n}} #[small.grayed (0.003%)]
             li.divider
-            small.grayed(style="margin-left:20px") Advanced Options
+            small.grayed(style="margin-left:20px") {{'Advanced Options'|i18n}}
             li(ng-class="{'active':colorblind.val=='protanopia'}")
               a(href="#",ng-click="colorblind.set('protanopia')",
               data-track="ChartEditor,Colorblind,Protanopia") Protanopia
@@ -265,14 +265,14 @@ include /widget/palette-edit-modal.jade
           .btn.btn-default.dropdown-toggle(data-toggle="dropdown",data-track="ChartEditor,Responsive,Toggle")
             span(ng-show="rwdtest.val=='default'")
               i.fa.fa-desktop.grayed
-              span &nbsp;responsive #[span.caret]
+              span &nbsp;{{'Chart Size'|i18n}} #[span.caret]
             span(ng-cloak,ng-show="rwdtest.val!='default'")
               i.fa.fa-desktop
-              span &nbsp;{{rwdtest.val}} #[span.caret]
+              span &nbsp;{{rwdtest.val|i18n}} #[span.caret]
           ul.dropdown-menu
             li(ng-class="{'active':rwdtest.val=='default'}")
               a(href="#",ng-click="rwdtest.set('default')",
-              data-track="ChartEditor,Responsive,Default") Default
+              data-track="ChartEditor,Responsive,Default") {{'Auto Scale'|i18n}}
             li(ng-class="{'active':rwdtest.val=='QVGA'}")
               a(href="#",ng-click="rwdtest.set('QVGA')",
               data-track="ChartEditor,Responsive,QVGA") QVGA #[small.grayed (240x320)]
@@ -281,11 +281,11 @@ include /widget/palette-edit-modal.jade
               data-track="ChartEditor,Responsive,HVGA") HVGA #[small.grayed (320x480)]
             li(ng-class="{'active':rwdtest.val=='Thumb'}")
               a(href="#",ng-click="rwdtest.set('Thumb')",
-              data-track="ChartEditor,Responsive,Thumb") Thumb#[small.grayed (308x229)]
+              data-track="ChartEditor,Responsive,Thumb") {{'Thumb'|i18n}}#[small.grayed (308x229)]
             li(ng-class="{'active':rwdtest.val=='Custom'}")
               a(href="#",ng-click="rwdtest.set('Custom')",
               data-track="ChartEditor,Responsive,Custom")
-                div Custom
+                div {{'Custom'|i18n}}
                 input.form-control-inline.input-xs.dimension(ng-model="rwdtest.custom.width",
                 type="text",placeholder="width")
                 span &nbsp;&times;&nbsp;

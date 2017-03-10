@@ -80,15 +80,18 @@ angular.module \plotDB
     @
 
   ..controller \plSite,
-  <[$scope $http $interval global plNotify plConfig dataService chartService eventBus Modal]> ++
-  ($scope, $http, $interval, global, plNotify, plConfig, data-service, chart-service, eventBus, Modal) ->
-    $scope.lang = window.lang
+  <[$scope $rootScope $http $interval global plNotify plConfig dataService chartService eventBus Modal]> ++
+  ($scope, $rootScope, $http, $interval, global, plNotify, plConfig, data-service, chart-service, eventBus, Modal) ->
+    $rootScope.lang = $scope.lang = (/lang=(.+?)(;|$)/.exec(document.cookie) or {}).1
+    $scope.set-lang = ->
+      $rootScope.lang = $scope.lang = window.lang = it
+      document.cookie = "lang=#it"
+      window.location.reload!
     $scope.track-event = (cat, act, label, value) -> ga \send, \event, cat, act, label, value
     $scope.notifications = plNotify.queue
     $scope.alert = plNotify.alert
     $scope.nexturl = if /nexturl=([^&]+)/exec((window.location.search or "")) => that.1 else window.location.href
     $scope.plConfig = plConfig
-    $scope.lang = window.lang
     $scope.user = do
       data: global.user
       authed: -> return @data and @data.key

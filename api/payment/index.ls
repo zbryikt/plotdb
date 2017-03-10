@@ -13,6 +13,12 @@ engine.router.api.post \/pay/change, (req, res) ->
 engine.app.get \/me/billing/, (req, res) ->
   if !req.user => return aux.r403 res, "", true
   payload = {}
+  payload <<< {} <<< req.user.payment{plan, period, expiredate}
+  io.query "select * from paymenthistory where owner = $1", [req.user.key]
+    .then (r={}) ->
+      payload.history = r.[]rows
+      res.render \view/me/billing.jade, payload
+  /*
   get-customer req, req.user, null
     .then (customer) ->
       subscription = (customer and customer.{}subscriptions.[]data[0]) or {}
@@ -26,3 +32,4 @@ engine.app.get \/me/billing/, (req, res) ->
     .then (r={}) ->
       payload.history = r.[]rows
       res.render \view/me/billing.jade, payload
+  */

@@ -6353,7 +6353,8 @@ plotdb.util.trackResizeEvent = function(root, callback){
   ref$ = nodes[0].style;
   ref$.position = 'relative';
   ref$.width = '100%';
-  ref$.height = import$('100%', style.hide);
+  ref$.height = '100%';
+  ref$["z-index"] = import$(-1, style.hide);
   import$(nodes[1].style, style.basic);
   import$(nodes[2].style, style.basic);
   import$(nodes[3].style, style.basic);

@@ -1,25 +1,25 @@
 include panel.jade
 +cover-modal("copy.toggled", "copy.toggle()")
-  .panel.panel-default
+  .panel.panel-default(ng-cloak)
     .panel-body.text-center(style="min-height: 110px")
-      h2 Press Ctrl+C to Copy
+      h2 {{'Press Ctrl+C to Copy'|i18n}}
       img(src="/assets/img/ctrl-c.png")
 +cover-modal("parser.csv.toggled", "parser.csv.toggle()")
-  .panel.panel-default
+  .panel.panel-default(ng-cloak)
     .panel-body(style="min-height:100px")
-      h3 Encoding
-      p If you have no idea what this is, just click OK.
+      h3 {{'Encoding'|i18n}}
+      p {{'If you have no idea what this is, just click OK.'|i18n}}
       select.form-control(ng-model="parser.csv.encoding",ng-options="option for option in parser.csv.encodings")
     .panel-footer.text-right
       //-.btn.btn-primary(ng-click="parser.csv.read()") OK
       .btn.btn-primary(ng-click="parser.csv.gotencoding()") OK
       span &nbsp;
-      .btn.btn-default(ng-click="parser.csv.toggle()") Cancel
+      .btn.btn-default(ng-click="parser.csv.toggle()") {{'Cancel'|i18n}}
 
 +cover-modal("parser.gsheet.toggled", "parser.gsheet.toggle()")
   .panel.panel-default
     .panel-body
-      h3 Import from Google sheets
+      h3 {{'Import from Google sheets'|i18n}}
       .sep
       br
       .input-group
@@ -30,25 +30,25 @@ include panel.jade
         .gsheet-file(ng-repeat="f in parser.gsheet.files",ng-click="parser.gsheet.load(f)")
           a.pull-right(target="_blank",
           ng-attr-href="https://docs.google.com/spreadsheets/d/{{f.file.id}}")
-            span open in new window 
+            span {{'open in new window'|i18n}}
             i.fa.fa-external-link
           span {{f.file.name}}
-        .gsheet-file.empty(ng-show="!parser.gsheet.files.length") no file
+        .gsheet-file.empty(ng-show="!parser.gsheet.files.length") {{'no file'|i18n}}
         .text-center(ng-show="parser.gsheet.loading"): .loader.loading.alone.sm(style="display:inline-block")
         #gsheet-list-end
     .panel-footer.text-right
-      .btn.btn-default(ng-click="parser.gsheet.toggle()") Cancel
+      .btn.btn-default(ng-click="parser.gsheet.toggle()") {{'Cancel'|i18n}}
 
 +cover-modal("panel.name.toggled","panel.toggle('name')")
   .panel.panel-default
     .panel-body(style="min-height:110px")
-      h3(ng-if="!dataset.name") Dataset Name
-      h3(ng-if="dataset.name") Rename Dataset
+      h3(ng-if="!dataset.name") {{'Dataset Name'|i18n}}
+      h3(ng-if="dataset.name") {{'Rename Dataset'|i18n}}
       .sep
       br
       div(style="width:94%;margin:auto")
-        p(ng-if="!dataset.name") Looks like your dataset doesn't have a name yet. Let's give it a name:
-        p(ng-if="dataset.name") Give your dataset a new name:
+        p(ng-if="!dataset.name") {{"Looks like your dataset doesn't have a name yet. Let's give it a name"|i18n}}:
+        p(ng-if="dataset.name") {{'Give your dataset a new name'|i18n}}:
         input#dataset-name-input.form-control(placeholder="e.g., US 2015 Population",ng-model="panel.name.value",
         ng-keydown="panel.name.keyhandler($event)")
       br
@@ -56,49 +56,49 @@ include panel.jade
       .btn.btn-primary(ng-class="{'disabled':!panel.name.value}",ng-click="panel.name.action(0)")
         span &nbsp; OK &nbsp;
       span &nbsp;
-      .btn.btn-default(ng-click="panel.name.action(1)") Cancel
+      .btn.btn-default(ng-click="panel.name.action(1)") {{'Cancel'|i18n}}
 
-#dataset-editor
+#dataset-editor(ng-cloak)
   #dataset-create-methods
     .navbar.navbar-default.dataset-toolbar
       .container-fluid
         .navbar-collapse.collapse
           ul.nav.navbar-nav
             li.dropdown
-              a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-file-o] File #[span.caret]
+              a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-file-o] {{'File'|i18n}} #[span.caret]
               ul.dropdown-menu
-                li: a(href="#",ng-click="reset('',true)") #[i.fa.align16] New
+                li: a(href="#",ng-click="reset('',true)") #[i.fa.align16] {{'New'|i18n}}
                 li.divider
-                li: a(href="#",ng-click="save()") #[i.fa.fa-floppy-o.align16] Save
+                  li: a(href="#",ng-click="save()") #[i.fa.fa-floppy-o.align16] {{'Save'|i18n}}
                 li(ng-class="{'disabled':!dataset.key}",ng-click="clone()")
-                  a(href="#") #[i.fa.fa-clone.align16] Make a Copy
+                  a(href="#") #[i.fa.fa-clone.align16] {{'Make a Copy'|i18n}}
                 li(ng-class="{'disabled':!dataset.key}",ng-click="panel.name.toggle(dataset.name)")
-                  a(href="#") #[i.fa.align16] Rename
+                  a(href="#") #[i.fa.align16] {{'Rename'|i18n}}
                 li.divider
                 li(ng-class="{'disabled':!dataset.key}",ng-click="delete(dataset)")
-                  a(href="#") #[i.fa.fa-trash-o.align16] Delete
+                  a(href="#") #[i.fa.fa-trash-o.align16] {{'Delete'|i18n}}
             li#dataset-import-dropdown.dropdown
-              a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-cloud-upload] Import... #[span.caret]
+              a.dropdown-toggle(data-toggle="dropdown") #[i.fa.fa-cloud-upload] {{'Import'|i18n}}... #[span.caret]
               ul.dropdown-menu
                 li.dropdown
                   a.toggle-filepick(href="#")
                     input#dataset-edit-csv-file(type="file",
                     askencoding="parser.csv.askencoding",
                     readby="parser.csv.import",encoding="{{parser.csv.encoding}}")
-                    span #[i.fa.fa-file-text-o.align16] upload CSV file ...
+                    span #[i.fa.fa-file-text-o.align16] {{'upload CSV file'|i18n}} ...
                 li: a.toggle-filepick(href="#")
                   input#dataset-edit-xls-file(type="file",readby="parser.xls.read")
-                  span #[i.fa.fa-file-excel-o.align16] upload Excel (.xls, .xlsx)
+                  span #[i.fa.fa-file-excel-o.align16] {{'upload Excel'|i18n}} (.xls, .xlsx)
                 li.divider
-                li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] from Google Sheet
+                  li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] {{'from Google Sheet'|i18n}}
             li#dataset-copy-btn
-              a #[i.fa.fa-clipboard] Copy All
+              a #[i.fa.fa-clipboard] {{'Copy All'|i18n}}
             li#dataset-download-btn.dropdown
               a.dropdown-toggle(data-toggle="dropdown",ng-click="download.prepare()")
                 i.fa.fa-download
-                span &nbsp;Download #[span.caret]
+                span &nbsp;{{'Download'|i18n}} #[span.caret]
               //-ul.dropdown-menu
-                li: a(href="#") #[i.fa.fa-fil-text-o.align16] ... as CSV
+                li: a(href="#") #[i.fa.fa-fil-text-o.align16] ... {{'as CSV'|i18n}}
 
               ul.dropdown-menu.download-options
                 li(ng-repeat="item in download.queue",
@@ -106,16 +106,16 @@ include panel.jade
                   a.pending
                     i.fa.align16
                     span
-                      | {{item.name}}
+                      | {{item.name|i18n}}
                       small.grayed(ng-if="item.alt") ({{item.alt}})
                       | &nbsp;
                     img(src="/assets/img/loading.gif")
                     i.fa.fa-warning
-                    .label.label-info Need Pro
+                    .label.label-info {{'Need Pro'|i18n}}
                   a.link(ng-attr-download="{{item.filename}}",
                   ng-attr-href="{{item.url}}")
                     i.fa.align16
-                    | {{item.name}}
+                    | {{item.name|i18n}}
                     small.grayed(ng-if="item.alt") ({{item.alt}})
                     | &nbsp;
                     small {{item.size|size}}
@@ -129,7 +129,7 @@ include panel.jade
                 li: a(href="#") #[i.fa.align16] Transpose
                 li: a(href="#") #[i.fa.fa-long-arrow-down.align16] Fill Down
           ul.nav.navbar-nav
-            li(ng-class="{'disabled':!dataset.key}"): a(ng-click="panel.toggle()") #[i.fa.fa-users] Share
+            li(ng-class="{'disabled':!dataset.key}"): a(ng-click="panel.toggle()") #[i.fa.fa-users] {{'Share'|i18n}}
 
   //dev
   //-script(src="/assets/clusterize/0.16.1/clusterize.min.js")
@@ -151,9 +151,9 @@ include panel.jade
 
     #dataset-editbox-meta
       .btn-group
-        .btn.btn-default(ng-class="{'active':grid.toggled}",ng-click="grid.toggle(true)") #[i.fa.fa-table] Grid
+        .btn.btn-default(ng-class="{'active':grid.toggled}",ng-click="grid.toggle(true)") #[i.fa.fa-table] {{'Grid Mode'|i18n}}
         .btn.btn-default(ng-class="{'active':!grid.toggled}",
-        ng-click="grid.toggle(false)") #[i.fa.fa-pencil] Text
+        ng-click="grid.toggle(false)") #[i.fa.fa-pencil] {{'Text Mode'|i18n}}
 
       //-.input-group.pull-left(style="width:260px")
         input.form-control(type="input",ng-model="dataset.name",placeholder="Dataset Name",
@@ -169,7 +169,7 @@ include panel.jade
          ng-click="save(true)") Save Locally
       span(ng-cloak,ng-class="{'grayed':parse.rows==0}",
       style="display:inline-block;padding:8px 10px;border:1px solid transparent;font-size:12px")
-        | {{grid.data.rows.length || 0}} rows, {{grid.data.headers.length || 0}} fields, size: {{(grid.data.size || 0)|size}} #[small (estimated)]
+        | {{grid.data.rows.length || 0}} {{'rows'|i18n}}, {{grid.data.headers.length || 0}} {{'fields'|i18n}}, {{'size'|i18n}}: {{(grid.data.size || 0)|size}} #[small ({{'estimated'|i18n}})]
       .btn.btn-sm.loader(ng-class="{'loading':loading}",style="padding-left:0") &nbsp;
-      .pull-right: .btn.btn-primary(style="min-width:140px",ng-click="save()") Save
+      .pull-right: .btn.btn-primary(style="min-width:140px",ng-click="save()") {{'Save'|i18n}}
 

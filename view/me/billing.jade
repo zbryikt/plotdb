@@ -6,15 +6,15 @@ block body
   include /pricing/credit-card.jade
   +cover-modal("ccPanel.toggle==true","ccPanel.toggle=!!!ccPanel.toggle","narrow")
     +credit-card-panel("ccPanel.toggle=false")
-  #root.narrow
-    h3 Billing Information
+  #root.narrow(ng-cloak)
+    h3 {{'Billing Information'|i18n}}
     .sep.gap
     .row
       .col-sm-6
         .panel.panel-default
           .panel-body(style="position:relative")
             .text-center
-              div(style="margin-bottom:15px") Your Current Plan
+              div(style="margin-bottom:15px") {{'Current Plan'|i18n}}
               .prc-widget-logo.lg(class="logo" + (plan + 1))
               h2(style="margin-top:0px;margin-bottom:5px")
                 if !plan
@@ -39,34 +39,34 @@ block body
             .text-center
               //-.btn.btn-link #[i.fa.fa-question-circle-o]  what's in this plan?
               //-span |
-              a.btn.btn-link(href="/pricing/") change plan
+              a.btn.btn-link(href="/pricing/") {{'change plan'|i18n}}
 
       .col-sm-6
         .panel.panel-default
           .panel-body
-            span Current Payment Information:
+            span {{'Current Payment Information'|i18n}}:
             br
             .form(style="max-width:480px;margin:auto")
               .sep.gap
               .pull-right: big: big
                 i.fa.fa-credit-card(style="vertical-align:top")
-              label Using Credit Card
+              label {{'Using Credit Card'|i18n}}
               input.form-control.disabled(type="input",disabled,placeholder="Card Number",value=ccn)
               br
               .row
                 .col-sm-6
-                  label Next Billing Due
+                  label {{'Next Billing Due'|i18n}}
                   div(style="background:#eee;padding:5px 10px;border-radius:3px")
                     if expiredate
                       span= "{{'" + expiredate + "'|nicedate}}"
                     else
                       span -
                 .col-sm-6
-                  label Amount
+                  label {{'Amount'|i18n}}
                   br
                   div(style="background:#eee;padding:5px 10px;border-radius:3px")= "$" + amount
               .sep.gap
-            a.pull-right(href="#",ng-click="ccPanel.toggle=true") update payment method
+            a.pull-right(href="#",ng-click="ccPanel.toggle=true") {{'update payment method'|i18n}}
 
     style(type="text/css").
       .pay-history {
@@ -81,15 +81,15 @@ block body
         text-align: center;
       }
     .panel.panel-default
-      .panel-heading: b Payment History
+      .panel-heading: b {{'Payment History'|i18n}}
       table.panel-body.pay-history
         tr
-          td: b State
-          td: b Transaction ID
-          td: b Date
-          td: b Amount
-          td: b Plan
-          td: b Payment Method
+          td: b {{'State'|i18n}}
+          td: b {{'Transaction ID'|i18n}}
+          td: b {{'Date'|i18n}}
+          td: b {{'Amount'|i18n}}
+          td: b {{'Plan'|i18n}}
+          td: b {{'Payment Method'|i18n}}
 
         each item in history
           tr(ng-cloak)
@@ -99,5 +99,7 @@ block body
             td= "$" + (item.amount/100)
             td= item.plan
             td #[i.fa.fa-credit-card] #[span= item.method]
+        tr(ng-show="!history.length")
+          td(colspan="6") {{'no transaction record'|i18n}}
 
   include /footer.jade

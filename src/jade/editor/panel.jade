@@ -4,14 +4,14 @@ mixin publish
     .btn-group
       .btn.btn-default.btn-sm(ng-class="{'active':target().permission.switch=='publish'}",ng-click="target().permission.switch='publish'")
         i.fa.fa-check.text-success
-        span  Published
+        span  {{'Published'|i18n}}
       .btn.btn-default.btn-sm(ng-class="{'active':target().permission.switch!='publish'}",ng-click="target().permission.switch='draft'")
         i.fa.fa-check.text-success
-        span  Draft
+        span  {{'Draft'|i18n}}
     .pull-right.btn.btn-text.btn-sm(
-    ng-show="target().permission.switch=='publish'") #[b visible] in embed code / share link
+    ng-show="target().permission.switch=='publish'") #[b {{'visible'|i18n}}] {{'in embed code / share link'|i18n}}
     .pull-right.btn.btn-text.btn-sm(
-    ng-show="target().permission.switch!='publish'") #[b invisible] in embed code / share link
+    ng-show="target().permission.switch!='publish'") #[b {{'invisible'|i18n}}] {{'in embed code / share link'|i18n}}
 
 +cover-modal("settingPanel.toggled","settingPanel.toggle()","narrow")
   .panel.panel-default(ng-init="settingPanel.tab='publish'")
@@ -20,15 +20,15 @@ mixin publish
       .closebtn.inner.lg.inverse(ng-click="settingPanel.toggle()")
       ul.nav.nav-tabs
         li(ng-class="{'active':settingPanel.tab=='publish'}",ng-click="settingPanel.tab='publish'")
-          a(href="#") #[i.fa.fa-bullhorn] Publish
+          a(href="#") #[i.fa.fa-bullhorn] {{'Publish'|i18n}}
         li(ng-class="{'active':settingPanel.tab=='permission'}",ng-click="settingPanel.tab='permission'")
-          a(href="#") #[i.fa.fa-lock] Permission
+          a(href="#") #[i.fa.fa-lock] {{'Permission'|i18n}}
         li(ng-class="{'active':settingPanel.tab=='chartinfo'}",ng-click="settingPanel.tab='chartinfo'")
-          a(href="#") #[i.fa.fa-info-circle] Chart Info
+          a(href="#") #[i.fa.fa-info-circle] {{'Chart Info'|i18n}}
         li(ng-class="{'active':settingPanel.tab=='library'}",ng-click="settingPanel.tab='library'")
-          a(href="#") #[i.fa.fa-book] Libraries
+          a(href="#") #[i.fa.fa-book] {{'Libraries'|i18n}}
         li(ng-class="{'active':settingPanel.tab=='license'}",ng-click="settingPanel.tab='license'")
-          a(href="#") #[i.fa.fa-book] License
+          a(href="#") #[i.fa.fa-book] {{'License'|i18n}}
 
       div(ng-show="settingPanel.tab=='permission'",style="position:relative")
         include /widget/panel-lock.jade
@@ -45,12 +45,12 @@ mixin publish
       div(ng-show="settingPanel.tab=='chartinfo'")
         .well
           h3(style="margin:0")
-            | Chart Info
+            | {{'Chart Info'|i18n}}
             if chart
               small.grayed
                 | &nbsp; by&nbsp;
                 a(href="/user/" + chart.owner)= chart.ownername
-          small.grayed increase visibility by providing more information for your chart.
+          small.grayed {{'increase visibility by providing more information for your chart'|i18n}}.
         include /widget/chartinfo.jade
       div(ng-show="settingPanel.tab=='library'")
         .well
@@ -98,9 +98,9 @@ mixin publish
 
     .panel-footer.text-right(style="padding-left: 5px")
       .btn.btn-default.btn-sm.pull-left.loader(ng-click="clone()",
-      ng-class="{'loading':save.handle}") Make a Copy
+      ng-class="{'loading':save.handle}") {{'Make a Copy'|i18n}}
       .btn.btn-success.btn-sm.loader(ng-class="{'btn-glowing': needSave,'loading':save.handle}",
-      ng-click="save()") SAVE
+      ng-click="save()") {{'Save'|i18n}}
       span &nbsp;
-      .btn.btn-default.btn-sm(ng-click="settingPanel.toggle()") Close
+      .btn.btn-default.btn-sm(ng-click="settingPanel.toggle()") {{'Close'|i18n}}
 

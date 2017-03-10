@@ -1,15 +1,73 @@
 mixin credit-card-panel(toggle)
   #prc-widget.panel.panel-default(ng-controller="payment")
+
     #prc-cc.panel-body.relpos
       .closebtn.inner.lg.inverse(ng-click=toggle)
+
       .form
+        #prc-cc-cardtype.pull-right: big: big
+          i.fa.fa-cc-visa(ng-class="{'text-success':cardtype=='Visa'}")
+          i.fa.fa-cc-mastercard(ng-class="{'text-success':cardtype=='Mastercard'}")
+          i.fa.fa-cc-amex(ng-class="{'text-success':cardtype=='American Express'}")
+          i.fa.fa-cc-jcb(ng-class="{'text-success':cardtype=='JCB'}")
+          //-i.fa.fa-cc-stripe
+        label {{'Credit Card Number'|i18n}}
+        .form-group(ng-class="{'has-feedback has-error':error.number}",style="margin-bottom:13px;position:relative")
+          .hover-tip.danger.top 卡號有問題喔！範例卡號： #[br] 1010101010101010
+          input.form-control(type="input",placeholder="Card Number, xxxx-xxxx-xxxx-xxxx",ng-model="payinfo.number",
+          ng-keydown="check('number')")
+          //-.form-control-feedback.with-text(ng-show="error.number",style="margin-top:3px")
+            small incorrect number. correct example: 1000200030004000
+        .row(style="margin-bottom:13px")
+          .col-sm-7
+            label {{'Expiration Date'|i18n}}
+            div
+            .form-group(ng-class="{'has-feedback has-error':error.exp_month}",style="display:inline;margin-bottom:0;position:relative")
+              input.form-control(type="input",placeholder="Month",ng-model="payinfo.exp_month",
+              style="display:inline;width:50%;border-right:0;border-radius:3px 0 0 3px",
+              ng-keydown="check('exp_month')")
+              .hover-tip.danger.bottom 兩位數月份#[br]如 08
+              //-.form-control-feedback.with-text(ng-show="error.exp_month",style="margin-top:15px")
+                small 01 ~ 12, like: 08
+            .form-group(ng-class="{'has-feedback has-error':error.exp_year}",style="display:inline;margin-bottom:0;position:relative")
+              input.form-control(type="input",placeholder="Year",ng-model="payinfo.exp_year",
+              style="display:inline;width:50%;border-radius:0 3px 3px 0",
+              ng-keydown="check('exp_year')")
+              .hover-tip.danger.bottom 西元年份#[br]如 2018
+              //-.form-control-feedback.with-text(ng-show="error.exp_year",style="margin-top:15px")
+                small future year, like: 2018
+          .col-sm-5
+            label
+              span {{'CVC Code'|i18n}}
+              small.light.hover-tip-host(style="position:relative;margin-left:5px")
+                i.fa.fa-question-circle
+                .hover-tip.top(style="color:#fff;width:200px")
+                  img(src="/assets/img/pricing/cvc.svg",style="width:140px")
+                  div {{'cvc-desc'|i18n}}
+            .form-group(ng-class="{'has-feedback has-error':error.cvc}",
+            style="margin-bottom:0;position:relative")
+              input.form-control(type="input",placeholder="CVC",style="display:inline",
+              ng-model="payinfo.cvc",ng-keydown="check('cvc')")
+              .hover-tip.danger.bottom 三位數字，如：#[br] 476
+              //.form-control-feedback.with-text(ng-show="error.cvc")
+                small 3 digit number, like: 476
+        //-
+          small.grayed Have a coupon code? (optional)
+          .input-group
+            input.form-control.input-sm(type="input",placeholder="Enter coupon code here")
+            span.input-group-btn: .btn.btn-default.btn-sm Apply
+        //-
+          .sep.gap
+          br
+
+      //-.form
         .pull-right(style="margin-right:10px"): big: big
           i.fa.fa-cc-visa(ng-class="{'text-primary':cardtype=='Visa'}")
           i.fa.fa-cc-mastercard(ng-class="{'text-primary':cardtype=='Mastercard'}")
           i.fa.fa-cc-amex(ng-class="{'text-primary':cardtype=='American Express'}")
           i.fa.fa-cc-jcb(ng-class="{'text-primary':cardtype=='JCB'}")
           //-i.fa.fa-cc-stripe
-        label Credit Card Number
+        label {{'Credit Card Number'|i18n}}
         .form-group(ng-class="{'has-feedback has-error':error.number}",style="margin-bottom:13px")
           input.form-control(type="input",placeholder="Card Number",ng-model="payinfo.number",
           ng-keydown="check('number')")
@@ -17,7 +75,7 @@ mixin credit-card-panel(toggle)
             small 16 digit number, like: 1000200030004000
         .row(style="margin-bottom:13px")
           .col-sm-7
-            label Expiration Date
+            label {{'Expiration Date'|i18n}}
             div
             .form-group(ng-class="{'has-feedback has-error':error.exp_month}",style="display:inline;margin-bottom:0")
               input.form-control(type="input",placeholder="Month",ng-model="payinfo.exp_month",
@@ -32,7 +90,7 @@ mixin credit-card-panel(toggle)
               .form-control-feedback.with-text(ng-show="error.exp_year",style="margin-top:15px",ng-cloak)
                 small future year, like: 2018
           .col-sm-5
-            label CVC Code
+            label {{'CVC Code'|i18n}}
             .form-group(ng-class="{'has-feedback has-error':error.cvc}",style="margin-bottom:0")
               input.form-control(type="input",placeholder="CVC",style="display:inline",
               ng-model="payinfo.cvc",ng-keydown="check('cvc')")
@@ -40,7 +98,7 @@ mixin credit-card-panel(toggle)
                 small 3 digit number, like: 476
       .btn.btn-primary.btn-block.btn-lg(ng-class="{'disabled':error.all}",style="margin-top:20px",
       ng-click="update()")
-        span Update
+        span {{'Update'|i18n}}
     .pull-right
       img(src="/assets/img/ssl-secure-light.png",style="margin:5px 5px 0 0")
       //-img(src="/assets/img/pricing/stripe-powered-light.png",style="margin:5px 0 0")

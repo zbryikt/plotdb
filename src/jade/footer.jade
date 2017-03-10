@@ -1,9 +1,10 @@
-#footer: .inner
+#footer: .inner(ng-cloak)
   .row
     .col-sm-12
-      span &copy; 2016 &nbsp;
-      b: big: a(href="/",style="margin:0") PlotDB.com
-      //-span About
-      a(href="/info/privacy/") Privacy Policy
-      //-span FAQ
-      a(href="/info/contact/") Suggestion and Contact
+      .btn-group(style="vertical-align:top")
+        .btn.btn-xs(ng-class="{'active btn-success':lang=='zh','btn-default':lang!='zh'}",
+        ng-click="setLang('zh')") 中文
+        .btn.btn-xs(ng-class="{'active btn-success':lang=='en','btn-default':lang!='en'}",
+        ng-click="setLang('en')") English
+      a(href="/info/privacy/") {{'Privacy Policy'|i18n}}
+      a(href="/info/contact/") {{'Suggestion and Contact'|i18n}}

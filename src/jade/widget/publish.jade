@@ -1,9 +1,9 @@
-label Link
+label {{'Link'|i18n}}
 small.pull-right(style="margin-top:5px")
-  a(ng-attr-href="{{sharePanel.link}}",ng-class="{'disabled':target().permission.switch!='publish'}",target="_blank") #[i.fa.fa-external-link] Open in New Window
+  a(ng-attr-href="{{sharePanel.link}}",ng-class="{'disabled':target().permission.switch!='publish'}",target="_blank") #[i.fa.fa-external-link] {{'open in new window'|i18n}}
 input.form-control.input-sm(ng-model="sharePanel.link",ng-disabled="target().permission.switch!='publish'")
 br
-label Embed Code
+label {{'Embed Code'|i18n}}
 #chart-edit-iframe-config.pull-right
   span(ng-show="sharePanel.aspectRatio")
     input.input-sm.form-control(type="text",placeholder="Width",
@@ -20,26 +20,26 @@ label Embed Code
   .checkbox(ng-class="{'disabled':target().permission.switch!='publish'}"): label
     input(type="checkbox",ng-model="sharePanel.aspectRatio",
     ng-disabled="target().permission.switch!='publish'")
-    small(style="vertical-align:text-top") Preserve Aspect Ratio
+    small(style="vertical-align:text-top") {{'Preserve Aspect Ratio'|i18n}}
 textarea.form-control(ng-cloak,disabled,rows="2",
 ng-show="target().permission.switch!='publish'",placeholder="set public to get embed code")
 textarea#edit-embedcode.form-control(ng-cloak,rows="2",ng-show="target().permission.switch=='publish'",
 data-clipboard-target="#edit-embedcode",ng-model="sharePanel.embedcode")
 
 br
-label Open Graph #[small.grayed summary shown in SNS like facebook, twitter, etc ]
+label Open Graph #[small.grayed {{'summary shown in SNS like facebook, twitter, etc'|i18n}} ]
 .sep.nogap
 br
 .row
   .col-sm-6
-    label Title
+    label {{'Title'|i18n}}
     .pull-right
       .checkbox(style="margin:0"): label
         input(type="checkbox",ng-model="target().metashow")
-        small(style="vertical-align:text-top") Show in Chart
+        small(style="vertical-align:text-top") {{'Show in Chart'|i18n}}
     input.form-control.input-sm(placeholder="title shown in social media",ng-model="target().name")
     br
-    label Footer
+    label {{'Footer'|i18n}}
     input.form-control.input-sm(placeholder="e.g., data source",ng-model="target().footer")
     //-
       label Share
@@ -56,5 +56,5 @@ br
           i.fa.fa-envelope-square(style="color:#444")
 
   .col-sm-6
-    label Description
+    label {{'Description'|i18n}}
     textarea.form-control.input-sm(rows="5",placeholder="summary shown in social media",ng-model="target().description")

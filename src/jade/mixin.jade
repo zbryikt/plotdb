@@ -1,6 +1,6 @@
 mixin SaveFork
-  span(ng-cloak,ng-show="writable") Save
-  span(ng-cloak,ng-show="!writable") Fork #[small.grayed &amp;] Save
+  span(ng-cloak,ng-show="writable") {{'Save'|i18n}}
+  span(ng-cloak,ng-show="!writable") {{'Fork-Save'|i18n}}
 mixin margin-break
   .margin-break &nbsp;
 mixin cover-modal(condition,toggle,className)
@@ -50,17 +50,17 @@ mixin selectbox(data,type,scope,config,size)
             i.fa.fa-check.pull-right
         .select-hint.grayed(ng-show="portal.loading")
           img(src="/assets/img/loading.gif")
-          span loading...
+          span {{'loading'|i18n}}...
         .select-hint.grayed(ng-show="portal.needchar>0") type {{portal.needchar}} more chars... 
         .select-hint.grayed(ng-show="!portal.options.length && portal.needchar<=0 && !portal.loading") 
-          span no result.
-          a(ng-if="portal.config.create",ng-click="create()") create one with this name
-        .select-hint.grayed(ng-show="portal.needchar<=0 && portal.end && !portal.loading && portal.options.length") that's all :)
+          span {{'no result'|i18n}}.
+          a(ng-if="portal.config.create",ng-click="create()") {{'create one with this name'|i18n}}
+        .select-hint.grayed(ng-show="portal.needchar<=0 && portal.end && !portal.loading && portal.options.length") {{"that's all"|i18n}} :)
 
 
 mixin searchable
   .perm-item(style="padding: 10px 0")
-    label Searchable?
+    label {{'Searchable?'|i18n}}
     br
     .btn-group
       .btn.btn-default.btn-sm(ng-class="{'active':target().searchable}",ng-click="target().searchable=true")
@@ -70,6 +70,6 @@ mixin searchable
         i.fa.fa-check.text-success
         span  Off
     .pull-right.btn.btn-text.btn-sm(
-    ng-show="target().searchable") #[b shown] in search result
+    ng-show="target().searchable") {{'shown in search result'|i18n}}
     .pull-right.btn.btn-text.btn-sm(
-    ng-show="!target().searchable") #[b hidden] from search result
+    ng-show="!target().searchable") {{'hidden from search result'|i18n}}

@@ -1,20 +1,20 @@
 angular.module \plotDB
   ..controller \payment,
-  <[$scope $http $timeout plNotify eventBus]> ++
-  ($scope, $http, $timeout, plNotify, eventBus) ->
+  <[$scope $http $timeout plNotify eventBus i18n]> ++
+  ($scope, $http, $timeout, plNotify, eventBus, i18n) ->
     #if !(Stripe?) => return
     #Stripe.setPublishableKey \pk_test_DE53QFrgknntLkCNsVr1MqrV
     $scope.payinfo = {cvc:null,exp_month:null,exp_year:null,number:null}
     #$scope.payinfo = {cvc:'123',exp_month:'02',exp_year:'18',number:'4242424242424242'}
     $scope.error = {all: true}
     $scope.prices = [[0,20,50],[0,200,500]]
-    $scope.check = (target) ->
+    $scope.check = (target, now) ->
       if $scope.check.handler => $timeout.cancel $scope.check.handler
-      $scope.check.handler = $timeout (->
+      _check = ->
         if !target or target == \exp_month =>
           $scope.error.exp_month = !!!(/^0[1-9]|1[0-2]$/.exec($scope.payinfo.exp_month))
         if !target or target == \exp_year =>
-          year = $scope.payinfo.exp_year
+          year = $scope.payinfo.exp_year or ""
           if year.length < 4 => year = "20#year"
           $scope.error.exp_year = !!!(/^2[01][0-9]{2}$/.exec(year)) or (new Date!getYear! + 1900) > +year
         if !target or target == \cvc =>
@@ -26,7 +26,6 @@ angular.module \plotDB
           )
           d6 = +($scope.payinfo.number or "").substring(0,6)
           d4 = +($scope.payinfo.number or "").substring(0,4)
-
           if /^4/.exec($scope.payinfo.number) => $scope.cardtype = \Visa
           else if /^3[47]/.exec($scope.payinfo.number) => $scope.cardtype = 'American Express'
           else if d4 >= 3528 and d4 <= 3589 => $scope.cardtype= \JCB
@@ -38,7 +37,8 @@ angular.module \plotDB
           [v for k,v of $scope.error].filter(->it).length or
           [v for k,v of $scope.payinfo].filter(->!it).length
         )
-      ), 500
+      if !now => $scope.check.handler = $timeout (-> _check!), 500
+      else _check!
     $scope.settings = do
       choose: (plan, period) ->
         if $scope.user.data and plan == $scope.user.data.{}payment.plan => return
@@ -69,13 +69,15 @@ angular.module \plotDB
           plNotify.send \danger, "something wrong, try again later? "
           eventBus.fire \loading.dimmer.off
     $scope.subscribe = ->
-      if $scope.settings.plan and $scope.error.all => return
+      $scope.check null, true
+      if $scope.settings.plan == $scope.settings.current => return
+      if $scope.error.all => return
       eventBus.fire \loading.dimmer.on
       _subscribe = (token = {})->
         $http do
           url: \/d/subscribe
           method: \POST
-          data: {settings: $scope.settings, token: token.id}
+          data: {settings: $scope.settings, token: token}
         .success (d) ->
           $scope.user.data.payment <<< d.payment
           if !d.payment.plan => plNotify.send \success, "you've switched to free plan."
@@ -84,21 +86,21 @@ angular.module \plotDB
         .error (d) ->
           plNotify.send \danger, "something wrong, try again later? "
           eventBus.fire \loading.dimmer.off
-      if $scope.settings.plan == 0 => return _subscribe!
+      #if $scope.settings.plan == 0 => return _subscribe!
 
-      TPDirect.setPublishableKey(10289, "90Ymc8w2YK4ANT8UOhIdH70F7L959dY93KurOhtT", 'sandbox')
-      TPDirect.card.createToken("4242424242424242", "04", "22", "955", (result) ->
-        console.log(result);
-      )
+      /*TPDirect.card.createToken(
+        $scope.payinfo.number,
+        $scope.payinfo.exp_month,
+        $scope.payinfo.exp_year,
+        $scope.payinfo.cvc,
+        (result) -> $scope.$apply ->
+          console.log result
+          if !result or result.status =>
+            plNotify.send \error, i18n.get 'failed to pay, try later?'
+            eventBus.fire \loading.dimmer.off
+          else
+            _subscribe result
+      )*/
 
-      /*
-      Stripe.card.create-token $scope.payinfo, (state, token) -> $scope.$apply ->
-        if state != 200 =>
-          #TODO detail error handling
-          alert "failed to make payment, please check if the information you provided is correct."
-          eventBus.fire \loading.dimmer.off
-          plNotify.send \danger, "payment failed."
-          return
-        _subscribe token
-      */
     $("[data-toggle='tooltip']").tooltip!
+    #TPDirect.setPublishableKey 10289, "90Ymc8w2YK4ANT8UOhIdH70F7L959dY93KurOhtT", \sandbox

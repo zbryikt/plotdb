@@ -5,30 +5,30 @@
         a.navbar-brand(href="/")
           img(src="/assets/img/plotdb.png",style="height:100%")
       div
-        ul.nav.navbar-nav
+        ul.nav.navbar-nav(ng-cloak)
           li#nav-chart.dropdown
             a.dropdown-toggle(href="#",data-toggle="dropdown")
               i.fa.fa-bar-chart
-              span.name &nbsp;CHARTS
+              span.name &nbsp;{{'CHART'|i18n}}
               span.caret
             ul.dropdown-menu
-              li: a(href="/chart/explore/") Explore
-              li(ng-show="user.data",ng-cloak): a(href="/chart/me") My Charts
+              li: a(href="/chart/explore/") {{'Explore'|i18n}}
+              li(ng-show="user.data",ng-cloak): a(href="/chart/me") {{'My Charts'|i18n}}
               li.divider
-              li: a(href="/chart/") from scratch
+              li: a(href="/chart/") {{'from scratch'|i18n}}
               //-li: a(href="/chart/?demo") Demo Chart
 
           li#nav-dataset.dropdown
             a.dropdown-toggle(href="#",data-toggle="dropdown")
               i.fa.fa-table
-              span.name &nbsp;DATASET
+              span.name &nbsp;{{'DATASET'|i18n}}
               span.caret
             ul.dropdown-menu
               //-li: a(href="/dataset/explore/") Explore
-              li: a(href="/dataset/me/",ng-cloak,ng-show="user.data") My Dataset
+              li: a(href="/dataset/me/",ng-show="user.data") {{'My Datasets'|i18n}}
               li.divider
-              li: a(href="/dataset/") New Dataset
-          li#nav-theme.dropdown
+              li: a(href="/dataset/") {{'New Dataset'|i18n}}
+          //-li#nav-theme.dropdown
             a.dropdown-toggle(href="#",data-toggle="dropdown")
               i.fa.fa-paint-brush
               span.name &nbsp;THEME
@@ -39,14 +39,14 @@
               //-li: a(href="/palette/editor.html",ng-cloak,ng-show="user.data") Palette Editor
               li.divider
               li: a(href="/theme/") Make New Theme
-          li#nav-collection: a(href="/collection/") COLLECTIONS
+          li#nav-collection: a(href="/collection/") {{'COLLECTION'|i18n}}
           li#nav-palette
             a(href="/palette/")
               img(src="/assets/img/palette2.svg",style="vertical-align:text-top;width:14px;margin-top:2px;")
-              span.name &nbsp;PALETTE
+              span.name &nbsp;{{'PALETTE'|i18n}}
               //li: a(href="/palette/editor.html",ng-cloak,ng-show="user.data") Advanced Editor
           li#nav-showcase: a(href="/showcase/",ng-cloak)
-            span.name &nbsp;SHOWCASE
+            span.name &nbsp;{{'SHOWCASE'|i18n}}
 
         ul.nav.navbar-nav.pull-right
           //- temporarily hide 'request' button
@@ -60,7 +60,7 @@
           li(ng-cloak,ng-show="!user.data"): a#nav-login(href="#",ng-click="auth.show = !!!auth.show")
             i.fa.fa-sign-in
             | &nbsp; 
-            span LOGIN / SIGNUP
+            span {{'LOGIN / SIGNUP'|i18n}}
           li#nav-profile.dropdown(ng-cloak,ng-show="user.data")
             .btn(data-toggle="dropdown")
               //-span {{user.data.displayname}}
@@ -75,16 +75,16 @@
               //-li(ng-show="user.data",ng-cloak): a(href="/user/{{user.data.key}}") Profile
               li.divider
               li: a(href="#")
-                label.grayed Storage Usage
+                label.grayed {{'Storage Usage'|i18n}}
                 .progress(style="width:120px;margin:0")
                   .progress-bar.progress-bar-info(
                   ng-class="{'progress-bar-info': ((user.data.datasize || 0) / 100000 < 50), 'progress-bar-warning': ((user.data.datasize || 0) / 100000 > 50)}",
                   ng-attr-style="width:{{(user.data.datasize || 0)/ 100000}}%")
                     span(ng-cloak) {{user.data.datasize|size}}
               li.divider
-              li: a(href="/team/") Teams
-              li: a(href="/me/edit/") Settings
-              li: a(href="/me/billing/") Billing
+              li: a(href="/team/") {{'Teams'|i18n}}
+              li: a(href="/me/edit/") {{'Settings'|i18n}}
+              li: a(href="/me/billing/") {{'Billing'|i18n}}
               li.divider
-              li: a(href="#",ng-click="auth.logout()") Logout
+              li: a(href="#",ng-click="auth.logout()") {{'Logout'|i18n}}
 

@@ -1,5 +1,5 @@
 .pull-right(style="margin-top:18px")
-  label.grayed Your Storage Usage
+  label.grayed(ng-cloak) {{'Your Storage Usage'|i18n}}
   .progress(style="width:240px")
     .progress-bar.progress-bar-info(
     ng-class="{'progress-bar-info': (user.storage.used < 50), 'progress-bar-warning': (user.storage.used > 50)}",

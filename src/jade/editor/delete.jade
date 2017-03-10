@@ -5,8 +5,8 @@
       .panel-body
         div(style="display:flex")
           div(style="flex: 1 1 0")
-            .text-center: label Delete
-            p.text-center(ng-cloak) Permanently delete this {{type}}. Are you sure?
+            .text-center: label {{'Delete'|i18n}}
+            p.text-center(ng-cloak) {{'Are you sure to delete it permanently?'|i18n}}
             .text-center
-              .btn.btn-danger.loader(ng-click="delete()",ng-class="{'loading':delete.handle}") Yes, Delete it
+              .btn.btn-danger.loader(ng-click="delete()",ng-class="{'loading':delete.handle}") {{'Yes, Delete it'|i18n}}
 

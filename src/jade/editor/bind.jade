@@ -1,20 +1,20 @@
 include /mixin.jade
 div#binding-panel(ng-controller="datasetList",ng-cloak,ng-init="useSample=true")
   include /dataset/widget/float-edit.jade
-  h1 Data Binding #[small.grayed: small connect your data with this chart]
+  h1 {{'Data Binding'|i18n}} #[small.grayed: small {{'connect your data with this chart'|i18n}}]
   .sep.dark
   .databinder.row
     .col-sm-4
       .ds-list-panel.panel.panel-default
         .panel-heading
-          | choose dataset you want to use ...
+          | {{'choose dataset you want to use'|i18n}} ...
         .panel-body
           .input-group
             input.input-sm.form-control(ng-model="qLazy.keyword",placeholder="search by dataset name ...")
             span.input-group-btn
               .loader.alone.xs.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")
               .btn.btn-default.btn-sm: i.fa.fa-search
-          .btn.btn-default.btn-sm(ng-click="dataPanel.toggle()") #[i.fa.fa-plus-circle] New Dataset
+          .btn.btn-default.btn-sm(ng-click="dataPanel.toggle()") #[i.fa.fa-plus-circle] {{'New Dataset'|i18n}}
           .sep
           .ds-list
             .ds-list-item(ng-repeat="dataset in datasets|filter:{name:filter.search}:false",
@@ -22,36 +22,37 @@ div#binding-panel(ng-controller="datasetList",ng-cloak,ng-init="useSample=true")
               img.avatar(ng-attr-src="/s/avatar/{{dataset.owneravatar || 0}}.jpg")
               .info
                 .name {{dataset.name}}
-                .grayed {{dataset.rows}} Rows, {{dataset.fields.length}} Fields
-              small.grayed.sample(ng-show="dataset.isSample") sample data
-              small.grayed.sample(ng-show="dataset.owner==user.data.key") my data
+                .grayed {{dataset.rows}} Rows, {{dataset.fields.length}} {{'Fields'|i18n}}
+              small.grayed.sample(ng-show="dataset.isSample") {{'sample data'|i18n}}
+              small.grayed.sample(ng-show="dataset.owner==user.data.key") {{'my data'|i18n}}
             #list-end.text-center: span(ng-cloak,ng-show="paging.end")
             .loader.alone.sm.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")
-            .text-center.grayed(ng-show="paging.end") that's all. #[i.fa.fa-smile-o]
-            .text-center.grayed(ng-show="paging.end") no result. try other keyword?
+            .text-center.grayed(ng-show="paging.end") {{"that's all"|i18n}}. #[i.fa.fa-smile-o]
+            .text-center.grayed(ng-show="paging.end") {{'no result'|i18n}}. {{'try other keyword'|i18n}}?
 
     .col-sm-8
       .ds-fields-panel.panel.panel-default
         .panel-heading
-          | Field List
+          | {{'Field List'|i18n}}
         .panel-body
           .pull-right.ctrl
-            a(ng-class="{'disabled':cur._type.location=='sample'}",
-            ng-click="columnize(cur)") #[i.fa.fa-pencil-square-o] columnize
-            a(ng-class="{'disabled':cur._type.location=='sample'}",
-            ng-click="transpose(cur)") #[i.fa.fa-pencil-square-o] transpose
+            //-
+              a(ng-class="{'disabled':cur._type.location=='sample'}",
+              ng-click="columnize(cur)") #[i.fa.fa-pencil-square-o] columnize
+              a(ng-class="{'disabled':cur._type.location=='sample'}",
+              ng-click="transpose(cur)") #[i.fa.fa-pencil-square-o] transpose
             //-a(ng-class="{'disabled':cur._type.location=='sample'}",
                ng-click="") #[i.fa.fa-refresh] refresh
             a(ng-class="{'disabled':cur._type.location=='sample'}",
-            ng-click="dataPanel.edit(cur)") #[i.fa.fa-pencil-square-o] edit
+            ng-click="dataPanel.edit(cur)") #[i.fa.fa-pencil-square-o] {{'edit'|i18n}}
             a(ng-class="{'disabled':cur._type.location=='sample'}",
-            ng-attr-href="/dataset/{{cur.key}}/",target="_blank") #[i.fa.fa-external-link] open
+            ng-attr-href="/dataset/{{cur.key}}/",target="_blank") #[i.fa.fa-external-link] {{'open'|i18n}}
           label
             .ball(ng-class="{'active':cur}")
             span(ng-cloak,ng-show="cur") {{cur.name}}
-          span.grayed(ng-show="!cur") ( no dataset select ... )
+          span.grayed(ng-show="!cur") ( {{'no dataset select'|i18n}} ... )
           .info
-            small.grayed(ng-show="cur") {{cur.rows}} Rows, {{cur.fields.length}} Fields
+            small.grayed(ng-show="cur") {{cur.rows}} {{'Rows'|i18n}}, {{cur.fields.length}} {{'Fields'|i18n}}
             span &nbsp;
           .sep
           #field-agent.ds-field(ng-drag="true",ng-drag-data="fieldAgent.data",
@@ -71,12 +72,12 @@ div#binding-panel(ng-controller="datasetList",ng-cloak,ng-init="useSample=true")
 
             .ds-field.flexend(style="cursor:default")
 
-      .text-center.grayed #[i.fa.fa-arrow-down] Drag Field to Map Dimension #[i.fa.fa-arrow-down]
+      .text-center.grayed #[i.fa.fa-arrow-down] {{'Drag Field to Map Dimension'|i18n}} #[i.fa.fa-arrow-down]
       .chart-dims(ng-cloak)
         .chart-dim.panel.panel-default(ng-repeat="(name,dim) in chart.dimension",
         ng-drop="true",ng-drop-success="dimension.bind($event,dim,$data)")
           .panel-heading
-            span dimension
+            span {{'dimension'|i18n}}
             small.pull-right(ng-show="dim.multiple",data-toggle="tooltip",data-placement="top",title="You can drag multiple fields here!",style="margin-top: 4px",ng-mouseover="tooltip.show($event)") multiple #[i.fa.fa-question-circle]
           .panel-body
             b {{name}} #[i.fa.fa-asterisk(style="color:#f00;font-size:0.7em",ng-show="dim.require")]
@@ -102,6 +103,6 @@ div#binding-panel(ng-controller="datasetList",ng-cloak,ng-init="useSample=true")
         .chart-dim.flexend
         div
           i.fa.fa-asterisk(style="color:#f00;font-size: 0.8em")
-          span &nbsp;= required
+          span &nbsp;= {{'required'|i18n}}
         .sep.gap
-        p Don't know how to prepare your data? #[a(href="#",ng-click="dataPanel.showSample()") Check the Sample Data]
+        p {{"Don't know how to prepare your data"|i18n}}? #[a(href="#",ng-click="dataPanel.showSample()") {{'Check the Sample Data'|i18n}}]

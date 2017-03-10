@@ -59,7 +59,7 @@ block body
         .panel-footer
           .btn.btn-default(ng-click="paymentNote=false") 我了解了
 
-    #plans(style="max-width:800px;margin:auto")
+    #plans(style="max-width:1024px;margin:auto")
       h1.text-center {{'Pricing'|i18n}}
       p.text-center {{'pricing-desc'|i18n}}
       br
@@ -140,7 +140,7 @@ block body
       br
       .sep.gap
       br
-      .row
+      .row(style="max-width:800px;margin:auto")
         .col-sm-4
           br
           small {{'Your Choice'|i18n}}:
@@ -150,7 +150,9 @@ block body
               span(ng-show="settings.plan==1") Basic
               span(ng-show="settings.plan==2") Expert
               span &nbsp;{{'Plan'|i18n}}
-            h2.price #[small US$] #[big 49] #[small .95] #[small.grayed 每月]
+            h2.price(ng-show="settings.plan==0") 無需費用.
+            h2.price(ng-show="settings.plan==1") #[small US$] #[big 19] #[small .95] #[small.grayed 每月]
+            h2.price(ng-show="settings.plan==2") #[small US$] #[big 49] #[small .95] #[small.grayed 每月]
             //-big
               span ${{prices[settings.period][settings.plan]}} USD / 
               span(ng-show="settings.period=='1'") year
