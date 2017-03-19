@@ -1016,7 +1016,7 @@ angular.module \plotDB
           $scope.parse.chart.pending = false
           {config,dimension} = JSON.parse(data.payload)
           if dimension => for k,v of (@chart.dimension or {}) => if dimension[k]? => dimension[k].fields = v.fields
-          if config => for k,v of (@chart.config or {}) => if config[k]? => config[k].value = v.value
+          if config => for k,v of (@chart.config or {}) => if config[k]? and v => config[k].value = v.value
           for k,v of (config or {}) => if !(v.value?) => v.value = v.default
           @chart <<< {config, dimension}
           hash = {}

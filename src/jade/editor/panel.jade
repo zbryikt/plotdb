@@ -54,11 +54,11 @@ mixin publish
         include /widget/chartinfo.jade
       div(ng-show="settingPanel.tab=='library'")
         .well
-          h3(style="margin:0") Library
-          small.grayed pick libraries you want to use from this dropdown box.
+          h3(style="margin:0") {{'Library'|i18n}}
+          small.grayed {{'pick libraries you want to use from this dropdown box'|i18n}}.
         include /widget/library.jade
         .sep
-        label Inherit Content from Source Chart
+        label {{'Inherit Content from Source Chart'|i18n}}
         select.form-control(multiple,ngselect2,ng-data="settingPanel.chart.inherit")
           option(value="code") code
           option(value="stylesheet") stylesheet
@@ -69,8 +69,8 @@ mixin publish
 
       div(ng-show="settingPanel.tab=='license'")
         .well
-          h3(style="margin:0") License
-          small.grayed How this viswork charges you for different usages
+          h3(style="margin:0") {{'License'|i18n}}
+          small.grayed {{"How this viswork's license works for different usages"|i18n}}
 
         select.form-control(ng-model="chart.license.name")
           option(value="MIT License") MIT License
@@ -81,13 +81,13 @@ mixin publish
         .row.gap
           .col-sm-6
           .col-sm-3
-            span Free?
+            span {{'Free'|i18n}}?
           .col-sm-3
-            span Price (USD)
+            span {{'Price'|i18n}} (USD)
         each i in ["Personal Use", "Generate SVG", "Embedded with IFrame", "Run in Single Site", "Run in Multiple Sites"]
           .row.gap(style="line-height:30px")
             .col-sm-6
-              span= i
+              span {{'#{i}'|i18n}}
             .col-sm-3
               select.form-control.input-sm(ng-model="chart.license.options['" + i + "'].free",
               ng-options="o.v as o.n for o in [{n: 'Yes', v: true}, {n: 'No', v: false}]")

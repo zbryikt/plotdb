@@ -1,0 +1,140 @@
+extends /base.jade
+block vars
+  if !chart
+    - var rootid = "chartview"
+    - var title = 'Visualization Editor @ PlotDB'
+    - var description = "Create, share and request visualizations online."
+    - var thumbnail = "https://plotdb.com/assets/img/thumbnail.png"
+    - var thumbtype = "image/png"
+    - var rootpath = "/module"
+    - var url = "https://plotdb.com/"
+  else
+    - var rootid = "chartview"
+    - var title = (chart.name || 'New Chart') + ' / Visualize with PlotDB'
+    - var description = chart.description || 'share your visualization via PlotDB.'
+    - var thumbnail = "https://plotdb.com/s/chart/" + chart.key + ".png"
+    - var thumbtype = "image/png"
+    - var rootpath = "/module"
+    - var url = "https://plotdb.com/chart/" + chart.key
+  - use.stripe = false;
+block head
+  link(rel="stylesheet",type="text/css",href="/dist/0.1.0/plotdb.min.css")
+  script(type="text/javascript",src="/lib/plotd3/0.1.0/index.js")
+  script(type="text/javascript",src="/js/edit-new.js")
+  script(type="text/javascript",src="/js/pack/view.js")
+block body
+  .editor-root(ng-controller="plEditorNew",ng-cloak,style="background:url(/assets/img/transparent.png)"): .inner
+    .editor-funclist(ng-init="edfunc='data'")
+      .editor-func(ng-class="{'active':edfunc == 'data'}", ng-click="edfunc = 'data'")
+        i.fa.fa-table
+        span {{'Data'|i18n}}
+      .editor-func(ng-class="{'active':edfunc == 'style'}", ng-click="edfunc = 'style'")
+        i.fa.fa-sliders
+        span {{'Style'|i18n}}
+      .editor-func(ng-class="{'active':edfunc == 'download'}", ng-click="edfunc = 'download'")
+        i.fa.fa-cloud-download
+        span {{'Download'|i18n}}
+      .editor-func(ng-class="{'active':edfunc == 'share'}", ng-click="edfunc = 'share'")
+        i.fa.fa-share-square
+        span {{'Share'|i18n}}
+      .editor-func(ng-class="{'active':edfunc == 'settings'}", ng-click="edfunc = 'settings'")
+        i.fa.fa-cog
+        span {{'Settings'|i18n}}
+      .editor-func(ng-class="{'active':edfunc == 'save'}", ng-click="edfunc = 'save'")
+        i.fa.fa-save
+        span {{'Save'|i18n}}
+    .editor-func-detail(ng-show="edfunc=='style'"): .inner
+      .title {{'Style'|i18n}}
+      .body
+        h4 Colors
+        label Palette
+        input.form-control
+        br
+        label Text Fill
+        input.form-control
+        .sep.gap
+        h4 X Axis
+        label Show
+        .btn.btn-default.btn-block false
+      .foot.text-right
+        .btn.btn-default(ng-click="edfunc=''") {{'Close'|i18n}}
+
+    .editor-func-detail(ng-show="edfunc=='share'")
+      .inner
+        .title {{'Share'|i18n}}
+        div(style="padding:20px 20px 0")
+          .btn-group
+            .btn.btn-default {{'Publish'|i18n}}
+            .btn.btn-default {{'Darft'|i18n}}
+        hr
+        .body
+          label {{'Link'|i18n}}
+          .input-group
+            input.form-control
+            span.input-group-btn
+              .btn.btn-default {{'COPY'|i18n}}
+          br
+          label {{'Embed'|i18n}}
+          .well
+            .checkbox(style="margin-left:20px") #[input(type="checkbox")] #[span {{'preserve aspect ratio'|i18n}}]
+            .input-group.dual
+              input.form-control.input-sm
+              span.input-group-addon &times;
+              input.form-control.input-sm
+            br
+            .input-group
+              input.form-control
+              span.input-group-btn
+                .btn.btn-default {{'COPY'|i18n}}
+          br
+          label {{'Open Graph'|i18n}} #[small.grayed {{'summary in SNS posts'|i18n}}]
+          .sep
+          label {{'Title'|i18n}}
+          input.form-control
+          br
+          label {{'Footer'|i18n}}
+          input.form-control
+          br
+          label {{'Description'|i18n}}
+          textarea.form-control
+          br
+      .foot.text-right
+        .btn.btn-default(ng-click="edfunc=''") {{'Close'|i18n}}
+
+    .editor-func-detail(ng-show="edfunc=='download'"): .inner
+      .title {{'Download'|i18n}}
+      .body
+        label {{'Download As'|i18n}}:
+        ul.list-group
+          li.list-group-item.active SVG #[small.grayed.pull-right for Vector Editing]
+          li.list-group-item PNG #[small.pull-right.grayed for Raster Editing]
+          li.list-group-item PNG #[small.grayed ( Hi Res )]
+          li.list-group-item PlotDB #[small.pull-right.grayed for Developer]
+        label Size
+        .input-group.dual
+          input.form-control.input-sm(placeholder="width")
+          span.input-group-addon &times;
+          input.form-control.input-sm(placeholder="height")
+        .sep.gap
+        .text-right
+          .btn.btn-success Download
+          span &nbsp;
+          .btn.btn-default Cancel
+    //-.editor-name
+      .title Stacked Bar Chart
+      .desc a standard bar chart. best used in visualize unordered data when we need accurate comparison or find maximal / minimal value.
+    #editor-canvas.editor-canvas: .inner(style="width:100%;height:100%;overflow:hidden;padding-bottom:0")
+    .editor-ctrls
+      .btn.btn-default {{'Colorblind'|i18n}} #[b.caret]
+      span &nbsp;
+      .btn.btn-default {{'Canvas Size'|i18n}} #[b.caret]
+      span &nbsp;
+      .btn.btn-default: i.fa.fa-arrows-alt
+      span &nbsp;
+      .btn.btn-default: i.fa.fa-refresh
+    .editor-panel-tab
+      .icon.active: i.fa.fa-eye
+      .icon JS
+      .icon CSS
+      .icon HTML
+      .icon ASSET

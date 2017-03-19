@@ -8,18 +8,30 @@ block vars
   - var url = "https://plotdb.com/"
 block head
 block body
-  .spc1
-  .page-header.simple: .inner
-    .title Suggestion + Contact
-    .desc your help makes plotdb a better place
-  #root.narrow.with-header.simple
-    p Hey! Our goal is to build the world's best visualization service, which is not possible without your help. Before we have a better feedback channel, let's discuss with email at first!
-    p Please mail your suggestion to following address:
-    blockquote tkirby@plotdb.com
-    p thanks for your interest in PlotDB :)
-    br
-    p Kirby
-    p founder of PlotDB
-
+  div(ng-cloak)
+    div(ng-if="lang=='en'")
+      .spc1
+      .page-header.simple: .inner
+        .title Suggestion and Contact
+        .desc your help makes plotdb a better place
+      #root.narrow.with-header.simple
+        p Hey! Our goal is to build the world's best visualization service, which is not possible without your help. Before we have a better feedback channel, let's discuss with email at first!
+        p Please mail your suggestion to following address:
+        blockquote tkirby@plotdb.com
+        p thanks for your interest in PlotDB :)
+        br
+        p Kirby
+        p founder of PlotDB
+    div(ng-if="lang=='zh'")
+      .spc1
+      .page-header.simple: .inner
+        .title 建議與聯繫
+        .desc 您的意見讓我們做得更好
+      #root.narrow.with-header.simple
+        p 想要進一步了解企業方案嗎？有任何關於產品的意見？需要量身訂作一個視覺化？歡迎直接來信與我們聯系：
+        blockquote tkirby@plotdb.com
+        p 感謝您對 PlotDB 的支持 :)
+        p Kirby
+        p PlotDB 創辦人
 
   include /footer.jade

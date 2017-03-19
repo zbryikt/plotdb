@@ -145,7 +145,7 @@ include panel.jade
       textarea#dataset-edit-text.form-control(
       ng-cloak,ng-show="!grid.toggled",
       rows="6",ng-model="rawdata",
-      placeholder="paste or drag your data here...",
+      ng-attr-placeholder="{{'paste or drag your data here'|i18n}}...",
       ng-disabled="dataset.type.location=='sample'"
       )
 

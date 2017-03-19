@@ -3608,8 +3608,50 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       return (ret.db[it] && ret.db[it][$rootScope.lang]) || it;
     },
     db: {
+      'Data Visualization as a Service': {
+        zh: "您的資料視覺化服務平台"
+      },
+      'We provide every single charts you will need': {
+        zh: "無論任何您需要的圖表，我們都提供給您"
+      },
       'Need Pro': {
         zh: "需升級"
+      },
+      "You don't have permission to change this": {
+        zh: "只有擁有者才能修改權限設定"
+      },
+      'Upgrade to enable privacy control': {
+        zh: "想要私人圖表嗎？現在就升級方案吧"
+      },
+      "let's check out the plans": {
+        zh: "那麼、方案長什麼樣子呢？"
+      },
+      'Canvas Size': {
+        zh: "畫布尺寸"
+      },
+      'Data': {
+        zh: "資料"
+      },
+      'Styles': {
+        zh: "樣式"
+      },
+      'Download': {
+        zh: "下載"
+      },
+      'Share': {
+        zh: "分享"
+      },
+      'Settings': {
+        zh: "設定"
+      },
+      'COPY': {
+        zh: "複製"
+      },
+      'Save': {
+        zh: "儲存"
+      },
+      'summary in SNS posts': {
+        zh: "分享時顯示的摘要資訊"
       },
       'chart type': {
         zh: "圖表類型"
@@ -3750,6 +3792,28 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
         zh: "團隊功能與私人內容",
         en: "privacy, team and enterprise"
       },
+      'price-enterprise-desc': {
+        zh: "專業的客製化服務",
+        en: "customizable as you wish"
+      },
+      'We are in Open Beta': {
+        zh: "開放公測中"
+      },
+      'Contact with Us': {
+        zh: "與我們聯絡"
+      },
+      'I got it': {
+        zh: "我了解了"
+      },
+      'Pro feature for every account': {
+        zh: "全功能開放，免付費！"
+      },
+      "don't worry, we provide 7 days money-back guarantee": {
+        zh: "怕反悔？我們提供七日內無條件退費"
+      },
+      'know more about payment': {
+        zh: "更多關於付費的權益"
+      },
       'Your Choice': {
         zh: "您的選擇"
       },
@@ -3780,6 +3844,12 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'My Datasets': {
         zh: "我的資料集"
       },
+      'Create Dataset': {
+        zh: "建立資料集"
+      },
+      'paste or drag your data here': {
+        zh: "在此貼上你的資料"
+      },
       'New Dataset': {
         zh: "建立新資料集"
       },
@@ -3787,7 +3857,7 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
         zh: "圖表"
       },
       'My Charts': {
-        zh: "我的圖表"
+        zh: "我的圖表集"
       },
       'Explore': {
         zh: "探索"
@@ -3803,9 +3873,6 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       },
       'Teams': {
         zh: "團隊"
-      },
-      'Settings': {
-        zh: "設定"
       },
       'Billing': {
         zh: "付款資訊"
@@ -3831,6 +3898,39 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'cvc-desc': {
         zh: "卡片背面簽名區旁的三位數字",
         en: "3 digits number on back of card"
+      },
+      "You've used all your quota": {
+        zh: "你的容量已經用完了"
+      },
+      "want more": {
+        zh: "想要更多嗎"
+      },
+      'subscribe now': {
+        zh: "馬上來升級吧"
+      },
+      "I'm cool, maybe later": {
+        zh: "沒關係晚點再說"
+      },
+      'add to collection': {
+        zh: "加到作品集中"
+      },
+      'add to team': {
+        zh: "加到我的團隊"
+      },
+      "Only chart's owner can add it to a team": {
+        zh: "只有圖表的擁有者才能把圖表加到他的團隊中"
+      },
+      'Collections': {
+        zh: "作品集"
+      },
+      'create': {
+        zh: "建立"
+      },
+      'My Collections': {
+        zh: "我的作品集"
+      },
+      "Everyone's Collections": {
+        zh: "所有人的作品集"
       },
       'Basic Information': {
         zh: "基本資訊"
@@ -3931,17 +4031,8 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'Copy All': {
         zh: "全部複製"
       },
-      'Download': {
-        zh: "下載"
-      },
-      'Share': {
-        zh: "共享"
-      },
       'New': {
         zh: "新增"
-      },
-      'Save': {
-        zh: "存檔"
       },
       'Make a Copy': {
         zh: "建立副本"
@@ -4020,7 +4111,7 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'size': {
         zh: "大小"
       },
-      'Save-Fork': {
+      'Fork-Save': {
         zh: "另存副本",
         en: "Save & Fork"
       },
@@ -4094,6 +4185,9 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       },
       'Edit Code': {
         zh: "編輯源碼"
+      },
+      'Colorblind': {
+        zh: "色盲測試"
       },
       'colorblind': {
         zh: "色盲測試"
@@ -4195,6 +4289,39 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'Libraries': {
         zh: "函式庫"
       },
+      'Library': {
+        zh: "函式庫"
+      },
+      'pick libraries you want to use in the dropdown box': {
+        zh: "將你想要使用的函式庫加到這裡來吧！"
+      },
+      'Inherit Content from Source Chart': {
+        zh: "直接使用原始樣板的源瑪"
+      },
+      "How this viswork's license works for different usages": {
+        zh: "依據使用情境設定圖表樣板的授權方式"
+      },
+      'Free': {
+        zh: "免費"
+      },
+      'Price': {
+        zh: "定價"
+      },
+      'Personal Use': {
+        zh: "個人非商業使用"
+      },
+      'Generate SVG': {
+        zh: "用以生成 SVG"
+      },
+      'Embedded with IFrame': {
+        zh: "透過 IFrame 嵌入任何網站"
+      },
+      'Run in Single Site': {
+        zh: "以源碼形式於單一網站執行"
+      },
+      'Run in Multiple Sites': {
+        zh: "以源碼形式於任意網站執行"
+      },
       'License': {
         zh: "授權"
       },
@@ -4233,6 +4360,21 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       },
       'increase visibility by providing more information for your chart': {
         zh: "提供額外的資訊能讓你的圖表更好被利用"
+      },
+      'Base Chart Type': {
+        zh: "圖表類型"
+      },
+      'Visual Encoding': {
+        zh: "視覺元素"
+      },
+      'Chart Category': {
+        zh: "圖表用途"
+      },
+      'Tags': {
+        zh: "標籤"
+      },
+      'derived from': {
+        zh: "源自"
       },
       'Add new permission': {
         zh: "加入新的權限"
@@ -6336,7 +6478,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             if (config) {
               for (k in ref$ = this$.chart.config || {}) {
                 v = ref$[k];
-                if (config[k] != null) {
+                if (config[k] != null && v) {
                   config[k].value = v.value;
                 }
               }

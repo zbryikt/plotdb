@@ -24,7 +24,7 @@ mixin block(i,j)
       span= features[i][j - 1][1]
 mixin selectbtn(current,value)
   div
-    .btn.btn-link.btn-lg.disabled(ng-if=current) Current Plan&nbsp; #[i.fa.fa-dot-circle-o]
+    .btn.btn-link.btn-lg.disabled(ng-if=current) {{'Current Plan'|i18n}}&nbsp; #[i.fa.fa-dot-circle-o]
     .btn.btn-lg.btn-success.btn-block(
       ng-if="!(" + current +") && settings.plan == " + value) {{'Your Choice'|i18n}} &nbsp; #[i.fa.fa-check-circle]
     .btn.btn-lg.btn-default.btn-block(ng-if="!(" + current +") && settings.plan != " + value, ng-click="settings.choose(" + value + ")")  {{'Select'|i18n}} &nbsp; #[i.fa.fa-circle-thin]
@@ -33,8 +33,26 @@ block body
   #root(ng-controller="payment",ng-cloak)
     +cover-modal("paymentNote","paymentNote=false")
       .panel.panel-default
-        .panel-body
-          h3.text-center 關於付款的細節
+        .panel-body(ng-if="lang=='en'")
+          h3.text-center FAQ about Payment
+          .sep.gap
+          h4 Q: Can I get a refund if I don't like your service after subscribed?
+          p A: Yes. We provide 7 days money-back guarantee, and proportional refund according the day remains in your subscription.
+          br
+          h4 Q: If I upgrade my subscription, how do you charge me?
+          p A: We will give you a refund according to the day remains in your original subscription, and start a new subscription based on the new plan.
+          br
+          h4 Q: What will happen if I've used all of my page view quota?
+          p A: We will notify you by mail at first. Service will remains as usual for 3 days for giving you a buffer to upgrade your account. Page views will be reset after next billing period start.
+          br
+          h4 Q: What will happen if I've used all of my storage quota?
+          p A: You will not be able to upload and create new data or chart until you upgrade your account. Yet, you won't be charged. You won't be charged without your permission.
+          br
+          h4 Q: How does the source code license go after I stop subscription?
+          p A: License will be expired once you stop your subscription. You can still choose to buy dedicated software license with lifetime use and 1 year warranty.
+          br
+        .panel-body(ng-if="lang=='zh'")
+          h3.text-center 關於付款的常見問題
           .sep.gap
           h4 Q: 如果我付費了卻不滿意，我可以選擇退費嗎？
           p A: 可以。我們提供七日內無條件退費，或者三十日內部份依天數比例退費。
@@ -42,35 +60,36 @@ block body
           h4 Q: 若我使用到一半再次升級了我的方案，原有的方案會退費嗎？
           p A: 我們會依使用天數的比例退還原本方案的費用，新的方案則會自付費起重新計時。
           br
-          h4 Q: 我可以購買一個帳號後與很多個人共用嗎？
-          p A: 我們鼓勵使用者設立自己的帳號，但並不會禁止使用者共用帳號。不過，一個帳號的流量與儲存空間上限是固定的。
-          br
           h4 Q: 若我的流量超過了使用上限，會發生什麼事？
           p A: 我們會先發信提醒您流量已超過，但不會立刻停止服務，給您升級帳號的緩衝時間。若您在三天之內沒有進行對應的處置，我們才會暫停您的網路瀏覽，直到下個月計費週期之後再重新開始計算。
           br
           h4 Q: 若我的儲存空間超過了使用上限，會發生什麼事？
-          p A: 一但用量超過上限，您便無法繼續增加資料，直到您升級您的帳號。因此，您並不會因為用量超過而需要被直接扣款。
+          p A: 一但用量超過上限，您便無法繼續增加資料，直到您升級您的帳號。因此，您並不會因為用量超過而被直接扣款。
           br
           h4 Q: 源碼授權在我停止訂閱之後還會持續嗎？
           p A: 源碼授權在停止訂閱後即終止。您亦可以選擇長期授權方案。
           br
 
 
-        .panel-footer
-          .btn.btn-default(ng-click="paymentNote=false") 我了解了
+        .panel-footer.text-right
+          .btn.btn-default(ng-click="paymentNote=false") {{'I got it'|i18n}}
 
-    #plans(style="max-width:1024px;margin:auto")
+    #plans(style="max-width:1280px;margin:auto")
       h1.text-center {{'Pricing'|i18n}}
       p.text-center {{'pricing-desc'|i18n}}
       br
       .row
-        .col-sm-4(style="border-right:2px solid #ccc")
+        .col-sm-3(style="border-right:2px solid #ccc")
           .prc-plan-logo.logo1(ng-click="settings.choose(0)")
           .text-center(ng-click="settings.choose(0)")
             h3(ng-class="{'selected':settings.plan==0}",style="margin-bottom:2px") FREE
             h2(style="line-height:43px") 就是免費.
             p.desc {{'price-free-desc'|i18n}}
-            ul.text-left
+            ul.text-left(ng-if="lang=='en'")
+              li PNG Download
+              li 5MB Storage
+              li 1000 Page Views
+            ul.text-left(ng-if="lang=='zh'")
               li 免費 PNG 下載
               li 5MB 基本儲存空間
               li 每月 1000 次免費瀏覽
@@ -82,13 +101,20 @@ block body
               br
             +selectbtn("!user.data.payment.plan", 0)
 
-        .col-sm-4(style="border-right:2px solid #ccc")
+        .col-sm-3(style="border-right:2px solid #ccc")
           .prc-plan-logo.logo2(ng-click="settings.choose(1)")
           .text-center(ng-click="settings.choose(1)")
             h3(ng-class="{'selected':settings.plan==1}",style="margin-bottom:2px") BASIC
             h2.price #[small US$] #[big 19] #[small .95] #[small.grayed 每月]
             p.desc {{'price-basic-desc'|i18n}}
-            ul.text-left
+            ul.text-left(ng-if="lang=='en'")
+              li SVG Download
+              li 50MB Storage
+              li 100000 Page Views
+              li: .question(data-toggle="tooltip",title="Run charts with API on multiple commercial website",data-placement="top") PlotDB Basic License #[i.fa.fa-question-circle]
+              li Access to 100+ Templates
+              li Create Own Collection
+            ul.text-left(ng-if="lang=='zh'")
               li SVG 向量檔下載
               li 50MB 進階儲存空間
               li 每月 100000 次瀏覽上限
@@ -102,17 +128,24 @@ block body
               br
             +selectbtn("user.data.payment.plan == 1", 1)
 
-        .col-sm-4
+        .col-sm-3(style="border-right:1px solid #ccc")
           .prc-plan-logo.logo3(ng-click="settings.choose(2)")
           .text-center(ng-click="settings.choose(2)")
             h3(ng-class="{'selected':settings.plan==2}",style="margin-bottom:2px") EXPERT
             h2.price #[small US$] #[big 49] #[small .95] #[small.grayed 每月]
             p.desc {{'price-expert-desc'|i18n}}
-
-            ul.text-left
+            ul.text-left(ng-if="lang=='en'")
+              li Hi Res PNG Download
+              li 500MB Storage
+              li 1000000 Page Views
+              li: .question(data-toggle="tooltip",title="Run charts with API on multiple commercial website",data-placement="top") PlotDB Expert License #[i.fa.fa-question-circle]
+              li Team Management
+              li PlotDB Logo Removed
+              li Permission Control
+            ul.text-left(ng-if="lang=='zh'")
               li 高解析度 PNG 下載
               li 500MB 儲存空間
-              li 每月 10000000 次瀏覽上限
+              li 每月1000000次瀏覽上限
               li: .question(data-toggle="tooltip",title="當您以 API 方式執行圖表時，可運行在多個商業用圖的網站上",data-placement="top") PlotDB Expert 源碼授權 #[i.fa.fa-question-circle]
               li 團隊管理功能
               li 移除 PlotDB 商標
@@ -124,6 +157,30 @@ block body
               br
               br
             +selectbtn("user.data.payment.plan == 2", 2)
+        .col-sm-3
+          .prc-plan-logo.logo3
+          .text-center
+            h3(ng-class="{'selected':settings.plan==3}",style="margin-bottom:2px;width:126px") ENTERPRISE
+            h2.price #[small US$] #[big 499] #[small .95] #[small.grayed 每月]
+            p.desc {{'price-enterprise-desc'|i18n}}
+            ul.text-left(ng-if="lang=='en'")
+              li 10 Expert Account
+              li Flexible Storage and Page Views
+              li Professional Visualization Consulting
+              li Technical Consultant
+              li 20% off on additional Expert Account
+            ul.text-left(ng-if="lang=='zh'")
+              li 10 組 EXPERT 帳號
+              li 彈性的空間與流量限制
+              li 專業的視覺化諮詢
+              li 技術支援
+              li 八折計算的額外 EXPERT 帳號
+            //-+blocks(2)
+              h2(style="margin-bottom:0") 50$ #[small / month]
+              small {{'or'|i18n}} 500$ / {{'annually'|i18n}}
+              br
+              br
+            a.btn.btn-default.btn-lg.btn-block(href="/info/contact") {{'Contact with Us'|i18n}}
 
       //-
         br
@@ -157,16 +214,18 @@ block body
               span ${{prices[settings.period][settings.plan]}} USD / 
               span(ng-show="settings.period=='1'") year
               span(ng-show="settings.period=='0'") month
+            small.grayed {{"don't worry, we provide 7 days money-back guarantee"|i18n}}
             br
-            small.grayed 怕反悔？我們提供七日內無條件退費！
-            br
-            small.grayed: a.clickable(ng-click="paymentNote=true") 更多關於付費的權益
+            small.grayed: a.clickable(ng-click="paymentNote=true") {{'know more about payment'|i18n}}
             br
             small.grayed(ng-if="user.data.payment.plan==1 && settings.plan==2") * we will only ${{prices[settings.period][2] - prices[settings.period][1]}} will be charged for an upgrade in the first #[span(ng-show="settings.period==0") month]#[span(ng-show="settings.period==1") year]
             br
 
         .col-sm-8
-          #prc-cc.panel.panel-default(style="max-width:480px;margin:auto;background:#f9f9f9")
+          #prc-cc.panel.panel-default(style="max-width:480px;margin:auto;background:#f9f9f9;position:relative")
+            div(style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.9);z-index:9;padding:60px 0")
+              h2.text-center {{'We are in Open Beta'|i18n}}
+              p.text-center {{'Pro feature for every account'|i18n}}!
             .panel-body.relpos
               #prc-cc-free(ng-show="settings.plan < " + current): .inner
                 .btn.btn-default.btn-lg.btn-block(ng-click="subscribe()") Downgrade to Free Plan
@@ -176,14 +235,13 @@ block body
                   i.fa.fa-cc-mastercard(ng-class="{'text-success':cardtype=='Mastercard'}")
                   i.fa.fa-cc-amex(ng-class="{'text-success':cardtype=='American Express'}")
                   i.fa.fa-cc-jcb(ng-class="{'text-success':cardtype=='JCB'}")
-                  //-i.fa.fa-cc-stripe
                 label {{'Credit Card Number'|i18n}}
-                .form-group(ng-class="{'has-feedback has-error':error.number}",style="margin-bottom:13px;position:relative")
+                .form-group(ng-class="{'has-feedback has-error':error.number}",
+                style="margin-bottom:13px;position:relative")
                   .hover-tip.danger.top 卡號有問題喔！範例卡號： #[br] 1010101010101010
-                  input.form-control(type="input",placeholder="Card Number, xxxx-xxxx-xxxx-xxxx",ng-model="payinfo.number",
+                  input.form-control(type="input",placeholder="Card Number, xxxx-xxxx-xxxx-xxxx",
+                  ng-model="payinfo.number",
                   ng-keydown="check('number')")
-                  //-.form-control-feedback.with-text(ng-show="error.number",style="margin-top:3px")
-                    small incorrect number. correct example: 1000200030004000
                 .row(style="margin-bottom:13px")
                   .col-sm-7
                     label {{'Expiration Date'|i18n}}
@@ -193,15 +251,11 @@ block body
                       style="display:inline;width:50%;border-right:0;border-radius:3px 0 0 3px",
                       ng-keydown="check('exp_month')")
                       .hover-tip.danger.bottom 兩位數月份#[br]如 08
-                      //-.form-control-feedback.with-text(ng-show="error.exp_month",style="margin-top:15px")
-                        small 01 ~ 12, like: 08
                     .form-group(ng-class="{'has-feedback has-error':error.exp_year}",style="display:inline;margin-bottom:0;position:relative")
                       input.form-control(type="input",placeholder="Year",ng-model="payinfo.exp_year",
                       style="display:inline;width:50%;border-radius:0 3px 3px 0",
                       ng-keydown="check('exp_year')")
                       .hover-tip.danger.bottom 西元年份#[br]如 2018
-                      //-.form-control-feedback.with-text(ng-show="error.exp_year",style="margin-top:15px")
-                        small future year, like: 2018
                   .col-sm-5
                     label
                       span {{'CVC Code'|i18n}}
@@ -215,8 +269,6 @@ block body
                       input.form-control(type="input",placeholder="CVC",style="display:inline",
                       ng-model="payinfo.cvc",ng-keydown="check('cvc')")
                       .hover-tip.danger.bottom 三位數字，如：#[br] 476
-                      //.form-control-feedback.with-text(ng-show="error.cvc")
-                        small 3 digit number, like: 476
                 //-
                   small.grayed Have a coupon code? (optional)
                   .input-group
@@ -244,3 +296,5 @@ block body
   .btn.btn-default(ng-click="pricing.Panel = true")
   +cover-modal("pricing.Panel","pricing.Panel = false")
     +pricing-panel("pricing.Panel=false")
+
+  include /footer.jade

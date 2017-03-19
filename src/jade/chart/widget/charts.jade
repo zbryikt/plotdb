@@ -6,14 +6,14 @@ include /widget/teamChooser.jade
   //-.chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1 {{chart.width}}px")
   .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1")
     //-.chart-ribon(ng-class="{'private': !chart.searchable, 'public': chart.searchable}")
-    .label.label-success.publish(ng-show="chart.published=='publish' && showPub") published
+    .label.label-success.publish(ng-show="chart.published=='publish' && showPub") {{'Published'|i18n}}
     .dropdown.pull-right(style="margin:5px",ng-show="user.data")
       .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown"): i.fa.fa-chevron-down
       ul.dropdown-menu
-        li: a(ng-click="addToCollection(chart)") add to collection...
+        li: a(ng-click="addToCollection(chart)") {{'add to collection'|i18n}}...
         li(ng-class="{'disabled':chart.owner!=user.data.key}")
-          a(ng-click="addToTeam(chart)",ng-disabled="chart.owner!=user.data.key") add to team...
-          .hover-tip(ng-cloak,ng-show="chart.owner!=user.data.key") Only chart's owner can add it to a team
+          a(ng-click="addToTeam(chart)",ng-disabled="chart.owner!=user.data.key") {{'add to team'|i18n}}...
+          .hover-tip(ng-cloak,ng-show="chart.owner!=user.data.key") {{"Only chart's owner can add it to a team"|i18n}}
     a.chart-img(ng-attr-href="{{link(chart)}}",style="display:block")
       .ib(ng-attr-style="background-image:url({{'/s/chart/'+chart.key+'.png'}}?{{chart.modifiedtime|timestamp}})")
     .chart-desc
@@ -28,4 +28,4 @@ include /widget/teamChooser.jade
       a.author(ng-attr-href="/user/{{chart.owner}}") #[i.fa.fa-user] {{chart.ownername}}
       .favorite(ng-click="like(chart)", ng-class="{'active':user.data && chart.liked}") #[i.fa.fa-heart] {{chart.likes || 0}}
   .flexend
-  #list-end.text-center: span(ng-cloak,ng-show="paging.end") this is the end :)
+  #list-end.text-center: span(ng-cloak,ng-show="paging.end") {{"that's all"|i18n}} :)

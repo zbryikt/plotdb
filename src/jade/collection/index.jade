@@ -4,7 +4,7 @@ block vars
   - var url = "https://plotdb.com/chart/explore/"
 block head
 block body
-  div(ng-controller="folderList")
+  div(ng-controller="folderList",ng-cloak)
     .spc1
     .page-header(style="height:188px;background:url(/assets/img/collection-icons.png) 85% center no-repeat #fff"): .inner
       .media
@@ -13,23 +13,22 @@ block body
         .media-body
           //-img.pull-right(src="/assets/img/collection-icons.png")
           .title
-            span Collections &nbsp;
+            span {{'Collections'|i18n}} &nbsp;
             .btn.btn-success(ng-click="create()",style="vertical-align:text-top") #[i.fa.fa-plus] create
           .desc(style="max-width:500px")
-            p Bring all your favorite visualizations in one place! And you can have multiple collections too. make collections by project, theme, type or even by your customer. Developer? also try bundling all visworks in a collection into a #[i JavaScript library]!
-
-
+            p(ng-if="lang=='en'") Bring all your favorite visualizations in one place! And you can have multiple collections too. make collections by project, theme, type or even by your customer. Developer? also try bundling all visworks in a collection into a #[i JavaScript library]!
+            p(ng-if="lang=='zh'") 喜歡的作品，就放在一起吧！作品集讓您依照需求分類常用的作品，也提供打包下載的服務，讓你自己訂做自己的圖表函式庫！
 
     #root
       include panel.jade
       include naming.jade
 
-      div(style="margin:auto;width:1024px")
+      div(style="margin:auto;width:1024px",ng-cloak)
         .text-center
           .btn-group
             .btn.btn-default(ng-click="q.owner=user.data.key",
-            ng-class="{'active':q.owner==user.data.key}") My Collections
-            .btn.btn-default(ng-click="q.owner=null", ng-class="{'active':!q.owner}") Everyone's Collections
+            ng-class="{'active':q.owner==user.data.key}") {{"My Collections"|i18n}}
+            .btn.btn-default(ng-click="q.owner=null", ng-class="{'active':!q.owner}") {{"Everyone's Collections"|i18n}}
           span &nbsp; &nbsp;
           //-.btn.btn-default: i.fa.fa-heart
           //-.pull-right
@@ -57,7 +56,7 @@ block body
                 span(style="vertical-align:middle;line-height:16px") {{item.ownername}}
 
           .flexend
-        #list-end.text-center: span(ng-cloak,ng-show="paging.end") this is the end :)
+          #list-end.text-center: span(ng-cloak,ng-show="paging.end") {{"that's all"|i18n}} :)
         .loader.alone.lg.loading.fixed.scrolling(ng-cloak,ng-show="paging.loading && !paging.end",style="bottom: 60px")
         //-.folderlist(style="display:flex;flex-wrap:wrap")
           .folder(ng-cloak,ng-repeat="item in folders",style="display:block;width:212px;min-height:180px;border:1px solid #ccc;box-shadow:0 2px 3px rgba(0,0,0,0.3);padding:5px;background:#fff;flex:1 1 212px;margin:10px")

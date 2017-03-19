@@ -11,7 +11,7 @@ big.xl {
   position: fixed;
   bottom: 10px;
   left: 10px;
-  z-index: 41;
+  z-index: 44;
 }
 .notify {
   border-radius: 2px;
@@ -35,7 +35,7 @@ big.xl {
   float: right;
   margin: -2px -2px 0 0;
   cursor: pointer;
-  z-index: 16;
+  z-index: 19;
 }
 .closebtn:after {
   content: "\0000d7";
@@ -1215,7 +1215,7 @@ width: 100%;
   top: 0;
   left: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 40;
+  z-index: 43;
 }
 #alertbox .ib {
   position: relative;
@@ -1255,12 +1255,12 @@ width: 100%;
 .loader.floating {
   position: absolute;
   left: 50%;
-  z-index: 42;
+  z-index: 45;
 }
 .loader.fixed.scrolling {
   position: fixed;
   left: 50%;
-  z-index: 42;
+  z-index: 45;
   bottom: 20px;
 }
 .loader.floating.lg,
@@ -1404,7 +1404,7 @@ a.dropdown-toggle {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 38;
+  z-index: 41;
   background: rgba(255,255,255,0.9);
 }
 .panel-lock > div {
@@ -1434,10 +1434,10 @@ a.dropdown-toggle {
   text-align: center;
 }
 .modal-backdrop {
-  z-index: 36 !important;
+  z-index: 39 !important;
 }
 .high-modal {
-  z-index: 37 !important;
+  z-index: 40 !important;
 }
 .form-control-feedback.with-text {
   width: auto;
@@ -1667,7 +1667,7 @@ ul.dropdown-menu li a.toggle-filepick input {
   left: 0;
   width: 80px;
   height: 80px;
-  z-index: 37;
+  z-index: 40;
   background: url("/assets/img/land/beta-ribbon.png") bottom right no-repeat;
 }
 @media (max-width: 1200px) {
@@ -1770,7 +1770,7 @@ ul.dropdown-menu li a.toggle-filepick input {
   transition: opacity 1s linear;
 }
 ul.dropdown-menu {
-  z-index: 32;
+  z-index: 35;
 }
 ul.dropdown-menu li {
   position: relative;
@@ -1782,4 +1782,18 @@ ul.dropdown-menu li .hover-tip {
 }
 ul.dropdown-menu li:hover .hover-tip {
   display: block;
+}
+.input-group.dual input.form-control {
+  border-radius: 3px;
+}
+.input-group.dual span.input-group-addon {
+  background: none;
+  border: none;
+}
+.list-group small.grayed {
+  line-height: 1.9em;
+}
+.list-group-item.active small.grayed {
+  color: #fff;
+  opacity: 0.7;
 }

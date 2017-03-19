@@ -1846,7 +1846,7 @@ x$.controller('plEditor', ['$scope', '$http', '$timeout', '$interval', '$sce', '
             if (config) {
               for (k in ref$ = this$.chart.config || {}) {
                 v = ref$[k];
-                if (config[k] != null) {
+                if (config[k] != null && v) {
                   config[k].value = v.value;
                 }
               }

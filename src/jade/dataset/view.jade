@@ -1,6 +1,6 @@
 include /widget/quota.jade
 +quota-panel
-#dataset-edit-page(ng-controller="dataEditCtrl")
+#dataset-edit-page(ng-controller="dataEditCtrl",ng-cloak)
   .spc1
   .page-header: .inner
     include widget/usage.jade
@@ -8,7 +8,7 @@ include /widget/quota.jade
       if dataset
         span #[small(style="font-size:16px;color:#777") dataset] #[span#dataset-name #{dataset.name}]
       else
-        span Create Dataset
+        span {{'Create Dataset'|i18n}}
     if dataset
       .entries
         .entry
@@ -23,7 +23,7 @@ include /widget/quota.jade
         //-.entry.text-danger.clickable(ng-click="delete(dataset)")
           i.fa.fa-close
           span Delete
-    else
+    //-else
       p create dataset to use them in your visualization.
   #root.narrow.with-header
     br

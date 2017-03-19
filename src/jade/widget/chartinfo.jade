@@ -20,10 +20,10 @@
   br
 
 .pull-right(ng-cloak,ng-show="target().parent")
-  span derived from 
+  span {{'derived from'|i18n}} 
   //TODO fetch parent name
   a(ng-attr-href="/{{type}}/{{target().parent}}",target="_blank") {{target().parent}}
-label Base Chart Type
+label {{'Base Chart Type'|i18n}}
 div: select#chart-setting-type.form-control(multiple="multiple",
 ngselect2,ng-data="settingPanel.chart.basetype")
   option(value="1") Bar Chart
@@ -46,7 +46,7 @@ ngselect2,ng-data="settingPanel.chart.basetype")
   option(value="18") Scatter Plot
   option(value="99") Other
 br
-label Visual Encoding
+label {{'Visual Encoding'|i18n}}
 div: select#chart-setting-encoding.form-control(multiple="multiple",
 ngselect2,ng-data="settingPanel.chart.visualencoding")
   option(value="1") Position
@@ -61,7 +61,7 @@ ngselect2,ng-data="settingPanel.chart.visualencoding")
   option(value="10") Saturation
   option(value="99") Other
 br
-label Chart Category
+label {{'Chart Category'|i18n}}
 div: select#chart-setting-category.form-control(multiple="multiple",
 ngselect2,ng-data="settingPanel.chart.category")
   option(value="1") Infographics
@@ -71,7 +71,7 @@ ngselect2,ng-data="settingPanel.chart.category")
   option(value="6") Business
   option(value="99") Other
 br
-label Tags
+label {{'Tags'|i18n}}
 div: select#editor-setting-tags.form-control(multiple="multiple",
 ngselect2,ng-data="settingPanel.chart.tags",istag="true",
 placeholder="comma separated values, like 'population,economics'")

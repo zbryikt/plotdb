@@ -1932,9 +1932,9 @@ function import$(obj, src){
 (function(){
   var config, x$, e;
   config = {
-    domain: 'localhost',
-    domainIO: 'localhost.io',
-    urlschema: "http://",
+    domain: 'plotdb.com',
+    domainIO: 'plotdb.io',
+    urlschema: "https://",
     name: 'plotdb',
     debug: true,
     facebook: {

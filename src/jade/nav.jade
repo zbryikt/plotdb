@@ -4,8 +4,8 @@
       .navbar-header
         a.navbar-brand(href="/")
           img(src="/assets/img/plotdb.png",style="height:100%")
-      div
-        ul.nav.navbar-nav(ng-cloak)
+      div(ng-cloak)
+        ul.nav.navbar-nav
           li#nav-chart.dropdown
             a.dropdown-toggle(href="#",data-toggle="dropdown")
               i.fa.fa-bar-chart
@@ -41,7 +41,7 @@
               li: a(href="/theme/") Make New Theme
           li#nav-collection: a(href="/collection/") {{'COLLECTION'|i18n}}
           li#nav-palette
-            a(href="/palette/")
+            a(href="/palette/editor.html")
               img(src="/assets/img/palette2.svg",style="vertical-align:text-top;width:14px;margin-top:2px;")
               span.name &nbsp;{{'PALETTE'|i18n}}
               //li: a(href="/palette/editor.html",ng-cloak,ng-show="user.data") Advanced Editor
@@ -56,7 +56,7 @@
             span: small Request a Chart
           //-li#nav-theme: a(href="/doc/"): small Dev Guide
           //-li#nav-localdata: a(href="/",ng-cloak) {{dataService.local.size|size}}, {{dataService.local.rows}} Rows
-          //-li#nav-pricing: a(href="/pricing/") Pricing
+          li#nav-pricing: a(href="/pricing/") {{'Pricing'|i18n}}
           li(ng-cloak,ng-show="!user.data"): a#nav-login(href="#",ng-click="auth.show = !!!auth.show")
             i.fa.fa-sign-in
             | &nbsp; 
