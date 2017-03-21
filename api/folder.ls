@@ -1,4 +1,4 @@
-require! <[fs bluebird]>
+require! <[fs bluebird path node-zip]>
 require! <[../engine/aux ../engine/share/model/ ./perm ./control]>
 (engine,io) <- (->module.exports = it)  _
 
@@ -40,6 +40,8 @@ get-folder = (req, id) ->
       if !perm.test(req, permission, folder.owner, \admin) => delete folder.permission
       {folder, permission: permission}
 
+load-file = (src,des) -> new bluebird (res, rej) -> fs.read-file src, (e,b) -> res [src,des,b.toString!]
+
 engine.app.get \/collection/:id/download, aux.numid true, (req, res) ->
   folder = null
   get-folder req, req.params.id
@@ -58,11 +60,42 @@ engine.app.get \/collection/:id/download, aux.numid true, (req, res) ->
         str = str.substring(0, str.length - 1)
         str += ",code: {content: " + (if code.0=='{' => code else "{init: function() { #code }}")  + "}}";
         ret += "plotdb.chart.add('#{chart.name}',#{str});\n"
+      chartslibs = charts.map(->
+        (it.library or []).map(->
+          ret = it.split \/
+          libname = path.basename ret.0
+          version = path.basename ret.1
+          [ 
+            "static/lib/#{libname}/#{version}/index.#{if ret.2 => 'min.' else ''}js"
+            "#{libname}-#{version}.js"
+          ]
+        )
+      )
+      hash = {}
+      name = escape(folder.name.replace(/ /g, '-'))
+      for chartlibs in chartslibs => for lib in chartlibs => hash[lib.0] = lib.1
+      zip = node-zip!
+      zip.file "#{name}.js", ret
+      contents = []
+      promises = for k,v of hash =>
+        load-file(k,v).then -> contents.push it
+      promises.push(load-file \static/dist/latest/plotdb.css, \plotdb.css .then -> contents.push it)
+      promises.push(load-file \static/dist/latest/plotdb.js, \plotdb.js .then -> contents.push it)
+      <- bluebird.all promises .then
+      for content in contents => 
+        if /^plotdb.(css|js)$/.exec(content.1) =>  zip.file "lib/#{content.1}", content.2
+        else zip.file content.1, content.2
+      zip.file \dependency.bundle.js, contents.filter(-> !/^plotdb.(css|js)$/.exec(it.1)).map(->it.2).join(\\n)
+      output = zip.generate base64: false, compression: \DEFLATE
+
+      res.header( "Content-Type", "application/octet-stream" )
+      res.header( "Content-Length", output.length )
       res.header(
         "Content-Disposition",
-        """attachment; filename='#{escape(folder.name.replace(/ /g, '-'))}.js';modification-date="#{new Date()}" """
+        """attachment; filename='#{name}.zip';modification-date="#{new Date()}" """
       )
-      res.send ret
+      res.send new Buffer(output, 'binary')
+
     .catch aux.error-handler res, true
     
 engine.app.get \/collection/:id, aux.numid true, (req, res) ->

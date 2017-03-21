@@ -136,8 +136,9 @@ angular.module \plotDB
         'All Collections': zh: "所有作品集"
         'a Quick Example of Usage': zh: "快速使用教學"
         'Want to know more about how to use it': zh: "想知道更多嗎"
+        'to list all names of available charts': zh: "你也可以透過下列函式列出所有可用的圖表名稱"
         'Check the Developer Guide': zh: "來看看開發者手冊吧"
-        'no thanks': zh: "不用了"
+        'no thanks': zh: "不用了謝謝"
         'How to Add Viswork to Collection': zh: "要怎麼把東西加到作品集中呢"
         'toggling the dropdown menu in the viswork you want to add': zh: "看到中意的樣板就打開他的下拉式選單吧"
         'OK I GOT IT': zh: "好我知道了"
@@ -212,6 +213,7 @@ angular.module \plotDB
         'try these predefined tags': zh: "何不試試這些關鍵字"
 
         # Chart Editor
+        'Style': zh: "樣式"
         'Fork-Save': zh: "另存副本", en: "Save & Fork"
         'Searchable?': zh: "要讓別人搜尋得到嗎？"
         'shown in search result': zh: "在搜尋結果中顯示"

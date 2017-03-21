@@ -378,11 +378,14 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'Want to know more about how to use it': {
         zh: "想知道更多嗎"
       },
+      'to list all names of available charts': {
+        zh: "你也可以透過下列函式列出所有可用的圖表名稱"
+      },
       'Check the Developer Guide': {
         zh: "來看看開發者手冊吧"
       },
       'no thanks': {
-        zh: "不用了"
+        zh: "不用了謝謝"
       },
       'How to Add Viswork to Collection': {
         zh: "要怎麼把東西加到作品集中呢"
@@ -580,6 +583,9 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       },
       'try these predefined tags': {
         zh: "何不試試這些關鍵字"
+      },
+      'Style': {
+        zh: "樣式"
       },
       'Fork-Save': {
         zh: "另存副本",

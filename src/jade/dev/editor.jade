@@ -43,6 +43,18 @@ block body
       .editor-func(ng-class="{'active':edfunc == 'save'}", ng-click="edfunc = 'save'")
         i.fa.fa-save
         span {{'Save'|i18n}}
+    .editor-func-detail(ng-show="edfunc=='data'"): .inner
+      .title {{'Data'|i18n}}
+      .body
+        .sheet
+          .sheet-head
+          .sheet-body-outer
+            .sheet-body
+              .sheet-cells
+                each i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21]
+                  div
+                    each j in [1,2,3,4,5]
+                      div(style="width:20%")
     .editor-func-detail(ng-show="edfunc=='style'"): .inner
       .title {{'Style'|i18n}}
       .body
