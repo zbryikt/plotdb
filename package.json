@@ -44,7 +44,7 @@
     "passport-facebook": ">=1.0.3",
     "passport-google-oauth2": "^0.1.6",
     "passport-local": ">=1.0.0",
-    "pg": "=4.5.1",
+    "pg": "=4.5.5",
     "read-chunk": "=1.0.1",
     "require-reload": "=0.2.2",
     "sanitize-html": "=1.11.4",
