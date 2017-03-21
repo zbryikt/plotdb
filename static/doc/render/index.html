@@ -11,7 +11,7 @@ span: small Request a Chart--><li id="nav-pricing"><a href="/pricing/">{{'Pricin
 
 <p><strong>Visworks</strong> including charts, visualizations or interactive contents on PlotDB are all designed to be executed independently. You can download their corresponding PlotDB.json and render it in any website with PlotDB API. PlotDB API also enpowers you to update their configuration, data, and even reuse them in multiple container simultaneously.</p>
 
-<p>Additionally, visworks can be bundled into one single javascript library using Collection. to see how this works, go directly to the <a href="/doc/render/#collection">Collection section</a> for more information.</p>
+<p>Additionally, visworks can be bundled into one single javascript library using Collection. to see how this works, go directly to the <a href="/doc/render/#viswork-library">Viswork Library section</a> for more information.</p>
 
 <p><em>( In this document, we will both use the term <strong>viswork</strong> and <strong>chart</strong>, but they all refer to the same concept. )</em></p>
 
@@ -296,7 +296,17 @@ plotdb.load(2008, function(chart) {
 
 <p>In most case, you may want to load viswork with JSONP style - to load all your visworks within a single <code>&lt;script&gt;</code> tag instead of through lots of ajax call. the Plotdb Collection mechanism can help you to bundle all visworks together, yet you can still do it yourself.</p>
 
-<p>To make a bundle of viswork, call <code>plotdb.chart.add</code> method with a name and the viswork JSON object:</p>
+<p>To quickly make a bundle of viswork:</p>
+
+<ol><li>go to collection page through menu bar</li><li>press '+create' to establish a new collection</li><li>add some viswork into this collection</li><li>press 'download as library' button on the right-top corner:</li></ol>
+
+<p><img src="/assets/img/md/download-as-library.png" alt="download as library"/></p>
+
+<p><br></p>
+
+<h4>Manual Approach</h4>
+
+<p>To manually make a bundle of viswork, call <code>plotdb.chart.add</code> method with a name and the viswork JSON object:</p>
 
 <pre><code>plotdb.chart.add(
   &quot;custom-viswork-name&quot;,    // unique name used to get this viswork
@@ -314,13 +324,16 @@ plotdb.chart.add(&quot;my-scatter-chart&quot;, { ... });</code></pre>
 
 <pre><code>var chart = plotdb.chart.get(&quot;name-of-desired-viswork&quot;);</code></pre>
 
-<p>the returned object is the same with the one returned by <code>plotdb.load</code> ajax call. Multiple calls to <code>plotdb.chart.get</code> will get multiple distinct viswork object, and can be used in different containers:
-<a id="collection"></a></p>
+<p>the returned object is the same with the one returned by <code>plotdb.load</code> ajax call. Multiple calls to <code>plotdb.chart.get</code> will get multiple distinct viswork object, and can be used in different containers:</p>
 
 <pre><code>var chart1 = plotdb.chart.get(&quot;name-of-desired-viswork&quot;);
 var chart2 = plotdb.chart.get(&quot;name-of-desired-viswork&quot;);
 chart1.attach(&quot;#some-container&quot;);
 chart2.attach(&quot;#another-container&quot;);</code></pre>
+
+<p>You can also retrieve all names by <code>plotdb.chart.list</code>. It will be useful when you are not sure what name to use to get those charts:</p>
+
+<pre><code>var list = plotdb.chart.list();</code></pre>
 
 <p>Again, PlotDB Collection can help you bundle your own viswork library, so you dont have to bother downloading all visworks one by one and repack them manually when there are updates to one of them. Try <a href="/collection">create a collection</a> and add your selected viswork into it.</p>
 

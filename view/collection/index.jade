@@ -33,6 +33,11 @@ block body
             &lt;/script&gt;
           .text-center
             br
+            span {{'to list all names of available charts'|i18n}}:
+          .pre: big: code.
+            plotdb.list();
+          .text-center
+            br
             h4 {{'Want to know more about how to use it'|i18n}}?
             br
             a.btn.btn-success(href="/doc/render/") {{'Check the Developer Guide'|i18n}}
