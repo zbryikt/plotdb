@@ -68,6 +68,8 @@ angular.module \plotDB
         'send feedback': zh: "提供回饋"
         'Close': zh: "關閉"
         'Pricing': zh: '方案與定價'
+        'Just Free': zh: "就是免費"
+        'monthly': zh: "每月"
         'pricing-desc': zh: "提升您的視覺力", en: "empower you with visualizations"
         'price-free-desc': zh: "所有用戶都能享有", en: "for all users to evaluation PlotDB"
         'price-basic-desc': zh: "適合個人快速製圖", en: "Best for individual expertise"

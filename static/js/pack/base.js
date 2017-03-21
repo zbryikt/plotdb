@@ -3779,6 +3779,12 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'Pricing': {
         zh: '方案與定價'
       },
+      'Just Free': {
+        zh: "就是免費"
+      },
+      'monthly': {
+        zh: "每月"
+      },
       'pricing-desc': {
         zh: "提升您的視覺力",
         en: "empower you with visualizations"

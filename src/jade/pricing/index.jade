@@ -83,7 +83,7 @@ block body
           .prc-plan-logo.logo1(ng-click="settings.choose(0)")
           .text-center(ng-click="settings.choose(0)")
             h3(ng-class="{'selected':settings.plan==0}",style="margin-bottom:2px") FREE
-            h2(style="line-height:43px") 就是免費.
+            h2(style="line-height:43px") {{'Just Free'|i18n}}.
             p.desc {{'price-free-desc'|i18n}}
             ul.text-left(ng-if="lang=='en'")
               li PNG Download
@@ -105,7 +105,7 @@ block body
           .prc-plan-logo.logo2(ng-click="settings.choose(1)")
           .text-center(ng-click="settings.choose(1)")
             h3(ng-class="{'selected':settings.plan==1}",style="margin-bottom:2px") BASIC
-            h2.price #[small US$] #[big 19] #[small .95] #[small.grayed 每月]
+            h2.price #[small US$] #[big 19] #[small .95] #[small.grayed {{'monthly'|i18n}}]
             p.desc {{'price-basic-desc'|i18n}}
             ul.text-left(ng-if="lang=='en'")
               li SVG Download
@@ -132,7 +132,7 @@ block body
           .prc-plan-logo.logo3(ng-click="settings.choose(2)")
           .text-center(ng-click="settings.choose(2)")
             h3(ng-class="{'selected':settings.plan==2}",style="margin-bottom:2px") EXPERT
-            h2.price #[small US$] #[big 49] #[small .95] #[small.grayed 每月]
+            h2.price #[small US$] #[big 49] #[small .95] #[small.grayed {{'monthly'|i18n}}]
             p.desc {{'price-expert-desc'|i18n}}
             ul.text-left(ng-if="lang=='en'")
               li Hi Res PNG Download
@@ -161,7 +161,7 @@ block body
           .prc-plan-logo.logo3
           .text-center
             h3(ng-class="{'selected':settings.plan==3}",style="margin-bottom:2px;width:126px") ENTERPRISE
-            h2.price #[small US$] #[big 499] #[small .95] #[small.grayed 每月]
+            h2.price #[small US$] #[big 499] #[small .95] #[small.grayed {{'monthly'|i18n}}]
             p.desc {{'price-enterprise-desc'|i18n}}
             ul.text-left(ng-if="lang=='en'")
               li 10 Expert Account
@@ -208,8 +208,8 @@ block body
               span(ng-show="settings.plan==2") Expert
               span &nbsp;{{'Plan'|i18n}}
             h2.price(ng-show="settings.plan==0") 無需費用.
-            h2.price(ng-show="settings.plan==1") #[small US$] #[big 19] #[small .95] #[small.grayed 每月]
-            h2.price(ng-show="settings.plan==2") #[small US$] #[big 49] #[small .95] #[small.grayed 每月]
+            h2.price(ng-show="settings.plan==1") #[small US$] #[big 19] #[small .95] #[small.grayed {{'monthly'|i18n}}]
+            h2.price(ng-show="settings.plan==2") #[small US$] #[big 49] #[small .95] #[small.grayed {{'monthly'|i18n}}]
             //-big
               span ${{prices[settings.period][settings.plan]}} USD / 
               span(ng-show="settings.period=='1'") year
