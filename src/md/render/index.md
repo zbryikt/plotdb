@@ -316,13 +316,14 @@ to get a viswork, call `plotdb.chart.get` method with the name of the viswork:
     var chart = plotdb.chart.get("name-of-desired-viswork");
 
 the returned object is the same with the one returned by `plotdb.load` ajax call. Multiple calls to `plotdb.chart.get` will get multiple distinct viswork object, and can be used in different containers:
+<a id="collection"></a>
 
     var chart1 = plotdb.chart.get("name-of-desired-viswork");
     var chart2 = plotdb.chart.get("name-of-desired-viswork");
     chart1.attach("#some-container");
     chart2.attach("#another-container");
 
-Again, PlotDB Collection can help you bundle your own viswork library, so you dont have to bother downloading all visworks one by one and repack them manually when there are updates to one of them. Try [create a collection](//) and add your selected viswork into it.
+Again, PlotDB Collection can help you bundle your own viswork library, so you dont have to bother downloading all visworks one by one and repack them manually when there are updates to one of them. Try [create a collection](/collection) and add your selected viswork into it.
 
 <br/> <br/>
 

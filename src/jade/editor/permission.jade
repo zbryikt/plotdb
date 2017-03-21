@@ -55,7 +55,7 @@ include /mixin.jade
     hr
     .row
       .col-sm-10.col-sm-offset-1
-        label Link
+        label {{'Link'|i18n}}
         .pull-right(ng-cloak,ng-show="sharePanel.isPublic()")
           a(ng-attr-href="{{sharePanel.link || '#'}}",target="_blank")
             i.fa.fa-external-link(style="vertical-align:middle")

@@ -57,7 +57,7 @@ engine.app.get \/collection/:id/download, aux.numid true, (req, res) ->
         str = JSON.stringify(chart)
         str = str.substring(0, str.length - 1)
         str += ",code: {content: " + (if code.0=='{' => code else "{init: function() { #code }}")  + "}}";
-        ret += "plotdb.chart.add(#{chart.key},#{str});\n"
+        ret += "plotdb.chart.add('#{chart.name}',#{str});\n"
       res.header(
         "Content-Disposition",
         """attachment; filename='#{escape(folder.name.replace(/ /g, '-'))}.js';modification-date="#{new Date()}" """

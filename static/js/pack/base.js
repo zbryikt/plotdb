@@ -3614,6 +3614,9 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'We provide every single charts you will need': {
         zh: "無論任何您需要的圖表，我們都提供給您"
       },
+      'no description': {
+        zh: "沒有描述"
+      },
       'Need Pro': {
         zh: "需升級"
       },
@@ -3926,11 +3929,62 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'create': {
         zh: "建立"
       },
+      'Create': {
+        zh: "建立"
+      },
       'My Collections': {
         zh: "我的作品集"
       },
       "Everyone's Collections": {
         zh: "所有人的作品集"
+      },
+      "write something about this collection": {
+        zh: "寫點關於這個集合的內容吧"
+      },
+      "Collection Description": {
+        zh: "作品集描述"
+      },
+      'Download as Library': {
+        zh: "打包成函式庫下載"
+      },
+      'There is no content in this collection': {
+        zh: "這個作品集裡面沒有東西"
+      },
+      "Let's add some": {
+        zh: "來加點東西吧"
+      },
+      'add to': {
+        zh: "加到"
+      },
+      'remove': {
+        zh: "移除"
+      },
+      'Add more': {
+        zh: "再加一些"
+      },
+      'All Collections': {
+        zh: "所有作品集"
+      },
+      'a Quick Example of Usage': {
+        zh: "快速使用教學"
+      },
+      'Want to know more about how to use it': {
+        zh: "想知道更多嗎"
+      },
+      'Check the Developer Guide': {
+        zh: "來看看開發者手冊吧"
+      },
+      'no thanks': {
+        zh: "不用了"
+      },
+      'How to Add Viswork to Collection': {
+        zh: "要怎麼把東西加到作品集中呢"
+      },
+      'toggling the dropdown menu in the viswork you want to add': {
+        zh: "看到中意的樣板就打開他的下拉式選單吧"
+      },
+      'OK I GOT IT': {
+        zh: "好我知道了"
       },
       'Basic Information': {
         zh: "基本資訊"
@@ -4110,6 +4164,15 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       },
       'size': {
         zh: "大小"
+      },
+      'Explore Viswork': {
+        zh: "探索視覺化作品"
+      },
+      'public charts available for re-use': {
+        zh: "不光是可以重覆使用，還可以修改源碼喔"
+      },
+      'try these predefined tags': {
+        zh: "何不試試這些關鍵字"
       },
       'Fork-Save': {
         zh: "另存副本",

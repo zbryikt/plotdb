@@ -5,45 +5,66 @@ block vars
 block head
 block body
   .spc1
-  .page-header: .inner
-    .title Explore Viz
-    .desc public charts available for re-use.
-  #root.narrow.with-header(ng-controller="chartList")
+  .page-header(ng-cloak): .inner
+    .title {{'Explore Viswork'|i18n}}
+    .desc {{'public charts available for re-use'|i18n}}.
+  #root.narrow.with-header(ng-controller="chartList",ng-cloak)
     +cover-modal("hint.toggled.addCollection", "hint.toggle(false, 'addCollection')")
       .panel.panel-default: .panel-body
          .text-center
-           h3 How to Add Viswork to Collection?
-           span toggling the dropdown menu in the viswork you want to add
+           h3 {{'How to Add Viswork to Collection'|i18n}}?
+           span {{'toggling the dropdown menu in the viswork you want to add'|i18n}}
            br
            br
            .hint-img(style="background-image:url(/assets/img/hint/add-to-collection.gif)")
            br
-           .btn.btn-success.btn-block.btn-lg(ng-click="hint.toggle(false)") OK I GOT IT.
+           .btn.btn-success.btn-block.btn-lg(ng-click="hint.toggle(false)") {{'OK I GOT IT'|i18n}}.
     div(style="height:60px")
     #chart-filter.scroll-stick(data-top="50")
       include ../widget/search.jade
     div
       #chart-explore-pretag.text-center
         br
-        p try these predefined tags?
-        .btn.btn-default(ng-click="qLazy.keyword='basic'",
-        data-toggle="tooltip",data-placement="top",title="5 basic charts for common usecase",
-        ) Basic
-        .btn.btn-default(ng-click="qLazy.keyword='trend'",
-        data-toggle="tooltip",data-placement="top",title="Trend across time",
-        ) Trends
-        .btn.btn-default(ng-click="qLazy.keyword='relation'",
-        data-toggle="tooltip",data-placement="top",title="Relation between stuff",
-        ) Relation
-        .btn.btn-default(ng-click="qLazy.keyword='change'",
-        data-toggle="tooltip",data-placement="top",title="change between two values",
-        ) Change
-        .btn.btn-default(ng-click="qLazy.keyword='frequency'",
-        data-toggle="tooltip",data-placement="top",title="distribution,frequency,etc",
-        ) Frequency
-        .btn.btn-default(ng-click="qLazy.keyword='map'",
-        data-toggle="tooltip",data-placement="top",title="Visualise geographically",
-        ) Map
+        p {{'try these predefined tags'|i18n}}?
+        div(ng-show="lang=='en'")
+          .btn.btn-default(ng-click="qLazy.keyword='basic'",
+          data-toggle="tooltip",data-placement="top",title="5 basic charts for common usecase",
+          ) Basic
+          .btn.btn-default(ng-click="qLazy.keyword='trend'",
+          data-toggle="tooltip",data-placement="top",title="Trend across time",
+          ) Trends
+          .btn.btn-default(ng-click="qLazy.keyword='relation'",
+          data-toggle="tooltip",data-placement="top",title="Relation between stuff",
+          ) Relation
+          .btn.btn-default(ng-click="qLazy.keyword='change'",
+          data-toggle="tooltip",data-placement="top",title="change between two values",
+          ) Change
+          .btn.btn-default(ng-click="qLazy.keyword='frequency'",
+          data-toggle="tooltip",data-placement="top",title="distribution,frequency,etc",
+          ) Frequency
+          .btn.btn-default(ng-click="qLazy.keyword='map'",
+          data-toggle="tooltip",data-placement="top",title="Visualise geographically",
+          ) Map
+        div(ng-show="lang=='zh'")
+          .btn.btn-default(ng-click="qLazy.keyword='basic'",
+          data-toggle="tooltip",data-placement="top",title="最常用的圖表類型",
+          ) 基本圖表
+          .btn.btn-default(ng-click="qLazy.keyword='trend'",
+          data-toggle="tooltip",data-placement="top",title="時序的趨勢變化",
+          ) 趨勢
+          .btn.btn-default(ng-click="qLazy.keyword='relation'",
+          data-toggle="tooltip",data-placement="top",title="事物間的關連性",
+          ) 關連
+          .btn.btn-default(ng-click="qLazy.keyword='change'",
+          data-toggle="tooltip",data-placement="top",title="數值間的變化",
+          ) 變化
+          .btn.btn-default(ng-click="qLazy.keyword='frequency'",
+          data-toggle="tooltip",data-placement="top",title="分布與頻率",
+          ) 頻率
+          .btn.btn-default(ng-click="qLazy.keyword='map'",
+          data-toggle="tooltip",data-placement="top",title="地理、空間與結構的呈現",
+          ) 地圖
+
         .sep.dark
     include ../widget/charts.jade
   include /footer.jade

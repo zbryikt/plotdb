@@ -55,7 +55,8 @@ mixin publish
       div(ng-show="settingPanel.tab=='library'")
         .well
           h3(style="margin:0") {{'Library'|i18n}}
-          small.grayed {{'pick libraries you want to use from this dropdown box'|i18n}}.
+          small.grayed(ng-if="lang=='en'") pick libraries you want to use from this dropdown box
+          small.grayed(ng-if="lang=='zh'") 透過下拉式選單挑選想要使用的圖表函式庫吧
         include /widget/library.jade
         .sep
         label {{'Inherit Content from Source Chart'|i18n}}
@@ -70,31 +71,36 @@ mixin publish
       div(ng-show="settingPanel.tab=='license'")
         .well
           h3(style="margin:0") {{'License'|i18n}}
-          small.grayed {{"How this viswork's license works for different usages"|i18n}}
+          small.grayed(ng-if="lang=='en'") How this viswork's license works for different usages
+          small.grayed(ng-if="lang=='zh'") 在不同用途中，圖表使用要如何授權呢？
+        .well
+          span(ng-if="lang=='en'") we provide free testing license in open beta stage, which means that you can use these viswork in any cases before we enter official release stage. After officially released, All visworks by PlotDB will be dual license - free for personal use and charged for commercial use. #[a(href="/info/contact") Contact us] for more detail.
+          span(ng-if="lang=='zh'") 在開放測試階段，我們提供「free testing license」，讓您免費且無限制地使用並測試我們的視覺化。在正式上線之後，由 PlotDB 所提供的所有視覺化作品源碼仍維持個人使用免費，但將針對商業、政府或其它單位使用收取授權費。您亦可#[a(href="/info/contact") 與我們連繫]，以了解更多細節。
 
-        select.form-control(ng-model="chart.license.name")
-          option(value="MIT License") MIT License
-          option(value="PlotDB Basic License") PlotDB Basic License
-          option(value="PlotDB Expert License") PlotDB Expert License 
-          option(value="Custom License") Custom License 
-        .sep
-        .row.gap
-          .col-sm-6
-          .col-sm-3
-            span {{'Free'|i18n}}?
-          .col-sm-3
-            span {{'Price'|i18n}} (USD)
-        each i in ["Personal Use", "Generate SVG", "Embedded with IFrame", "Run in Single Site", "Run in Multiple Sites"]
-          .row.gap(style="line-height:30px")
+        //-
+          select.form-control(ng-model="chart.license.name")
+            option(value="MIT License") MIT License
+            option(value="PlotDB Basic License") PlotDB Basic License
+            option(value="PlotDB Expert License") PlotDB Expert License 
+            option(value="Custom License") Custom License 
+          .sep
+          .row.gap
             .col-sm-6
-              span {{'#{i}'|i18n}}
             .col-sm-3
-              select.form-control.input-sm(ng-model="chart.license.options['" + i + "'].free",
-              ng-options="o.v as o.n for o in [{n: 'Yes', v: true}, {n: 'No', v: false}]")
+              span {{'Free'|i18n}}?
             .col-sm-3
-              input.form-control.input-sm(
-              ng-disabled="chart.license.options['" + i + "'].free",
-              ng-model="chart.license.options['" + i + "'].price")
+              span {{'Price'|i18n}} (USD)
+          each i in ["Personal Use", "Generate SVG", "Embedded with IFrame", "Run in Single Site", "Run in Multiple Sites"]
+            .row.gap(style="line-height:30px")
+              .col-sm-6
+                span {{'#{i}'|i18n}}
+              .col-sm-3
+                select.form-control.input-sm(ng-model="chart.license.options['" + i + "'].free",
+                ng-options="o.v as o.n for o in [{n: 'Yes', v: true}, {n: 'No', v: false}]")
+              .col-sm-3
+                input.form-control.input-sm(
+                ng-disabled="chart.license.options['" + i + "'].free",
+                ng-model="chart.license.options['" + i + "'].price")
 
     .panel-footer.text-right(style="padding-left: 5px")
       .btn.btn-default.btn-sm.pull-left.loader(ng-click="clone()",

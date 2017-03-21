@@ -48,8 +48,10 @@ block body
             a.chart-img(ng-attr-href="/collection/{{item.key}}")
               .ib(ng-attr-style="background-image:url(/s/chart/{{item.thumbnail || 0}}.png)")
             .chart-desc
-              .title(ng-attr-href="/collection/{{item.key}}",ng-cloak) {{item.name}}
-              .desc(ng-class="{'grayed':!item.description}") {{item.description || '(no description...)'}}
+              a.title(ng-attr-href="/collection/{{item.key}}",ng-cloak) {{item.name}}
+              .desc(ng-class="{'grayed':!item.description}")
+                span(ng-if="item.description") {{item.description}}
+                span(ng-if="!item.description") ({{'no description'|i18n}}...)
             .social
               a.author(ng-attr-href="/user/{{item.owner}}")
                 .avatar.xs(ng-attr-style="background-image(/s/avatar/{{item.owner}}.png);margin-right:3px;display:inline-block;vertical-align:middle")

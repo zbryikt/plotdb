@@ -17,11 +17,11 @@ block body
   include ../module/widget/folderChooser.jade
   include ../module/collection/naming.jade
   +folder-panel
-  #root.narrow(ng-controller="folderView")
+  #root.narrow(ng-controller="folderView",ng-cloak)
     +cover-modal("hint.download.toggled", "hint.download.toggle()")
       .panel.panel-default
         .panel-body
-          h2.text-center a Quick Example of Usage
+          h2.text-center {{'a Quick Example of Usage'|i18n}}
           br
           pre: big: code.
             &lt;link rel="stylesheet" type="text/css" href="<a href="/css/render/pdb.css">pdb.css</a>"/&gt;
@@ -33,11 +33,11 @@ block body
             &lt;/script&gt;
           .text-center
             br
-            h4 Want to know more about how to use it?
+            h4 {{'Want to know more about how to use it'|i18n}}?
             br
-            a.btn.btn-success(href="/doc/render/") Check the Developer Guide
+            a.btn.btn-success(href="/doc/render/") {{'Check the Developer Guide'|i18n}}
             span &nbsp;
-            .btn.btn-default(ng-click="hitn.download.toggle(false)") no thanks.
+            .btn.btn-default(ng-click="hitn.download.toggle(false)") {{'no thanks'|i18n}}.
             br
     //-+cover-modal("edit.toggled", "edit.toggle()")
       .panel.panel-default(style="width:500px;margin:auto")
@@ -55,7 +55,7 @@ block body
             .btn.btn-default(ng-click="edit.toggled=false") Cancel
 
     h3 
-      small: a(href="/collection/") #[i.fa.fa-home] All Collections
+      small: a(href="/collection/") #[i.fa.fa-home] {{'All Collections'|i18n}}
       span &nbsp;&nbsp;
       small #[i.fa.fa-chevron-right] 
       span &nbsp;
@@ -65,9 +65,9 @@ block body
         small.grayed: i.fa.fa-edit
       .pull-right
         a.btn.btn-default(ng-attr-href="/collection/{{folder.key}}/download",
-        ng-click="hint.download.toggle(true)") Download as Library...
+        ng-click="hint.download.toggle(true)") {{'Download as Library'|i18n}}...
     div(ng-click=(permtype[0]>5 ? "fire('folder.edit.description',folder)" : ""))
-      span.grayed(ng-cloak,ng-if="!folder.description") ( no description... )
+      span.grayed(ng-cloak,ng-if="!folder.description") ( {{'no description'|i18n}}... )
       span(ng-cloak,ng-if="folder.description") {{folder.description}}
       span &nbsp; &nbsp;
       +isAdmin
@@ -77,22 +77,23 @@ block body
     .text-center(ng-if="!items.length",ng-cloak)
       br
       br
-      h3 There is no content in this collection.
+      h3 {{'There is no content in this collection'|i18n}}.
       br
       +isAdmin
-        a.btn.btn-success.btn-lg(href="/chart/explore/#hint.addCollection.") Let's add some!
+        a.btn.btn-success.btn-lg(href="/chart/explore/#hint.addCollection.") {{"Let's add some"|i18n}}!
     .charts
       .chart(ng-cloak,ng-repeat="item in items")
         .dropdown.pull-right(style="margin:5px;z-index:1")
           .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown"): i.fa.fa-chevron-down
           ul.dropdown-menu
-            li: a(ng-click="addToCollection(item)") add to...
+            li: a(ng-click="addToCollection(item)") {{'add to'|i18n}}...
             +isAdmin
-              li: a(ng-click="remove(item)") remove
+              li: a(ng-click="remove(item)") {{'remove'|i18n}}
         a.chart-img(ng-attr-href="/chart/{{item.item}}",ng-attr-style="background-image:url(/s/{{item.type}}/{{item.item}}.png)")
         .chart-desc
           .title {{item.name || 'untitled'}}
-          .desc(ng-class="{'grayed':!item.description}") {{item.description || '( no description .. )'}}
+          .desc(ng-if="item.description") {{item.description}}
+          .desc.grayed(ng-if="!item.description") ( {{'no description'|i18n}} .. )
         .social
           a.author(ng-attr-href="/user/{{item.owner}}")
             .avatar.xs(ng-attr-style="background-image(/s/avatar/{{item.owner}}.png);margin-right:3px;display:inline-block;vertical-align:middle")
@@ -102,6 +103,6 @@ block body
     br
     br
     +isAdmin
-      .text-center(ng-cloak,ng-if="items.length"): a.btn.btn-default.btn-lg.btn-success(ng-attr-href="/chart/explore/#hint.addCollection.{{folder.key}}.") Add more ...
+      .text-center(ng-cloak,ng-if="items.length"): a.btn.btn-default.btn-lg.btn-success(ng-attr-href="/chart/explore/#hint.addCollection.{{folder.key}}.") {{'Add more'|i18n}} ...
 
   include ../module/footer.jade

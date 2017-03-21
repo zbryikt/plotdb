@@ -262,14 +262,14 @@ then it will trigger `bind -> resize -> render` when bindMethod is changed.
 
 For now, PlotDB provides following data type:
 
- * [PlotDB.Number](#)
- * [PlotDB.Date](#)
- * [PlotDB.Choice](#)
- * [PlotDB.String](#)
- * [PlotDB.Color](#)
- * [PlotDB.Palette](#)
+ * [PlotDB.Number](#ref-type-number)
+ * [PlotDB.Date](#ref-type-date)
+ * [PlotDB.Choice](#ref-type-choice)
+ * [PlotDB.String](#ref-type-string)
+ * [PlotDB.Color](#ref-type-color)
+ * [PlotDB.Palette](#ref-type-palette)
 
-a complete list and usage can be found in the last section - [PlotDB Viswork API Reference](#).
+a complete list and usage can be found in the last section - [PlotDB Viswork API Reference](#ref-type).
 
 Here is an example of bar chart what enable users to change bar color ( modified from above bar chart example ):
 
