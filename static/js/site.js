@@ -198,7 +198,11 @@ x$.service('plNotify', ['$rootScope', '$timeout'].concat(function($rootScope, $t
 }));
 x$.controller('plSite', ['$scope', '$rootScope', '$http', '$interval', 'global', 'plNotify', 'plConfig', 'dataService', 'chartService', 'eventBus', 'Modal'].concat(function($scope, $rootScope, $http, $interval, global, plNotify, plConfig, dataService, chartService, eventBus, Modal){
   var that, ref$, ret, x$, tracks, i$, to$, i, results$ = [];
-  $rootScope.lang = $scope.lang = (/lang=(.+?)(;|$)/.exec(document.cookie) || {})[1];
+  $scope.lang = (/lang=([^;].+?)(;|$)/.exec(document.cookie) || {})[1];
+  if (!$scope.lang) {
+    $scope.lang = 'en';
+  }
+  $rootScope.lang = $scope.lang;
   $scope.setLang = function(it){
     $rootScope.lang = $scope.lang = window.lang = it;
     document.cookie = "lang=" + it;
@@ -276,7 +280,6 @@ x$.controller('plSite', ['$scope', '$rootScope', '$http', '$interval', 'global',
   };
   $scope.addToCollection = function(item, type){
     type == null && (type = null);
-    console.log(item);
     if (type) {
       (item._type || (item._type = {})).name = type;
     }

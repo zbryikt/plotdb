@@ -82,7 +82,9 @@ angular.module \plotDB
   ..controller \plSite,
   <[$scope $rootScope $http $interval global plNotify plConfig dataService chartService eventBus Modal]> ++
   ($scope, $rootScope, $http, $interval, global, plNotify, plConfig, data-service, chart-service, eventBus, Modal) ->
-    $rootScope.lang = $scope.lang = (/lang=(.+?)(;|$)/.exec(document.cookie) or {}).1
+    $scope.lang = (/lang=([^;].+?)(;|$)/.exec(document.cookie) or {}).1
+    if !$scope.lang => $scope.lang = \en
+    $rootScope.lang = $scope.lang
     $scope.set-lang = ->
       $rootScope.lang = $scope.lang = window.lang = it
       document.cookie = "lang=#it"
@@ -135,7 +137,6 @@ angular.module \plotDB
       if ret => $scope.hint.toggle true, ret.1
     $scope.fire = (name,payload) -> eventBus.fire name, payload
     $scope.addToCollection = (item,type=null) ->
-      console.log item
       if type => item.{}_type.name = type
       eventBus.fire \add-to-collection, item
     $scope.confirmbox = do
