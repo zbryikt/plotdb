@@ -472,11 +472,14 @@ angular.module \plotDB
       render: (obj = {}) ->
         {head-only,ths,trs} = obj
         return new Promise (res, rej) ~>
+          dim = document.querySelector '#dataset-editbox .sheet .sheet-dim'
           head = document.querySelector '#dataset-editbox .sheet .sheet-head'
           scroll = document.querySelector '#dataset-editbox .sheet .clusterize-scroll'
           content = document.querySelector '#dataset-editbox .sheet .clusterize-content'
+          rowcount = +head.getAttribute(\data-rowcount) or 10
           if !@worker => @worker = new Worker \/js/data/worker/grid-render-wrap.js
-          update = (trs,ths) ~>
+          update = (trs,ths,dimnode) ~>
+            if dim => dim.innerHTML = dimnode
             head.innerHTML = ths
             if head-only => return res!
             content.innerHTML = ""
@@ -489,13 +492,13 @@ angular.module \plotDB
           if trs and ths => return update trs, ths
 
           @worker.onmessage = (e) ~>
-            [trs, ths] = [e.data.trs, e.data.ths]
-            update trs, ths
+            [trs, ths, dimnode] = [e.data.trs, e.data.ths, e.data.dim]
+            update trs, ths, dimnode
 
           if head-only =>
-            @worker.postMessage {headers: @data.headers, types: @data.types}
+            @worker.postMessage {headers: @data.headers, types: @data.types, rowcount: rowcount}
           else
-            @worker.postMessage {headers: @data.headers, rows: @data.rows, types: @data.types}
+            @worker.postMessage {headers: @data.headers, rows: @data.rows, types: @data.types, rowcount: rowcount}
 
       update: (r,c,val) ->
         dirty = false
@@ -531,7 +534,7 @@ angular.module \plotDB
           @data.rows.map (row) -> row.splice i + 1,1
           @data.types.splice i + 1
           dirty = true
-
+        eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
         if dirty => @render {head-only: true} .then ->
           if r < 0 =>
             node = document.querySelector(

@@ -2,10 +2,96 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce', 'plConfig', 'IOService', 'dataService', 'chartService', 'paletteService', 'themeService', 'plNotify', 'eventBus', 'permService', 'license'].concat(function($scope, $http, $timeout, $interval, $sce, plConfig, IOService, dataService, chartService, paletteService, themeService, plNotify, eventBus, permService, license){
+  $scope.$watch('edfunc', function(){
+    return $timeout(function(){
+      var left, node;
+      left = Math.max.apply(null, Array.from(document.querySelectorAll('.editor-func-detail')).map(function(it){
+        return it.getBoundingClientRect().width;
+      })) + 100;
+      node = document.querySelector('#editor-canvas');
+      node.style.left = left + "px";
+      node = document.querySelector('.editor-ctrls');
+      return node.style.left = left + "px";
+    }, 0);
+  });
+  $scope.map = [];
   return plotdb.load(1008, function(chart){
+    var dimkeys, k, data;
     chart.config({
       yAxisShowDomain: false
     });
-    return chart.attach('#editor-canvas .inner');
+    chart.attach('#editor-canvas .inner');
+    dimkeys = (function(){
+      var results$ = [];
+      for (k in chart._.chart.dimension) {
+        results$.push(k);
+      }
+      return results$;
+    }()).concat([null]);
+    data = plotdb.chart.getSampleData(chart._.chart);
+    data = data.map(function(row){
+      var k, v, i$, to$, i;
+      for (k in row) {
+        v = row[k];
+        if (Array.isArray(v)) {
+          delete row[k];
+          for (i$ = 0, to$ = v.length; i$ < to$; ++i$) {
+            i = i$;
+            row[k + "[" + (i + 1) + "]"] = v[i];
+          }
+        }
+      }
+      return row;
+    });
+    eventBus.fire('dataset.sample', data);
+    return eventBus.listen('dataset.changed', function(data){
+      var hash, i$, len$, item, name, dims;
+      hash = {};
+      for (i$ = 0, len$ = data.length; i$ < len$; ++i$) {
+        item = data[i$];
+        name = item.name.replace(/\[.+\]/, '');
+        (hash[name] || (hash[name] = [])).push(item);
+        if (!$scope.map.inited) {
+          $scope.map.push(name);
+        }
+      }
+      $scope.map.inited = true;
+      console.log(">", hash);
+      dims = document.querySelectorAll('#dataset-editbox .sheet .sheet-dim .dropdown');
+      Array.from(dims).map(function(node, i){
+        node.querySelector('span').innerText = $scope.map[i] || '';
+        console.log(dimkeys);
+        node.querySelector('ul').innerHTML = dimkeys.map(function(e, j){
+          if (e === null) {
+            return "<li><a href='#' class='grayed'><small>(empty)</small></a></li>";
+          } else {
+            return "<li><a data-dimname='" + e + "' href='#'>" + e + "</a></li>";
+          }
+        }).join("");
+        return node.querySelector('ul').addEventListener('click', function(e){
+          var dimname, hash, i$, to$, k, key$;
+          console.log(i, $scope.map[i]);
+          dimname = e.target.getAttribute('data-dimname');
+          $scope.map[i] = dimname || null;
+          console.log(i, $scope.map[i]);
+          Array.from(dims).map(function(n, j){
+            n.querySelector('span').setAttribute('class', $scope.map[j] ? "" : "grayed text-sm");
+            n.querySelector('span').innerText = $scope.map[j] || '(empty)';
+            return console.log(">", j, $scope.map[j]);
+          });
+          hash = {};
+          for (i$ = 0, to$ = data.length; i$ < to$; ++i$) {
+            k = i$;
+            if (!$scope.map[k]) {
+              continue;
+            }
+            (hash[key$ = $scope.map[k]] || (hash[key$] = [])).push(data[k]);
+          }
+          return chart.data(hash, true);
+        });
+      });
+      $('.sheet-dim .dropdown-toggle').dropdown();
+      return chart.data(hash, true);
+    });
   });
 }));

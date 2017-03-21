@@ -17,7 +17,7 @@
 .sheet.clusterize
   height: 100%
 
-.sheet-head
+.sheet-head, .sheet-dim
   border: 1px solid #ccc
   overflow: hidden
   box-shadow: 0 2px 1px rgba(0,0,0,0.1)
@@ -31,14 +31,14 @@
   height: 100%
   max-height: initial
 
-.sheet-head > div, .sheet-cells > div
+.sheet-head > div, .sheet-dim > div, .sheet-cells > div
   white-space: nowrap
   width: 100%
   height: 20px
   &:last-child > div
     border-bottom: none
 
-.sheet-head > div
+.sheet-head > div, .sheet-dim > div
   height: 37px
   & > div > div
     line-height: 18px
@@ -56,10 +56,19 @@
     font-size: 16px
     margin: 0
 
+.sheet-dim, .sheet-dim .dropdown.open
+  overflow: visible
+.sheet-dim .dropdown
+  vertical-align: top
+  cursor: pointer
 
-.sheet-head > div > div > .in-use:empty
-  background: #f9f9f9
-.sheet-head > div > div, .sheet-cells > div > div
+.sheet-dim > div
+  height: 27px
+
+.sheet-head, .sheet-dim 
+  & > div > div > .in-use:empty
+    background: #f9f9f9
+.sheet-head > div > div, .sheet-dim > div > div, .sheet-cells > div > div
   position: relative
   height: 100%
   display: inline-block
@@ -72,5 +81,5 @@
     border-right: none
 .sheet-cells > div:last-child
   border-bottom: 1px solid #ccc
-.sheet-head div, .sheet-cells div
+.sheet-head div, .sheet-dim div, .sheet-cells div
   outline: none

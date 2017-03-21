@@ -9599,15 +9599,20 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       obj == null && (obj = {});
       headOnly = obj.headOnly, ths = obj.ths, trs = obj.trs;
       return new Promise(function(res, rej){
-        var head, scroll, content, update;
+        var dim, head, scroll, content, rowcount, update;
+        dim = document.querySelector('#dataset-editbox .sheet .sheet-dim');
         head = document.querySelector('#dataset-editbox .sheet .sheet-head');
         scroll = document.querySelector('#dataset-editbox .sheet .clusterize-scroll');
         content = document.querySelector('#dataset-editbox .sheet .clusterize-content');
+        rowcount = +head.getAttribute('data-rowcount') || 10;
         if (!this$.worker) {
           this$.worker = new Worker('/js/data/worker/grid-render-wrap.js');
         }
-        update = function(trs, ths){
+        update = function(trs, ths, dimnode){
           var that;
+          if (dim) {
+            dim.innerHTML = dimnode;
+          }
           head.innerHTML = ths;
           if (headOnly) {
             return res();
@@ -9627,20 +9632,22 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           return update(trs, ths);
         }
         this$.worker.onmessage = function(e){
-          var ref$, trs, ths;
-          ref$ = [e.data.trs, e.data.ths], trs = ref$[0], ths = ref$[1];
-          return update(trs, ths);
+          var ref$, trs, ths, dimnode;
+          ref$ = [e.data.trs, e.data.ths, e.data.dim], trs = ref$[0], ths = ref$[1], dimnode = ref$[2];
+          return update(trs, ths, dimnode);
         };
         if (headOnly) {
           return this$.worker.postMessage({
             headers: this$.data.headers,
-            types: this$.data.types
+            types: this$.data.types,
+            rowcount: rowcount
           });
         } else {
           return this$.worker.postMessage({
             headers: this$.data.headers,
             rows: this$.data.rows,
-            types: this$.data.types
+            types: this$.data.types,
+            rowcount: rowcount
           });
         }
       });
@@ -9713,6 +9720,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         this.data.types.splice(i + 1);
         dirty = true;
       }
+      eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
       if (dirty) {
         return this.render({
           headOnly: true
