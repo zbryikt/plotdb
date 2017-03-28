@@ -27,7 +27,9 @@ plotdb.util.trackResizeEvent = function(root, callback){
     return document.createElement('div');
   });
   ref$ = nodes[0].style;
-  ref$.position = 'relative';
+  ref$.position = 'absolute';
+  ref$.top = 0;
+  ref$.left = 0;
   ref$.width = '100%';
   ref$.height = '100%';
   ref$["z-index"] = import$(-1, style.hide);

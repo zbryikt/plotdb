@@ -730,7 +730,34 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       return $scope.dataset = null;
     }
   });
-  eventBus.listen('dataset.sample', function(data){
+  eventBus.listen('dataset.update.fields', function(data, dimkeys){
+    var v;
+    $scope.grid.data.headers = (function(){
+      var i$, ref$, len$, results$ = [];
+      for (i$ = 0, len$ = (ref$ = data).length; i$ < len$; ++i$) {
+        v = ref$[i$];
+        results$.push(v.name);
+      }
+      return results$;
+    }());
+    $scope.grid.data.rows = data[0].data.map(function(d, i){
+      return data.map(function(e){
+        return e.data[i];
+      });
+    });
+    $scope.grid.data.types = plotdb.Types.resolve($scope.grid.data);
+    $scope.grid.data.bind = (function(){
+      var i$, ref$, len$, results$ = [];
+      for (i$ = 0, len$ = (ref$ = data).length; i$ < len$; ++i$) {
+        v = ref$[i$];
+        results$.push(v.bind);
+      }
+      return results$;
+    }());
+    $scope.grid.data.dimkeys = dimkeys;
+    return $scope.grid.render();
+  });
+  eventBus.listen('dataset.sample', function(data, dimkeys){
     var h, k, v;
     $scope.grid.data.headers = h = (function(){
       var ref$, results$ = [];
@@ -746,6 +773,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       });
     });
     $scope.grid.data.types = plotdb.Types.resolve($scope.grid.data);
+    $scope.grid.data.dimkeys = dimkeys;
     return $scope.grid.render();
   });
   eventBus.listen('dataset.edit', function(dataset, load){
@@ -810,14 +838,44 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       rows: [],
       headers: [],
       trs: [],
+      bind: [],
+      dimkeys: [],
       clusterizer: null,
+      bindField: function(e){
+        var node, dim, multi, i$, to$, i, index, root, span;
+        node = e.target || e.srcElement;
+        if (node.nodeName.toLowerCase() !== 'a') {
+          return;
+        }
+        dim = node.getAttribute('data-dim') || '';
+        multi = (node.getAttribute('data-multi') || 'false') === 'true';
+        if (dim && multi) {
+          for (i$ = 0, to$ = this.bind.length; i$ < to$; ++i$) {
+            i = i$;
+            if (this.bind[i] === dim) {
+              this.bind[i] = null;
+            }
+          }
+        }
+        index = Array.from(node.parentNode.parentNode.parentNode.parentNode.childNodes).indexOf(node.parentNode.parentNode.parentNode);
+        this.bind[index] = dim || null;
+        root = node.parentNode.parentNode.parentNode.parentNode;
+        for (i$ = 0, to$ = this.bind.length; i$ < to$; ++i$) {
+          i = i$;
+          span = root.childNodes[i].querySelector("span");
+          span.innerText = this.bind[i] || "(empty)";
+          span.className = this.bind[i] ? '' : 'grayed';
+        }
+        return eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
+      },
       fieldize: function(){
         var ret, i$, to$, i, j$, to1$, j, ref$, this$ = this;
         ret = this.headers.map(function(d, i){
           return {
             data: [],
             datatype: this$.types[i],
-            name: d
+            name: d,
+            bind: this$.bind[i]
           };
         });
         for (i$ = 0, to$ = this.rows.length; i$ < to$; ++i$) {
@@ -876,6 +934,8 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           return this$.worker.postMessage({
             headers: this$.data.headers,
             types: this$.data.types,
+            bind: this$.data.bind,
+            dimkeys: this$.data.dimkeys,
             rowcount: rowcount
           });
         } else {
@@ -883,19 +943,23 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
             headers: this$.data.headers,
             rows: this$.data.rows,
             types: this$.data.types,
+            bind: this$.data.bind,
+            dimkeys: this$.data.dimkeys,
             rowcount: rowcount
           });
         }
       });
     },
     update: function(r, c, val){
-      var dirty, i$, i, ref$, j, that, valtype;
+      var dirty, headOnly, i$, i, ref$, j, that, valtype;
       dirty = false;
+      headOnly = true;
       if (c >= this.data.headers.length) {
         for (i$ = this.data.headers.length; i$ <= c; ++i$) {
           i = i$;
           this.data.headers[i] = '';
         }
+        headOnly = false;
       }
       if (r >= this.data.rows.length) {
         for (i$ = this.data.rows.length; i$ <= r; ++i$) {
@@ -959,7 +1023,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
       if (dirty) {
         return this.render({
-          headOnly: true
+          headOnly: headOnly
         }).then(function(){
           var node, range, e, sel;
           if (r < 0) {
@@ -1025,9 +1089,11 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
                 return row.splice(col, 1);
               });
               data.types.splice(col, 1);
+              data.bind.splice(col, 1);
               return $scope.grid.render().then(function(){
                 return $scope.$apply(function(){
-                  return eventBus.fire('loading.dimmer.off');
+                  eventBus.fire('loading.dimmer.off');
+                  return eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
                 });
               });
             }, 0);

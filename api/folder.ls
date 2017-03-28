@@ -108,10 +108,10 @@ engine.app.get \/collection/:id, aux.numid true, (req, res) ->
     .catch aux.error-handler res, true
 
 engine.router.api.get \/folder/, (req, res) ->
-  if !req.user => return aux.r404 res
   offset = req.query.offset or 0
   limit = (req.query.limit or 20) <? 100
   owner = +req.query.owner or null
+  if owner and !req.user => return aux.r404 res
   keyword = (req.query.keyword or "").split(/[, ]/).map(->it.trim!).filter(->it)
   io.query(
     [

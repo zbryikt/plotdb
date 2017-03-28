@@ -3630,7 +3630,7 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
         zh: "那麼、方案長什麼樣子呢？"
       },
       'Canvas Size': {
-        zh: "畫布尺寸"
+        zh: "尺寸"
       },
       'Data': {
         zh: "資料"
@@ -4275,6 +4275,38 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       },
       'Monochromasy': {
         zh: "全色盲"
+      },
+      'achromatopsia': {
+        zh: "全色盲",
+        en: 'Achromatopsia'
+      },
+      'achromatomaly': {
+        zh: "全色弱",
+        en: 'Achromatomaly'
+      },
+      'protanopia': {
+        zh: "紅色盲",
+        en: 'Protanopia'
+      },
+      'protanomaly': {
+        zh: "紅色弱",
+        en: 'Protanomaly'
+      },
+      'deuteranopia': {
+        zh: "綠色盲",
+        en: 'Deuteranopia'
+      },
+      'deuteranomaly': {
+        zh: "綠色弱",
+        en: 'Deuteranomaly'
+      },
+      'tritanopia': {
+        zh: "藍色盲",
+        en: 'Tritanopia'
+      },
+      'tritanomaly': {
+        zh: "藍色弱",
+        en: 'Tritanomaly'
       },
       'Advanced Options': {
         zh: "進階選項"
@@ -9494,7 +9526,34 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       return $scope.dataset = null;
     }
   });
-  eventBus.listen('dataset.sample', function(data){
+  eventBus.listen('dataset.update.fields', function(data, dimkeys){
+    var v;
+    $scope.grid.data.headers = (function(){
+      var i$, ref$, len$, results$ = [];
+      for (i$ = 0, len$ = (ref$ = data).length; i$ < len$; ++i$) {
+        v = ref$[i$];
+        results$.push(v.name);
+      }
+      return results$;
+    }());
+    $scope.grid.data.rows = data[0].data.map(function(d, i){
+      return data.map(function(e){
+        return e.data[i];
+      });
+    });
+    $scope.grid.data.types = plotdb.Types.resolve($scope.grid.data);
+    $scope.grid.data.bind = (function(){
+      var i$, ref$, len$, results$ = [];
+      for (i$ = 0, len$ = (ref$ = data).length; i$ < len$; ++i$) {
+        v = ref$[i$];
+        results$.push(v.bind);
+      }
+      return results$;
+    }());
+    $scope.grid.data.dimkeys = dimkeys;
+    return $scope.grid.render();
+  });
+  eventBus.listen('dataset.sample', function(data, dimkeys){
     var h, k, v;
     $scope.grid.data.headers = h = (function(){
       var ref$, results$ = [];
@@ -9510,6 +9569,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       });
     });
     $scope.grid.data.types = plotdb.Types.resolve($scope.grid.data);
+    $scope.grid.data.dimkeys = dimkeys;
     return $scope.grid.render();
   });
   eventBus.listen('dataset.edit', function(dataset, load){
@@ -9574,14 +9634,44 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       rows: [],
       headers: [],
       trs: [],
+      bind: [],
+      dimkeys: [],
       clusterizer: null,
+      bindField: function(e){
+        var node, dim, multi, i$, to$, i, index, root, span;
+        node = e.target || e.srcElement;
+        if (node.nodeName.toLowerCase() !== 'a') {
+          return;
+        }
+        dim = node.getAttribute('data-dim') || '';
+        multi = (node.getAttribute('data-multi') || 'false') === 'true';
+        if (dim && multi) {
+          for (i$ = 0, to$ = this.bind.length; i$ < to$; ++i$) {
+            i = i$;
+            if (this.bind[i] === dim) {
+              this.bind[i] = null;
+            }
+          }
+        }
+        index = Array.from(node.parentNode.parentNode.parentNode.parentNode.childNodes).indexOf(node.parentNode.parentNode.parentNode);
+        this.bind[index] = dim || null;
+        root = node.parentNode.parentNode.parentNode.parentNode;
+        for (i$ = 0, to$ = this.bind.length; i$ < to$; ++i$) {
+          i = i$;
+          span = root.childNodes[i].querySelector("span");
+          span.innerText = this.bind[i] || "(empty)";
+          span.className = this.bind[i] ? '' : 'grayed';
+        }
+        return eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
+      },
       fieldize: function(){
         var ret, i$, to$, i, j$, to1$, j, ref$, this$ = this;
         ret = this.headers.map(function(d, i){
           return {
             data: [],
             datatype: this$.types[i],
-            name: d
+            name: d,
+            bind: this$.bind[i]
           };
         });
         for (i$ = 0, to$ = this.rows.length; i$ < to$; ++i$) {
@@ -9640,6 +9730,8 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           return this$.worker.postMessage({
             headers: this$.data.headers,
             types: this$.data.types,
+            bind: this$.data.bind,
+            dimkeys: this$.data.dimkeys,
             rowcount: rowcount
           });
         } else {
@@ -9647,19 +9739,23 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
             headers: this$.data.headers,
             rows: this$.data.rows,
             types: this$.data.types,
+            bind: this$.data.bind,
+            dimkeys: this$.data.dimkeys,
             rowcount: rowcount
           });
         }
       });
     },
     update: function(r, c, val){
-      var dirty, i$, i, ref$, j, that, valtype;
+      var dirty, headOnly, i$, i, ref$, j, that, valtype;
       dirty = false;
+      headOnly = true;
       if (c >= this.data.headers.length) {
         for (i$ = this.data.headers.length; i$ <= c; ++i$) {
           i = i$;
           this.data.headers[i] = '';
         }
+        headOnly = false;
       }
       if (r >= this.data.rows.length) {
         for (i$ = this.data.rows.length; i$ <= r; ++i$) {
@@ -9723,7 +9819,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
       if (dirty) {
         return this.render({
-          headOnly: true
+          headOnly: headOnly
         }).then(function(){
           var node, range, e, sel;
           if (r < 0) {
@@ -9789,9 +9885,11 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
                 return row.splice(col, 1);
               });
               data.types.splice(col, 1);
+              data.bind.splice(col, 1);
               return $scope.grid.render().then(function(){
                 return $scope.$apply(function(){
-                  return eventBus.fire('loading.dimmer.off');
+                  eventBus.fire('loading.dimmer.off');
+                  return eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
                 });
               });
             }, 0);
@@ -10700,6 +10798,24 @@ plotdb.chart = {
     resize: function(){},
     render: function(){}
   },
+  fieldsFromDimension: function(dimension){
+    var k, v;
+    return (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = dimension) {
+        v = ref$[k];
+        results$.push([k, v]);
+      }
+      return results$;
+    }()).map(function(d){
+      d[1].fields.map(function(it){
+        return it.bind = d[0];
+      });
+      return d[1].fields;
+    }).reduce(function(a, b){
+      return a.concat(b);
+    }, []);
+  },
   dataFromDimension: function(dimension){
     var ref$, parsers, data, len, k, v, that, i$, len$, field, defaultParser, key$, i, ret, j$, to$, j;
     ref$ = [{}, []], parsers = ref$[0], data = ref$[1];
@@ -10776,6 +10892,15 @@ plotdb.chart = {
     }
   },
   dataConvert: {
+    fromDimension: function(dimension){
+      var ret, k, v;
+      ret = {};
+      for (k in dimension) {
+        v = dimension[k];
+        ret[k] = v.fields;
+      }
+      return ret;
+    },
     byMapping: function(data, mapping){
       var ret, k, v, res$, i$, len$, name;
       ret = {};
@@ -11745,7 +11870,9 @@ plotdb.util.trackResizeEvent = function(root, callback){
     return document.createElement('div');
   });
   ref$ = nodes[0].style;
-  ref$.position = 'relative';
+  ref$.position = 'absolute';
+  ref$.top = 0;
+  ref$.left = 0;
   ref$.width = '100%';
   ref$.height = '100%';
   ref$["z-index"] = import$(-1, style.hide);

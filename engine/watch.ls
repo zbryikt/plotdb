@@ -1,4 +1,4 @@
-require! <[fs fs-extra path chokidar child_process jade stylus require-reload markdown jsdom bluebird]>
+require! <[fs fs-extra path chokidar child_process jade stylus require-reload markdown jsdom bluebird node-minify]>
 require! 'uglify-js': uglify-js, LiveScript: lsc, 'uglifycss': uglify-css
 require! <[./share/scriptpack]>
 reload = require-reload require
@@ -132,16 +132,33 @@ base = do
 
       for k,v of @queue.{}js =>
         des = "static/js/pack/#k.js"
+        des-min = "static/js/pack/#k.min.js"
         ret = [fs.read-file-sync(file).toString! for file in v.1].join("")
         #ret = uglify-js.minify(ret,{fromString:true}).code
         #if !base.config.debug => ret = uglify-js.minify(ret,{fromString:true}).code
         fs.write-file-sync des, ret
+
+        if k == \view =>
+          node-minify.minify({
+            compressor: 'uglifyjs'
+            input: des
+            output: des-min
+          })
+
         console.log "[BUILD] Pack '#k' -> #des by #{v.0}"
 
       for k,v of @queue.{}css =>
         des = "static/css/pack/#k.css"
+        des-min = "static/css/pack/#k.min.css"
         ret = [fs.read-file-sync(file).toString! for file in v.1].join("")
         fs.write-file-sync des, ret
+
+        node-minify.minify({
+          compressor: 'csso'
+          input: des
+          output: des-min
+        })
+
         console.log "[BUILD] Pack '#k' -> #des by #{v.0}"
 
       @queue = {}

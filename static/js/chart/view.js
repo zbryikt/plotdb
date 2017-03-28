@@ -199,7 +199,7 @@ import$(plotdb.view.chart.prototype, {
         if (chart.render) {
           return chart.render();
         }
-      }, 500);
+      }, 10);
     };
     plotdb.util.trackResizeEvent(root, function(){
       return resize();
@@ -280,6 +280,9 @@ import$(plotdb.view.chart.prototype, {
     }
     if (mapping) {
       data = plotdb.chart.dataConvert.byMapping(data, mapping);
+    }
+    if (!Array.isArray(data) && typeof data === typeof {}) {
+      data = plotdb.chart.dataConvert.fromDimension(data);
     }
     this._.data = data;
     this.sync();

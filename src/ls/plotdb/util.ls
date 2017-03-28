@@ -6,7 +6,7 @@ plotdb.util.trackResizeEvent = (root, callback) ->
     child: position: \absolute, left: 0, top: 0, transition: \0s
   style.basic <<< style.hide
   nodes = [0,0,0,0,0,0].map(->document.createElement \div)
-  nodes.0.style <<< position: \relative, width: \100%, height: \100%, "z-index": -1 <<< style.hide
+  nodes.0.style <<< position: \absolute, top: 0, left: 0, width: \100%, height: \100%, "z-index": -1 <<< style.hide
   nodes.1.style <<< style.basic
   nodes.2.style <<< style.basic
   nodes.3.style <<< style.basic

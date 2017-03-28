@@ -1876,9 +1876,12 @@ plotdb.util.trackResizeEvent = function(root, callback){
     return document.createElement('div');
   });
   ref$ = nodes[0].style;
-  ref$.position = 'relative';
+  ref$.position = 'absolute';
+  ref$.top = 0;
+  ref$.left = 0;
   ref$.width = '100%';
-  ref$.height = import$('100%', style.hide);
+  ref$.height = '100%';
+  ref$["z-index"] = import$(-1, style.hide);
   import$(nodes[1].style, style.basic);
   import$(nodes[2].style, style.basic);
   import$(nodes[3].style, style.basic);
@@ -1932,9 +1935,9 @@ function import$(obj, src){
 (function(){
   var config, x$, e;
   config = {
-    domain: 'plotdb.com',
-    domainIO: 'plotdb.io',
-    urlschema: "https://",
+    domain: 'localhost',
+    domainIO: 'localhost.io',
+    urlschema: "http://",
     name: 'plotdb',
     debug: true,
     facebook: {
@@ -1943,7 +1946,7 @@ function import$(obj, src){
     google: {
       clientID: '1003996266757-4gv30no8ije0sd8d8qsd709dluav0676.apps.googleusercontent.com'
     },
-    mode: 1,
+    mode: 0,
     plan: {
       sizeLimits: [1000000, 50000000, 1000000000]
     }

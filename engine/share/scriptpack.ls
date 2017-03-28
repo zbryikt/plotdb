@@ -12,6 +12,10 @@
           /assets/select2/4.0.1/css/select2.min.css
           /assets/ldcolorpicker/0.1.1/ldcp.css
           /assets/codemirror/5.10/lib/codemirror.css
+          /assets/codemirror/5.10/theme/neat.css
+          /assets/codemirror/5.10/theme/monokai.css
+          /assets/codemirror/5.10/theme/rubyblue.css
+          /assets/codemirror/5.10/theme/colorforth.css
           /assets/clusterize/0.16.1/clusterize.css
           /assets/medium-editor/5.15.1/css/medium-editor.min.css
           /assets/medium-insert/2.2.4/css/base.min.css

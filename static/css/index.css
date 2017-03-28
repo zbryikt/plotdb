@@ -125,6 +125,13 @@ big.xl {
   top: 4px;
   right: 4px;
 }
+.closebtn.lg {
+  font-size: 32px;
+}
+.closebtn.lg.inner {
+  top: 12px;
+  right: 12px;
+}
 .closebtn.outer {
   position: absolute;
   top: -4px;
@@ -6111,6 +6118,10 @@ span.select2-container--default .select2-selection--multiple {
   top: 0;
   padding-top: 53px;
 }
+#editor-datagrid .closebtn {
+  top: auto;
+  bottom: 4px;
+}
 #chartview {
   background: #fff;
 }
@@ -6120,7 +6131,7 @@ span.select2-container--default .select2-selection--multiple {
   height: 100%;
   padding: 60px 0 0 0;
 }
-.editor-root .inner {
+.editor-root > .inner {
   width: 100%;
   height: 100%;
   position: relative;
@@ -6133,6 +6144,7 @@ span.select2-container--default .select2-selection--multiple {
   top: 0;
   background: #292929;
   color: #fff;
+  z-index: 12;
 }
 .editor-func {
   cursor: pointer;
@@ -6186,7 +6198,7 @@ span.select2-container--default .select2-selection--multiple {
   color: #444;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
-.editor-func-detail .inner {
+.editor-func-detail > .inner {
   height: 100%;
   overflow: scroll;
   padding-bottom: 60px;
@@ -6217,11 +6229,16 @@ span.select2-container--default .select2-selection--multiple {
   bottom: 110px;
   border: 1px dashed #ddd;
 }
+.editor-canvas iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: none;
+}
 .editor-ctrls {
   position: absolute;
   bottom: 5%;
   height: 50px;
-  width: 80%;
   margin: auto;
   left: 0;
   right: 0;
@@ -6241,6 +6258,9 @@ span.select2-container--default .select2-selection--multiple {
   position: absolute;
   right: 40px;
   top: 10px;
+  z-index: 12;
+  border: 1px solid #ccc;
+  border-radius: 3px;
 }
 .editor-panel-tab .icon {
   background: #393939;
@@ -6265,4 +6285,65 @@ span.select2-container--default .select2-selection--multiple {
 .editor-panel-tab .icon.active {
   background: #191919;
   box-shadow: inset 0 2px 2px rgba(0,0,0,0.5);
+}
+.editor-panel-tab .icon .btn-xs {
+  background: none;
+  color: #fff;
+  border: none;
+}
+.editor-panel-tab .icon .dropdown-menu {
+  min-width: auto;
+}
+.editor-func-detail .CodeMirror {
+  height: 100%;
+  font-size: 18px;
+  font-family: consolas, fixed;
+}
+#editor-code {
+  position: relative;
+  opacity: 0.1;
+  z-index: 0;
+  width: 1px;
+}
+#editor-code .inner {
+  overflow: hidden;
+}
+#editor-code.active {
+  width: 50%;
+  opacity: 1;
+  z-index: 8;
+}
+#editor-code .btn-dark {
+  color: #fff;
+  background: rgba(0,0,0,0.8);
+  position: absolute;
+  border: 1px solid #ccc;
+  bottom: 10px;
+  right: 10px;
+  z-index: 11;
+}
+#editor-code.lg.active {
+  width: 100%;
+  position: absolute;
+  left: 0;
+  padding-left: 80px;
+  background: none;
+}
+#editor-code.lg.active .btn-dark {
+  bottom: 40px;
+}
+#editor-code.lg .CodeMirror {
+  background: rgba(255,255,255,0.9);
+}
+#editor-code.lg .CodeMirror.cm-s-neat {
+  background: #fff;
+}
+#editor-code.lg .CodeMirror.cm-s-monokai {
+  background: rgba(39,40,34,0.95);
+}
+#editor-code.lg .CodeMirror.cm-s-rubyblue {
+  background: rgba(17,36,53,0.95);
+}
+#editor-code.lg .CodeMirror.cm-s-colorforth {
+  background: rgba(0,0,0,0.9);
 }

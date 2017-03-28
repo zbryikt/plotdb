@@ -32,11 +32,14 @@
     "helmet": "=2.1.2",
     "image-type": "=2.0.2",
     "jade": ">=0.27.6",
+    "jsdom": "=9.11.0",
     "jsonwebtoken": "=7.1.9",
     "jstransformer-markdown": "zbryikt/jstransformer-markdown",
     "markdown": "zbryikt/markdown-js",
     "moment": "=2.14.1",
     "mongodb": "=2.0.33",
+    "node-minify": "^2.0.3",
+    "node-zip": "=1.1.1",
     "nodemailer": ">=2.7.0",
     "nodemailer-mailgun-transport": "=1.2.2",
     "nodemailer-smtp-transport": ">=0.1.12",
@@ -49,11 +52,9 @@
     "require-reload": "=0.2.2",
     "sanitize-html": "=1.11.4",
     "sharp": "=0.16.0",
+    "stripe": "=4.9.0",
     "stylus": "=0.50.0",
     "uglify-js": "=2.4.16",
-    "stripe": "=4.9.0",
-    "uglifycss": "=0.0.15",
-    "jsdom": "=9.11.0",
-    "node-zip": "=1.1.1"
+    "uglifycss": "=0.0.15"
   }
 }

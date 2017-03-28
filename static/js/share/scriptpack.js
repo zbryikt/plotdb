@@ -4,7 +4,7 @@
   config = {
     css: {
       plotdb: ['/css/render/pdb.css'],
-      frameworks: ['/assets/bootstrap/3.3.7/css/bootstrap.min.css', '/assets/fontawesome/4.6.1/css/font-awesome.min.css', '/assets/select2/4.0.1/css/select2.min.css', '/assets/ldcolorpicker/0.1.1/ldcp.css', '/assets/codemirror/5.10/lib/codemirror.css', '/assets/clusterize/0.16.1/clusterize.css', '/assets/medium-editor/5.15.1/css/medium-editor.min.css', '/assets/medium-insert/2.2.4/css/base.min.css', '/assets/medium-insert/2.2.4/css/frontend.min.css', '/assets/animate.css/3.5.1/index.css', '/css/index.css']
+      frameworks: ['/assets/bootstrap/3.3.7/css/bootstrap.min.css', '/assets/fontawesome/4.6.1/css/font-awesome.min.css', '/assets/select2/4.0.1/css/select2.min.css', '/assets/ldcolorpicker/0.1.1/ldcp.css', '/assets/codemirror/5.10/lib/codemirror.css', '/assets/codemirror/5.10/theme/neat.css', '/assets/codemirror/5.10/theme/monokai.css', '/assets/codemirror/5.10/theme/rubyblue.css', '/assets/codemirror/5.10/theme/colorforth.css', '/assets/clusterize/0.16.1/clusterize.css', '/assets/medium-editor/5.15.1/css/medium-editor.min.css', '/assets/medium-insert/2.2.4/css/base.min.css', '/assets/medium-insert/2.2.4/css/frontend.min.css', '/assets/animate.css/3.5.1/index.css', '/css/index.css']
     },
     js: {
       render: ['/js/sched.js', '/assets/jquery/1.10.2/jquery.min.js', '/assets/bluebird/3.3.4/bluebird.min.js', '/assets/canvg/1.4.0/rgbcolor.js', '/assets/canvg/1.4.0/StackBlur.js', '/assets/canvg/1.4.0/canvg.js', '/assets/utf8js/2.0.0/utf8.js', '/assets/base64/0.1.0/base64.js', '/js/plotdb/main.js', '/js/plotdb/type.js', '/js/plotdb/chart.js', '/js/plotdb/theme.js', '/js/plotdb/data.js', '/js/plotdb/config.js', '/js/plotdb/util.js', '/js/share/config.js', '/js/chart/render.js'],

@@ -2,6 +2,8 @@ grid-render = (e) ->
   htmlCharMap = '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
   escape = (text="") -> "#text".replace /[&<>"']/g, (m) -> htmlCharMap[m]
   data = e.data
+  dimkeys = data.dimkeys or []
+  bind = data.bind or []
   rowcount = data.rowcount or 10
   types = data.types or []
   ohlen = data.headers.length
@@ -29,8 +31,10 @@ grid-render = (e) ->
   trs = []
   dim = "<div>" + headers.map((d,j)->
     ["<div class='dropdown' col='#j' style='width:#w'>"
-    "<div class='dropdown-toggle' data-toggle='dropdown'><span></span><span class='caret'></span></div>"
+    """<div class='dropdown-toggle' data-toggle='dropdown'><span>#{bind[j] or '<span class="grayed">(empty)</span>'}</span><span class='caret'></span></div>"""
     "<ul class='dropdown-menu'>"
+    ["""<li><a href='#' data-dim="#{v.name}" data-multiple="#{!!v.multiple}">#{v.name}</a></li>""" for v in dimkeys].join("")
+    """<li class='grayed'><a href='#' data-dim="">(empty)</a></li>"""
     "</ul>"
     "</div>"].join("")
   ).join("") + "</div>"

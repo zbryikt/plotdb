@@ -9,6 +9,9 @@
   overflow: hidden
   top: 0
   padding-top: 53px
+  .closebtn
+    top: auto
+    bottom: 4px
 
 #chartview
   background: #fff
@@ -17,7 +20,7 @@
   width: 100%
   height: 100%
   padding: 60px 0 0 0
-  .inner
+  & > .inner
     width: 100%
     height: 100%
     position: relative
@@ -29,6 +32,7 @@
   top: 0
   background: #292929
   color: #fff
+  z-index: index(order, 'code-tabs')
 .editor-func
   cursor: pointer
   padding: 15px 10px
@@ -62,7 +66,7 @@
 .editor-func-detail
   position: relative
   z-index: index(order, 'editor-func-detail')
-  .inner
+  & > .inner
     height: 100%
     overflow: scroll
     padding-bottom: 60px
@@ -101,20 +105,20 @@
   //box-shadow: 0 2px 4px rgba(0,0,0,0.2)
   //border-radius: 5px
   border: 1px dashed #ddd
+  iframe
+    width: 100%
+    height: 100%
+    border: none
+    background: none
 
 .editor-ctrls
   position: absolute
   bottom: 5%
   height: 50px
-  width: 80%
   margin: auto
   left: 0
   right: 0
-  //background: #fff
-  //border: 1px solid #ccc
-  //box-shadow: 0 2px 1px  rgba(0,0,0,0.2)
   padding: 8px
-  //border-radius: 0 0 3px 3px
 .editor-name
   position: absolute
   width: 80%
@@ -127,6 +131,9 @@
   position: absolute
   right: 40px
   top: 10px
+  z-index: index(order, 'code-tabs')
+  border: 1px solid #ccc
+  border-radius: 3px
   .icon
     background: #393939
     width: 48px
@@ -147,3 +154,51 @@
     &.active
       background: #191919
       box-shadow: inset 0 2px 2px rgba(0,0,0,0.5)
+    .btn-xs
+      background: none
+      color: #fff
+      border: none
+    .dropdown-menu
+      min-width: auto
+.editor-func-detail .CodeMirror
+  height: 100%
+  font-size: 18px
+  font-family: consolas, fixed
+
+#editor-code
+  position: relative
+  opacity: 0.1
+  z-index: 0
+  width: 1px
+  .inner
+    overflow: hidden
+  &.active
+    width: 50%
+    opacity: 1
+    z-index: index(order, 'edit-box')
+  .btn-dark
+    color: #fff
+    background: rgba(0,0,0,0.8)
+    position: absolute
+    border: 1px solid #ccc
+    bottom: 10px
+    right: 10px
+    z-index: index(order, 'code-ctrl')
+  &.lg.active
+    width: 100%
+    position: absolute
+    left: 0
+    padding-left: 80px
+    background: none
+    .btn-dark
+      bottom: 40px
+#editor-code.lg .CodeMirror
+  background: rgba(255,255,255,0.9)
+  &.cm-s-neat
+    background: rgba(255,255,255,1.0)
+  &.cm-s-monokai
+    background: rgba(39,40,34,0.95)
+  &.cm-s-rubyblue
+    background: rgba(17,36,53,0.95)
+  &.cm-s-colorforth
+    background: rgba(0,0,0,0.9)

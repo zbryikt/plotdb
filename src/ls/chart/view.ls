@@ -101,7 +101,7 @@ plotdb.view.chart.prototype <<< do
         resize.handle = null
         if chart.resize => chart.resize!
         if chart.render => chart.render!
-      ), 500
+      ), 10
     plotdb.util.trackResizeEvent root, (-> resize!)
     newClass = (root.getAttribute(\class) or "").split(' ').filter(->it!='loading').join(" ").trim!
     try
@@ -135,9 +135,9 @@ plotdb.view.chart.prototype <<< do
     @_.chart.render!
 
   data: (data, refresh, mapping) ->
-
     if !data? => return @_.data
     if mapping => data = plotdb.chart.data-convert.by-mapping data, mapping
+    if !Array.isArray(data) and typeof(data) == typeof({}) => data = plotdb.chart.data-convert.from-dimension data
     @_.data = data
     @sync!
     if @inited and refresh => @refresh!

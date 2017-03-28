@@ -19,6 +19,24 @@ plotdb.chart = {
     resize: function(){},
     render: function(){}
   },
+  fieldsFromDimension: function(dimension){
+    var k, v;
+    return (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = dimension) {
+        v = ref$[k];
+        results$.push([k, v]);
+      }
+      return results$;
+    }()).map(function(d){
+      d[1].fields.map(function(it){
+        return it.bind = d[0];
+      });
+      return d[1].fields;
+    }).reduce(function(a, b){
+      return a.concat(b);
+    }, []);
+  },
   dataFromDimension: function(dimension){
     var ref$, parsers, data, len, k, v, that, i$, len$, field, defaultParser, key$, i, ret, j$, to$, j;
     ref$ = [{}, []], parsers = ref$[0], data = ref$[1];
@@ -95,6 +113,15 @@ plotdb.chart = {
     }
   },
   dataConvert: {
+    fromDimension: function(dimension){
+      var ret, k, v;
+      ret = {};
+      for (k in dimension) {
+        v = dimension[k];
+        ret[k] = v.fields;
+      }
+      return ret;
+    },
     byMapping: function(data, mapping){
       var ret, k, v, res$, i$, len$, name;
       ret = {};

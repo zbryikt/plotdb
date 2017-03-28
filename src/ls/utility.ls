@@ -14,7 +14,7 @@ angular.module \plotDB
         'Upgrade to enable privacy control': zh: "想要私人圖表嗎？現在就升級方案吧"
         "let's check out the plans": zh: "那麼、方案長什麼樣子呢？"
         # new editor
-        'Canvas Size': zh: "畫布尺寸"
+        'Canvas Size': zh: "尺寸"
         'Data': zh: "資料"
         'Styles': zh: "樣式"
         'Download': zh: "下載"
@@ -243,6 +243,15 @@ angular.module \plotDB
         'Normal People': zh: "正常人"
         'Red-Green': zh: "紅綠色盲"
         'Monochromasy': zh: "全色盲"
+        'achromatopsia': zh: "全色盲", en: 'Achromatopsia'
+        'achromatomaly': zh: "全色弱", en: 'Achromatomaly'
+        'protanopia': zh: "紅色盲", en: 'Protanopia'
+        'protanomaly': zh: "紅色弱", en: 'Protanomaly'
+        'deuteranopia': zh: "綠色盲", en: 'Deuteranopia'
+        'deuteranomaly': zh: "綠色弱", en: 'Deuteranomaly'
+        'tritanopia': zh: "藍色盲", en: 'Tritanopia'
+        'tritanomaly': zh: "藍色弱", en: 'Tritanomaly'
+
         'Advanced Options': zh: "進階選項"
         'Chart Size': zh: "圖表尺寸"
         'Auto Scale': zh: "自動調整"

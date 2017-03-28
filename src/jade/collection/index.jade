@@ -27,7 +27,7 @@ block body
         .text-center
           .btn-group
             .btn.btn-default(ng-click="q.owner=user.data.key",
-            ng-class="{'active':q.owner==user.data.key}") {{"My Collections"|i18n}}
+            ng-class="{'active':q.owner==user.data.key && user.data.key}") {{"My Collections"|i18n}}
             .btn.btn-default(ng-click="q.owner=null", ng-class="{'active':!q.owner}") {{"Everyone's Collections"|i18n}}
           span &nbsp; &nbsp;
           //-.btn.btn-default: i.fa.fa-heart

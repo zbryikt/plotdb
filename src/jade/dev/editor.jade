@@ -1,4 +1,6 @@
 extends /base.jade
+mixin edfuncClose
+  .pull-right: .closebtn.inner.inverse.lg(ng-click="edfunc=''")
 block vars
   if !chart
     - var rootid = "chartview"
@@ -20,10 +22,12 @@ block vars
 block head
   link(rel="stylesheet",type="text/css",href="/dist/0.1.0/plotdb.min.css")
   script(type="text/javascript",src="/lib/plotd3/0.1.0/index.js")
-  script(type="text/javascript",src="/js/edit-new.js")
+  script(type="text/javascript",src="/js/dev/editor.js")
   script(type="text/javascript",src="/js/pack/view.js")
+  include /colorblind.jade
 block body
   .editor-root(ng-controller="plEditorNew",ng-cloak,style="background:url(/assets/img/transparent.png)"): .inner
+    include ../editor/panel.jade
     .editor-funclist(ng-init="edfunc='data'")
       .editor-func(ng-class="{'active':edfunc == 'data'}", ng-click="edfunc = 'data'")
         i.fa.fa-table
@@ -37,25 +41,30 @@ block body
       .editor-func(ng-class="{'active':edfunc == 'share'}", ng-click="edfunc = 'share'")
         i.fa.fa-share-square
         span {{'Share'|i18n}}
-      .editor-func(ng-class="{'active':edfunc == 'settings'}", ng-click="edfunc = 'settings'")
+      .editor-func(ng-class="{'active':edfunc == 'settings'}", ng-click="settingPanel.toggle('permission')")
         i.fa.fa-cog
         span {{'Settings'|i18n}}
       .editor-func(ng-class="{'active':edfunc == 'save'}", ng-click="edfunc = 'save'")
         i.fa.fa-save
         span {{'Save'|i18n}}
-    .editor-func-detail(ng-show="edfunc=='data'",ng-controller="dataEditCtrl",style="width:500px"): .inner
+    .editor-func-detail(ng-show="edfunc=='data'",style="width:500px"): .inner
+      +edfuncClose
       .title {{'Data'|i18n}}
-      #editor-datagrid.body(style="padding-left:0;padding-right:0")
+      #editor-datagrid.body(style="padding-left:0;padding-right:0",ng-controller="dataEditCtrl")
         #dataset-editbox
           #dataset-edit-grid.sheet-outer
             .sheet.clusterize
-              .sheet-dim
+              .sheet-dim(ng-click="grid.data.bindField($event)")
               .sheet-head(data-rowcount="5")
               .sheet-body-outer
                 .sheet-body.clusterize-scroll
                   .sheet-cells.clusterize-content
+      .foot
+        .btn.btn-default(ng-click="loadSampleData()") {{'Load Sample Data'|i18n}}
+        .pull-right.btn.btn-default(ng-click="edfunc=''") {{'Close'|i18n}}
 
     .editor-func-detail(ng-show="edfunc=='style'"): .inner
+      +edfuncClose
       .title {{'Style'|i18n}}
       .body
         h4 Colors
@@ -73,6 +82,7 @@ block body
 
     .editor-func-detail(ng-show="edfunc=='share'")
       .inner
+        +edfuncClose
         .title {{'Share'|i18n}}
         div(style="padding:20px 20px 0")
           .btn-group
@@ -114,14 +124,19 @@ block body
         .btn.btn-default(ng-click="edfunc=''") {{'Close'|i18n}}
 
     .editor-func-detail(ng-show="edfunc=='download'"): .inner
+      +edfuncClose
       .title {{'Download'|i18n}}
       .body
         label {{'Download As'|i18n}}:
         ul.list-group
-          li.list-group-item.active SVG #[small.grayed.pull-right for Vector Editing]
-          li.list-group-item PNG #[small.pull-right.grayed for Raster Editing]
-          li.list-group-item PNG #[small.grayed ( Hi Res )]
-          li.list-group-item PlotDB #[small.pull-right.grayed for Developer]
+          li.list-group-item(ng-class="{'active':download.format=='svg'}",
+          ng-click="download.fetch('svg')") SVG #[small.grayed.pull-right for Vector Editing]
+          li.list-group-item(ng-class="{'active':download.format=='png'}",
+          ng-click="download.fetch('png')") PNG #[small.pull-right.grayed for Raster Editing]
+          li.list-group-item(ng-class="{'active':download.format=='png-hd'}",
+          ng-click="download.fetch('png-hd')") PNG #[small.grayed ( Hi Res )]
+          li.list-group-item(ng-class="{'active':download.format=='plotdb'}",
+          ng-click="download.fetch('plotdb')") JS #[small.pull-right.grayed for Developer]
         label Size
         .input-group.dual
           input.form-control.input-sm(placeholder="width")
@@ -129,24 +144,124 @@ block body
           input.form-control.input-sm(placeholder="height")
         .sep.gap
         .text-right
-          .btn.btn-success Download
+          img(src="/assets/img/loading-sm.svg",ng-show="download.loading")
+          a.btn.btn-success(ng-attr-download="{{download.filename}}",
+          ng-attr-href="{{download.url}}",ng-class="{'disabled':!download.ready}") Download
           span &nbsp;
-          .btn.btn-default Cancel
+          .btn.btn-default(ng-click="edfunc=''") Cancel
+    #editor-code.editor-func-detail(ng-class="{'active':edfunc=='editor','lg':code.size=='lg'}")
+      .btn.btn-dark(ng-click="code.toggleLarge()")
+        i.fa.fa-long-arrow-right(ng-if="code.size!='lg'")
+        i.fa.fa-long-arrow-left(ng-if="code.size=='lg'")
+      .inner(style="padding-bottom:0")
+        textarea#editor-textarea
     //-.editor-name
       .title Stacked Bar Chart
       .desc a standard bar chart. best used in visualize unordered data when we need accurate comparison or find maximal / minimal value.
-    #editor-canvas.editor-canvas: .inner(style="width:100%;height:100%;overflow:hidden;padding-bottom:0")
+    #editor-canvas.editor-canvas
+      .inner(style="width:100%;height:100%;overflow:hidden;padding-bottom:0")
+        iframe
     .editor-ctrls
-      .btn.btn-default {{'Colorblind'|i18n}} #[b.caret]
+      .dropup.btn-group
+        .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+          span(ng-show="colorblind.val=='normal'")
+            i.fa.fa-eye-slash.grayed
+            span &nbsp;{{'colorblind'|i18n}} #[span.caret]
+          span(ng-cloak,ng-show="colorblind.val!='normal'")
+            i.fa.fa-eye
+            span &nbsp;{{colorblind.val|i18n}} #[span.caret]
+        ul.dropdown-menu
+          li(ng-class="{'active':colorblind.val=='normal'}")
+            a(href="#",ng-click="colorblind.set('normal')",
+            data-track="ChartEditor,Colorblind,Normal") {{'Normal People'|i18n}}
+          li(ng-class="{'active':colorblind.val=='deuteranopia'}")
+            a(href="#",ng-click="colorblind.set('deuteranopia')",
+            data-track="ChartEditor,Colorblind,Red-Green") {{'Red-Green'|i18n}} #[small.grayed (9%)]
+          li(ng-class="{'active':colorblind.val=='achromatopsia'}")
+            a(href="#",ng-click="colorblind.set('achromatopsia')",
+            data-track="ChartEditor,Colorblind,Monochromasy") {{'Monochromasy'|i18n}} #[small.grayed (0.003%)]
+          li.divider
+          small.grayed(style="margin-left:20px") {{'Advanced Options'|i18n}}
+          li(ng-class="{'active':colorblind.val=='protanopia'}")
+            a(href="#",ng-click="colorblind.set('protanopia')",
+            data-track="ChartEditor,Colorblind,Protanopia") {{'protanopia'|i18n}}
+          li(ng-class="{'active':colorblind.val=='protanomaly'}")
+            a(href="#",ng-click="colorblind.set('protanomaly')",
+            data-track="ChartEditor,Colorblind,Protanomaly") {{'protanomaly'|i18n}}
+          li(ng-class="{'active':colorblind.val=='deuteranopia'}")
+            a(href="#",ng-click="colorblind.set('deuteranopia')",
+            data-track="ChartEditor,Colorblind,Deuteranopia") {{'deuteranopia'|i18n}}
+          li(ng-class="{'active':colorblind.val=='deuteranomaly'}")
+            a(href="#",ng-click="colorblind.set('deuteranomaly')",
+            data-track="ChartEditor,Colorblind,Deuteranomaly") {{'deuteranomaly'|i18n}}
+          li(ng-class="{'active':colorblind.val=='tritanopia'}")
+            a(href="#",ng-click="colorblind.set('tritanopia')",
+            data-track="ChartEditor,Colorblind,Tritanopia") {{'tritanopia'|i18n}}
+          li(ng-class="{'active':colorblind.val=='tritanomaly'}")
+            a(href="#",ng-click="colorblind.set('tritanomaly')",
+            data-track="ChartEditor,Colorblind,Tritanomaly") {{'tritanomaly'|i18n}}
+          li(ng-class="{'active':colorblind.val=='achromatopsia'}")
+            a(href="#",ng-click="colorblind.set('achromatopsia')",
+            data-track="ChartEditor,Colorblind,Achromatopsia") {{'achromatopsia'|i18n}}
+          li(ng-class="{'active':colorblind.val=='achromatomaly'}")
+            a(href="#",ng-click="colorblind.set('achromatomaly')",
+            data-track="ChartEditor,Colorblind,Achromatomaly") {{'achromatomaly'|i18n}}
+
       span &nbsp;
-      .btn.btn-default {{'Canvas Size'|i18n}} #[b.caret]
+      .dropup.btn-group
+        .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+          span(ng-show="rwdtest.val=='default'")
+            i.fa.fa-desktop.grayed
+            span &nbsp;{{'Canvas Size'|i18n}} #[span.caret]
+          span(ng-cloak,ng-show="rwdtest.val!='default'")
+            i.fa.fa-desktop
+            span &nbsp;{{rwdtest.val|i18n}} #[span.caret]
+        ul.dropdown-menu
+          li(ng-class="{'active':rwdtest.val=='default'}")
+            a(href="#",ng-click="rwdtest.set('default')",
+            data-track="ChartEditor,Responsive,Default") {{'Auto Scale'|i18n}}
+          li(ng-class="{'active':rwdtest.val=='QVGA'}")
+            a(href="#",ng-click="rwdtest.set('QVGA')",
+            data-track="ChartEditor,Responsive,QVGA") QVGA #[small.grayed (240x320)]
+          li(ng-class="{'active':rwdtest.val=='HVGA'}")
+            a(href="#",ng-click="rwdtest.set('HVGA')",
+            data-track="ChartEditor,Responsive,HVGA") HVGA #[small.grayed (320x480)]
+          li(ng-class="{'active':rwdtest.val=='Thumb'}")
+            a(href="#",ng-click="rwdtest.set('Thumb')",
+            data-track="ChartEditor,Responsive,Thumb") {{'Thumb'|i18n}}#[small.grayed (308x229)]
+          li(ng-class="{'active':rwdtest.val=='Custom'}")
+            a(href="#",ng-click="rwdtest.set('Custom')",
+            data-track="ChartEditor,Responsive,Custom")
+              div {{'Custom'|i18n}}
+              input.form-control-inline.input-xs.dimension(ng-model="rwdtest.custom.width",
+              type="text",placeholder="width")
+              span &nbsp;&times;&nbsp;
+              input.form-control-inline.input-xs.dimension(ng-model="rwdtest.custom.height",
+              type="text",placeholder="height")
+
+
       span &nbsp;
-      .btn.btn-default: i.fa.fa-arrows-alt
-      span &nbsp;
-      .btn.btn-default: i.fa.fa-refresh
+      .btn.btn-default(ng-click="render(chart)"): i.fa.fa-refresh
     .editor-panel-tab
-      .icon.active: i.fa.fa-eye
-      .icon JS
-      .icon CSS
-      .icon HTML
+      .icon(ng-class="{'active':edfunc==''}",ng-click="edfunc=''"): i.fa.fa-eye
+      .icon(ng-class="{'active':edfunc=='editor' && edcode=='code'}",ng-click="edfunc='editor';edcode='code'") JS
+      .icon(ng-class="{'active':edfunc=='editor' && edcode=='style'}",ng-click="edfunc='editor';edcode='style'") CSS
+      .icon(ng-class="{'active':edfunc=='editor' && edcode=='doc'}",ng-click="edfunc='editor';edcode='doc'") HTML
       .icon ASSET
+      .icon
+        .dropdown.btn-group
+          .btn.btn-xs.btn-default.dropdown-toggle(data-toggle="dropdown")
+            span
+              span #[i.fa.fa-adjust] #[span.caret]
+          ul.dropdown-menu
+            li(ng-class="{'active':editortheme.val=='default'}")
+              a(href="#",ng-click="editortheme('default')") #[i.fa.fa-circle(style="color:#eee")]
+            li(ng-class="{'active':editortheme.val=='neat'}")
+              a(href="#",ng-click="editortheme('neat')") #[i.fa.fa-circle(style="color:#ddd")]
+            li(ng-class="{'active':editortheme.val=='monokai'}")
+              a(href="#",ng-click="editortheme('monokai')") #[i.fa.fa-circle(style="color:#ba9")]
+            li(ng-class="{'active':editortheme.val=='rubyblue'}")
+              a(href="#",ng-click="editortheme('rubyblue')") #[i.fa.fa-circle(style="color:#249")]
+            li(ng-class="{'active':editortheme.val=='colorforth'}")
+              a(href="#",ng-click="editortheme('colorforth')") #[i.fa.fa-circle(style="color:#222")]
+

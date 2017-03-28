@@ -8,6 +8,11 @@ plotdb.chart = do
     bind: ->
     resize: ->
     render: ->
+  fields-from-dimension: (dimension) ->
+    [[k,v] for k,v of dimension].map((d)->
+      d.1.fields.map -> it.bind = d.0
+      d.1.fields
+    ).reduce(((a,b) -> a ++ b), [])
   data-from-dimension: (dimension) ->
     [parsers,data] = [{},[]]
     len = Math.max.apply null,
@@ -24,7 +29,6 @@ plotdb.chart = do
       parsers[k] = if v.fields.length =>
         v.fields.map(->default-parser or plotdb{}[it.datatype].parse or (->it))
       else [default-parser or (->it)]
-
     for i from 0 til len =>
       ret = {}
       for k,v of dimension
@@ -38,6 +42,10 @@ plotdb.chart = do
       data.push ret
     return data
   data-convert: do
+    from-dimension: (dimension) ->
+      ret = {}
+      for k,v of dimension => ret[k] = v.fields
+      ret
     by-mapping: (data, mapping) ->
       ret = {}
       for k,v of mapping =>

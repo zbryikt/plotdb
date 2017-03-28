@@ -1,0 +1,15 @@
+doctype html
+include /version.jade
+html(lang="en")
+  head(prefix="og: http://ogp.me/ns#")
+    meta(charset="utf-8")
+    script
+      include /static/js/dev/render.js
+      include /static/assets/bluebird/3.3.4/bluebird.min.js
+      include /static/dist/latest/plotdb.js
+      include /static/assets/base64/0.1.0/base64.js
+      include /static/assets/utf8js/2.0.0/utf8.min.js
+    include /render/base-style.jade
+    include /render/pdb-style.jade
+    include /colorblind.jade
+  body(class="pdb-renderer"): div

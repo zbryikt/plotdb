@@ -75,6 +75,9 @@ li.disabled a:hover {
 .grayed {
   color: rgba(0,0,0,0.5);
 }
+.text-sm {
+  font-size: 0.8em;
+}
 .light {
   color: rgba(0,0,0,0.3);
 }

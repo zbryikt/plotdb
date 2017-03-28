@@ -1,0 +1,254 @@
+angular.module \plotDB
+  ..controller \plEditorNew,
+  <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify eventBus permService license]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify,eventBus,permService,license) ->
+    $scope.plotdb-domain = "#{plConfig.urlschema}#{plConfig.domain}" #"#{plConfig.urlschema}#{plConfig.domainIO}"
+    $scope.editor = CodeMirror.fromTextArea(document.getElementById('editor-textarea'), {
+      lineNumbers: true,
+      mode: "javascript",
+      theme: "default"
+    });
+    $scope.editortheme = ->
+      $scope.editortheme.val = it
+      $scope.editor.setOption \theme, it
+    $scope.editortheme.val = 'default'
+    $scope.colorblind = do
+      val: \normal
+      vals: <[
+        normal protanopia protanomaly deuteranopia deuteranomaly tritanopia
+        tritanomaly achromatopsia achromatomaly
+      ]>
+      set: ->
+        if !(it in @vals) => return
+        @val = it
+        document.getElementById(\editor-canvas).style <<< do
+          "-webkit-filter": "url(\##it)"
+          "filter": "url(\##it)"
+
+
+    $scope.rwdtest = do
+      val: \default
+      vals: <[default QVGA HVGA Thumb Custom]>
+      map: do
+        default: [0,0]
+        QVGA: [240, 320]
+        HVGA: [320, 480]
+        Thumb: [308, 229]
+      custom: width: 640, height: 480
+      init: -> $scope.$watch 'rwdtest.custom', (~>@set!), true
+      set: ->
+        if !(it in @vals) => it = @val
+        @val = it
+        #if !$scope.editor.fullscreen.toggled => $scope.editor.fullscreen.toggle!
+        node = document.getElementById(\editor-canvas)
+        canvas = node.querySelector(".inner")
+        {width,height} = node.getBoundingClientRect!{width, height}
+        if @val == \default =>
+          [w,h] = <[100% 100%]>
+          canvas.style <<< marginTop: 0, marginLeft: 0
+        else
+          if @val == \Custom =>
+            [w,h] = [@custom.width, @custom.height]
+          else [w,h] = @map[@val]
+          canvas.style <<< marginTop: ((height - h)/2) + "px", marginLeft: ((width - w)/2) + "px"
+          [w,h] = [w,h].map(->"#{it}px")
+        canvas.style <<< width: w, height: h
+        canvas.style.boxShadow = '0 0 3px rgba(0,0,0,0.2)'
+    $scope.rwdtest.init!
+
+    $scope.code = do
+      size: ''
+      toggle-large: ->
+        @size = if @size == 'lg' => '' else \lg
+        $scope.canvas-resize!
+
+    $scope.canvas-resize = ->
+      $timeout (->
+        left = Math.max.apply(null, Array.from(document.querySelectorAll '.editor-func-detail')
+          .map(->
+            if it.getAttribute(\class).split(' ').indexOf(\lg) >= 0  => return 0
+            it.getBoundingClientRect!width
+          )) + 100
+        node = document.querySelector '#editor-canvas'
+        node.style.left = "#{left}px"
+        node = document.querySelector '.editor-ctrls'
+        node.style.left = "#{left}px"
+        $scope.rwdtest.set!
+      ), 0
+
+    $scope.$watch 'edfunc', -> $scope.canvas-resize!
+    last-edcode = null
+    build = ->
+      value = $scope.editor.getValue()
+      if $scope.chart => $scope.chart[$scope.edcode].content = value
+      if last-edcode == $scope.edcode => reset $scope.chart
+      last-edcode := $scope.edcode
+
+    $scope.editor.on \change, build
+    $scope.update-code = ->
+      if $scope.chart => $scope.editor.getDoc!.setValue $scope.chart[$scope.edcode].content
+    $scope.$watch 'edcode', (val) -> $scope.update-code!
+    $scope.edcode = \code
+
+    $scope.library = do
+      hash: {}
+      load: (list) ->
+        if !list => list = $scope.{}chart.library or []
+        tasks = list.map(-> [it, it.split '/']).filter(~> !@hash[it.0])
+        Promise.all(for item in tasks =>
+          ((item) ~> new Promise (res, rej) ~>
+            url = item.1
+            url = "/lib/#{url.0}/#{url.1}/index.#{if url.2 => that+'.' else ''}js"
+            $http url: url, method: \GET
+              .success (js) ~>
+                bloburl = URL.createObjectURL new Blob [js], {type: \text/javascript}
+                @hash[item.0] = bloburl
+                res!
+          ) item
+        ) .then ~>
+          ret = {}
+          list.map ~> ret[it] = @hash[it]
+          ret
+
+    $scope.update-data = (data) ->
+      [v for k,v of $scope.dimension].map -> it.fields = []
+      for i from 0 til data.length =>
+        if !data[i].bind or !$scope.dimension[data[i].bind] => continue
+        $scope.dimension{}[data[i].bind].[]fields.push data[i]
+      send-msg {
+        type: \update-data
+        data: $scope.dimension
+      }
+    eventBus.listen \dataset.changed, (data) ->
+      $scope.update-data data
+      $scope.data = data
+
+    $scope.loadSampleData = ->
+      send-msg { type: \get-sample-data }
+    $scope.iframe = document.querySelector('#editor-canvas iframe')
+    $scope.framewin = $scope.iframe.contentWindow
+    send-msg = -> $scope.framewin.postMessage it, $scope.plotdb-domain
+
+    $scope.download = do
+      loading: false
+      data: null
+      fetch: (format = \svg) ->
+        @ <<< {format, loading: true, data: false, ready: false}
+        @format = format
+        @loading = true
+        send-msg {type: \snapshot, format: format}
+
+    dispatcher = (evt) ->
+      if evt.data.type == \inited =>
+        $scope.dimension = JSON.parse evt.data.dimension 
+        $scope.dimkeys = [{name: k,multiple: v.multiple} for k,v of $scope.dimension]
+      if evt.data.type == \sample-data =>
+        $scope.data = data = evt.data.data
+        eventBus.fire \dataset.update.fields, data, $scope.dimkeys
+        $scope.update-data data
+      if evt.data.type == \snapshot => $scope.$apply ->
+        {payload, format} = evt.data
+        if payload =>
+          if /svg/.exec(format) =>
+            size = payload.length
+            url = URL.createObjectURL(new Blob [payload], {type: 'image/svg+xml'})
+          else if /png/.exec(format) =>
+            bytes = atob(payload.split(\,).1)
+            mime = payload.split(\,).0.split(\:).1.split(\;).0
+            buf = new ArrayBuffer bytes.length
+            ints = new Uint8Array buf
+            for idx from 0 til bytes.length => ints[idx] = bytes.charCodeAt idx
+            size = bytes.length
+            url = URL.createObjectURL(new Blob [buf], {type: 'image/png'})
+
+        $scope.download <<< do
+          loading: false
+          ready: (if payload => true else false)
+          url: url
+          size: size
+          filename: 'tmp'
+    window.addEventListener \message, dispatcher, false
+    init = (code) ->
+      if typeof(code) == \number => plotdb.load code, (chart) ->
+        $scope.chart = JSON.parse(chart._._chart)
+        $scope.update-code!
+        reset $scope.chart
+    reset = (chart) ->
+      $scope.iframe.src = "/dev/render.html"
+      $scope.iframe.onload = ->
+        $scope.library.load chart.library .then (library) ->
+          send-msg {
+            type: \init
+            src: JSON.stringify(chart)
+            library: library
+          }
+    init 2241
+
+    $scope <<< do
+      setting-panel: do
+        tab: \publish
+        init: ->
+          $scope.permtype = window.[]permtype.1 or 'none'
+          $scope.writable = permService.is-enough($scope.permtype, 'write')
+          $scope.is-admin = permService.is-enough($scope.permtype, 'admin')
+          #$scope.$watch 'chart.permission', $scope.setting-panel.permcheck, true
+          #$scope.$watch 'theme.permission', $scope.setting-panel.permcheck, true
+          $scope.$watch 'settingPanel.chart', ((cur, old) ~>
+            for k,v of cur =>
+              if !v and !old[k] => continue
+              $scope.chart[k] = v
+          ), true
+          $scope.$watch 'chart.inherit', (~> @chart.inherit = it), true
+          $scope.$watch 'chart.basetype', ~> @chart.basetype = it
+          $scope.$watch 'chart.visualencoding', ~> @chart.visualencoding = it
+          $scope.$watch 'chart.category', ~> @chart.category = it
+          $scope.$watch 'chart.tags', ~> @chart.tags = it
+          $scope.$watch 'chart.library', ~> @chart.library = it
+        toggle: (tab) ->
+          if tab => @tab = tab
+          @toggled = !!!@toggled
+        toggled: false
+        chart: do
+          basetype: null
+          visualencoding: null
+          category: null
+          tags: null
+          library: null
+          inherit: null
+
+
+
+    /*
+    $scope.framewin.postMessage {
+      type: \render
+      chart: JSON.stringify(chart._.chart)
+      library: library
+    }, $scope.plotdb-domain
+    */
+    /*
+    $timeout (->
+      $scope.framewin.postMessage {
+        type: \get-sample-data
+      }, $scope.plotdb-domain
+    ), 2000
+    */
+
+    /*
+    plotdb.load 1008, (chart) ->
+      $scope.chart = chart
+      $scope.editor.getDoc!.setValue chart._.chart.code.content
+      chart.config do
+        yAxisShowDomain: false
+      #chart.attach '#editor-canvas .inner'
+      dimkeys = [k for k of chart._.chart.dimension]
+      data = plotdb.chart.fields-from-dimension chart._.chart.dimension
+      data.map (d,i) -> $scope.map[i] = d.bind
+      console.log 'sample dataset', data
+      console.log ">", dimkeys
+      $scope.data = data
+      eventBus.fire \dataset.update.fields, data, dimkeys
+      eventBus.listen \dataset.changed, (data) ->
+        console.log 'changed dataset', data
+        ret = $scope.update-data chart, data
+        chart.data ret, true
+        $scope.data = data
+    */

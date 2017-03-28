@@ -420,10 +420,19 @@ angular.module \plotDB
           @{}[name]toggled = !!!@{}[name]toggled
         else @toggled = !!! @toggled
     eventBus.listen \dataset.delete, (key) -> if $scope.dataset.key == key => $scope.dataset = null
-    eventBus.listen \dataset.sample, (data) ->
+    eventBus.listen \dataset.update.fields, (data, dimkeys) ->
+      $scope.grid.data.headers = [v.name for v in data]
+      $scope.grid.data.rows = data.0.data.map((d,i)->data.map((e)->e.data[i]))
+      $scope.grid.data.types = plotdb.Types.resolve $scope.grid.data
+      $scope.grid.data.bind = [v.bind for v in data]
+      $scope.grid.data.dimkeys = dimkeys
+      $scope.grid.render!
+
+    eventBus.listen \dataset.sample, (data, dimkeys) ->
       $scope.grid.data.headers = h = [k for k,v of data.0]
       $scope.grid.data.rows = data.map((d)-> h.map(->d[it]))
       $scope.grid.data.types = plotdb.Types.resolve $scope.grid.data
+      $scope.grid.data.dimkeys = dimkeys
       $scope.grid.render!
     eventBus.listen \dataset.edit, (dataset, load = true) ->
       $scope.inited = false
@@ -462,9 +471,28 @@ angular.module \plotDB
         rows: []
         headers: []
         trs: []
+        bind: []
+        dimkeys: []
         clusterizer: null
+        bind-field: (e)->
+          node = e.target or e.srcElement
+          if node.nodeName.toLowerCase! != \a => return
+          dim = node.getAttribute(\data-dim) or ''
+          multi = (node.getAttribute(\data-multi) or 'false') == 'true'
+          if dim and multi => for i from 0 til @bind.length =>
+            if @bind[i] == dim => @bind[i] = null
+          index = Array.from(node.parentNode.parentNode.parentNode.parentNode.childNodes)
+            .indexOf(node.parentNode.parentNode.parentNode)
+          @bind[index] = dim or null
+          root = node.parentNode.parentNode.parentNode.parentNode
+          for i from 0 til @bind.length =>
+            span = root.childNodes[i].querySelector("span")
+            span.innerText = @bind[i] or "(empty)"
+            span.className = if @bind[i] => '' else 'grayed'
+          eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
+
         fieldize: ->
-          ret = @headers.map (d,i) ~> { data: [], datatype: @types[i], name: d }
+          ret = @headers.map (d,i) ~> { data: [], datatype: @types[i], name: d, bind: @bind[i] }
           for i from 0 til @rows.length =>
             for j from 0 til @headers.length => ret[j].data.push @rows[][i][j]
           return ret
@@ -496,19 +524,35 @@ angular.module \plotDB
             update trs, ths, dimnode
 
           if head-only =>
-            @worker.postMessage {headers: @data.headers, types: @data.types, rowcount: rowcount}
+            @worker.postMessage {
+              headers: @data.headers,
+              types: @data.types,
+              bind: @data.bind,
+              dimkeys: @data.dimkeys,
+              rowcount: rowcount
+            }
           else
-            @worker.postMessage {headers: @data.headers, rows: @data.rows, types: @data.types, rowcount: rowcount}
+            @worker.postMessage {
+              headers: @data.headers,
+              rows: @data.rows,
+              types: @data.types,
+              bind: @data.bind,
+              dimkeys: @data.dimkeys
+              rowcount: rowcount
+            }
 
       update: (r,c,val) ->
         dirty = false
+        head-only = true
         if c >= @data.headers.length =>
           for i from @data.headers.length to c => @data.headers[i] = ''
+          head-only = false
         if r >= @data.rows.length =>
           for i from @data.rows.length to r => @data.rows[i] = []
         if r == -1 =>
           if !@data.headers[c] and !val => return
           @data.headers[c] = val
+
         if r >= 0 and !@data.rows[][r][c] and !val => return
 
         if c >= @data.[]types.length and val =>
@@ -534,8 +578,9 @@ angular.module \plotDB
           @data.rows.map (row) -> row.splice i + 1,1
           @data.types.splice i + 1
           dirty = true
+
         eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
-        if dirty => @render {head-only: true} .then ->
+        if dirty => @render {head-only: head-only} .then ->
           if r < 0 =>
             node = document.querySelector(
               '#dataset-editbox .sheet-head > div >' + " div:nth-of-type(#{c + 1}) > div:first-child"
@@ -578,7 +623,10 @@ angular.module \plotDB
               data.headers.splice col,1
               data.rows.map (row) -> row.splice col,1
               data.types.splice col, 1
-              $scope.grid.render!then -> $scope.$apply -> eventBus.fire \loading.dimmer.off
+              data.bind.splice col, 1
+              $scope.grid.render!then -> $scope.$apply ->
+                eventBus.fire \loading.dimmer.off
+                eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
             ), 0
           else =>
             col = +e.target.getAttribute(\col)

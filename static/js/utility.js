@@ -31,7 +31,7 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
         zh: "那麼、方案長什麼樣子呢？"
       },
       'Canvas Size': {
-        zh: "畫布尺寸"
+        zh: "尺寸"
       },
       'Data': {
         zh: "資料"
@@ -676,6 +676,38 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       },
       'Monochromasy': {
         zh: "全色盲"
+      },
+      'achromatopsia': {
+        zh: "全色盲",
+        en: 'Achromatopsia'
+      },
+      'achromatomaly': {
+        zh: "全色弱",
+        en: 'Achromatomaly'
+      },
+      'protanopia': {
+        zh: "紅色盲",
+        en: 'Protanopia'
+      },
+      'protanomaly': {
+        zh: "紅色弱",
+        en: 'Protanomaly'
+      },
+      'deuteranopia': {
+        zh: "綠色盲",
+        en: 'Deuteranopia'
+      },
+      'deuteranomaly': {
+        zh: "綠色弱",
+        en: 'Deuteranomaly'
+      },
+      'tritanopia': {
+        zh: "藍色盲",
+        en: 'Tritanopia'
+      },
+      'tritanomaly': {
+        zh: "藍色弱",
+        en: 'Tritanomaly'
       },
       'Advanced Options': {
         zh: "進階選項"
