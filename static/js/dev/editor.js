@@ -4,16 +4,88 @@ x$ = angular.module('plotDB');
 x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce', 'plConfig', 'IOService', 'dataService', 'chartService', 'paletteService', 'themeService', 'plNotify', 'eventBus', 'permService', 'license'].concat(function($scope, $http, $timeout, $interval, $sce, plConfig, IOService, dataService, chartService, paletteService, themeService, plNotify, eventBus, permService, license){
   var lastEdcode, build, sendMsg, dispatcher, init, reset;
   $scope.plotdbDomain = plConfig.urlschema + "" + plConfig.domain;
+  $scope.plotdbDomainIO = plConfig.urlschema + "" + plConfig.domainIO;
   $scope.editor = CodeMirror.fromTextArea(document.getElementById('editor-textarea'), {
     lineNumbers: true,
     mode: "javascript",
     theme: "default"
   });
+  $scope.sharePanel = {
+    embed: {
+      width: '100%',
+      height: '600px',
+      widthRate: 4,
+      heightRate: 3
+    },
+    init: function(){
+      var this$ = this;
+      $scope.$watch('chart.key', function(){
+        if ($scope.chart) {
+          return this$.link = $scope.plotdbDomainIO + "/v/chart/" + $scope.chart.key;
+        }
+      });
+      return ['#edit-sharelink-btn', '#edit-sharelink', '#edit-embedcode-btn', '#edit-embedcode'].map(function(eventsrc){
+        var clipboard, embedcodeGenerator;
+        clipboard = new Clipboard(eventsrc);
+        clipboard.on('success', function(){
+          $(eventsrc).tooltip({
+            title: 'copied',
+            trigger: 'click'
+          }).tooltip('show');
+          return setTimeout(function(){
+            return $(eventsrc).tooltip('hide');
+          }, 1000);
+        });
+        clipboard.on('error', function(){
+          $(eventsrc).tooltip({
+            title: 'Press Ctrl+C to Copy',
+            trigger: 'click'
+          }).tooltip('show');
+          return setTimeout(function(){
+            return $(eventsrc).tooltip('hide');
+          }, 1000);
+        });
+        embedcodeGenerator = function(){
+          var link, ref$, w, h, wr, hr, ratio;
+          link = this$.link;
+          ref$ = [this$.embed.width, this$.embed.height], w = ref$[0], h = ref$[1];
+          ref$ = [this$.embed.widthRate, this$.embed.heightRate], wr = ref$[0], hr = ref$[1];
+          ratio = (hr / (wr || hr || 1)) * 100;
+          if (/^\d+$/.exec(w)) {
+            w = w + 'px';
+          }
+          if (/^\d+$/.exec(h)) {
+            h = h + 'px';
+          }
+          if ($scope.sharePanel.aspectRatio) {
+            return ["<div style=\"width:100%\"><div style=\"position:relative;height:0;overflow:hidden;", "padding-bottom:" + ratio + "%\"><iframe src=\"" + link + "\" frameborder=\"0\" allowfullscreen=\"true\" ", "style=\"position:absolute;top:0;left:0;width:100%;height:100%\"></iframe></div></div>"].join("");
+          } else {
+            return ["<iframe src=\"" + link + "\" width=\"" + w + "\" height=\"" + h + "\" ", "allowfullscreen=\"true\" frameborder=\"0\"></iframe>"].join("");
+          }
+        };
+        $scope.$watch('sharePanel.embed', function(){
+          return this$.embedcode = embedcodeGenerator();
+        }, true);
+        $scope.$watch('sharePanel.aspectRatio', function(){
+          return this$.embedcode = embedcodeGenerator();
+        });
+        return $scope.$watch('sharePanel.link', function(){
+          return this$.embedcode = embedcodeGenerator();
+        });
+      });
+    }
+  };
+  $scope.sharePanel.init();
   $scope.editortheme = function(it){
     $scope.editortheme.val = it;
-    return $scope.editor.setOption('theme', it);
+    $scope.editor.setOption('theme', it);
+    return document.cookie = "editortheme=" + it;
   };
-  $scope.editortheme.val = 'default';
+  $scope.editortheme.val = (/editortheme=([^;].+?)(;|$)/.exec(document.cookie) || {})[1];
+  if (!$scope.editortheme.val) {
+    $scope.editortheme.val = 'default';
+  }
+  $scope.editortheme($scope.editortheme.val);
   $scope.colorblind = {
     val: 'normal',
     vals: ['normal', 'protanopia', 'protanomaly', 'deuteranopia', 'deuteranomaly', 'tritanopia', 'tritanomaly', 'achromatopsia', 'achromatomaly'],
@@ -107,7 +179,13 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
       return $scope.rwdtest.set();
     }, 0);
   };
-  $scope.$watch('edfunc', function(){
+  $scope.$watch('edfunc', function(it){
+    var ref$;
+    if (it === 'download') {
+      ref$ = $scope.download;
+      ref$.format = '';
+      ref$.ready = false;
+    }
     return $scope.canvasResize();
   });
   lastEdcode = null;
@@ -220,7 +298,20 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
   $scope.download = {
     loading: false,
     data: null,
+    init: function(){
+      return $scope.$watch('download.customSize', function(v, o){
+        if (v === o) {
+          return;
+        }
+        if (!v) {
+          return $scope.rwdtest.set('default');
+        } else {
+          return $scope.rwdtest.set('Custom');
+        }
+      });
+    },
     fetch: function(format){
+      var data, size, url;
       format == null && (format = 'svg');
       this.format = format;
       this.loading = true;
@@ -228,12 +319,28 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
       this.ready = false;
       this.format = format;
       this.loading = true;
-      return sendMsg({
-        type: 'snapshot',
-        format: format
-      });
+      if (format === 'plotdb') {
+        data = JSON.stringify($scope.chart);
+        size = data.length;
+        url = URL.createObjectURL(new Blob([data], {
+          type: 'application/json'
+        }));
+        return import$(this, {
+          loading: false,
+          ready: true,
+          url: url,
+          size: size,
+          filename: $scope.chart.name + ".json"
+        });
+      } else {
+        return sendMsg({
+          type: 'snapshot',
+          format: format
+        });
+      }
     }
   };
+  $scope.download.init();
   dispatcher = function(evt){
     var res$, k, ref$, v, data;
     if (evt.data.type === 'inited') {
@@ -255,14 +362,16 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
     }
     if (evt.data.type === 'snapshot') {
       return $scope.$apply(function(){
-        var ref$, payload, format, size, url, bytes, mime, buf, ints, i$, to$, idx;
+        var ref$, payload, format, ext, size, url, bytes, mime, buf, ints, i$, to$, idx;
         ref$ = evt.data, payload = ref$.payload, format = ref$.format;
+        ext = "png";
         if (payload) {
           if (/svg/.exec(format)) {
             size = payload.length;
             url = URL.createObjectURL(new Blob([payload], {
               type: 'image/svg+xml'
             }));
+            ext = "svg";
           } else if (/png/.exec(format)) {
             bytes = atob(payload.split(',')[1]);
             mime = payload.split(',')[0].split(':')[1].split(';')[0];
@@ -283,7 +392,7 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
           ready: payload ? true : false,
           url: url,
           size: size,
-          filename: 'tmp'
+          filename: $scope.chart.name + "." + ext
         });
       });
     }

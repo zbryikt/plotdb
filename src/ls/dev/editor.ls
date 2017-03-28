@@ -2,15 +2,64 @@ angular.module \plotDB
   ..controller \plEditorNew,
   <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify eventBus permService license]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify,eventBus,permService,license) ->
     $scope.plotdb-domain = "#{plConfig.urlschema}#{plConfig.domain}" #"#{plConfig.urlschema}#{plConfig.domainIO}"
+    $scope.plotdb-domainIO = "#{plConfig.urlschema}#{plConfig.domainIO}"
     $scope.editor = CodeMirror.fromTextArea(document.getElementById('editor-textarea'), {
       lineNumbers: true,
       mode: "javascript",
       theme: "default"
     });
+    $scope.sharePanel = do
+      embed: do
+        width: \100%
+        height: \600px
+        widthRate: 4
+        heightRate: 3
+      init: ->
+        $scope.$watch 'chart.key', ~>
+          if $scope.chart => @link = "#{$scope.plotdb-domainIO}/v/chart/#{$scope.chart.key}"
+        (eventsrc) <~ <[#edit-sharelink-btn #edit-sharelink #edit-embedcode-btn #edit-embedcode]>.map
+        clipboard = new Clipboard eventsrc
+        clipboard.on \success, ->
+          $(eventsrc).tooltip({title: 'copied', trigger: 'click'}).tooltip('show')
+          setTimeout((->$(eventsrc).tooltip('hide')), 1000)
+        clipboard.on \error, ->
+          $(eventsrc).tooltip({title: 'Press Ctrl+C to Copy', trigger: 'click'}).tooltip('show')
+          setTimeout((->$(eventsrc).tooltip('hide')), 1000)
+        embedcode-generator = ~>
+          link = @link
+          [w,h] = [@embed.width, @embed.height]
+          [wr,hr] = [@embed.widthRate, @embed.heightRate]
+          ratio = (hr / (wr or hr or 1)) * 100
+          if /^\d+$/.exec(w) => w = w + \px
+          if /^\d+$/.exec(h) => h = h + \px
+          if $scope.sharePanel.aspectRatio =>
+            return [
+              """<div style="width:100%"><div style="position:relative;height:0;overflow:hidden;"""
+              """padding-bottom:#ratio%"><iframe src="#link" frameborder="0" allowfullscreen="true" """
+              """style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe></div></div>"""
+            ].join("")
+          else =>
+            return [
+              """<iframe src="#link" width="#w" height="#h" """
+              """allowfullscreen="true" frameborder="0"></iframe>"""
+            ].join("")
+        $scope.$watch 'sharePanel.embed', (~>
+          @embedcode = embedcode-generator!
+        ), true
+        $scope.$watch 'sharePanel.aspectRatio', ~>
+          @embedcode = embedcode-generator!
+        $scope.$watch 'sharePanel.link', ~>
+          @embedcode = embedcode-generator!
+    $scope.sharePanel.init!
+
+
     $scope.editortheme = ->
       $scope.editortheme.val = it
       $scope.editor.setOption \theme, it
-    $scope.editortheme.val = 'default'
+      document.cookie = "editortheme=#it"
+    $scope.editortheme.val = (/editortheme=([^;].+?)(;|$)/.exec(document.cookie) or {}).1
+    if !$scope.editortheme.val => $scope.editortheme.val = \default
+    $scope.editortheme $scope.editortheme.val
     $scope.colorblind = do
       val: \normal
       vals: <[
@@ -46,8 +95,7 @@ angular.module \plotDB
           [w,h] = <[100% 100%]>
           canvas.style <<< marginTop: 0, marginLeft: 0
         else
-          if @val == \Custom =>
-            [w,h] = [@custom.width, @custom.height]
+          if @val == \Custom => [w,h] = [@custom.width, @custom.height]
           else [w,h] = @map[@val]
           canvas.style <<< marginTop: ((height - h)/2) + "px", marginLeft: ((width - w)/2) + "px"
           [w,h] = [w,h].map(->"#{it}px")
@@ -75,7 +123,9 @@ angular.module \plotDB
         $scope.rwdtest.set!
       ), 0
 
-    $scope.$watch 'edfunc', -> $scope.canvas-resize!
+    $scope.$watch 'edfunc', ->
+      if it == \download => $scope.download <<< format: '', ready: false
+      $scope.canvas-resize!
     last-edcode = null
     build = ->
       value = $scope.editor.getValue()
@@ -131,11 +181,29 @@ angular.module \plotDB
     $scope.download = do
       loading: false
       data: null
+      init: ->
+        $scope.$watch 'download.customSize', (v,o) ->
+          if v == o => return
+          if !v => $scope.rwdtest.set \default
+          else
+            $scope.rwdtest.set \Custom
+
       fetch: (format = \svg) ->
         @ <<< {format, loading: true, data: false, ready: false}
         @format = format
         @loading = true
-        send-msg {type: \snapshot, format: format}
+        if format == \plotdb =>
+          data = JSON.stringify($scope.chart)
+          size = data.length
+          url = URL.createObjectURL(new Blob [data], {type: 'application/json'})
+          @ <<< do
+            loading: false
+            ready: true
+            url: url
+            size: size
+            filename: "#{$scope.chart.name}.json"
+        else => send-msg {type: \snapshot, format: format}
+    $scope.download.init!
 
     dispatcher = (evt) ->
       if evt.data.type == \inited =>
@@ -147,10 +215,12 @@ angular.module \plotDB
         $scope.update-data data
       if evt.data.type == \snapshot => $scope.$apply ->
         {payload, format} = evt.data
+        ext = "png"
         if payload =>
           if /svg/.exec(format) =>
             size = payload.length
             url = URL.createObjectURL(new Blob [payload], {type: 'image/svg+xml'})
+            ext = "svg"
           else if /png/.exec(format) =>
             bytes = atob(payload.split(\,).1)
             mime = payload.split(\,).0.split(\:).1.split(\;).0
@@ -165,7 +235,7 @@ angular.module \plotDB
           ready: (if payload => true else false)
           url: url
           size: size
-          filename: 'tmp'
+          filename: "#{$scope.chart.name}.#{ext}"
     window.addEventListener \message, dispatcher, false
     init = (code) ->
       if typeof(code) == \number => plotdb.load code, (chart) ->

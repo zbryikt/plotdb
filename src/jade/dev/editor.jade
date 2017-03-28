@@ -86,39 +86,49 @@ block body
         .title {{'Share'|i18n}}
         div(style="padding:20px 20px 0")
           .btn-group
-            .btn.btn-default {{'Publish'|i18n}}
-            .btn.btn-default {{'Darft'|i18n}}
+            .btn.btn-default(ng-class="{'active':chart.permission.switch=='publish'}",
+            ng-click="chart.permission.switch='publish'") {{'Publish'|i18n}}
+            .btn.btn-default(ng-class="{'active':chart.permission.switch!='publish'}",
+            ng-click="chart.permission.switch='draft'") {{'Draft'|i18n}}
         hr
         .body
-          label {{'Link'|i18n}}
+          label {{'Publish Link'|i18n}}
           .input-group
-            input.form-control
+            input#edit-sharelink.form-control(ng-model="sharePanel.link",
+            readonly,data-clipboard-target="#edit-sharelink")
             span.input-group-btn
-              .btn.btn-default {{'COPY'|i18n}}
+              #edit-sharelink-btn.btn.btn-default(data-clipboard-target="#edit-sharelink") {{'COPY'|i18n}}
           br
-          label {{'Embed'|i18n}}
+          .pull-right: .checkbox(style="margin:0")
+            label #[input(type="checkbox",ng-model="sharePanel.aspectRatio")] #[span {{'Preserve Aspect Ratio'|i18n}}]
+          label {{'Embed Code'|i18n}}
           .well
-            .checkbox(style="margin-left:20px") #[input(type="checkbox")] #[span {{'preserve aspect ratio'|i18n}}]
-            .input-group.dual
-              input.form-control.input-sm
+            .input-group.dual(ng-show="sharePanel.aspectRatio")
+              input.form-control.input-sm(ng-model="sharePanel.embed.widthRate")
               span.input-group-addon &times;
-              input.form-control.input-sm
+              input.form-control.input-sm(ng-model="sharePanel.embed.heightRate")
+            .input-group.dual(ng-show="!sharePanel.aspectRatio")
+              input.form-control.input-sm(ng-model="sharePanel.embed.width")
+              span.input-group-addon &times;
+              input.form-control.input-sm(ng-model="sharePanel.embed.height")
             br
             .input-group
-              input.form-control
+              input#edit-embedcode.form-control(ng-model="sharePanel.embedcode",
+              readonly,data-clipboard-target="#edit-embedcode")
               span.input-group-btn
-                .btn.btn-default {{'COPY'|i18n}}
+                #edit-embedcode-btn.btn.btn-default(data-clipboard-target="#edit-embedcode") {{'COPY'|i18n}}
           br
           label {{'Open Graph'|i18n}} #[small.grayed {{'summary in SNS posts'|i18n}}]
           .sep
           label {{'Title'|i18n}}
-          input.form-control
+          input.form-control(ng-model="chart.name",ng-attr-placeholder="{{'title shown in social media'|i18n}}")
           br
           label {{'Footer'|i18n}}
-          input.form-control
+          input.form-control(ng-model="chart.footer",ng-attr-placeholder="{{'e.g., data source'|i18n}}")
           br
           label {{'Description'|i18n}}
-          textarea.form-control
+          textarea.form-control(ng-model="chart.description",
+          ng-attr-placeholder="{{'summary shown in social media'|i18n}}")
           br
       .foot.text-right
         .btn.btn-default(ng-click="edfunc=''") {{'Close'|i18n}}
@@ -130,25 +140,28 @@ block body
         label {{'Download As'|i18n}}:
         ul.list-group
           li.list-group-item(ng-class="{'active':download.format=='svg'}",
-          ng-click="download.fetch('svg')") SVG #[small.grayed.pull-right for Vector Editing]
+          ng-click="download.fetch('svg')") SVG #[small.grayed.pull-right {{'for Vector Editing'|i18n}}]
           li.list-group-item(ng-class="{'active':download.format=='png'}",
-          ng-click="download.fetch('png')") PNG #[small.pull-right.grayed for Raster Editing]
+          ng-click="download.fetch('png')") PNG #[small.pull-right.grayed {{'for Raster Editing'|i18n}}]
           li.list-group-item(ng-class="{'active':download.format=='png-hd'}",
-          ng-click="download.fetch('png-hd')") PNG #[small.grayed ( Hi Res )]
+          ng-click="download.fetch('png-hd')") PNG #[small.grayed ( {{'Hi Res'|i18n}} )]
           li.list-group-item(ng-class="{'active':download.format=='plotdb'}",
-          ng-click="download.fetch('plotdb')") JS #[small.pull-right.grayed for Developer]
-        label Size
+          ng-click="download.fetch('plotdb')") JS #[small.pull-right.grayed {{'for Developer'|i18n}}]
+        .pull-right
+          .checkbox(style="margin:0"): label #[input(type="checkbox",ng-model="download.customSize")] #[span {{'enable'|i18n}}]
+        label {{'Custom Size'|i18n}}
         .input-group.dual
-          input.form-control.input-sm(placeholder="width")
+          input.form-control.input-sm(placeholder="width",
+          ng-model="rwdtest.custom.width",ng-disabled="!download.customSize")
           span.input-group-addon &times;
-          input.form-control.input-sm(placeholder="height")
+          input.form-control.input-sm(placeholder="height",
+          ng-model="rwdtest.custom.height",ng-disabled="!download.customSize")
         .sep.gap
         .text-right
-          img(src="/assets/img/loading-sm.svg",ng-show="download.loading")
-          a.btn.btn-success(ng-attr-download="{{download.filename}}",
-          ng-attr-href="{{download.url}}",ng-class="{'disabled':!download.ready}") Download
+          a.btn.btn-success.loader(ng-attr-download="{{download.filename}}",
+          ng-attr-href="{{download.url}",ng-class="{'disabled':!download.ready,'loading':download.loading}") {{'Download'|i18n}}
           span &nbsp;
-          .btn.btn-default(ng-click="edfunc=''") Cancel
+          .btn.btn-default(ng-click="edfunc=''") {{'Cancel'|i18n}}
     #editor-code.editor-func-detail(ng-class="{'active':edfunc=='editor','lg':code.size=='lg'}")
       .btn.btn-dark(ng-click="code.toggleLarge()")
         i.fa.fa-long-arrow-right(ng-if="code.size!='lg'")

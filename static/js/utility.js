@@ -584,8 +584,32 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'try these predefined tags': {
         zh: "何不試試這些關鍵字"
       },
+      'for Vector Editing': {
+        zh: "向量圖編輯專用"
+      },
+      'for Raster Editing': {
+        zh: "點陣圖編輯專用"
+      },
+      'for Developer': {
+        zh: "開發者專用"
+      },
+      'Hi Res': {
+        zh: "高解析度"
+      },
+      'Download As': {
+        zh: "下載格式"
+      },
+      'Custom Size': {
+        zh: "客製尺寸"
+      },
+      'enable': {
+        zh: "啟用"
+      },
       'Style': {
         zh: "樣式"
+      },
+      'Load Sample Data': {
+        zh: "載入範例資料集"
       },
       'Fork-Save': {
         zh: "另存副本",
@@ -844,6 +868,15 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       },
       'Preserve Aspect Ratio': {
         zh: "保持長寬比"
+      },
+      'title shown in social media': {
+        zh: "分享時顯示的標題"
+      },
+      'summary shown in social media': {
+        zh: "分享時顯示的描述"
+      },
+      'e.g., data source': {
+        zh: "註腳，如：資料來源"
       },
       'summary shown in SNS like facebook, twitter, etc': {
         zh: "在臉書、推特中顯示的摘要訊息"

@@ -1383,6 +1383,9 @@ li.disabled a:hover {
   right: 10px;
   top: 0;
 }
+.btn.btn-success.disabled {
+  color: rgba(255,255,255,0.5);
+}
 .btn.btn-success.loader:after {
   background: url("/assets/img/loading-success.gif") center center no-repeat;
 }
@@ -6189,7 +6192,7 @@ span.select2-container--default .select2-selection--multiple {
 .editor-func-detail {
   position: relative;
   z-index: 4;
-  width: 320px;
+  width: 400px;
   height: 100%;
   left: 80px;
   top: 0;

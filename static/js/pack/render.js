@@ -4736,11 +4736,16 @@ plotdb.Date = {
     return !/^\d*$/.exec(it) && this.parse(it) ? true : false;
   },
   parse: function(it){
-    var d, ret;
+    var twdate, d, ret;
     if (typeof it === 'object' && it.type === 'Date') {
       return it;
     }
-    d = new Date(it);
+    twdate = /^(\d{2,3})\/([01]?\d)(?:\/([0123]?\d))?$/.exec(it);
+    if (twdate) {
+      d = new Date(twdate[1], twdate[2], twdate[3]);
+    } else {
+      d = new Date(it);
+    }
     if (!(d instanceof Date) || isNaN(d.getTime())) {
       ret = /^(\d{1,2})[/-](\d{4})$/.exec(it);
       if (!ret) {

@@ -124,7 +124,9 @@ plotdb.Date = do
     return if !/^\d*$/.exec(it) and @parse(it) => true else false
   parse: ->
     if typeof(it) == \object and it.type == \Date => return it
-    d = new Date(it)
+    twdate = /^(\d{2,3})\/([01]?\d)(?:\/([0123]?\d))?$/.exec(it)
+    if twdate => d = new Date(twdate.1, twdate.2, twdate.3)
+    else d = new Date(it)
     if !(d instanceof Date) or isNaN(d.getTime!) =>
       ret = /^(\d{1,2})[/-](\d{4})$/.exec it
       if !ret => return null
