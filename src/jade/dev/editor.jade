@@ -1,6 +1,6 @@
 extends /base.jade
 mixin edfuncClose
-  .pull-right: .closebtn.inner.inverse.lg(ng-click="edfunc=''")
+  .pull-right: .closebtn.inner.inverse.lg(ng-click="edfuncSet('')")
 block vars
   if !chart
     - var rootid = "chartview"
@@ -20,6 +20,7 @@ block vars
     - var url = "https://plotdb.com/chart/" + chart.key
   - use.stripe = false;
 block head
+  script(src="https://apis.google.com/js/api.js")
   link(rel="stylesheet",type="text/css",href="/dist/0.1.0/plotdb.min.css")
   script(type="text/javascript",src="/lib/plotd3/0.1.0/index.js")
   script(type="text/javascript",src="/js/dev/editor.js")
@@ -44,13 +45,30 @@ block body
       .editor-func(ng-class="{'active':edfunc == 'settings'}", ng-click="settingPanel.toggle('permission')")
         i.fa.fa-cog
         span {{'Settings'|i18n}}
-      .editor-func(ng-class="{'active':edfunc == 'save'}", ng-click="edfunc = 'save'")
+      .editor-func(ng-click="save()")
         i.fa.fa-save
         span {{'Save'|i18n}}
-    .editor-func-detail(ng-show="edfunc=='data'",style="width:500px"): .inner
+    .editor-func-detail(ng-show="edfunc=='data'",style="width:500px"): .inner(ng-controller="dataEditCtrl")
       +edfuncClose
       .title {{'Data'|i18n}}
-      #editor-datagrid.body(style="padding-left:0;padding-right:0",ng-controller="dataEditCtrl")
+      include ../dataset/widget/modal.jade
+      #editor-datagrid.body(style="padding-left:0;padding-right:0")
+        #dataset-import-dropdown-inline.dropdown.btn-group
+          .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown")
+            span {{'Import'|i18n}}... #[span.caret]
+            p.pull-right
+          ul.dropdown-menu
+            li.dropdown
+              a.toggle-filepick(href="#")
+                input#dataset-edit-csv-file(type="file",
+                askencoding="parser.csv.askencoding",
+                readby="parser.csv.import",encoding="{{parser.csv.encoding}}")
+                span #[i.fa.fa-file-text-o.align16] {{'upload CSV file'|i18n}} ...
+            li: a.toggle-filepick(href="#")
+              input#dataset-edit-xls-file(type="file",readby="parser.xls.read")
+              span #[i.fa.fa-file-excel-o.align16] {{'upload Excel'|i18n}} (.xls, .xlsx)
+            li.divider
+              li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] {{'from Google Sheet'|i18n}}
         #dataset-editbox
           #dataset-edit-grid.sheet-outer
             .sheet.clusterize
@@ -61,7 +79,7 @@ block body
                   .sheet-cells.clusterize-content
       .foot
         .btn.btn-default(ng-click="loadSampleData()") {{'Load Sample Data'|i18n}}
-        .pull-right.btn.btn-default(ng-click="edfunc=''") {{'Close'|i18n}}
+        .pull-right.btn.btn-default(ng-click="edfuncSet('')") {{'Close'|i18n}}
 
     .editor-func-detail(ng-show="edfunc=='style'"): .inner
       +edfuncClose
@@ -159,7 +177,8 @@ block body
         .sep.gap
         .text-right
           a.btn.btn-success.loader(ng-attr-download="{{download.filename}}",
-          ng-attr-href="{{download.url}",ng-class="{'disabled':!download.ready,'loading':download.loading}") {{'Download'|i18n}}
+          ng-attr-href="{{download.url}}",
+          ng-class="{'disabled':!download.ready,'loading':download.loading}") {{'Download'|i18n}}
           span &nbsp;
           .btn.btn-default(ng-click="edfunc=''") {{'Cancel'|i18n}}
     #editor-code.editor-func-detail(ng-class="{'active':edfunc=='editor','lg':code.size=='lg'}")

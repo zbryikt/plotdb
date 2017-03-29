@@ -4,8 +4,8 @@ mixin SaveFork
 mixin margin-break
   .margin-break &nbsp;
 mixin cover-modal(condition,toggle,className)
-  .cover-modal.ng-hide-animate.ng-hide(ng-cloak,ng-show=condition,ng-click=toggle)
-  .cover-modal-inner.ng-hide-animate.ng-hide(ng-cloak,ng-show=condition,class=className)
+  .cover-modal(ng-cloak,ng-if=condition,ng-click=toggle)
+  .cover-modal-inner(ng-cloak,ng-if=condition,class=className)
     block
 
 mixin selectbox(data,type,scope,config,size)

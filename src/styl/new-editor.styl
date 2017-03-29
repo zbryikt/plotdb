@@ -9,6 +9,7 @@
   overflow: hidden
   top: 0
   padding-top: 53px
+  z-index: index(order, 'editor-func-detail')
   .closebtn
     top: auto
     bottom: 4px
@@ -28,8 +29,9 @@
   width: 80px
   height: 100%
   left: 0
-  position: absolute
   top: 0
+  position: absolute
+  border-right: 1px solid #000
   background: #292929
   color: #fff
   z-index: index(order, 'code-tabs')
@@ -71,6 +73,7 @@
     overflow: scroll
     padding-bottom: 60px
   .title
+    position: relative
     font-size: 1.7em
     padding: 10px 20px
     border-bottom: 1px solid #ddd

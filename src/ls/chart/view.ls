@@ -134,10 +134,16 @@ plotdb.view.chart.prototype <<< do
     @_.chart.bind!
     @_.chart.render!
 
+  # we accpet:
+  #   [{}, {}, ...]               - data array
+  #   {order: [{},{}...], ...}    - field array
+  #   {order: {fields: ...}, ...} - dimension
   data: (data, refresh, mapping) ->
     if !data? => return @_.data
     if mapping => data = plotdb.chart.data-convert.by-mapping data, mapping
-    if !Array.isArray(data) and typeof(data) == typeof({}) => data = plotdb.chart.data-convert.from-dimension data
+    if !Array.isArray(data) and typeof(data) == typeof({}) =>
+      key = [k for k of data].0
+      if !Array.isArray(data[key]) => data = plotdb.chart.data-convert.from-dimension data
     @_.data = data
     @sync!
     if @inited and refresh => @refresh!

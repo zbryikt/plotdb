@@ -40,12 +40,12 @@ gridRender = function(e){
   }
   headers = res$;
   w = 100 / len.head + "%";
-  if (len.head > 10) {
-    w = "10%";
+  if (len.head > 7) {
+    w = "15%";
   }
   ths = "<div>" + headers.map(function(d, i){
     var that;
-    return ["<div style='width:" + w + "' col='" + i + "'>", "<div contenteditable='true' col='" + i + "' class='" + (i < ohlen ? 'in-use' : '') + "'>", d ? "&nbsp;" + escape(d) : "", "</div><small class='grayed' col='" + i + "'>&nbsp;", i < ohlen ? (that = types[i]) ? that : 'ANY' : '', "</small>", i < ohlen ? "<div class='closebtn inverse' col='" + i + "'></div>" : '', "</div>"].join("");
+    return ["<div style='width:" + w + "' col='" + i + "'>", "<textarea col='" + i + "' class='" + (i < ohlen ? 'in-use' : '') + "'>" + d + "</textarea>", "<small class='grayed' col='" + i + "'>&nbsp;", i < ohlen ? (that = types[i]) ? that : 'ANY' : '', "</small>", i < ohlen ? "<div class='closebtn inverse' col='" + i + "'></div>" : '', "</div>"].join("");
   }).join("") + "</div>";
   if (!data.rows) {
     return postMessage({
@@ -62,11 +62,11 @@ gridRender = function(e){
   dim = "<div>" + headers.map(function(d, j){
     var v;
     return [
-      "<div class='dropdown' col='" + j + "' style='width:" + w + "'>", "<div class='dropdown-toggle' data-toggle='dropdown'><span>" + (bind[j] || '<span class="grayed">(empty)</span>') + "</span><span class='caret'></span></div>", "<ul class='dropdown-menu'>", (function(){
+      "<div class='dropdown' col='" + j + "' style='width:" + w + "'>", "<div class='dropdown-toggle' data-toggle='dropdown'>", "<span>" + (bind[j] || '<span class="grayed">(empty)</span>') + "</span>", "<span class='caret'></span></div>", "<ul class='dropdown-menu'>", (function(){
         var i$, ref$, len$, results$ = [];
         for (i$ = 0, len$ = (ref$ = dimkeys).length; i$ < len$; ++i$) {
           v = ref$[i$];
-          results$.push("<li><a href='#' data-dim=\"" + v.name + "\" data-multiple=\"" + !!v.multiple + "\">" + v.name + "</a></li>");
+          results$.push(("<li><a href='#' data-dim=\"" + v.name + "\" ") + ("data-multiple=\"" + !!v.multiple + "\">" + v.name + "</a></li>"));
         }
         return results$;
       }()).join(""), "<li class='grayed'><a href='#' data-dim=\"\">(empty)</a></li>", "</ul>", "</div>"
@@ -74,7 +74,7 @@ gridRender = function(e){
   }).join("") + "</div>";
   for (i$ = 0, to$ = len.rows; i$ < to$; ++i$) {
     i = i$;
-    trs.push("<div>" + headers.map(fn1$).join("") + "</div>");
+    trs.push(("<div><span class='closebtn inverse' row='" + i + "'></span>") + headers.map(fn1$).join("") + "</div>");
   }
   return {
     trs: trs,
@@ -90,6 +90,6 @@ gridRender = function(e){
     return results$;
   }
   function fn1$(d, j){
-    return ("<div contenteditable='true' row='" + i + "' col='" + j + "' style='width:" + w + "'>") + (escape((data.rows[i] || [])[j]) || '') + "</div>";
+    return ["<div style='width:" + w + "'><textarea row='" + i + "' col='" + j + "'>" + ((data.rows[i] || [])[j] || '') + "</textarea></div>"].join("");
   }
 };

@@ -1,6 +1,7 @@
 angular.module \plotDB
   ..controller \plEditorNew,
   <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify eventBus permService license]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify,eventBus,permService,license) ->
+    $scope.service = chart-service
     $scope.plotdb-domain = "#{plConfig.urlschema}#{plConfig.domain}" #"#{plConfig.urlschema}#{plConfig.domainIO}"
     $scope.plotdb-domainIO = "#{plConfig.urlschema}#{plConfig.domainIO}"
     $scope.editor = CodeMirror.fromTextArea(document.getElementById('editor-textarea'), {
@@ -8,6 +9,51 @@ angular.module \plotDB
       mode: "javascript",
       theme: "default"
     });
+
+    $scope.local = do
+      get: -> new Promise (res, rej) ~>
+        @promise = {res, rej}
+        send-msg {type: \get-local}
+
+    $scope._save = ->
+      if @save.pending => return
+      @save.pending = true
+      if !$scope.writable and $scope.chart.owner != $scope.user.data.key =>
+        parent-key = (if @target!._type.location == \server => @target!.key else null)
+        # could be : <[code document stylesheet assets]>. config
+        $scope.target <<< key: null, owner: null, inherit: <[]>
+        if !$scope.chart.permission => $scope.chart.permission = {switch: \publish, list: []}
+        if parent-key => $scope.chart <<< {parent: parent-key}
+      refresh = if !$scope.chart.key => true else false
+      if $scope.chart.dimension => $scope.chart.dimlen = [k for k of $scope.chart.dimension or {}].length
+      data = null
+      @local.get!
+        .then (local) ~>
+          @chart.local = local
+          data := @chart.data # prevent data to be sent
+          @chart.data = null
+          new chart-service.chart(@chart).save!
+        .finally ~>
+          @save.pending = false
+          eventBus.fire \loading.dimmer.off
+        .then (ret) ~>
+          @chart.data = data
+          <~ @$apply
+          plNotify.send \success, "saved"
+          if refresh => window.location.href = @service.link @chart
+        .catch (err) ~> @$apply ~>
+          if err.2 == 402 =>
+            eventBus.fire \quota.widget.on
+            plNotify.send \danger, "Failed: Quota exceeded"
+          else
+            plNotify.aux.error.io \save, @type, err
+            console.error "[save #name]", err
+
+    $scope.save = ->
+      if !$scope.user.authed! => return $scope.auth.toggle true
+      if @save.pending => return
+      eventBus.fire \loading.dimmer.on
+      send-msg type: \save
     $scope.sharePanel = do
       embed: do
         width: \100%
@@ -16,7 +62,7 @@ angular.module \plotDB
         heightRate: 3
       init: ->
         $scope.$watch 'chart.key', ~>
-          if $scope.chart => @link = "#{$scope.plotdb-domainIO}/v/chart/#{$scope.chart.key}"
+          if $scope.chart => @link = $scope.service.sharelink $scope.chart
         (eventsrc) <~ <[#edit-sharelink-btn #edit-sharelink #edit-embedcode-btn #edit-embedcode]>.map
         clipboard = new Clipboard eventsrc
         clipboard.on \success, ->
@@ -123,8 +169,10 @@ angular.module \plotDB
         $scope.rwdtest.set!
       ), 0
 
+    $scope.edfunc-set = -> $scope.edfunc = it
     $scope.$watch 'edfunc', ->
       if it == \download => $scope.download <<< format: '', ready: false
+      if it == \editor => $scope.editor.focus!
       $scope.canvas-resize!
     last-edcode = null
     build = ->
@@ -135,7 +183,10 @@ angular.module \plotDB
 
     $scope.editor.on \change, build
     $scope.update-code = ->
-      if $scope.chart => $scope.editor.getDoc!.setValue $scope.chart[$scope.edcode].content
+      if $scope.chart =>
+        $scope.editor.getDoc!.setValue $scope.chart[$scope.edcode].content
+        $scope.editor.setOption \mode, $scope.chart[$scope.edcode].type
+        $scope.editor.focus!
     $scope.$watch 'edcode', (val) -> $scope.update-code!
     $scope.edcode = \code
 
@@ -206,24 +257,33 @@ angular.module \plotDB
     $scope.download.init!
 
     dispatcher = (evt) ->
-      if evt.data.type == \inited =>
-        $scope.dimension = JSON.parse evt.data.dimension 
+      payload = evt.data
+      if evt.data.type == \local-data =>
+        $scope.local.data = payload.data
+        res = $scope.local.{}promise.res
+        $scope.local.promise = null
+        if res => res payload.data
+      if payload.type == \save =>
+        if payload.payload => $scope.chart.thumbnail = payload.data
+        $scope._save!
+      if payload.type == \inited =>
+        $scope.dimension = JSON.parse payload.dimension 
         $scope.dimkeys = [{name: k,multiple: v.multiple} for k,v of $scope.dimension]
-      if evt.data.type == \sample-data =>
-        $scope.data = data = evt.data.data
+      if payload.type == \sample-data =>
+        $scope.data = data = payload.data
         eventBus.fire \dataset.update.fields, data, $scope.dimkeys
         $scope.update-data data
-      if evt.data.type == \snapshot => $scope.$apply ->
-        {payload, format} = evt.data
+      if payload.type == \snapshot => $scope.$apply ->
+        {data, format} = payload
         ext = "png"
-        if payload =>
+        if data =>
           if /svg/.exec(format) =>
-            size = payload.length
-            url = URL.createObjectURL(new Blob [payload], {type: 'image/svg+xml'})
+            size = data.length
+            url = URL.createObjectURL(new Blob [data], {type: 'image/svg+xml'})
             ext = "svg"
           else if /png/.exec(format) =>
-            bytes = atob(payload.split(\,).1)
-            mime = payload.split(\,).0.split(\:).1.split(\;).0
+            bytes = atob(data.split(\,).1)
+            mime = data.split(\,).0.split(\:).1.split(\;).0
             buf = new ArrayBuffer bytes.length
             ints = new Uint8Array buf
             for idx from 0 til bytes.length => ints[idx] = bytes.charCodeAt idx
@@ -232,7 +292,7 @@ angular.module \plotDB
 
         $scope.download <<< do
           loading: false
-          ready: (if payload => true else false)
+          ready: (if data => true else false)
           url: url
           size: size
           filename: "#{$scope.chart.name}.#{ext}"
@@ -251,7 +311,7 @@ angular.module \plotDB
             src: JSON.stringify(chart)
             library: library
           }
-    init 2241
+    init 2243
 
     $scope <<< do
       setting-panel: do

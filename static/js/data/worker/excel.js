@@ -2,39 +2,50 @@
 var onmessage;
 importScripts('/assets/js-xls/0.7.5/xlsx.full.min.js', '/js/plotdb/type.js', '/js/data/worker/grid-render.js');
 onmessage = function(e){
-  var data, buf, workbook, sheet, list, h, k, ret;
-  data = {};
-  buf = (e.data || (e.data = {})).buf;
-  workbook = XLSX.read(buf, {
-    type: 'binary'
-  });
-  sheet = workbook.Sheets[workbook.SheetNames[0]];
-  list = XLSX.utils.sheet_to_json(sheet);
-  data.headers = h = (function(){
-    var results$ = [];
-    for (k in list[0] || {}) {
-      results$.push(k);
-    }
-    return results$;
-  }());
-  data.rows = list.map(function(row){
-    var i$, ref$, len$, k, results$ = [];
-    for (i$ = 0, len$ = (ref$ = h).length; i$ < len$; ++i$) {
-      k = ref$[i$];
-      results$.push(row[k]);
-    }
-    return results$;
-  });
-  data.types = plotdb.Types.resolve({
-    rows: data.rows,
-    headers: data.headers
-  });
-  ret = gridRender({
-    data: data
-  });
-  data.trs = ret.trs;
-  data.ths = ret.ths;
-  return postMessage({
-    data: data
-  });
+  var workbook, data, sheet, list, h, k, ret;
+  if (e.data.type === 'get-sheet-list') {
+    workbook = XLSX.read(e.data.buf, {
+      type: 'binary'
+    });
+    postMessage({
+      type: 'sheet-list',
+      data: workbook.SheetNames
+    });
+  }
+  if (e.data.type === 'get-sheet') {
+    data = {};
+    workbook = XLSX.read(e.data.buf, {
+      type: 'binary'
+    });
+    sheet = workbook.Sheets[e.data.sheetName || workbook.SheetNames[0]];
+    list = XLSX.utils.sheet_to_json(sheet);
+    data.headers = h = (function(){
+      var results$ = [];
+      for (k in list[0] || {}) {
+        results$.push(k);
+      }
+      return results$;
+    }());
+    data.rows = list.map(function(row){
+      var i$, ref$, len$, k, results$ = [];
+      for (i$ = 0, len$ = (ref$ = h).length; i$ < len$; ++i$) {
+        k = ref$[i$];
+        results$.push(row[k]);
+      }
+      return results$;
+    });
+    data.types = plotdb.Types.resolve({
+      rows: data.rows,
+      headers: data.headers
+    });
+    ret = gridRender({
+      data: data
+    });
+    data.trs = ret.trs;
+    data.ths = ret.ths;
+    return postMessage({
+      type: 'sheet',
+      data: data
+    });
+  }
 };

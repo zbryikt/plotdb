@@ -3,6 +3,7 @@ var x$;
 x$ = angular.module('plotDB');
 x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce', 'plConfig', 'IOService', 'dataService', 'chartService', 'paletteService', 'themeService', 'plNotify', 'eventBus', 'permService', 'license'].concat(function($scope, $http, $timeout, $interval, $sce, plConfig, IOService, dataService, chartService, paletteService, themeService, plNotify, eventBus, permService, license){
   var lastEdcode, build, sendMsg, dispatcher, init, reset;
+  $scope.service = chartService;
   $scope.plotdbDomain = plConfig.urlschema + "" + plConfig.domain;
   $scope.plotdbDomainIO = plConfig.urlschema + "" + plConfig.domainIO;
   $scope.editor = CodeMirror.fromTextArea(document.getElementById('editor-textarea'), {
@@ -10,6 +11,93 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
     mode: "javascript",
     theme: "default"
   });
+  $scope.local = {
+    get: function(){
+      var this$ = this;
+      return new Promise(function(res, rej){
+        this$.promise = {
+          res: res,
+          rej: rej
+        };
+        return sendMsg({
+          type: 'get-local'
+        });
+      });
+    }
+  };
+  $scope._save = function(){
+    var parentKey, ref$, refresh, k, data, this$ = this;
+    if (this.save.pending) {
+      return;
+    }
+    this.save.pending = true;
+    if (!$scope.writable && $scope.chart.owner !== $scope.user.data.key) {
+      parentKey = this.target()._type.location === 'server' ? this.target().key : null;
+      ref$ = $scope.target;
+      ref$.key = null;
+      ref$.owner = null;
+      ref$.inherit = [];
+      if (!$scope.chart.permission) {
+        $scope.chart.permission = {
+          'switch': 'publish',
+          list: []
+        };
+      }
+      if (parentKey) {
+        $scope.chart.parent = parentKey;
+      }
+    }
+    refresh = !$scope.chart.key ? true : false;
+    if ($scope.chart.dimension) {
+      $scope.chart.dimlen = (function(){
+        var results$ = [];
+        for (k in $scope.chart.dimension || {}) {
+          results$.push(k);
+        }
+        return results$;
+      }()).length;
+    }
+    data = null;
+    return this.local.get().then(function(local){
+      this$.chart.local = local;
+      data = this$.chart.data;
+      this$.chart.data = null;
+      return new chartService.chart(this$.chart).save();
+    })['finally'](function(){
+      this$.save.pending = false;
+      return eventBus.fire('loading.dimmer.off');
+    }).then(function(ret){
+      this$.chart.data = data;
+      return this$.$apply(function(){
+        plNotify.send('success', "saved");
+        if (refresh) {
+          return window.location.href = this$.service.link(this$.chart);
+        }
+      });
+    })['catch'](function(err){
+      return this$.$apply(function(){
+        if (err[2] === 402) {
+          eventBus.fire('quota.widget.on');
+          return plNotify.send('danger', "Failed: Quota exceeded");
+        } else {
+          plNotify.aux.error.io('save', this$.type, err);
+          return console.error("[save " + name + "]", err);
+        }
+      });
+    });
+  };
+  $scope.save = function(){
+    if (!$scope.user.authed()) {
+      return $scope.auth.toggle(true);
+    }
+    if (this.save.pending) {
+      return;
+    }
+    eventBus.fire('loading.dimmer.on');
+    return sendMsg({
+      type: 'save'
+    });
+  };
   $scope.sharePanel = {
     embed: {
       width: '100%',
@@ -21,7 +109,7 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
       var this$ = this;
       $scope.$watch('chart.key', function(){
         if ($scope.chart) {
-          return this$.link = $scope.plotdbDomainIO + "/v/chart/" + $scope.chart.key;
+          return this$.link = $scope.service.sharelink($scope.chart);
         }
       });
       return ['#edit-sharelink-btn', '#edit-sharelink', '#edit-embedcode-btn', '#edit-embedcode'].map(function(eventsrc){
@@ -179,12 +267,18 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
       return $scope.rwdtest.set();
     }, 0);
   };
+  $scope.edfuncSet = function(it){
+    return $scope.edfunc = it;
+  };
   $scope.$watch('edfunc', function(it){
     var ref$;
     if (it === 'download') {
       ref$ = $scope.download;
       ref$.format = '';
       ref$.ready = false;
+    }
+    if (it === 'editor') {
+      $scope.editor.focus();
     }
     return $scope.canvasResize();
   });
@@ -203,7 +297,9 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
   $scope.editor.on('change', build);
   $scope.updateCode = function(){
     if ($scope.chart) {
-      return $scope.editor.getDoc().setValue($scope.chart[$scope.edcode].content);
+      $scope.editor.getDoc().setValue($scope.chart[$scope.edcode].content);
+      $scope.editor.setOption('mode', $scope.chart[$scope.edcode].type);
+      return $scope.editor.focus();
     }
   };
   $scope.$watch('edcode', function(val){
@@ -342,9 +438,24 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
   };
   $scope.download.init();
   dispatcher = function(evt){
-    var res$, k, ref$, v, data;
-    if (evt.data.type === 'inited') {
-      $scope.dimension = JSON.parse(evt.data.dimension);
+    var payload, res, ref$, res$, k, v, data;
+    payload = evt.data;
+    if (evt.data.type === 'local-data') {
+      $scope.local.data = payload.data;
+      res = ((ref$ = $scope.local).promise || (ref$.promise = {})).res;
+      $scope.local.promise = null;
+      if (res) {
+        res(payload.data);
+      }
+    }
+    if (payload.type === 'save') {
+      if (payload.payload) {
+        $scope.chart.thumbnail = payload.data;
+      }
+      $scope._save();
+    }
+    if (payload.type === 'inited') {
+      $scope.dimension = JSON.parse(payload.dimension);
       res$ = [];
       for (k in ref$ = $scope.dimension) {
         v = ref$[k];
@@ -355,26 +466,26 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
       }
       $scope.dimkeys = res$;
     }
-    if (evt.data.type === 'sample-data') {
-      $scope.data = data = evt.data.data;
+    if (payload.type === 'sample-data') {
+      $scope.data = data = payload.data;
       eventBus.fire('dataset.update.fields', data, $scope.dimkeys);
       $scope.updateData(data);
     }
-    if (evt.data.type === 'snapshot') {
+    if (payload.type === 'snapshot') {
       return $scope.$apply(function(){
-        var ref$, payload, format, ext, size, url, bytes, mime, buf, ints, i$, to$, idx;
-        ref$ = evt.data, payload = ref$.payload, format = ref$.format;
+        var data, format, ext, size, url, bytes, mime, buf, ints, i$, to$, idx;
+        data = payload.data, format = payload.format;
         ext = "png";
-        if (payload) {
+        if (data) {
           if (/svg/.exec(format)) {
-            size = payload.length;
-            url = URL.createObjectURL(new Blob([payload], {
+            size = data.length;
+            url = URL.createObjectURL(new Blob([data], {
               type: 'image/svg+xml'
             }));
             ext = "svg";
           } else if (/png/.exec(format)) {
-            bytes = atob(payload.split(',')[1]);
-            mime = payload.split(',')[0].split(':')[1].split(';')[0];
+            bytes = atob(data.split(',')[1]);
+            mime = data.split(',')[0].split(':')[1].split(';')[0];
             buf = new ArrayBuffer(bytes.length);
             ints = new Uint8Array(buf);
             for (i$ = 0, to$ = bytes.length; i$ < to$; ++i$) {
@@ -389,7 +500,7 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
         }
         return import$($scope.download, {
           loading: false,
-          ready: payload ? true : false,
+          ready: data ? true : false,
           url: url,
           size: size,
           filename: $scope.chart.name + "." + ext
@@ -419,7 +530,7 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
       });
     };
   };
-  init(2241);
+  init(2243);
   return import$($scope, {
     settingPanel: {
       tab: 'publish',

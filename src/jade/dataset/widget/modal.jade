@@ -1,0 +1,79 @@
++cover-modal("copy.toggled", "copy.toggle()")
+  .panel.panel-default(ng-cloak)
+    .panel-body.text-center(style="min-height: 110px")
+      h2 {{'Press Ctrl+C to Copy'|i18n}}
+      img(src="/assets/img/ctrl-c.png")
++cover-modal("parser.csv.toggled", "parser.csv.toggle()")
+  .panel.panel-default(ng-cloak)
+    .panel-body(style="min-height:100px")
+      h3 {{'Encoding'|i18n}}
+      p {{'If you have no idea what this is, just click OK.'|i18n}}
+      select.form-control(ng-model="parser.csv.encoding",ng-options="option for option in parser.csv.encodings")
+    .panel-footer.text-right
+      //-.btn.btn-primary(ng-click="parser.csv.read()") OK
+      .btn.btn-primary(ng-click="parser.csv.gotencoding()") OK
+      span &nbsp;
+      .btn.btn-default(ng-click="parser.csv.toggle()") {{'Cancel'|i18n}}
+
++cover-modal("parser.xls.sheets.toggled", "parser.xls.sheets.toggle()")
+  .panel.panel-default
+    .panel-body
+      h3 {{'Import from Excel File'|i18n}}
+      .sep
+      br
+      p {{'Select the sheet you want to import'|i18n}}:
+      .btn.btn-block.btn-default(ng-repeat="sheet in parser.xls.sheets.list",
+      ng-click="parser.xls.sheets.choose(sheet)") {{sheet}}
+
++cover-modal("parser.gsheet.sheets.toggled", "parser.gsheet.sheets.toggle()")
+  .panel.panel-default
+    .panel-body
+      h3 {{'Import from Google sheets'|i18n}}
+      .sep
+      br
+      p {{'Select the sheet you want to import'|i18n}}:
+      .btn.btn-block.btn-default(ng-repeat="sheet in parser.gsheet.sheets.list",
+      ng-click="parser.gsheet.sheets.title=sheet;parser.gsheet.sheets.toggle(false)") {{sheet}}
+
++cover-modal("parser.gsheet.toggled", "parser.gsheet.toggle()")
+  .panel.panel-default
+    .panel-body
+      h3 {{'Import from Google sheets'|i18n}}
+      .sep
+      br
+      .input-group
+        input.form-control(placeholder="search for spreadsheet title...",ng-model="parser.gsheet.title")
+        span.input-group-btn
+          .btn.btn-default: i.fa.fa-search
+      #gsheet-files.gsheet-files
+        .gsheet-file(ng-repeat="f in parser.gsheet.files",ng-click="parser.gsheet.load(f)")
+          a.pull-right(target="_blank",
+          ng-attr-href="https://docs.google.com/spreadsheets/d/{{f.file.id}}")
+            span {{'open in new window'|i18n}}
+            i.fa.fa-external-link
+          span {{f.file.name}}
+        .gsheet-file.empty(ng-show="!parser.gsheet.files.length") {{'no file'|i18n}}
+        .text-center(ng-show="parser.gsheet.loading"): .loader.loading.alone.sm(style="display:inline-block")
+        #gsheet-list-end
+    .panel-footer.text-right
+      .btn.btn-default(ng-click="parser.gsheet.toggle()") {{'Cancel'|i18n}}
+
++cover-modal("panel.name.toggled","panel.toggle('name')")
+  .panel.panel-default
+    .panel-body(style="min-height:110px")
+      h3(ng-if="!dataset.name") {{'Dataset Name'|i18n}}
+      h3(ng-if="dataset.name") {{'Rename Dataset'|i18n}}
+      .sep
+      br
+      div(style="width:94%;margin:auto")
+        p(ng-if="!dataset.name") {{"Looks like your dataset doesn't have a name yet. Let's give it a name"|i18n}}:
+        p(ng-if="dataset.name") {{'Give your dataset a new name'|i18n}}:
+        input#dataset-name-input.form-control(placeholder="e.g., US 2015 Population",ng-model="panel.name.value",
+        ng-keydown="panel.name.keyhandler($event)")
+      br
+    .panel-footer.text-right
+      .btn.btn-primary(ng-class="{'disabled':!panel.name.value}",ng-click="panel.name.action(0)")
+        span &nbsp; OK &nbsp;
+      span &nbsp;
+      .btn.btn-default(ng-click="panel.name.action(1)") {{'Cancel'|i18n}}
+

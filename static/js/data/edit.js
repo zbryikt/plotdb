@@ -444,7 +444,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         alert("it's not a CSV file");
         return;
       }
-      node = document.getElementById('dataset-import-dropdown');
+      node = document.getElementById('dataset-import-dropdown') || document.getElementById('dataset-import-dropdown-inline');
       node.className = node.className.replace(/open/, '');
       $scope.parser.csv.buf = buf;
       $scope.parser.csv.toggle(false);
@@ -479,10 +479,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
             $scope.grid.data.types = data.types;
             return $scope.grid.data.size = buf.length;
           });
-          return $scope.grid.render({
-            trs: data.trs,
-            ths: data.ths
-          }).then(function(){
+          return $scope.grid.render().then(function(){
             return $scope.$apply(function(){
               this$.toggle(false);
               this$.buf = null;
@@ -502,40 +499,76 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
   };
   $scope.parser.xls = {
     worker: null,
+    sheets: {
+      toggled: false,
+      toggle: function(it){
+        var res;
+        this.toggled = it != null
+          ? it
+          : !this.toggled;
+        if (!this.toggled && this.promise) {
+          res = this.promise.res;
+          this.promise = null;
+          return res();
+        }
+      },
+      list: [],
+      title: null,
+      choose: function(it){
+        this.title = it;
+        $scope.parser.progress($scope.parser.xls.sec);
+        eventBus.fire('loading.dimmer.on', 1);
+        this.toggle(false);
+        return $scope.parser.xls.worker.postMessage({
+          type: 'get-sheet',
+          buf: $scope.parser.xls.buf,
+          sheetName: this.title
+        });
+      }
+    },
     read: function(buf, file){
-      var sec, node, this$ = this;
+      var xls, sec, node, this$ = this;
+      xls = $scope.parser.xls;
+      xls.sheets.title = null;
+      xls.buf = buf;
       if (file.name && !/\.xlsx?/.exec(file.name)) {
         alert("it's not a Microsoft Excel file");
         return;
       }
       eventBus.fire('loading.dimmer.on', 1);
-      sec = buf.length * 2.5 / 1000;
+      xls.sec = sec = buf.length * 2.5 / 1000;
       $scope.parser.progress(sec);
-      if (!this.worker) {
-        this.worker = new Worker('/js/data/worker/excel.js');
-        this.worker.onmessage = function(e){
+      if (!xls.worker) {
+        xls.worker = new Worker('/js/data/worker/excel.js');
+        xls.worker.onmessage = function(e){
           return $scope.$apply(function(){
             var data;
-            data = e.data.data;
-            $scope.grid.data.headers = data.headers;
-            $scope.grid.data.rows = data.rows;
-            $scope.grid.data.types = data.types;
-            $scope.grid.data.size = buf.length;
-            return $scope.grid.render({
-              trs: data.trs,
-              ths: data.ths
-            }).then(function(){
-              return $scope.$apply(function(){
-                return eventBus.fire('loading.dimmer.off');
+            if (e.data.type === 'sheet-list') {
+              xls.sheets.toggle(true);
+              xls.sheets.list = e.data.data;
+              eventBus.fire('loading.dimmer.off');
+            }
+            if (e.data.type === 'sheet') {
+              data = e.data.data;
+              $scope.grid.data.headers = data.headers;
+              $scope.grid.data.rows = data.rows;
+              $scope.grid.data.types = data.types;
+              $scope.grid.data.size = buf.length;
+              return $scope.grid.render().then(function(){
+                return $scope.$apply(function(){
+                  eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
+                  return eventBus.fire('loading.dimmer.off');
+                });
               });
-            });
+            }
           });
         };
       }
-      node = document.getElementById('dataset-import-dropdown');
+      node = document.getElementById('dataset-import-dropdown') || document.getElementById('dataset-import-dropdown-inline');
       node.className = node.className.replace(/open/, '');
       return $timeout(function(){
-        return this$.worker.postMessage({
+        return xls.worker.postMessage({
+          type: 'get-sheet-list',
           buf: buf
         });
       }, 100);
@@ -619,10 +652,52 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         });
       });
     },
-    toggle: function(){
-      this.toggled = !this.toggled;
+    toggle: function(it){
+      this.toggled = it != null
+        ? it
+        : !this.toggled;
       if (this.toggled && !this.files.length) {
         return this.list();
+      }
+    },
+    sheets: {
+      toggled: false,
+      toggle: function(it){
+        var res;
+        this.toggled = it != null
+          ? it
+          : !this.toggled;
+        if (!this.toggled && this.promise) {
+          res = this.promise.res;
+          this.promise = null;
+          return res();
+        }
+      },
+      list: [],
+      title: null,
+      promise: null,
+      load: function(file){
+        var this$ = this;
+        return gapi.client.sheets.spreadsheets.get({
+          spreadsheetId: file.id
+        }).then(function(ret){
+          this$.list = ret.result.sheets.map(function(it){
+            return it.properties.title;
+          });
+          if (this$.list.length === 1) {
+            this$.title = this$.list[0];
+            return Promise.resolve();
+          }
+          eventBus.fire('loading.dimmer.off');
+          $scope.parser.gsheet.toggle(false);
+          this$.toggle(true);
+          return new Promise(function(res, rej){
+            return this$.promise = {
+              res: res,
+              rej: rej
+            };
+          });
+        });
       }
     },
     load: function(file){
@@ -631,13 +706,24 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       eventBus.fire('loading.dimmer.on', 1);
       $scope.parser.progress(3000);
       return gapi.client.load('https://sheets.googleapis.com/$discovery/rest?version=v4').then(function(){
+        return $scope.parser.gsheet.sheets.load(file);
+      }).then(function(){
+        return this$.toggle(false);
+      }).then(function(){
+        eventBus.fire('loading.dimmer.on', 1);
+        $scope.parser.progress(3000);
         return gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId: file.id,
-          range: 'A:ZZ'
+          range: this$.sheets.title + "!A:ZZ"
         });
       }).then(function(ret){
         var list, data;
         list = ret.result.values;
+        list = list.filter(function(it){
+          return it.filter(function(it){
+            return it.length;
+          }).length;
+        });
         data = $scope.grid.data;
         $scope.$apply(function(){
           var h;
@@ -650,7 +736,8 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         return $scope.grid.render().then(function(){
           return $scope.$apply(function(){
             this$.toggled = false;
-            return eventBus.fire('loading.dimmer.off');
+            eventBus.fire('loading.dimmer.off');
+            return eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
           });
         });
       }, function(){
@@ -842,7 +929,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       dimkeys: [],
       clusterizer: null,
       bindField: function(e){
-        var node, dim, multi, i$, to$, i, index, root, span;
+        var node, dim, multi, i$, to$, i, index, root;
         node = e.target || e.srcElement;
         if (node.nodeName.toLowerCase() !== 'a') {
           return;
@@ -860,13 +947,29 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         index = Array.from(node.parentNode.parentNode.parentNode.parentNode.childNodes).indexOf(node.parentNode.parentNode.parentNode);
         this.bind[index] = dim || null;
         root = node.parentNode.parentNode.parentNode.parentNode;
-        for (i$ = 0, to$ = this.bind.length; i$ < to$; ++i$) {
+        this.bindFieldSync();
+        return eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
+      },
+      bindFieldSync: function(){
+        var root, i$, to$, i, span, results$ = [];
+        root = document.querySelector('#dataset-editbox .sheet .sheet-dim > div');
+        for (i$ = this.headers.length, to$ = root.childNodes.length; i$ < to$; ++i$) {
           i = i$;
           span = root.childNodes[i].querySelector("span");
-          span.innerText = this.bind[i] || "(empty)";
-          span.className = this.bind[i] ? '' : 'grayed';
+          span.innerText = "(empty)";
+          span.className = 'grayed';
+          this.bind[i] = null;
         }
-        return eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
+        for (i$ = 0, to$ = this.headers.length; i$ < to$; ++i$) {
+          i = i$;
+          if (!root.childNodes[i]) {
+            continue;
+          }
+          span = root.childNodes[i].querySelector("span");
+          span.innerText = this.bind[i] || "(empty)";
+          results$.push(span.className = this.bind[i] ? '' : 'grayed');
+        }
+        return results$;
       },
       fieldize: function(){
         var ret, i$, to$, i, j$, to1$, j, ref$, this$ = this;
@@ -920,6 +1023,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
             scrollElem: scroll,
             contentElem: content
           });
+          this$.data.bindFieldSync();
           return res();
         };
         if (trs && ths) {
@@ -950,11 +1054,11 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         }
       });
     },
-    update: function(r, c, val){
-      var dirty, headOnly, i$, i, ref$, j, that, valtype;
+    update: function(r, c, val, headOnly){
+      var dirty, i$, i, ref$, j, that, valtype;
+      headOnly == null && (headOnly = true);
       dirty = false;
-      headOnly = true;
-      if (c >= this.data.headers.length) {
+      if (c >= this.data.headers.length && val) {
         for (i$ = this.data.headers.length; i$ <= c; ++i$) {
           i = i$;
           this.data.headers[i] = '';
@@ -1027,9 +1131,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         }).then(function(){
           var node, range, e, sel;
           if (r < 0) {
-            node = document.querySelector('#dataset-editbox .sheet-head > div >' + (" div:nth-of-type(" + (c + 1) + ") > div:first-child"));
+            node = document.querySelector('#dataset-editbox .sheet-head > div >' + (" div:nth-of-type(" + (c + 1) + ") > textarea:first-child"));
           } else {
-            node = document.querySelector(['#dataset-editbox .sheet-cells >', "div:nth-of-type(" + (r + 1) + ") >", "div:nth-of-type(" + (c + 1) + ")"].join(" "));
+            node = document.querySelector(['#dataset-editbox .sheet-cells >', "div:nth-of-type(" + (r + 1) + ") >", "div:nth-of-type(" + (c + 1) + ") textarea"].join(" "));
           }
           if (node) {
             node.focus();
@@ -1068,13 +1172,36 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       return this.render();
     },
     init: function(){
-      var head, scroll, content, this$ = this;
+      var head, dim, scroll, content, this$ = this;
       this.empty();
       head = document.querySelector('#dataset-editbox .sheet .sheet-head');
+      dim = document.querySelector('#dataset-editbox .sheet .sheet-dim');
       scroll = document.querySelector('#dataset-editbox .sheet .clusterize-scroll');
       content = document.querySelector('#dataset-editbox .sheet .clusterize-content');
       scroll.addEventListener('scroll', function(e){
-        return head.scrollLeft = scroll.scrollLeft;
+        head.scrollLeft = scroll.scrollLeft;
+        if (dim && dim.childNodes[0]) {
+          return dim.childNodes[0].style.left = (-scroll.scrollLeft) + "px";
+        }
+      });
+      content.addEventListener('click', function(e){
+        var data, row;
+        if (/closebtn/.exec(e.target.className)) {
+          data = $scope.grid.data;
+          row = +e.target.getAttribute('row');
+          return $scope.$apply(function(){
+            return $timeout(function(){
+              eventBus.fire('loading.dimmer.on');
+              data.rows.splice(row, 1);
+              return $scope.grid.render().then(function(){
+                return $scope.$apply(function(){
+                  eventBus.fire('loading.dimmer.off');
+                  return eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
+                });
+              });
+            }, 0);
+          });
+        }
       });
       head.addEventListener('click', function(e){
         var data, col, node, that;
@@ -1109,18 +1236,33 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         }
       });
       head.addEventListener('keydown', function(e){
+        var pPos, key, n, val;
+        pPos = e.target.selectionStart;
+        key = e.keyCode;
+        n = e.target;
+        val = n.value.trim() || n.textContent.trim();
+        if (key === 86 && e.metaKey || e.ctrlKey && /\t/.exec(val)) {
+          return n.value = "";
+        }
         return setTimeout(function(){
-          var key, n, val, col, v, node, that;
-          key = e.keyCode;
-          n = e.target;
-          val = n.textContent.trim();
+          var val, cPos, col, v, node, that;
+          val = n.value.trim() || n.textContent.trim();
+          cPos = e.target.selectionStart;
           col = +n.getAttribute('col');
-          if (key >= 37 && key <= 40) {
+          if (key === 39 && (pPos !== cPos || cPos < val.length)) {
+            return;
+          }
+          if (key === 37 && (pPos !== cPos || cPos > 0)) {
+            return;
+          }
+          if (key === 86 && e.metaKey || e.ctrlKey && /\t/.exec(val)) {
+            return this$.paste(-1, col, val);
+          } else if (key >= 37 && key <= 40) {
             v = [[-1, 0], [0, -1], [1, 0], [0, 1]][key - 37];
             if (v[1] > 0) {
-              node = content.querySelector([".sheet-cells >", "div:first-child >", "div:nth-of-type(" + (col + 1 + v[0]) + ")"].join(" "));
+              node = content.querySelector([".sheet-cells >", "div:first-child >", "div:nth-of-type(" + (col + 1 + v[0]) + ") textarea"].join(" "));
             } else {
-              node = head.querySelector([".sheet-head > div:first-child >", "div:nth-of-type(" + (col + 1 + v[0]) + ") > div:first-child"].join(" "));
+              node = head.querySelector([".sheet-head > div:first-child >", "div:nth-of-type(" + (col + 1 + v[0]) + ") > textarea:first-child"].join(" "));
             }
             if (that = node) {
               return that.focus();
@@ -1132,21 +1274,52 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           }
         }, 0);
       });
+      head.addEventListener('input', function(e){
+        var key, n, val, col;
+        key = e.keyCode;
+        n = e.target;
+        val = n.value || n.textContent;
+        col = +n.getAttribute('col');
+        if (/\t/.exec(val)) {
+          return this$.paste(-1, col, val);
+        }
+      });
+      content.addEventListener('input', function(e){
+        var key, n, val, row, col;
+        key = e.keyCode;
+        n = e.target;
+        val = n.value || n.textContent;
+        row = +n.getAttribute('row');
+        col = +n.getAttribute('col');
+        if (/\t/.exec(val)) {
+          return this$.paste(row, col, val);
+        }
+      });
       return content.addEventListener('keydown', function(e){
+        var pPos, key, n, val;
+        pPos = e.target.selectionStart;
+        key = e.keyCode;
+        n = e.target;
+        val = n.value || n.textContent;
+        if (key === 86 && e.metaKey || e.ctrlKey && /\t/.exec(val)) {
+          return n.value = "";
+        }
         return setTimeout(function(){
-          var key, n, val, row, col, h, v, node, that;
-          key = e.keyCode;
-          n = e.target;
-          val = n.textContent;
+          var val, cPos, row, col, h, v, node, that;
+          val = n.value || n.textContent;
+          cPos = e.target.selectionStart;
           row = +n.getAttribute('row');
           col = +n.getAttribute('col');
           h = col;
-          if (key >= 37 && key <= 40) {
+          if (key === 39 && (pPos !== cPos || cPos < val.length)) {
+            return;
+          }
+          if (key === 37 && (pPos !== cPos || cPos > 0)) {} else if (key >= 37 && key <= 40) {
             v = [[-1, 0], [0, -1], [1, 0], [0, 1]][key - 37];
             if (row === 0 && v[1] < 0) {
-              node = head.querySelector([".sheet-head > div >", "div:nth-of-type(" + (col + 1) + ") > div:first-child"].join(" "));
+              node = head.querySelector([".sheet-head > div >", "div:nth-of-type(" + (col + 1) + ") > textarea:first-child"].join(" "));
             } else {
-              node = content.querySelector([".sheet-cells >", "div:nth-of-type(" + (row + 1 + v[1]) + ") >", "div:nth-of-type(" + (col + 1 + v[0]) + ")"].join(" "));
+              node = content.querySelector([".sheet-cells >", "div:nth-of-type(" + (row + 1 + v[1]) + ") >", "div:nth-of-type(" + (col + 1 + v[0]) + ") textarea"].join(" "));
             }
             if (that = node) {
               return that.focus();
@@ -1158,6 +1331,76 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           }
         }, 0);
       });
+    },
+    paste: function(row, col, val){
+      var head, data, ret, w, h, curRowSize, curColSize, newRowSize, newColSize, i$, i, r, j$, c, ref$, key$, to$, j;
+      head = null;
+      eventBus.fire('loading.dimmer.on');
+      data = $scope.grid.data;
+      ret = val.split('\n').map(function(it){
+        return it.split('\t');
+      });
+      if (row === -1) {
+        head = ret.splice(0, 1)[0];
+        row = 0;
+      }
+      w = Math.max.apply(null, ret.map(function(it){
+        return it.length;
+      }));
+      h = ret.length;
+      curRowSize = data.rows.length;
+      curColSize = data.headers.length;
+      newRowSize = row + h - 1 < curRowSize
+        ? curRowSize
+        : row + h - 1;
+      newColSize = col + w - 1 < curColSize
+        ? curColSize
+        : col + w - 1;
+      if (newColSize > curColSize) {
+        for (i$ = curColSize; i$ < newColSize; ++i$) {
+          i = i$;
+          data.headers[i] = "";
+        }
+      }
+      if (head) {
+        for (i$ = 0; i$ < w; ++i$) {
+          i = i$;
+          data.headers[i + col] = head[i];
+        }
+      }
+      if (newRowSize > curRowSize) {
+        data.rows.push((function(){
+          var i$, to$, results$ = [];
+          for (i$ = 0, to$ = newColSize; i$ < to$; ++i$) {
+            i = i$;
+            results$.push("");
+          }
+          return results$;
+        }()));
+      }
+      for (i$ = 0; i$ < h; ++i$) {
+        r = i$;
+        for (j$ = 0; j$ < w; ++j$) {
+          c = j$;
+          ((ref$ = data.rows)[key$ = r + row] || (ref$[key$] = []))[c + col] = ret[r][c];
+        }
+      }
+      for (i$ = col, to$ = col + w; i$ < to$; ++i$) {
+        i = i$;
+        data.types[i] = plotdb.Types.resolve((fn$()));
+      }
+      return $scope.grid.render().then(function(){
+        eventBus.fire('loading.dimmer.off');
+        return eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
+      });
+      function fn$(){
+        var i$, to$, results$ = [];
+        for (i$ = 0, to$ = data.rows.length; i$ < to$; ++i$) {
+          j = i$;
+          results$.push(data.rows[j][i]);
+        }
+        return results$;
+      }
     }
   };
   $scope.init();

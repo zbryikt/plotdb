@@ -4451,11 +4451,6 @@ body {
 select[ngselect2] {
   height: 34px;
 }
- {
-  width: 100%;
-  width: 100%;
-  width: 100%;
-}
 big.xl {
   font-size: 1.5em;
 }
@@ -4493,7 +4488,7 @@ big.xl {
   float: right;
   margin: -2px -2px 0 0;
   cursor: pointer;
-  z-index: 19;
+  z-index: 18;
 }
 .closebtn:after {
   content: "\0000d7";
@@ -6630,7 +6625,7 @@ ul.dropdown-menu li:hover .hover-tip {
   margin: 5px;
   cursor: move;
   color: #421;
-  z-index: 17;
+  z-index: 16;
   position: relative;
 }
 .data-field span {
@@ -6671,7 +6666,7 @@ ul.dropdown-menu li:hover .hover-tip {
   display: block;
   margin: 0.66%;
   padding: 10px;
-  z-index: 15;
+  z-index: 14;
   position: relative;
 }
 .dimensions .dimension .require {
@@ -6711,7 +6706,7 @@ ul.dropdown-menu li:hover .hover-tip {
 #code-panel #code-tabs {
   border-bottom: 1px solid #ddd;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  z-index: 12;
+  z-index: 11;
   position: relative;
   overflow: hidden;
 }
@@ -6787,7 +6782,7 @@ ul.dropdown-menu li:hover .hover-tip {
   width: 45px;
 }
 #code-panel #code-tabs .tab {
-  z-index: 14;
+  z-index: 13;
   position: relative;
 }
 #code-panel #code-tabs .tab.action {
@@ -6811,7 +6806,7 @@ ul.dropdown-menu li:hover .hover-tip {
   -webkit-transition: all 0.5s ease-in-out;
   -o-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out;
-  z-index: 13;
+  z-index: 12;
   position: absolute;
 }
 #code-panel #code-tabs .tab.src.shown {
@@ -6820,7 +6815,7 @@ ul.dropdown-menu li:hover .hover-tip {
 }
 #code-header {
   position: absolute;
-  z-index: 11;
+  z-index: 10;
   top: 0;
   left: 0;
   width: 100%;
@@ -6873,7 +6868,7 @@ ul.dropdown-menu li:hover .hover-tip {
 }
 #code-ctrl {
   position: absolute;
-  z-index: 11;
+  z-index: 10;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -6904,11 +6899,11 @@ ul.dropdown-menu li:hover .hover-tip {
   height: 100%;
   left: 0;
   top: 0;
-  z-index: 8;
+  z-index: 7;
   opacity: 0.01;
 }
 #code-editor .box.active {
-  z-index: 9;
+  z-index: 8;
   opacity: 1;
 }
 #code-editor .CodeMirror {
@@ -7277,7 +7272,7 @@ small.hint {
   display: flex;
   justify-content: flex-start;
   font-size: 24px;
-  z-index: 18;
+  z-index: 17;
 }
 #datamap-hint p {
   margin-top: 70px;
@@ -7911,6 +7906,7 @@ small.hint {
   width: 100%;
   height: 230px;
   padding: 20px;
+  margin-bottom: 20px;
 }
 #land-pdb-root text {
   font-family: plotdb-zh, lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -8387,7 +8383,7 @@ small.hint {
   -ms-user-select: none;
   user-select: none;
   background: #fff;
-  z-index: 16;
+  z-index: 15;
   position: relative;
   overflow: hidden;
   max-height: 45px;
@@ -8457,7 +8453,7 @@ small.hint {
   height: 100%;
   padding-bottom: 56px;
 }
-#dataset-editbox textarea {
+textarea#dataset-edit-text {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
   font-family: monospace;
@@ -8838,6 +8834,12 @@ small.hint {
 .dataset-toolbar .dropdown-menu > li > a {
   padding-left: 7px;
 }
+#dataset-import-dropdown-inline {
+  position: absolute;
+  top: 12px;
+  left: 85px;
+  z-index: 19;
+}
 .gsheet-files {
   height: 400px;
   overflow: scroll;
@@ -9125,7 +9127,7 @@ small.hint {
   background: #810;
 }
 #code-editor #code-inherit.box.active {
-  z-index: 10;
+  z-index: 9;
   background: #fff;
   opacity: 0.93;
 }
@@ -9342,7 +9344,7 @@ small.hint {
 #chart-filter.sticked {
   width: 96%;
   left: 2%;
-  z-index: 7;
+  z-index: 6;
   margin-top: 0;
 }
 #chart-filter.sticked #chart-explore-bar {
@@ -9781,6 +9783,9 @@ small.hint {
 .sheet-dim .dropdown.open {
   overflow: visible;
 }
+.sheet-dim > div {
+  position: relative;
+}
 .sheet-dim .dropdown {
   vertical-align: top;
   cursor: pointer;
@@ -9816,6 +9821,39 @@ small.hint {
 .sheet-dim div,
 .sheet-cells div {
   outline: none;
+}
+.sheet-cells div {
+  position: relative;
+}
+.sheet-cells div .closebtn {
+  color: #ccc;
+  position: absolute;
+  float: none;
+  right: auto;
+  left: 5px;
+}
+.sheet-cells div:hover .closebtn {
+  color: #000;
+}
+.sheet input,
+.sheet textarea {
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: right;
+  resize: none;
+  padding: 0;
+  display: block;
+}
+.sheet textarea {
+  overflow: hidden;
+}
+.sheet input:focus,
+.sheet textarea:focus {
+  outline: none;
+}
+.sheet-head textarea {
+  height: 22px;
 }
 .dropdown-submenu {
   position: relative;
@@ -10510,6 +10548,7 @@ span.select2-container--default .select2-selection--multiple {
   overflow: hidden;
   top: 0;
   padding-top: 53px;
+  z-index: 4;
 }
 #editor-datagrid .closebtn {
   top: auto;
@@ -10533,11 +10572,12 @@ span.select2-container--default .select2-selection--multiple {
   width: 80px;
   height: 100%;
   left: 0;
-  position: absolute;
   top: 0;
+  position: absolute;
+  border-right: 1px solid #000;
   background: #292929;
   color: #fff;
-  z-index: 12;
+  z-index: 11;
 }
 .editor-func {
   cursor: pointer;
@@ -10597,6 +10637,7 @@ span.select2-container--default .select2-selection--multiple {
   padding-bottom: 60px;
 }
 .editor-func-detail .title {
+  position: relative;
   font-size: 1.7em;
   padding: 10px 20px;
   border-bottom: 1px solid #ddd;
@@ -10612,7 +10653,7 @@ span.select2-container--default .select2-selection--multiple {
   width: 100%;
   padding: 20px;
   border-top: 1px solid #ccc;
-  z-index: 6;
+  z-index: 19;
 }
 .editor-canvas {
   position: absolute;
@@ -10651,7 +10692,7 @@ span.select2-container--default .select2-selection--multiple {
   position: absolute;
   right: 40px;
   top: 10px;
-  z-index: 12;
+  z-index: 11;
   border: 1px solid #ccc;
   border-radius: 3px;
 }
@@ -10704,7 +10745,7 @@ span.select2-container--default .select2-selection--multiple {
 #editor-code.active {
   width: 50%;
   opacity: 1;
-  z-index: 8;
+  z-index: 7;
 }
 #editor-code .btn-dark {
   color: #fff;
@@ -10713,7 +10754,7 @@ span.select2-container--default .select2-selection--multiple {
   border: 1px solid #ccc;
   bottom: 10px;
   right: 10px;
-  z-index: 11;
+  z-index: 10;
 }
 #editor-code.lg.active {
   width: 100%;

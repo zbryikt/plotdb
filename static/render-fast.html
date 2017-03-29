@@ -4552,7 +4552,6 @@ plotdb.Order = {
       types = types.filter(fn$);
     }
     type = types[0];
-    console.log(type);
     sorter = ((type || {}).order || this.order)[isAscending ? 'Ascending' : 'Descending'];
     if (fieldname) {
       if (type) {

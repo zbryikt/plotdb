@@ -2275,6 +2275,7 @@ import$(plotdb.view.chart.prototype, {
     return this._.chart.render();
   },
   data: function(data, refresh, mapping){
+    var key, k;
     if (data == null) {
       return this._.data;
     }
@@ -2282,7 +2283,16 @@ import$(plotdb.view.chart.prototype, {
       data = plotdb.chart.dataConvert.byMapping(data, mapping);
     }
     if (!Array.isArray(data) && typeof data === typeof {}) {
-      data = plotdb.chart.dataConvert.fromDimension(data);
+      key = (function(){
+        var results$ = [];
+        for (k in data) {
+          results$.push(k);
+        }
+        return results$;
+      }())[0];
+      if (!Array.isArray(data[key])) {
+        data = plotdb.chart.dataConvert.fromDimension(data);
+      }
     }
     this._.data = data;
     this.sync();

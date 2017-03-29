@@ -58,6 +58,8 @@
 
 .sheet-dim, .sheet-dim .dropdown.open
   overflow: visible
+.sheet-dim > div
+  position: relative
 .sheet-dim .dropdown
   vertical-align: top
   cursor: pointer
@@ -83,3 +85,29 @@
   border-bottom: 1px solid #ccc
 .sheet-head div, .sheet-dim div, .sheet-cells div
   outline: none
+.sheet-cells div
+  position: relative
+  .closebtn
+    color: #ccc
+    position: absolute
+    float: none
+    right: auto
+    left: 5px
+.sheet-cells div:hover .closebtn
+  color: #000
+
+.sheet
+  input, textarea
+    width: 100%
+    border: none
+    background: none
+    text-align: right
+    resize: none
+    padding: 0
+    display: block
+  textarea
+    overflow: hidden
+  input:focus, textarea:focus
+    outline: none
+.sheet-head textarea
+  height: 22px

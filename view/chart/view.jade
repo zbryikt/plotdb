@@ -33,6 +33,9 @@ block foot
     var mychart = new plotdb.view.chart(chart, {theme: theme, fields: fields}); //, {theme: theme, fields: fields})
     //-mychart.loadlib();
     mychart.attach(document.getElementById("wrapper"));
+    var config = mychart.config();
+    if(config.background) document.body.style.background = config.background;
+    if(config.textFill) document.body.style.color = config.textFill;
   script(type="text/javascript").
     function fullscreen() {
       if (document.fullscreenEnabled || document.webkitFullscreenEnabled ||

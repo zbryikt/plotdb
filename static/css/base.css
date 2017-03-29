@@ -35,7 +35,7 @@ big.xl {
   float: right;
   margin: -2px -2px 0 0;
   cursor: pointer;
-  z-index: 19;
+  z-index: 18;
 }
 .closebtn:after {
   content: "\0000d7";
@@ -56,6 +56,13 @@ big.xl {
   position: absolute;
   top: 4px;
   right: 4px;
+}
+.closebtn.lg {
+  font-size: 32px;
+}
+.closebtn.lg.inner {
+  top: 12px;
+  right: 12px;
 }
 .closebtn.outer {
   position: absolute;
@@ -1309,6 +1316,9 @@ width: 100%;
   position: absolute;
   right: 10px;
   top: 0;
+}
+.btn.btn-success.disabled {
+  color: rgba(255,255,255,0.5);
 }
 .btn.btn-success.loader:after {
   background: url("/assets/img/loading-success.gif") center center no-repeat;

@@ -210,7 +210,7 @@ $(document).ready(function(){
         value2Label: "Dignity",
         value3Label: "Logic"
       });
-      chart.data(data[0][i]);
+      chart.data(data[0][i], false);
       chart.attach(node);
       if (i === 2) {
         root.show();

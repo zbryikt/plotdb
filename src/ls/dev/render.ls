@@ -35,7 +35,7 @@ error-handling = (e, lineno = 0) ->
   if msg.length > 1024 => msg = msg.substring(0,1024) + "..."
   lines = msg.split(\\n)
   if lines.length > 4 => msg = lines.splice(0,4).join(\\n)
-  window.parent.postMessage {type: \error, payload: {msg, lineno}}, plotdb-domain
+  window.parent.postMessage {type: \error, data: {msg, lineno}}, plotdb-domain
 
 window.addEventListener \error, (e) -> error-handling e.error, e.lineno
 
@@ -50,6 +50,13 @@ proper-eval = (src) -> new Promise (res, rej) ->
   script.src = store.{}code.url = URL.createObjectURL new Blob [code], {type: "text/javascript"}
   document.body.appendChild script
 
+save-local = (chart, key) -> (cb) ->
+  req = new XMLHttpRequest!
+  req.onload = -> if cb => cb!
+  req.open \put, "#{plotdb-domain}/e/chart/#key/local", true
+  req.setRequestHeader \Content-Type, "application/json;charset=UTF-8"
+  req.send JSON.stringify(chart.local)
+
 dispatcher = (evt) ->
   if evt.data.type == \init =>
     obj = JSON.parse(evt.data.src)
@@ -62,12 +69,14 @@ dispatcher = (evt) ->
       plotdb.chart.get-sample-data module
       data = plotdb.chart.fields-from-dimension module.dimension
       send-msg {type: \sample-data, data: data}
-  if evt.data.type == \render =>
-  if evt.data.type == \snapshot => snapshot evt.data.format
+  if evt.data.type == \save => snapshot \png .then (payload) ->
+    send-msg(payload <<< type: \save)
+  if evt.data.type == \snapshot => snapshot evt.data.format .then (payload) -> send-msg(payload <<< type: \snapshot)
   if evt.data.type == \update-data =>
     chart = store.chart
     chart.data evt.data.data, true
-    
+  if evt.data.type == \get-local =>
+    send-msg {type: \local-data, data: store.module.local}
   if evt.data.type == \get-sample-data =>
     chart = store.module
     if !chart => return
@@ -76,7 +85,7 @@ dispatcher = (evt) ->
     window.parent.postMessage {type: \sample-data, data: data}, plotdb-domain 
 window.addEventListener \message, dispatcher, false
 
-snapshot = (format='snapshot') ->
+snapshot = (format='snapshot') -> new Promise (res, rej) ->
   try
     Array.from(document.querySelectorAll('body > div:first-of-type svg')).forEach((node)->
       {width, height} = node.getBoundingClientRect!
@@ -170,16 +179,16 @@ snapshot = (format='snapshot') ->
 
     svg = rgba-percent-to-value svg
     svgnode.setAttribute(\style, inline-style)
-    if format == \svg => return send-msg {type: \snapshot, format: \svg, payload: svg}
+    if format == \svg => res {format: \svg, data: svg}
     img = new Image!
     img.onload = ->
       #newHeight = (if height > width => width else height ) #TODO crop image in server / service
       canvas = document.createElement("canvas") <<< {width, height}
       canvas.getContext \2d .drawImage img, 0, 0, width, height, 0, 0, width, height
-      send-msg {type: \snapshot, format: format, payload: canvas.toDataURL!}
+      res {format: format, data: canvas.toDataURL!}
     # btoa doesn't work for utf-8 string
     encoded = base64.encode(utf8.encode(svg))
     img.src = "data:image/svg+xml;charset=utf-8;base64," + encoded
   catch e
     console.log e
-    send-msg {type: \snapshot, format: format, payload: null}
+    res {format: format, data: null}

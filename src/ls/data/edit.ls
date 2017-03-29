@@ -258,7 +258,10 @@ angular.module \plotDB
         if file.name and !/\.csv$/.exec(file.name) =>
           alert("it's not a CSV file")
           return
-        node = document.getElementById(\dataset-import-dropdown)
+        node = (
+          document.getElementById(\dataset-import-dropdown) or
+          document.getElementById(\dataset-import-dropdown-inline)
+        )
         node.className = node.className.replace /open/, ''
         $scope.parser.csv.buf = buf
         $scope.parser.csv.toggle false
@@ -278,7 +281,7 @@ angular.module \plotDB
             $scope.grid.data.headers = data.headers
             $scope.grid.data.types = data.types
             $scope.grid.data.size = buf.length
-          $scope.grid.render data{trs, ths} .then ~> $scope.$apply ~>
+          $scope.grid.render!then ~> $scope.$apply ~>
             @toggle false
             @buf = null
             if verbose => eventBus.fire \loading.dimmer.off
@@ -289,26 +292,57 @@ angular.module \plotDB
 
     $scope.parser.xls = do
       worker: null
+      sheets: do
+        toggled: false
+        toggle: ->
+          @toggled = if it? => it else !!!@toggled
+          if !@toggled and @promise =>
+            res = @promise.res
+            @promise = null
+            res!
+        list: []
+        title: null
+        choose: ->
+          @title = it
+          $scope.parser.progress $scope.parser.xls.sec
+          eventBus.fire \loading.dimmer.on, 1
+          @toggle false
+          $scope.parser.xls.worker.postMessage {type: \get-sheet, buf: $scope.parser.xls.buf, sheetName: @title}
+
       read: (buf,file) ->
+        xls = $scope.parser.xls
+        xls.sheets.title = null
+        xls.buf = buf
         if file.name and !/\.xlsx?/.exec(file.name) =>
           alert("it's not a Microsoft Excel file")
           return
         eventBus.fire \loading.dimmer.on, 1
-        sec = buf.length * 2.5 / 1000
+        xls.sec = sec = buf.length * 2.5 / 1000
         $scope.parser.progress sec
-        if !@worker =>
-          @worker = new Worker \/js/data/worker/excel.js
-          @worker.onmessage = (e) -> $scope.$apply ->
-            data = e.data.data
-            $scope.grid.data.headers = data.headers
-            $scope.grid.data.rows = data.rows
-            $scope.grid.data.types = data.types
-            $scope.grid.data.size = buf.length
-            $scope.grid.render data{trs, ths} .then -> # 1.3
-              $scope.$apply -> eventBus.fire \loading.dimmer.off
-        node = document.getElementById(\dataset-import-dropdown)
+        if !xls.worker =>
+          xls.worker = new Worker \/js/data/worker/excel.js
+          xls.worker.onmessage = (e) ~> $scope.$apply ~>
+            if e.data.type == \sheet-list =>
+              xls.sheets.toggle true
+              xls.sheets.list = e.data.data
+              eventBus.fire \loading.dimmer.off
+            if e.data.type == \sheet =>
+              data = e.data.data
+              $scope.grid.data.headers = data.headers
+              $scope.grid.data.rows = data.rows
+              $scope.grid.data.types = data.types
+              $scope.grid.data.size = buf.length
+              $scope.grid.render!then -> # 1.3
+                $scope.$apply ->
+                  eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
+                  eventBus.fire \loading.dimmer.off
+
+        node = (
+          document.getElementById(\dataset-import-dropdown) or
+          document.getElementById(\dataset-import-dropdown-inline)
+        )
         node.className = node.className.replace /open/, ''
-        $timeout (~> @worker.postMessage {buf}), 100
+        $timeout (~> xls.worker.postMessage {type: \get-sheet-list, buf}), 100
 
     $scope.parser.gsheet = do
       url: null
@@ -356,20 +390,48 @@ angular.module \plotDB
             @files ++= ret.[]files.map -> {file: it}
             @loading = false
       toggle: ->
-        @toggled = !!!@toggled
+        @toggled = if it? => it else !!!@toggled
         if @toggled and !@files.length => @list!
+      sheets: do
+        toggled: false
+        toggle: ->
+          @toggled = if it? => it else !!!@toggled
+          if !@toggled and @promise =>
+            res = @promise.res
+            @promise = null
+            res!
+        list: []
+        title: null
+        promise: null
+        load: (file) ->
+          gapi.client.sheets.spreadsheets.get do
+            spreadsheetId: file.id
+          .then (ret) ~>
+            @list = ret.result.sheets.map(->it.properties.title)
+            if @list.length == 1 =>
+              @title = @list.0
+              return Promise.resolve!
+            eventBus.fire \loading.dimmer.off
+            $scope.parser.gsheet.toggle false
+            @toggle true
+            new Promise (res, rej) ~> @promise = {res, rej}
       load: (file) ->
         file = file.file
         eventBus.fire \loading.dimmer.on, 1
         $scope.parser.progress 3000
         gapi.client.load 'https://sheets.googleapis.com/$discovery/rest?version=v4'
-          .then ->
+          .then -> $scope.parser.gsheet.sheets.load file
+          .then ~> @toggle false
+          .then ~>
+            eventBus.fire \loading.dimmer.on, 1
+            $scope.parser.progress 3000
             gapi.client.sheets.spreadsheets.values.get do
               spreadsheetId: file.id
-              range: 'A:ZZ'
+              range: "#{@sheets.title}!A:ZZ"
           .then(
             ((ret) ~>
               list = ret.result.values
+              list = list.filter(->it.filter(->it.length).length)
               data = $scope.grid.data
               $scope.$apply ~>
                 data.headers = h = list.0
@@ -382,6 +444,7 @@ angular.module \plotDB
                 $scope.$apply ~>
                   @toggled = false
                   eventBus.fire \loading.dimmer.off
+                  eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
             ),
             (-> $scope.$apply ~>
               plNotify.send \danger, "can't load sheet, try again later?"
@@ -485,11 +548,20 @@ angular.module \plotDB
             .indexOf(node.parentNode.parentNode.parentNode)
           @bind[index] = dim or null
           root = node.parentNode.parentNode.parentNode.parentNode
-          for i from 0 til @bind.length =>
+          @bind-field-sync!
+          eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
+        bind-field-sync: ->
+          root = document.querySelector('#dataset-editbox .sheet .sheet-dim > div')
+          for i from @headers.length til root.childNodes.length =>
+            span = root.childNodes[i].querySelector("span")
+            span.innerText = "(empty)"
+            span.className = 'grayed'
+            @bind[i] = null
+          for i from 0 til @headers.length =>
+            if !root.childNodes[i] => continue
             span = root.childNodes[i].querySelector("span")
             span.innerText = @bind[i] or "(empty)"
             span.className = if @bind[i] => '' else 'grayed'
-          eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
 
         fieldize: ->
           ret = @headers.map (d,i) ~> { data: [], datatype: @types[i], name: d, bind: @bind[i] }
@@ -516,6 +588,7 @@ angular.module \plotDB
               rows: trs
               scrollElem: scroll
               contentElem: content
+            @data.bind-field-sync!
             res!
           if trs and ths => return update trs, ths
 
@@ -541,10 +614,9 @@ angular.module \plotDB
               rowcount: rowcount
             }
 
-      update: (r,c,val) ->
+      update: (r,c,val, head-only = true) ->
         dirty = false
-        head-only = true
-        if c >= @data.headers.length =>
+        if c >= @data.headers.length and val =>
           for i from @data.headers.length to c => @data.headers[i] = ''
           head-only = false
         if r >= @data.rows.length =>
@@ -556,7 +628,7 @@ angular.module \plotDB
         if r >= 0 and !@data.rows[][r][c] and !val => return
 
         if c >= @data.[]types.length and val =>
-          for i from @data.types.length to c=>
+          for i from @data.types.length to c =>
             @data.types[i] = plotdb.Types.resolve [@data.rows[j][i] for j from 0 til @data.rows.length]
             @data.headers[i] = (if @data.headers[i] => that else '')
           dirty = true
@@ -583,13 +655,13 @@ angular.module \plotDB
         if dirty => @render {head-only: head-only} .then ->
           if r < 0 =>
             node = document.querySelector(
-              '#dataset-editbox .sheet-head > div >' + " div:nth-of-type(#{c + 1}) > div:first-child"
+              '#dataset-editbox .sheet-head > div >' + " div:nth-of-type(#{c + 1}) > textarea:first-child"
             )
           else
             node = document.querySelector([
               '#dataset-editbox .sheet-cells >'
               "div:nth-of-type(#{r + 1}) >"
-              "div:nth-of-type(#{c + 1})"
+              "div:nth-of-type(#{c + 1}) textarea"
             ].join(" "))
           if node =>
             node.focus!
@@ -610,9 +682,24 @@ angular.module \plotDB
       init: ->
         @empty!
         head = document.querySelector '#dataset-editbox .sheet .sheet-head'
+        dim = document.querySelector '#dataset-editbox .sheet .sheet-dim'
         scroll = document.querySelector '#dataset-editbox .sheet .clusterize-scroll'
         content = document.querySelector '#dataset-editbox .sheet .clusterize-content'
-        scroll.addEventListener \scroll, (e) -> head.scrollLeft = scroll.scrollLeft
+        scroll.addEventListener \scroll, (e) ->
+          head.scrollLeft = scroll.scrollLeft
+          if dim and dim.childNodes.0 => dim.childNodes.0.style.left = "#{-scroll.scrollLeft}px"
+        content.addEventListener \click, (e) ~>
+          if /closebtn/.exec e.target.className =>
+            data = $scope.grid.data
+            row = +e.target.getAttribute(\row)
+            <- $scope.$apply
+            $timeout (->
+              eventBus.fire \loading.dimmer.on
+              data.rows.splice row, 1
+              $scope.grid.render!then -> $scope.$apply ->
+                eventBus.fire \loading.dimmer.off
+                eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
+            ), 0
         head.addEventListener \click, (e) ~>
           if /closebtn/.exec e.target.className =>
             data = $scope.grid.data
@@ -634,51 +721,106 @@ angular.module \plotDB
               node = head.querySelector ".sheet-head > div > div:nth-of-type(#{col + 1}) > div:first-child"
               if node => that.focus!
         head.addEventListener \keydown, (e) ~>
+          pPos = e.target.selectionStart
+          key = e.keyCode
+          n = e.target
+          val = n.value.trim! or n.textContent.trim!
+          if key == 86 and e.metaKey or e.ctrlKey and /\t/.exec(val) => return n.value = ""
           setTimeout (~>
-            key = e.keyCode
-            n = e.target
-            val = n.textContent.trim!
+            val = n.value.trim! or n.textContent.trim!
+            cPos = e.target.selectionStart
             col = +n.getAttribute(\col)
-            if key >=37 and key <=40 =>
+            if key == 39 and (pPos != cPos or cPos < val.length) => return
+            if key == 37 and (pPos != cPos or cPos > 0) => return
+            if key == 86 and e.metaKey or e.ctrlKey and /\t/.exec(val) => @paste -1, col, val
+            else if key >=37 and key <=40 =>
               v = [[-1 0],[0 -1],[1 0],[0 1]][key - 37]
               if v.1 > 0 =>
                 node = content.querySelector([
                   ".sheet-cells >"
                   "div:first-child >"
-                  "div:nth-of-type(#{col + 1 + v.0})"
+                  "div:nth-of-type(#{col + 1 + v.0}) textarea"
                 ].join(" "))
               else
                 node = head.querySelector([
                   ".sheet-head > div:first-child >"
-                  "div:nth-of-type(#{col + 1 + v.0}) > div:first-child"
+                  "div:nth-of-type(#{col + 1 + v.0}) > textarea:first-child"
                 ].join(" "))
               if node => that.focus!
             else $scope.$apply ~> @update -1, col, val
           ), 0
+
+        head.addEventListener \input, (e) ~>
+          key = e.keyCode
+          n = e.target
+          val = n.value or n.textContent
+          col = +n.getAttribute(\col)
+          if /\t/.exec(val) => @paste -1, col, val
+
+        content.addEventListener \input, (e) ~>
+          key = e.keyCode
+          n = e.target
+          val = n.value or n.textContent
+          row = +n.getAttribute(\row)
+          col = +n.getAttribute(\col)
+          if /\t/.exec(val) => @paste row, col, val
+
         content.addEventListener \keydown, (e) ~>
+          pPos = e.target.selectionStart
+          key = e.keyCode
+          n = e.target
+          val = n.value or n.textContent
+          if key == 86 and e.metaKey or e.ctrlKey and /\t/.exec(val) => return n.value = ""
           setTimeout (~>
-            key = e.keyCode
-            n = e.target
-            val = n.textContent
+            val = n.value or n.textContent
+            cPos = e.target.selectionStart
             row = +n.getAttribute(\row)
             col = +n.getAttribute(\col)
             h = col
-            if key >=37 and key <=40 =>
+            if key == 39 and (pPos != cPos or cPos < val.length) => return
+            if key == 37 and (pPos != cPos or cPos > 0) => return
+            else if key >=37 and key <=40 =>
               v = [[-1 0],[0 -1],[1 0],[0 1]][key - 37]
               if row == 0 and v.1 < 0 =>
                 node = head.querySelector([
                   ".sheet-head > div >"
-                  "div:nth-of-type(#{col + 1}) > div:first-child"
+                  "div:nth-of-type(#{col + 1}) > textarea:first-child"
                 ].join(" "))
               else
                 node = content.querySelector([
                   ".sheet-cells >"
                   "div:nth-of-type(#{row + 1 + v.1}) >"
-                  "div:nth-of-type(#{col + 1 + v.0})"
+                  "div:nth-of-type(#{col + 1 + v.0}) textarea"
                 ].join(" "))
               if node => that.focus!
             else $scope.$apply ~> @update row, h, val
           ), 0
+      paste: (row,col,val) ->
+        head = null
+        eventBus.fire \loading.dimmer.on
+        data = $scope.grid.data
+        ret = val.split(\\n).map -> it.split \\t
+        if row == -1 =>
+          head = ret.splice(0, 1).0
+          row = 0
+        w = Math.max.apply null, ret.map(->it.length)
+        h = ret.length
+        cur-row-size = data.rows.length
+        cur-col-size = data.headers.length
+        new-row-size = if row + h - 1 < cur-row-size => cur-row-size else row + h - 1
+        new-col-size = if col + w - 1 < cur-col-size => cur-col-size else col + w - 1
+        if new-col-size > cur-col-size =>
+          for i from cur-col-size til new-col-size => data.headers[i] = ""
+        if head => for i from 0 til w => data.headers[i + col] = head[i]
+        if new-row-size > cur-row-size => data.rows.push ["" for i from 0 til new-col-size]
+        for r from 0 til h => for c from 0 til w =>
+          data.rows[][r + row][c + col] = ret[r][c]
+        for i from col til col + w =>
+          data.types[i] = plotdb.Types.resolve [data.rows[j][i] for j from 0 til data.rows.length]
+        $scope.grid.render!then ->
+          eventBus.fire \loading.dimmer.off
+          eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
+        
 
     $scope.init!
     $scope.copy.init!

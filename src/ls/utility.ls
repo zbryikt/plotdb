@@ -186,6 +186,8 @@ angular.module \plotDB
         'Delete': zh: "刪除"
         'upload CSV file': zh: "上傳 CSV 檔"
         'upload Excel': zh: "上傳 Excel 檔"
+        'Import from Excel File': zh: "由 Excel 檔匯入"
+        'Select the sheet you want to import': zh: "選擇你要匯入的工作表"
         'from Google Sheet': zh: "從 Google 試算表匯入"
         'Import from Google Sheet': zh: "從 Google 試算表匯入"
         '.. as CSV': zh: "下載 CSV"

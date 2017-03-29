@@ -102,7 +102,7 @@ plotdb.load \/assets/json/samples.json, (ret) ->
     node = $("\#land-pdb-root > div:nth-child(#{i + 1}) > div").0
     chart = charts[i]
     chart.config {palette: pal, value1Label: "Creativity", value2Label: "Dignity", value3Label: "Logic"}
-    chart.data data[0][i]
+    chart.data data[0][i], false
     chart.attach node
     if i == 2 => root.show! else root.hide!
     root.css \opacity, 1
