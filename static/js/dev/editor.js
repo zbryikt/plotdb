@@ -11,6 +11,18 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
     mode: "javascript",
     theme: "default"
   });
+  $scope.updateConfig = function(it){
+    var config, k, ref$, v;
+    config = {};
+    for (k in ref$ = it || $scope.chart.config) {
+      v = ref$[k];
+      config[k] = v.value || v['default'];
+    }
+    return sendMsg({
+      type: 'set-config',
+      config: config
+    });
+  };
   $scope.local = {
     get: function(){
       var this$ = this;
@@ -531,7 +543,7 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
     };
   };
   init(2243);
-  return import$($scope, {
+  import$($scope, {
     settingPanel: {
       tab: 'publish',
       init: function(){
@@ -586,6 +598,218 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
       }
     }
   });
+  $scope.paledit = {
+    convert: function(it){
+      return it.map(function(it){
+        return {
+          id: it.key || Math.random() + "",
+          text: it.name,
+          data: it.colors
+        };
+      });
+    },
+    ldcp: null,
+    item: null,
+    paste: null,
+    init: function(){
+      var x$, this$ = this;
+      this.ldcp = new ldColorPicker(null, {}, $('#palette-editor .editor .ldColorPicker')[0]);
+      this.ldcp.on('change-palette', function(){
+        return setTimeout(function(){
+          return $scope.$apply(function(){
+            return this$.update();
+          });
+        }, 0);
+      });
+      this.sample = paletteService.sample;
+      this.list = [];
+      x$ = $('#pal-select');
+      x$.select2({
+        ajax: {
+          url: '/d/palette',
+          dataType: 'json',
+          delay: 250,
+          data: function(params){
+            return {
+              offset: (params.page || 0) * 20,
+              limit: 20
+            };
+          },
+          processResults: function(data, params){
+            params.page = params.page || 0;
+            if (params.page === 0) {
+              this$.list = data = this$.sample.concat(data);
+            } else {
+              this$.list = this$.list.concat(data);
+            }
+            return {
+              results: data.map(function(it){
+                return {
+                  id: it.key,
+                  text: it.name,
+                  data: it.colors
+                };
+              }),
+              pagination: {
+                more: data.length >= 20
+              }
+            };
+          }
+        },
+        allowedMethods: ['updateResults'],
+        escapeMarkup: function(it){
+          return it;
+        },
+        minimumInputLength: 0,
+        templateSelection: function(it){
+          return it.text + "<small class='grayed'> (" + it.id + ")</small>";
+        },
+        templateResult: function(state){
+          var color, c;
+          if (!state.data) {
+            return state.text;
+          }
+          color = (function(){
+            var i$, ref$, len$, results$ = [];
+            for (i$ = 0, len$ = (ref$ = state.data).length; i$ < len$; ++i$) {
+              c = ref$[i$];
+              results$.push("<div class='color' " + ("style='background:" + c.hex + ";width:" + 100 / state.data.length + "%'") + "></div>");
+            }
+            return results$;
+          }()).join("");
+          $(("<div class='palette select'><div class='name'>" + state.text + "</div>") + ("<div class='palette-color'>" + color + "</div></div>"));
+          return ("<div class='palette select'><div class='name'>" + state.text + "</div>") + ("<div class='palette-color'>" + color + "</div></div>");
+        }
+      });
+      x$.on('select2:closing', function(e){
+        var key, ret;
+        key = $(e.target).val();
+        ret = this$.list.filter(function(it){
+          return it.key == key;
+        })[0];
+        $scope.$apply(function(){
+          return this$.item.value = JSON.parse(JSON.stringify(ret));
+        });
+        return this$.ldcp.setPalette(this$.item.value);
+      });
+      return $scope.$watch('paledit.paste', function(d){
+        var result, e;
+        try {
+          result = JSON.parse(d);
+          if (Array.isArray(result)) {
+            return this$.ldcp.setPalette({
+              colors: result.map(function(it){
+                return {
+                  hex: it
+                };
+              })
+            });
+          }
+        } catch (e$) {
+          e = e$;
+          console.log(e);
+          return $scope.paledit.paste = '';
+        }
+      });
+    },
+    update: function(){
+      var ref$, src, des, pairing, i$, to$, i, d, j$, to1$, j, s, len$, pair, unpair;
+      if (this.item) {
+        ref$ = [this.item.value, this.ldcp.getPalette(), []], src = ref$[0], des = ref$[1], pairing = ref$[2];
+        for (i$ = 0, to$ = des.colors.length; i$ < to$; ++i$) {
+          i = i$;
+          d = des.colors[i];
+          for (j$ = 0, to1$ = src.colors.length; j$ < to1$; ++j$) {
+            j = j$;
+            s = src.colors[j];
+            if (s.hex !== d.hex) {
+              continue;
+            }
+            pairing.push([s, d, Math.abs(i - j)]);
+          }
+        }
+        pairing.sort(function(a, b){
+          return a[2] - b[2];
+        });
+        for (i$ = 0, len$ = pairing.length; i$ < len$; ++i$) {
+          pair = pairing[i$];
+          if (pair[0].pair || pair[1].pair) {
+            continue;
+          }
+          pair[0].pair = pair[1];
+          pair[1].pair = pair[0];
+        }
+        unpair = [
+          src.colors.filter(function(it){
+            return !it.pair;
+          }), des.colors.filter(function(it){
+            return !it.pair;
+          })
+        ];
+        for (i$ = 0, to$ = Math.min(unpair[0].length, unpair[1].length); i$ < to$; ++i$) {
+          i = i$;
+          unpair[1][i].pair = unpair[0][i];
+        }
+        src.colors = des.colors.map(function(it){
+          var ref$;
+          if (it.pair) {
+            return ref$ = it.pair, ref$.hex = it.hex, ref$;
+          } else {
+            return it;
+          }
+        });
+        src.colors.forEach(function(it){
+          var ref$;
+          return ref$ = it.pair, delete it.pair, ref$;
+        });
+        this.paste = null;
+        return $scope.updateConfig($scope.chart.config);
+      }
+    },
+    toggled: false,
+    toggle: function(){
+      this.toggled = !this.toggled;
+      if (!this.toggled) {
+        return this.update();
+      }
+    },
+    edit: function(item){
+      this.item = item;
+      this.ldcp.setPalette(item.value);
+      return this.toggled = true;
+    }
+  };
+  $scope.paledit.init();
+  $scope.coloredit = {
+    idx: 0,
+    config: function(v){
+      return {
+        'class': "no-palette text-input top",
+        context: "context-" + (this.idx++),
+        exclusive: true,
+        palette: [v.value]
+      };
+    }
+  };
+  $scope.configHash = {
+    value: {},
+    init: function(){
+      var this$ = this;
+      return $scope.$watch('chart.config', function(){
+        var k, ref$, v, ref1$, key$;
+        this$.value = {};
+        if (!$scope.chart) {
+          return;
+        }
+        for (k in ref$ = $scope.chart.config) {
+          v = ref$[k];
+          ((ref1$ = this$.value)[key$ = v.category || 'Other'] || (ref1$[key$] = {}))[k] = v;
+        }
+        return $scope.updateConfig($scope.chart.config);
+      }, true);
+    }
+  };
+  return $scope.configHash.init();
 }));
 function in$(x, xs){
   var i = -1, l = xs.length >>> 0;

@@ -58,6 +58,11 @@ save-local = (chart, key) -> (cb) ->
   req.send JSON.stringify(chart.local)
 
 dispatcher = (evt) ->
+  if evt.data.type == \set-config =>
+    chart = store.chart
+    chart.config evt.data.config
+    chart.resize!
+    chart.render!
   if evt.data.type == \init =>
     obj = JSON.parse(evt.data.src)
     loadlib evt.data .then ->

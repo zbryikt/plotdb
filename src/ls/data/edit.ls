@@ -361,8 +361,7 @@ angular.module \plotDB
           gapi.auth2.init do
             client_id: @client-id
             scope: @scopes
-          if $(\#gsheet-list-end) =>
-            Paging.load-on-scroll (-> $scope.parser.gsheet.list!), $(\#gsheet-list-end), $(\#gsheet-files)
+          Paging.load-on-scroll (-> $scope.parser.gsheet.list!), \#gsheet-list-end, \#gsheet-files
           $scope.$watch 'parser.gsheet.title', (n,o) ~> if n != o => @list true
       files: []
       auth: ->

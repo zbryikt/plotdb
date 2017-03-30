@@ -591,11 +591,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
           client_id: this$.clientId,
           scope: this$.scopes
         });
-        if ($('#gsheet-list-end')) {
-          Paging.loadOnScroll(function(){
-            return $scope.parser.gsheet.list();
-          }, $('#gsheet-list-end'), $('#gsheet-files'));
-        }
+        Paging.loadOnScroll(function(){
+          return $scope.parser.gsheet.list();
+        }, '#gsheet-list-end', '#gsheet-files');
         return $scope.$watch('parser.gsheet.title', function(n, o){
           if (n !== o) {
             return this$.list(true);

@@ -8,6 +8,8 @@ angular.module \plotDB
         'Data Visualization as a Service': zh: "您的資料視覺化服務平台"
         'We provide every single charts you will need': zh: "無論任何您需要的圖表，我們都提供給您"
         # Generic
+        'Yes': zh: "是"
+        'No': zh: "否"
         'no description': zh: "沒有描述"
         'Need Pro': zh: "需升級"
         "You don't have permission to change this": zh: "只有擁有者才能修改權限設定"
@@ -436,3 +438,13 @@ angular.module \plotDB
           s.$apply ->
             if askencoding => askencoding reader
             else reader!
+
+  ..directive \ngIonSlider, <[$compile]> ++ ($compile) -> do
+    restrict: \A
+    scope: do
+      model: \=ngModel
+      config: \=config
+    link: (s,e,a,c) -> 
+      config = s.config or {}
+      $(e).ionRangeSlider {} <<< config <<< do
+        onChange: -> s.model = it.from

@@ -37,22 +37,26 @@ x$.service('Paging', ['$rootScope', '$timeout'].concat(function($rootScope, $tim
     loading: false,
     handle: null,
     loadOnScroll: function(cb, beacon, container){
-      if (container) {
-        container = $(container)[0];
-      }
-      if (beacon) {
-        beacon = $(beacon)[0];
-      }
-      return (container || window).addEventListener('scroll', function(v){
-        var scrolltop, that, height, top, ptop, this$ = this;
-        scrolltop = container
-          ? container.scrollTop
+      var that;
+      return ((that = $(container)[0]) ? that : window).addEventListener('scroll', function(v){
+        var c, b, scrolltop, that, height, top, ptop, this$ = this;
+        if (container) {
+          c = $(container)[0];
+        }
+        if (beacon) {
+          b = $(beacon)[0];
+        }
+        if (!c || !b) {
+          return;
+        }
+        scrolltop = c
+          ? c.scrollTop
           : (that = document.body.scrollTop)
             ? that
             : document.querySelector('html').scrollTop;
-        height = (container || document.body).getBoundingClientRect().height;
-        top = beacon.getBoundingClientRect().top;
-        ptop = container ? container.getBoundingClientRect().top : 0;
+        height = (c || document.body).getBoundingClientRect().height;
+        top = b.getBoundingClientRect().top;
+        ptop = c ? c.getBoundingClientRect().top : 0;
         if (height + 50 > top - ptop) {
           if (!this.loading && !this.end) {
             return $rootScope.$apply(function(){

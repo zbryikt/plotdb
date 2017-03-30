@@ -121,7 +121,13 @@ saveLocal = function(chart, key){
   };
 };
 dispatcher = function(evt){
-  var obj, chart, data;
+  var chart, obj, data;
+  if (evt.data.type === 'set-config') {
+    chart = store.chart;
+    chart.config(evt.data.config);
+    chart.resize();
+    chart.render();
+  }
   if (evt.data.type === 'init') {
     obj = JSON.parse(evt.data.src);
     loadlib(evt.data).then(function(){

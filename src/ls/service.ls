@@ -15,15 +15,16 @@ angular.module \plotDB
       session: 0, offset: 0, limit: 30, end: false, loading: false
       handle: null
       load-on-scroll: (cb, beacon, container) ->
-        if container => container = $(container).0
-        if beacon => beacon = $(beacon).0
-        (container or window).addEventListener \scroll, (v)  ->
-          scrolltop = if container => container.scrollTop
+        (if $(container).0 => that else window).addEventListener \scroll, (v)  ->
+          if container => c = $(container).0
+          if beacon => b = $(beacon).0
+          if !c or !b => return
+          scrolltop = if c => c.scrollTop
           else if document.body.scrollTop => that
           else document.querySelector(\html).scrollTop
-          height = (container or document.body).getBoundingClientRect().height
-          top = beacon.getBoundingClientRect().top
-          ptop = (if container => container.getBoundingClientRect().top else 0)
+          height = (c or document.body).getBoundingClientRect().height
+          top = b.getBoundingClientRect().top
+          ptop = (if c => c.getBoundingClientRect().top else 0)
           if height + 50 > (top - ptop)  =>
             if !@loading and !@end => $rootScope.$apply ~> cb!
 

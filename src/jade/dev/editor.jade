@@ -22,13 +22,17 @@ block vars
 block head
   script(src="https://apis.google.com/js/api.js")
   link(rel="stylesheet",type="text/css",href="/dist/0.1.0/plotdb.min.css")
+  link(rel="stylesheet",type="text/css",href="/assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.css")
+  link(rel="stylesheet",type="text/css",href="/assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.skinFlat.css")
+  script(type="text/javascript",src="/assets/ion-rangeslider/2.1.7/js/ion.rangeSlider.min.js")
   script(type="text/javascript",src="/lib/plotd3/0.1.0/index.js")
   script(type="text/javascript",src="/js/dev/editor.js")
   script(type="text/javascript",src="/js/pack/view.js")
   include /colorblind.jade
 block body
   .editor-root(ng-controller="plEditorNew",ng-cloak,style="background:url(/assets/img/transparent.png)"): .inner
-    include ../editor/panel.jade
+    include /editor/panel.jade
+    include /widget/palette-edit-modal.jade
     .editor-funclist(ng-init="edfunc='data'")
       .editor-func(ng-class="{'active':edfunc == 'data'}", ng-click="edfunc = 'data'")
         i.fa.fa-table
@@ -85,18 +89,80 @@ block body
       +edfuncClose
       .title {{'Style'|i18n}}
       .body
-        h4 Colors
-        label Palette
-        input.form-control
-        br
-        label Text Fill
-        input.form-control
-        .sep.gap
-        h4 X Axis
-        label Show
-        .btn.btn-default.btn-block false
-      .foot.text-right
-        .btn.btn-default(ng-click="edfunc=''") {{'Close'|i18n}}
+        //-
+        div(ng-repeat="(category,list) in configHash.value",ng-show="!v._bytheme")
+          h3 {{category}}
+          div(style="display:flex;flex-wrap:wrap")
+            div(ng-cloak,ng-repeat="(name,v) in list",
+            ng-show="!v._bytheme",ng-attr-style="margin:0 10px 15px;width:{{v.desc ? '100%' : '40%'}};flex:1 1 auto")
+              span {{v.name || name}}
+              small.grayed(ng-if="v.desc",style="position:relative;top:-3px") #[br]{{v.desc}}
+              .btn-group.btn-block(ng-if="v.type[0].name=='Choice'")
+                .dropdown
+                  .btn.btn-default.dropdown-toggle.btn-block(data-toggle="dropdown")
+                    i.fa.fa-caret-down.pull-right
+                    span {{v.value.name || v.value}}
+                  ul.dropdown-menu
+                    li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice.name || choice}}
+
+              .btn-group.btn-block(ng-if="v.type[0].name=='Boolean'")
+                .btn.btn-default.btn-block(ng-click="v.value=!!!v.value") {{(v.value ?  'Yes' : 'No')|i18n}}
+
+              .input-color(ng-if="v.type[0].name=='Color'")
+                div(ng-attr-style="box-shadow:0 0 1px rgba(0,0,0,0.1);background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:34px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v)") &nbsp;
+              input.irs(ng-ion-slider,ng-if="v.type[0].name=='Range'",ng-model="v.value",config="{type:'double'}")
+              input.irs(ng-ion-slider,ng-if="v.type[0].name=='Number'",ng-model="v.value")
+              //-input(ng-if="v.type[0].name=='Number'",type="range",ng-model="v.value")
+              //-input.form-control(ng-if="v.type[0].name=='String' || v.type[0].name=='Number' || !v.type[0].name",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value")
+              input.form-control(ng-if="v.type[0].name=='String' || !v.type[0].name",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value")
+
+              .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);",style="width:100%")
+                .input-palette(style="display:flex;flex-wrap:wrap")
+                  div(ng-repeat="c in v.value.colors",ng-attr-style="background:{{c.hex}};height:34px;display:inline-block;border-radius:2px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 1px") &nbsp;
+
+        //-.chart-config-group(ng-cloak,ng-repeat="(category,list) in configHash.value",ng-show="!v._bytheme")
+          .chart-config-category {{category}}
+          .chart-config(ng-cloak,ng-repeat="(name,v) in list",ng-show="!v._bytheme")
+            // Otherwise
+            i.fa.fa-question-circle(ng-cloak,ng-show="v.desc")
+            .hint-popup {{v.desc}}
+            .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color' && v.type[0].name!='Range'")
+              span.input-group-addon: div {{v.name || name}}
+              input.form-control(type="text",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value",style="text-align:center")
+            .btn-group(ng-if="v.type[0].name=='Choice'")
+              span.input-group-addon: div {{v.name || name}}
+              .dropdown
+                .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                  i.fa.fa-caret-down.pull-right
+                  span {{v.value.name || v.value}}
+                ul.dropdown-menu
+                  li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice.name || choice}}
+            //- Color
+            .btn-group(ng-if="v.type[0].name=='Color'")
+              span.input-group-addon: div {{v.name || name}}
+              .input-color
+                div(ng-attr-style="background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v)") &nbsp;
+            //- Range
+            .input-group.chart-config-range(ng-if="v.type[0].name=='Range'")
+              span.input-group-addon: div {{v.name || name}}
+              div.form-control
+                input.form-control(ng-model="v.value[0]")
+                span to
+                input.form-control(ng-model="v.value[1]")
+            //- Palette
+            .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);")
+              span.input-group-addon: div {{v.name || name}}
+              .input-palette
+                div(ng-repeat="c in v.value.colors",ng-attr-style="background:{{c.hex}};height:30px;display:inline-block;border-radius:2px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 1px") &nbsp;
+            //- Boolean
+            .btn-group(ng-if="v.type[0].name=='Boolean'")
+              span.input-group-addon: div {{v.name || name}}
+              .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
+        .chart-config.chart-config-end(style="background:none")
+      .foot
+        .btn.btn-sm.btn-default.dropdown-toggle.pull-left(data-toggle="dropdown",style="vertical-align:top")
+          span {{'Responsive'|i18n}}... #[span.caret]
+        .btn.btn-default.pull-right(ng-click="edfunc=''") {{'Close'|i18n}}
 
     .editor-func-detail(ng-show="edfunc=='share'")
       .inner
@@ -274,6 +340,24 @@ block body
 
       span &nbsp;
       .btn.btn-default(ng-click="render(chart)"): i.fa.fa-refresh
+      span &nbsp;
+      span.chart-config
+        div(ng-click="paledit.edit(chart.config.palette);",style="width:200px;display:inline-block;padding:2px;vertical-align:bottom")
+          span Palette
+          .input-palette
+            div(ng-repeat="c in chart.config.palette.value.colors",
+            ng-attr-style="background:{{c.hex}};height:30px;display:inline-block;border-radius:2px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 1px") &nbsp;
+        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;")
+          span Text Fill
+          .input-color(ng-init="v={value: '#f0f0f0'}")
+            div(ng-attr-style="background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v)") &nbsp
+        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;")
+          span Bk Color
+          .input-color(ng-init="u={value: '#000000'}")
+            div(ng-attr-style="background:{{u.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="u.value",config="coloredit.config(u)") &nbsp
+        .btn.btn-default(style="margin-left:10px;"): i.fa.fa-cogs
+
+
     .editor-panel-tab
       .icon(ng-class="{'active':edfunc==''}",ng-click="edfunc=''"): i.fa.fa-eye
       .icon(ng-class="{'active':edfunc=='editor' && edcode=='code'}",ng-click="edfunc='editor';edcode='code'") JS

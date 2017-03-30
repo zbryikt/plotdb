@@ -15,6 +15,12 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'We provide every single charts you will need': {
         zh: "無論任何您需要的圖表，我們都提供給您"
       },
+      'Yes': {
+        zh: "是"
+      },
+      'No': {
+        zh: "否"
+      },
       'no description': {
         zh: "沒有描述"
       },
@@ -1178,3 +1184,26 @@ x$.directive('readby', ['$compile'].concat(function($compile){
     }
   };
 }));
+x$.directive('ngIonSlider', ['$compile'].concat(function($compile){
+  return {
+    restrict: 'A',
+    scope: {
+      model: '=ngModel',
+      config: '=config'
+    },
+    link: function(s, e, a, c){
+      var config;
+      config = s.config || {};
+      return $(e).ionRangeSlider(import$(import$({}, config), {
+        onChange: function(it){
+          return s.model = it.from;
+        }
+      }));
+    }
+  };
+}));
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}

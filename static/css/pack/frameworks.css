@@ -4451,6 +4451,11 @@ body {
 select[ngselect2] {
   height: 34px;
 }
+ {
+  width: 100%;
+  width: 100%;
+  width: 100%;
+}
 big.xl {
   font-size: 1.5em;
 }
@@ -10217,6 +10222,26 @@ textarea#dataset-edit-text {
 #root.doc-root .affix-anchor {
   position: relative;
   top: -150px;
+}
+div > .irs {
+  margin-bottom: 15px;
+}
+.irs {
+  margin-top: -20px;
+}
+.irs .irs-single,
+.irs .irs-min,
+.irs .irs-max,
+.irs .irs-from,
+.irs .irs-to {
+  bottom: -17px;
+  top: auto;
+}
+.irs .irs-single:after {
+  border-top-color: transparent;
+  border-bottom-color: rgba(238,221,85,0.333) 6;
+  bottom: auto;
+  top: -6px;
 }
 span.select2-container--default .select2-selection--multiple {
   box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
