@@ -10,10 +10,10 @@ angular.module \plotDB
       theme: "default"
     });
 
-    $scope.update-config = -> 
-      config = {}
-      for k,v of (it or $scope.chart.config) => config[k] = v.value or v.default
-      send-msg {type: \set-config, config}
+    $scope.update-config = (config, rebind = false) -> 
+      payload = (config or $scope.chart.config) #{}
+      #for k,v of (config or $scope.chart.config) => payload[k] = v.value or v.default
+      send-msg {type: \set-config, config: payload, rebind}
     $scope.local = do
       get: -> new Promise (res, rej) ~>
         @promise = {res, rej}
@@ -262,6 +262,16 @@ angular.module \plotDB
 
     dispatcher = (evt) ->
       payload = evt.data
+      if evt.data.type == \click =>
+        if document.dispatchEvent =>
+          event = document.createEvent \MouseEvents
+          event.initEvent \click, true, true
+          event.synthetic = true
+          document.dispatchEvent event
+        else
+          event = document.createEventObject!
+          event.synthetic = true
+          document.fireEvent("onclick", event)
       if evt.data.type == \local-data =>
         $scope.local.data = payload.data
         res = $scope.local.{}promise.res
@@ -272,6 +282,10 @@ angular.module \plotDB
         $scope._save!
       if payload.type == \inited =>
         $scope.dimension = JSON.parse payload.dimension 
+        new-config = JSON.parse payload.config
+        [[k,v] for k,v of new-config].map -> it.1.value = $scope.chart.config[it.0].value
+        $scope.chart.config = new-config
+        $scope.$apply -> $scope.config-hash.update!
         $scope.dimkeys = [{name: k,multiple: v.multiple} for k,v of $scope.dimension]
       if payload.type == \sample-data =>
         $scope.data = data = payload.data
@@ -442,12 +456,16 @@ angular.module \plotDB
 
     $scope.config-hash = do
       value: {}
-      init: ->
-        $scope.$watch 'chart.config', (~>
-          @value = {}
-          if !$scope.chart => return
-          for k,v of $scope.chart.config =>
-            @value{}[v.category or 'Other'][k] = v
-          $scope.update-config $scope.chart.config
-        ), true
+      update: (n,o)->
+        @value = {}
+        if !$scope.chart => return
+        n = n or $scope.chart.config
+        if !n => return
+        for k,v of n => @value{}[v.category or 'Other'][k] = v
+        ret = !!([[k,v] for k,v of n]
+          .filter(([k,v]) -> !o or !o[k] or (v.value != o[k].value))
+          .map(->(it.1 or {}).rebindOnChange)
+          .filter(->it).length)
+        $scope.update-config $scope.chart.config, ret
+      init: -> $scope.$watch 'chart.config', ((n,o) ~> @update(n,o)), true
     $scope.config-hash.init!

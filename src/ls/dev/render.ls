@@ -1,5 +1,9 @@
 plotdb-domain = "http://localhost/"
 send-msg = (msg) -> window.parent.postMessage msg, plotdb-domain 
+
+# bubbling up click outside renderer. for ColorPicker
+window.addEventListener \click, -> send-msg {type: \click}
+
 loadscript = (lib, url) -> new Promise (res,rej) ->
   node = document.createElement \script
     ..type = \text/javascript
@@ -57,11 +61,42 @@ save-local = (chart, key) -> (cb) ->
   req.setRequestHeader \Content-Type, "application/json;charset=UTF-8"
   req.send JSON.stringify(chart.local)
 
+config-preset = (config) ->
+  for k,v of (config or {}) =>
+    if config[v.extend] => p = config[v.extend]
+    else if plotdb.config[v.extend] => p = plotdb.config[v.extend]
+    else if plotdb.config[k] => p = plotdb.config[k]
+    else p = null
+    if !p => continue
+    for field, value of p => if !(v[field]?) => v[field] = value
+  config
+
+config-parser = (config) ->
+  ret = {}
+  for k,v of (config or {}) =>
+    for type in (v.type or [])=>
+      try
+        type = plotdb[type.name]
+        if type.test and type.parse and type.test(v.value) =>
+          v.value = type.parse v.value
+          break
+      catch e
+        console.log "chart config: type parsing exception ( #k / #type )"
+        console.log "#{e.stack}"
+  for k,v of config =>
+    if !(config[k]?) or !(config[k].value?)=> ret[k] = (v or config[k] or {}).default or 0
+    else ret[k] = config[k].value
+  ret
+
+
 dispatcher = (evt) ->
   if evt.data.type == \set-config =>
     chart = store.chart
-    chart.config evt.data.config
+    if !chart => return
+    chart.config config-parser(evt.data.config)
+    if evt.data.rebind => chart.parse!
     chart.resize!
+    if evt.data.rebind => chart.bind!
     chart.render!
   if evt.data.type == \init =>
     obj = JSON.parse(evt.data.src)
@@ -70,7 +105,10 @@ dispatcher = (evt) ->
     .then (module) ->
       store.chart = chart = new plotdb.view.chart(obj)
       chart.attach 'body > div:first-of-type', {}
-      send-msg { type: \inited, dimension: JSON.stringify(chart._.chart.dimension) }
+      send-msg do
+        type: \inited
+        dimension: JSON.stringify(chart._.chart.dimension)
+        config: JSON.stringify(config-preset(store.module.config))
       plotdb.chart.get-sample-data module
       data = plotdb.chart.fields-from-dimension module.dimension
       send-msg {type: \sample-data, data: data}

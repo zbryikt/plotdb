@@ -11,16 +11,14 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
     mode: "javascript",
     theme: "default"
   });
-  $scope.updateConfig = function(it){
-    var config, k, ref$, v;
-    config = {};
-    for (k in ref$ = it || $scope.chart.config) {
-      v = ref$[k];
-      config[k] = v.value || v['default'];
-    }
+  $scope.updateConfig = function(config, rebind){
+    var payload;
+    rebind == null && (rebind = false);
+    payload = config || $scope.chart.config;
     return sendMsg({
       type: 'set-config',
-      config: config
+      config: payload,
+      rebind: rebind
     });
   };
   $scope.local = {
@@ -450,8 +448,20 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
   };
   $scope.download.init();
   dispatcher = function(evt){
-    var payload, res, ref$, res$, k, v, data;
+    var payload, event, res, ref$, newConfig, k, v, res$, data;
     payload = evt.data;
+    if (evt.data.type === 'click') {
+      if (document.dispatchEvent) {
+        event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        event.synthetic = true;
+        document.dispatchEvent(event);
+      } else {
+        event = document.createEventObject();
+        event.synthetic = true;
+        document.fireEvent("onclick", event);
+      }
+    }
     if (evt.data.type === 'local-data') {
       $scope.local.data = payload.data;
       res = ((ref$ = $scope.local).promise || (ref$.promise = {})).res;
@@ -468,6 +478,21 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
     }
     if (payload.type === 'inited') {
       $scope.dimension = JSON.parse(payload.dimension);
+      newConfig = JSON.parse(payload.config);
+      (function(){
+        var ref$, results$ = [];
+        for (k in ref$ = newConfig) {
+          v = ref$[k];
+          results$.push([k, v]);
+        }
+        return results$;
+      }()).map(function(it){
+        return it[1].value = $scope.chart.config[it[0]].value;
+      });
+      $scope.chart.config = newConfig;
+      $scope.$apply(function(){
+        return $scope.configHash.update();
+      });
       res$ = [];
       for (k in ref$ = $scope.dimension) {
         v = ref$[k];
@@ -793,19 +818,42 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
   };
   $scope.configHash = {
     value: {},
+    update: function(n, o){
+      var k, v, ref$, key$, ret;
+      this.value = {};
+      if (!$scope.chart) {
+        return;
+      }
+      n = n || $scope.chart.config;
+      if (!n) {
+        return;
+      }
+      for (k in n) {
+        v = n[k];
+        ((ref$ = this.value)[key$ = v.category || 'Other'] || (ref$[key$] = {}))[k] = v;
+      }
+      ret = !!(function(){
+        var ref$, results$ = [];
+        for (k in ref$ = n) {
+          v = ref$[k];
+          results$.push([k, v]);
+        }
+        return results$;
+      }()).filter(function(arg$){
+        var k, v;
+        k = arg$[0], v = arg$[1];
+        return !o || !o[k] || v.value !== o[k].value;
+      }).map(function(it){
+        return (it[1] || {}).rebindOnChange;
+      }).filter(function(it){
+        return it;
+      }).length;
+      return $scope.updateConfig($scope.chart.config, ret);
+    },
     init: function(){
       var this$ = this;
-      return $scope.$watch('chart.config', function(){
-        var k, ref$, v, ref1$, key$;
-        this$.value = {};
-        if (!$scope.chart) {
-          return;
-        }
-        for (k in ref$ = $scope.chart.config) {
-          v = ref$[k];
-          ((ref1$ = this$.value)[key$ = v.category || 'Other'] || (ref1$[key$] = {}))[k] = v;
-        }
-        return $scope.updateConfig($scope.chart.config);
+      return $scope.$watch('chart.config', function(n, o){
+        return this$.update(n, o);
       }, true);
     }
   };

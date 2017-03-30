@@ -52,7 +52,9 @@ plotdb.config = {
     name: "Margin",
     type: [plotdb.Number],
     'default': 10,
-    category: "Global Settings"
+    category: "Global Settings",
+    min: 0,
+    max: 20
   },
   padding: {
     name: "Padding",

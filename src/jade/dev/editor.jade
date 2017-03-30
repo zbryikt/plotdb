@@ -90,13 +90,13 @@ block body
       .title {{'Style'|i18n}}
       .body
         //-
-        div(ng-repeat="(category,list) in configHash.value",ng-show="!v._bytheme")
-          h3 {{category}}
+        div(ng-repeat="(category,list) in configHash.value",ng-show="!v._bytheme",style="margin-bottom:40px")
+          h3(style="padding-bottom:5px;border-bottom:1px solid #ccc") {{category}}
           div(style="display:flex;flex-wrap:wrap")
             div(ng-cloak,ng-repeat="(name,v) in list",
             ng-show="!v._bytheme",ng-attr-style="margin:0 10px 15px;width:{{v.desc ? '100%' : '40%'}};flex:1 1 auto")
               span {{v.name || name}}
-              small.grayed(ng-if="v.desc",style="position:relative;top:-3px") #[br]{{v.desc}}
+              small.grayed(ng-if="v.desc",style="position:relative;top:0;display:block;line-height:1em;margin-bottom:5px") {{v.desc}}
               .btn-group.btn-block(ng-if="v.type[0].name=='Choice'")
                 .dropdown
                   .btn.btn-default.dropdown-toggle.btn-block(data-toggle="dropdown")
@@ -111,7 +111,7 @@ block body
               .input-color(ng-if="v.type[0].name=='Color'")
                 div(ng-attr-style="box-shadow:0 0 1px rgba(0,0,0,0.1);background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:34px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v)") &nbsp;
               input.irs(ng-ion-slider,ng-if="v.type[0].name=='Range'",ng-model="v.value",config="{type:'double'}")
-              input.irs(ng-ion-slider,ng-if="v.type[0].name=='Number'",ng-model="v.value")
+              input.irs(ng-ion-slider,ng-if="v.type[0].name=='Number'",ng-model="v.value",config="{min: v.min || 0, max: v.max || 100}")
               //-input(ng-if="v.type[0].name=='Number'",type="range",ng-model="v.value")
               //-input.form-control(ng-if="v.type[0].name=='String' || v.type[0].name=='Number' || !v.type[0].name",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value")
               input.form-control(ng-if="v.type[0].name=='String' || !v.type[0].name",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value")
@@ -342,19 +342,19 @@ block body
       .btn.btn-default(ng-click="render(chart)"): i.fa.fa-refresh
       span &nbsp;
       span.chart-config
-        div(ng-click="paledit.edit(chart.config.palette);",style="width:200px;display:inline-block;padding:2px;vertical-align:bottom")
-          span Palette
+        div(ng-click="paledit.edit(chart.config.palette);",style="width:200px;display:inline-block;padding:2px;vertical-align:bottom",ng-if="chart.config.palette")
+          span {{'Palette'|i18n}}
           .input-palette
             div(ng-repeat="c in chart.config.palette.value.colors",
             ng-attr-style="background:{{c.hex}};height:30px;display:inline-block;border-radius:2px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 1px") &nbsp;
-        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;")
-          span Text Fill
-          .input-color(ng-init="v={value: '#f0f0f0'}")
-            div(ng-attr-style="background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v)") &nbsp
-        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;")
-          span Bk Color
-          .input-color(ng-init="u={value: '#000000'}")
-            div(ng-attr-style="background:{{u.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="u.value",config="coloredit.config(u)") &nbsp
+        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;",ng-if="chart.config.textFill")
+          span {{'Text Fill'|i18n}}
+          .input-color
+            div(ng-attr-style="background:{{chart.config.textFill.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="chart.config.textFill.value",config="coloredit.config(chart.config.textFill)") &nbsp
+        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;",ng-if="chart.config.background")
+          span {{'Bk Color'|i18n}}
+          .input-color
+            div(ng-attr-style="background:{{chart.config.background.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="chart.config.background.value",config="coloredit.config(chart.config.background)") &nbsp
         .btn.btn-default(style="margin-left:10px;"): i.fa.fa-cogs
 
 

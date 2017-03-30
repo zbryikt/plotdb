@@ -67,6 +67,8 @@ plotdb.config = do
     type: [plotdb.Number]
     default: 10
     category: "Global Settings"
+    min: 0
+    max: 20
 
   padding: do
     name: "Padding"

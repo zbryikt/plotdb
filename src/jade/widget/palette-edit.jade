@@ -1,9 +1,9 @@
-.ldColorEditor(style="width:500px;height:300px;margin:auto;border:1px solid #ddd;box-shadow:0 6px 9px rgba(0,0,0,0.3);border-radius:3px;padding:5px;background:#fff"): .ib(style="position:relative;width:100%;height:100%")
-  .edit-panel(style="position:absolute;top:0;left:0;width:250px;height:300px;")
-    .editor(style="position:absolute;left:0;top:0;width:100%;height:50%;padding:0 10px 5px 0")
+.ldColorEditor(style="width:600px;height:340px;margin:auto;border:1px solid #ddd;box-shadow:0 6px 9px rgba(0,0,0,0.3);border-radius:3px;padding:10px;background:#fff"): .ib(style="position:relative;width:100%;height:100%")
+  .edit-panel(style="position:absolute;top:0;left:0;width:340px;height:300px;")
+    .editor(style="position:absolute;left:0;top:0;width:100%;height:60%;padding:0 10px 5px 0")
       .ldColorPicker.no-border.text-input(style="width:100%;height:100%")
-    .chooser(style="position:absolute;left:0;top:50%;width:100%;height:50%;padding:5px 15px 5px 5px")
-      label Paste Palette
+    .chooser(style="position:absolute;left:0;top:60%;width:100%;height:50%;padding:5px 15px 5px 5px")
+      label {{'Paste Palette'|i18n}}
       input.form-control(style="height:29px",placeholder="e.g.: ['#f00','#0f0','#00f']",ng-model="paledit.paste")
       //-
         label Save Palette
@@ -12,13 +12,16 @@
           span.input-group-btn
             .btn.btn-default.disabled(style="height:29px;padding-top:3px;border-top-right-radius:4px;border-bottom-right-radius:4px") Save
       hr(style="margin:15px 0 5px")
-      label or load from ...
+      label {{'or load from'|i18n}} ...
       br
       select#pal-select.form-control(style="height:29px;width:100%;")
-  .map-panel(style="position:absolute;top:5px;left:245px;border-left:1px solid #ccc;width:240px;height:280px;padding-left:10px")
-    label Color Mapping
+  .map-panel(style="position:absolute;top:5px;left:335px;border-left:1px solid #ccc;width:240px;height:280px;padding-left:10px")
+    label(style="width:100%")
+      span {{'Color Mapping'|i18n}}
+      small.grayed.block {{'fill with values you want to map'|i18n}}
+      .sep
     div(style="height:100%;overflow-y:scroll;height:90%")
       div(style="margin:0 0 10px 0;padding-left:37px",ng-repeat="v in paledit.item.value.colors")
         div(ng-attr-style="width:29px;height:29px;background:{{v.hex}};border-radius:2px;margin-right:5px;display:inline-block;vertical-align:middle;margin-left:-37px")
         input.form-control(style="display:inline-block;width:100%;height:29px;vertical-align:middle;",placeholder="keyword, e.g., America",ng-model="v.keyword")
-  .closebtn(ng-click="paledit.toggle()")
+  .closebtn.lg.inverse(ng-click="paledit.toggle()")

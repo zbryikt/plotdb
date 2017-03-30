@@ -800,9 +800,11 @@
             }), hue = ref$.hue, sat = ref$.sat, lit = ref$.lit, ref$);
             return ret;
           }
-          if (that = /^rgba\(([0-9.]+),([0-9.]+),([0-9.]+),([0-9.]+)\)$/.exec(it)) {
+          if (that = /^\s*rgba\(\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*,\s*([0-9.]+%?)\s*\)\s*$/.exec(it)) {
             ref$ = [that[1], that[2], that[3]].map(function(it){
-              return parseInt(it) / 255;
+              return it[it.length - 1] === '%'
+                ? (+it.substring(0, it.length - 1)) / 100
+                : parseInt(it) / 255;
             }), r = ref$[0], g = ref$[1], b = ref$[2];
             ret = (ref$ = this.rgbHsl({
               r: r,
@@ -909,7 +911,7 @@
         ret = this.toRgba(c);
         for (i$ = 0; i$ < 3; ++i$) {
           i = i$;
-          ret[i] = parseInt(ret[i] * 255);
+          ret[i] = ret[i] * 100 + "%";
         }
         return "rgba(" + ret.join(',') + ")";
       },
@@ -1154,47 +1156,67 @@
             s.ldcp = ldcp;
           }
           ldcp.on('change', function(color){
-            return s.$apply(function(){
+            var f;
+            if (s.color === color) {
+              return;
+            }
+            f = function(){
               if (a.ngModel) {
                 return s.color = color;
               }
-            });
+            };
+            if (s.$$phase) {
+              return f();
+            } else {
+              return s.$apply(f);
+            }
           });
           ldcp.on('change-palette', function(palette){
-            return s.$apply(function(){
+            var f;
+            if (!a.ngPalette) {
+              return;
+            }
+            f = function(){
               if (a.ngPalette) {
                 return s.palette = ldcp.getPalette();
               }
-            });
+            };
+            if (s.$$phase) {
+              return f();
+            } else {
+              return s.$apply(f);
+            }
           });
           s.$watch('color', function(color){
             var cc, e;
             try {
               cc = ldcp.getValue();
               if (color != null && cc !== color) {
-                return setTimeout(function(){
-                  return ldcp.setColor(color);
-                }, 0);
+                return ldcp.setColor(color);
               }
             } catch (e$) {
               return e = e$;
             }
           });
           ldcp.on('change-idx', function(idx){
-            return s.$apply(function(){
+            var f;
+            f = function(){
               if (a.ngIdx) {
                 return s.idx = idx;
               }
-            });
+            };
+            if (s.$$phase) {
+              return f();
+            } else {
+              return s.$apply(f);
+            }
           });
           if (a.ngIdx && !(s.idx != null)) {
             s.idx = ldcp.getIdx();
           }
           s.$watch('idx', function(idx){
             if (idx != null) {
-              return setTimeout(function(){
-                return ldcp.setIdx(idx);
-              }, 0);
+              return ldcp.setIdx(idx);
             }
           });
           ldcp.on('change-pin', function(pin){

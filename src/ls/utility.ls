@@ -4,6 +4,11 @@ angular.module \plotDB
     ret = do
       get: -> (ret.db[it] and ret.db[it][$rootScope.lang]) or it
       db: do
+        # Palette
+        'Color Mapping': zh: "顏色對應"
+        'or load from': zh: "或從這裡挑選"
+        'Paste Palette': zh: "貼上色盤"
+        'fill with values you want to map': zh: "在此填入顏色欲對應的數值"
         # landing
         'Data Visualization as a Service': zh: "您的資料視覺化服務平台"
         'We provide every single charts you will need': zh: "無論任何您需要的圖表，我們都提供給您"
@@ -217,6 +222,9 @@ angular.module \plotDB
         'try these predefined tags': zh: "何不試試這些關鍵字"
 
         # Chart Editor
+        'Palette': zh: "色盤"
+        'Bk Color': zh: "背景色"
+        'Text Fill': zh: "文字色"
         'for Vector Editing': zh: "向量圖編輯專用"
         'for Raster Editing': zh: "點陣圖編輯專用"
         'for Developer': zh: "開發者專用"
@@ -446,5 +454,7 @@ angular.module \plotDB
       config: \=config
     link: (s,e,a,c) -> 
       config = s.config or {}
+      s.$watch 'config', (config) -> slider.update(config)
       $(e).ionRangeSlider {} <<< config <<< do
         onChange: -> s.model = it.from
+      slider = $(e).data \ionRangeSlider

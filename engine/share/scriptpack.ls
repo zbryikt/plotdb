@@ -87,7 +87,7 @@
         <[
           /assets/codemirror/5.10/lib/codemirror.min.js
           /assets/bluebird/3.3.4/bluebird.min.js
-          /assets/ldcolorpicker/0.1.1/ldcp.min.js
+          /assets/ldcolorpicker/0.1.1/ldcp.js
           /assets/codemirror/5.10/mode/javascript/javascript.js
           /assets/codemirror/5.10/mode/xml/xml.js
           /assets/codemirror/5.10/mode/css/css.js

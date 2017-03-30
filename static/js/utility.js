@@ -9,6 +9,18 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       return (ret.db[it] && ret.db[it][$rootScope.lang]) || it;
     },
     db: {
+      'Color Mapping': {
+        zh: "顏色對應"
+      },
+      'or load from': {
+        zh: "或從這裡挑選"
+      },
+      'Paste Palette': {
+        zh: "貼上色盤"
+      },
+      'fill with values you want to map': {
+        zh: "在此填入顏色欲對應的數值"
+      },
       'Data Visualization as a Service': {
         zh: "您的資料視覺化服務平台"
       },
@@ -595,6 +607,15 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       },
       'try these predefined tags': {
         zh: "何不試試這些關鍵字"
+      },
+      'Palette': {
+        zh: "色盤"
+      },
+      'Bk Color': {
+        zh: "背景色"
+      },
+      'Text Fill': {
+        zh: "文字色"
       },
       'for Vector Editing': {
         zh: "向量圖編輯專用"
@@ -1192,13 +1213,17 @@ x$.directive('ngIonSlider', ['$compile'].concat(function($compile){
       config: '=config'
     },
     link: function(s, e, a, c){
-      var config;
+      var config, slider;
       config = s.config || {};
-      return $(e).ionRangeSlider(import$(import$({}, config), {
+      s.$watch('config', function(config){
+        return slider.update(config);
+      });
+      $(e).ionRangeSlider(import$(import$({}, config), {
         onChange: function(it){
           return s.model = it.from;
         }
       }));
+      return slider = $(e).data('ionRangeSlider');
     }
   };
 }));
