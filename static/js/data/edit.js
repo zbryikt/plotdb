@@ -721,7 +721,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         list = ret.result.values;
         list = list.filter(function(it){
           return it.filter(function(it){
-            return it.length;
+            return (it || "").trim().length;
           }).length;
         });
         data = $scope.grid.data;

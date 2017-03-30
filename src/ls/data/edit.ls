@@ -431,7 +431,7 @@ angular.module \plotDB
           .then(
             ((ret) ~>
               list = ret.result.values
-              list = list.filter(->it.filter(->it.length).length)
+              list = list.filter(->it.filter(->(it or "").trim!length).length)
               data = $scope.grid.data
               $scope.$apply ~>
                 data.headers = h = list.0
