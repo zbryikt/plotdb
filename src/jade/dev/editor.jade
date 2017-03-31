@@ -72,7 +72,8 @@ block body
               input#dataset-edit-xls-file(type="file",readby="parser.xls.read")
               span #[i.fa.fa-file-excel-o.align16] {{'upload Excel'|i18n}} (.xls, .xlsx)
             li.divider
-              li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] {{'from Google Sheet'|i18n}}
+            li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] {{'from Google Sheet'|i18n}}
+            li(ng-click="parser.plotdb.toggle()"): a(href="#") #[i.fa.fa-database.align16] {{'from PlotDB Dataset'|i18n}}
         #dataset-editbox
           #dataset-edit-grid.sheet-outer
             .sheet.clusterize
@@ -94,7 +95,7 @@ block body
           h3(style="padding-bottom:5px;border-bottom:1px solid #ccc") {{category}}
           div(style="display:flex;flex-wrap:wrap")
             div(ng-cloak,ng-repeat="(name,v) in list",
-            ng-show="!v._bytheme",ng-attr-style="margin:0 10px 15px;width:{{v.desc ? '100%' : '40%'}};flex:1 1 auto")
+            ng-show="!v._bytheme",ng-attr-style="margin:0 10px 15px;width:{{v.desc || v.type[0].name == 'EditableChoice' ? '100%' : '40%'}};flex:1 1 auto")
               span {{v.name || name}}
               small.grayed(ng-if="v.desc",style="position:relative;top:0;display:block;line-height:1em;margin-bottom:5px") {{v.desc}}
               .btn-group.btn-block(ng-if="v.type[0].name=='Choice'")
@@ -114,7 +115,15 @@ block body
               input.irs(ng-ion-slider,ng-if="v.type[0].name=='Number'",ng-model="v.value",config="{min: v.min || 0, max: v.max || 100}")
               //-input(ng-if="v.type[0].name=='Number'",type="range",ng-model="v.value")
               //-input.form-control(ng-if="v.type[0].name=='String' || v.type[0].name=='Number' || !v.type[0].name",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value")
+
               input.form-control(ng-if="v.type[0].name=='String' || !v.type[0].name",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value")
+              .dropdown(ng-if="v.type[0].name=='EditableChoice'",style="position:relative")
+                input.form-control(ng-model="v.value")
+                .btn.btn-default.dropdown-toggle(data-toggle="dropdown",style="position:absolute;top:0;right:0")
+                  i.fa.fa-caret-down.pull-right(style="line-height:20px")
+                  span {{v.value.name || v.value}}
+                ul.dropdown-menu(style="left:auto;right:0")
+                  li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice.name || choice}}
 
               .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);",style="width:100%")
                 .input-palette(style="display:flex;flex-wrap:wrap")
@@ -344,18 +353,18 @@ block body
       span.chart-config
         div(ng-click="paledit.edit(chart.config.palette);",style="width:200px;display:inline-block;padding:2px;vertical-align:bottom",ng-if="chart.config.palette")
           span {{'Palette'|i18n}}
-          .input-palette
+          .input-palette(style="border-radius:2px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.2);")
             div(ng-repeat="c in chart.config.palette.value.colors",
-            ng-attr-style="background:{{c.hex}};height:30px;display:inline-block;border-radius:2px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 1px") &nbsp;
+            ng-attr-style="background:{{c.hex}};height:30px;display:inline-block;border-radius:0px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 0px") &nbsp;
         div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;",ng-if="chart.config.textFill")
           span {{'Text Fill'|i18n}}
           .input-color
-            div(ng-attr-style="background:{{chart.config.textFill.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="chart.config.textFill.value",config="coloredit.config(chart.config.textFill)") &nbsp
+            div(ng-attr-style="background:{{chart.config.textFill.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.3)",ldColorPicker,ng-model="chart.config.textFill.value",config="coloredit.config(chart.config.textFill)") &nbsp
         div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;",ng-if="chart.config.background")
           span {{'Bk Color'|i18n}}
           .input-color
-            div(ng-attr-style="background:{{chart.config.background.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="chart.config.background.value",config="coloredit.config(chart.config.background)") &nbsp
-        .btn.btn-default(style="margin-left:10px;"): i.fa.fa-cogs
+            div(ng-attr-style="background:{{chart.config.background.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.3)",ldColorPicker,ng-model="chart.config.background.value",config="coloredit.config(chart.config.background)") &nbsp
+        .btn.btn-default(style="margin-left:10px;",ng-click="edfuncToggle('style')",ng-class="{'active':edfunc=='style'}"): i.fa.fa-cogs
 
 
     .editor-panel-tab

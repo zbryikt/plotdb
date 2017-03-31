@@ -441,6 +441,17 @@ plotdb.Choice = function(v){
     values: v
   };
 };
+plotdb.EditableChoice = function(v){
+  return {
+    'default': "",
+    name: 'EditableChoice',
+    level: 20,
+    test: function(it){
+      return v && v.length && in$(it, v);
+    },
+    values: v
+  };
+};
 plotdb.Color = {
   name: 'Color',
   level: 10,
@@ -1267,7 +1278,7 @@ plotdb.config = {
   },
   fontFamily: {
     name: "Font",
-    type: [plotdb.String],
+    type: [plotdb.EditableChoice(["Arial", "Helvetica", "Tahoma", "Consolas", "Century Gothic", "Courier New"])],
     'default': "Arial",
     category: "Global Settings"
   },

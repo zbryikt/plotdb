@@ -223,6 +223,14 @@ plotdb.Choice = (v) ->
     test: -> v and v.length and (it in v)
     values: v
 
+plotdb.EditableChoice = (v) ->
+  return do
+    default: ""
+    name: \EditableChoice
+    level: 20
+    test: -> v and v.length and (it in v)
+    values: v
+
 plotdb.Color = do
   name: \Color
   level: 10

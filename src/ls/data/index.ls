@@ -138,6 +138,11 @@ angular.module \plotDB
     service.Field = Field
     dataService = baseService.derive name, service, Dataset
     dataService.sample = sampleData.map -> new Dataset it
+    baseLoad = dataService.load
+    dataService.load = (_type, key) ->
+      if _type.location == \sample => 
+        Promise.resolve dataService.sample.filter(->it.key == key).0
+      else baseLoad _type, key
     dataService
 
   ..controller \dataFiles,
@@ -181,7 +186,7 @@ angular.module \plotDB
     #$scope.filter = { search: "" }
     $scope.datasets = []
     $scope.mydatasets = []
-    $scope.samplesets = dataService.sample.map -> it <<< {key: -Math.random!}
+    $scope.samplesets = dataService.sample #.map -> it <<< {key: -Math.random!}
 
     $scope.q = {}
     $scope.q-lazy = { keyword: null }

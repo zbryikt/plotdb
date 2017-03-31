@@ -20,7 +20,7 @@ plotdb.config = {
   },
   fontFamily: {
     name: "Font",
-    type: [plotdb.String],
+    type: [plotdb.EditableChoice(["Arial", "Helvetica", "Tahoma", "Consolas", "Century Gothic", "Courier New"])],
     'default': "Arial",
     category: "Global Settings"
   },

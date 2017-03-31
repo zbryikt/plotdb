@@ -174,6 +174,7 @@ angular.module \plotDB
       ), 0
 
     $scope.edfunc-set = -> $scope.edfunc = it
+    $scope.edfunc-toggle = -> $scope.edfunc = if $scope.edfunc == it => '' else it
     $scope.$watch 'edfunc', ->
       if it == \download => $scope.download <<< format: '', ready: false
       if it == \editor => $scope.editor.focus!

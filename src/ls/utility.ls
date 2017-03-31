@@ -196,6 +196,7 @@ angular.module \plotDB
         'Import from Excel File': zh: "由 Excel 檔匯入"
         'Select the sheet you want to import': zh: "選擇你要匯入的工作表"
         'from Google Sheet': zh: "從 Google 試算表匯入"
+        'from PlotDB Dataset': zh: "載入 PlotDB 資料集"
         'Import from Google Sheet': zh: "從 Google 試算表匯入"
         '.. as CSV': zh: "下載 CSV"
         'Encoding': zh: "編碼"
@@ -455,6 +456,7 @@ angular.module \plotDB
     link: (s,e,a,c) -> 
       config = s.config or {}
       s.$watch 'config', (config) -> slider.update(config)
+      s.$watch 'model', -> if slider.result.from != +it => slider.update({from: it})
       $(e).ionRangeSlider {} <<< config <<< do
-        onChange: -> s.model = it.from
+        onChange: -> if s.model != it.from => s.model = it.from
       slider = $(e).data \ionRangeSlider

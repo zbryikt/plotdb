@@ -280,6 +280,9 @@ x$.controller('plEditorNew', ['$scope', '$http', '$timeout', '$interval', '$sce'
   $scope.edfuncSet = function(it){
     return $scope.edfunc = it;
   };
+  $scope.edfuncToggle = function(it){
+    return $scope.edfunc = $scope.edfunc === it ? '' : it;
+  };
   $scope.$watch('edfunc', function(it){
     var ref$;
     if (it === 'download') {

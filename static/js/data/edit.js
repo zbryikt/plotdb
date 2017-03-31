@@ -420,6 +420,23 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       }, sec / 6);
     }
   };
+  $scope.parser.plotdb = {
+    toggle: function(v){
+      return this.toggled = v != null
+        ? v
+        : !this.toggled;
+    },
+    toggled: false,
+    load: function(dataset){
+      var this$ = this;
+      eventBus.fire('loading.dimmer.on', 1);
+      $scope.parser.progress(3000);
+      return $scope.load(dataset._type, dataset.key).then(function(){
+        this$.toggle(false);
+        return eventBus.fire('loading.dimmer.off');
+      });
+    }
+  };
   $scope.parser.csv = {
     encodings: ['UTF-8', 'BIG5', 'GB2312', 'ISO-8859-1'],
     encoding: 'UTF-8',
@@ -971,6 +988,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       },
       fieldize: function(){
         var ret, i$, to$, i, j$, to1$, j, ref$, this$ = this;
+        console.log(">>>", this);
         ret = this.headers.map(function(d, i){
           return {
             data: [],

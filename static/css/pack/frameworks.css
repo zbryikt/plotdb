@@ -10270,9 +10270,11 @@ div > .irs {
   bottom: -17px;
   top: auto;
 }
-.irs .irs-single:after {
+.irs .irs-single:after,
+.irs .irs-from:after,
+.irs .irs-to:after {
   border-top-color: transparent;
-  border-bottom-color: rgba(238,221,85,0.333) 6;
+  border-bottom-color: #ed5565;
   bottom: auto;
   top: -6px;
 }

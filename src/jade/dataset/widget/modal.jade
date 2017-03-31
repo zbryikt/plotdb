@@ -1,3 +1,28 @@
++cover-modal("parser.plotdb.toggled", "parser.plotdb.toggle()")
+  .ds-list-panel.panel.panel-default(ng-cloak,ng-controller="datasetList",ng-init="useSample=true")
+    .panel-body
+      h3 {{'from PlotDB Dataset'|i18n}}...
+      .input-group
+        input.input-sm.form-control(ng-model="qLazy.keyword",placeholder="search by dataset name ...")
+        span.input-group-btn
+          .loader.alone.xs.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")
+          .btn.btn-default.btn-sm: i.fa.fa-search
+      .btn.btn-default.btn-sm(ng-click="dataPanel.toggle()") #[i.fa.fa-plus-circle] {{'New Dataset'|i18n}}
+      .sep
+      .ds-list
+        .ds-list-item(ng-repeat="dataset in datasets|filter:{name:filter.search}:false",
+        ng-click="parser.plotdb.load(dataset)",ng-class="{'active':cur==dataset}")
+          img.avatar(ng-attr-src="/s/avatar/{{dataset.owneravatar || 0}}.jpg")
+          .info
+            .name {{dataset.name}}
+            .grayed {{dataset.rows}} Rows, {{dataset.fields.length}} {{'Fields'|i18n}}
+          small.grayed.sample(ng-show="dataset.isSample") {{'sample data'|i18n}}
+          small.grayed.sample(ng-show="dataset.owner==user.data.key") {{'my data'|i18n}}
+        #list-end.text-center: span(ng-cloak,ng-show="paging.end")
+        .loader.alone.sm.block-center(ng-cloak,ng-class="{'loading':paging.loading && !paging.end}")
+        .text-center.grayed(ng-show="paging.end") {{"that's all"|i18n}}. #[i.fa.fa-smile-o]
+        .text-center.grayed(ng-show="paging.end") {{'no result'|i18n}}. {{'try other keyword'|i18n}}?
+
 +cover-modal("copy.toggled", "copy.toggle()")
   .panel.panel-default(ng-cloak)
     .panel-body.text-center(style="min-height: 110px")

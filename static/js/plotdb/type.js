@@ -436,6 +436,17 @@ plotdb.Choice = function(v){
     values: v
   };
 };
+plotdb.EditableChoice = function(v){
+  return {
+    'default': "",
+    name: 'EditableChoice',
+    level: 20,
+    test: function(it){
+      return v && v.length && in$(it, v);
+    },
+    values: v
+  };
+};
 plotdb.Color = {
   name: 'Color',
   level: 10,

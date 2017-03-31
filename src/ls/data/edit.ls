@@ -244,6 +244,16 @@ angular.module \plotDB
           eventBus.fire \loading.dimmer.progress, progress
         ), sec / 6
 
+    $scope.parser.plotdb = do
+      toggle: (v) -> @toggled = (if v? => v else !!!@toggled)
+      toggled: false
+      load: (dataset) ->
+        eventBus.fire \loading.dimmer.on, 1
+        $scope.parser.progress 3000
+        $scope.load dataset._type, dataset.key .then ~>
+          @toggle false
+          eventBus.fire \loading.dimmer.off
+        
     $scope.parser.csv = do
       encodings: <[UTF-8 BIG5 GB2312 ISO-8859-1]>
       encoding: \UTF-8
@@ -563,6 +573,7 @@ angular.module \plotDB
             span.className = if @bind[i] => '' else 'grayed'
 
         fieldize: ->
+          console.log ">>>", @
           ret = @headers.map (d,i) ~> { data: [], datatype: @types[i], name: d, bind: @bind[i] }
           for i from 0 til @rows.length =>
             for j from 0 til @headers.length => ret[j].data.push @rows[][i][j]

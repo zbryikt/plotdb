@@ -540,6 +540,9 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'from Google Sheet': {
         zh: "從 Google 試算表匯入"
       },
+      'from PlotDB Dataset': {
+        zh: "載入 PlotDB 資料集"
+      },
       'Import from Google Sheet': {
         zh: "從 Google 試算表匯入"
       },
@@ -1218,9 +1221,18 @@ x$.directive('ngIonSlider', ['$compile'].concat(function($compile){
       s.$watch('config', function(config){
         return slider.update(config);
       });
+      s.$watch('model', function(it){
+        if (slider.result.from !== +it) {
+          return slider.update({
+            from: it
+          });
+        }
+      });
       $(e).ionRangeSlider(import$(import$({}, config), {
         onChange: function(it){
-          return s.model = it.from;
+          if (s.model !== it.from) {
+            return s.model = it.from;
+          }
         }
       }));
       return slider = $(e).data('ionRangeSlider');

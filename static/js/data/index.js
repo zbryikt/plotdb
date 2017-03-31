@@ -2,7 +2,7 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'baseService', 'plNotify', 'eventBus', 'plConfig'].concat(function($rootScope, $http, IOService, sampleData, baseService, plNotify, eventBus, plConfig){
-  var name, service, Field, Dataset, dataService;
+  var name, service, Field, Dataset, dataService, baseLoad;
   name = 'dataset';
   service = {
     link: function(dataset){
@@ -182,6 +182,16 @@ x$.service('dataService', ['$rootScope', '$http', 'IOService', 'sampleData', 'ba
   dataService.sample = sampleData.map(function(it){
     return new Dataset(it);
   });
+  baseLoad = dataService.load;
+  dataService.load = function(_type, key){
+    if (_type.location === 'sample') {
+      return Promise.resolve(dataService.sample.filter(function(it){
+        return it.key === key;
+      })[0]);
+    } else {
+      return baseLoad(_type, key);
+    }
+  };
   return dataService;
 }));
 x$.controller('dataFiles', ['$scope', 'dataService', 'plNotify', 'eventBus'].concat(function($scope, dataService, plNotify, eventBus){
@@ -241,9 +251,7 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
   $scope.paging.limit = 50;
   $scope.datasets = [];
   $scope.mydatasets = [];
-  $scope.samplesets = dataService.sample.map(function(it){
-    return it.key = -Math.random(), it;
-  });
+  $scope.samplesets = dataService.sample;
   $scope.q = {};
   $scope.qLazy = {
     keyword: null
