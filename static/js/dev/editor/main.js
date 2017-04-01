@@ -551,6 +551,59 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       };
     }
   };
+  $scope.settingPanel = initWrap({
+    tab: 'publish',
+    init: function(){
+      var this$ = this;
+      $scope.permtype = (window.permtype || (window.permtype = []))[1] || 'none';
+      $scope.writable = permService.isEnough($scope.permtype, 'write');
+      $scope.isAdmin = permService.isEnough($scope.permtype, 'admin');
+      $scope.$watch('settingPanel.chart', function(cur, old){
+        var k, v, results$ = [];
+        for (k in cur) {
+          v = cur[k];
+          if (!v && !old[k]) {
+            continue;
+          }
+          results$.push($scope.chart[k] = v);
+        }
+        return results$;
+      }, true);
+      $scope.$watch('chart.obj.inherit', function(it){
+        return this$.chart.inherit = it;
+      }, true);
+      $scope.$watch('chart.obj.basetype', function(it){
+        return this$.chart.basetype = it;
+      });
+      $scope.$watch('chart.obj.visualencoding', function(it){
+        return this$.chart.visualencoding = it;
+      });
+      $scope.$watch('chart.obj.category', function(it){
+        return this$.chart.category = it;
+      });
+      $scope.$watch('chart.obj.tags', function(it){
+        return this$.chart.tags = it;
+      });
+      return $scope.$watch('chart.obj.library', function(it){
+        return this$.chart.library = it;
+      });
+    },
+    toggle: function(tab){
+      if (tab) {
+        this.tab = tab;
+      }
+      return this.toggled = !this.toggled;
+    },
+    toggled: false,
+    chart: {
+      basetype: null,
+      visualencoding: null,
+      category: null,
+      tags: null,
+      library: null,
+      inherit: null
+    }
+  });
   $scope.sharePanel = initWrap({
     embed: {
       width: '100%',

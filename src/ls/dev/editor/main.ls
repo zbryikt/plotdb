@@ -260,6 +260,37 @@ angular.module \plotDB
         exclusive: true
         palette: [v.value]
 
+    $scope.settingPanel = initWrap do
+      tab: \publish
+      init: ->
+        $scope.permtype = window.[]permtype.1 or 'none'
+        $scope.writable = permService.is-enough($scope.permtype, 'write')
+        $scope.is-admin = permService.is-enough($scope.permtype, 'admin')
+        #$scope.$watch 'chart.permission', $scope.setting-panel.permcheck, true
+        #$scope.$watch 'theme.permission', $scope.setting-panel.permcheck, true
+        $scope.$watch 'settingPanel.chart', ((cur, old) ~>
+          for k,v of cur =>
+            if !v and !old[k] => continue
+            $scope.chart[k] = v
+        ), true
+        $scope.$watch 'chart.obj.inherit', (~> @chart.inherit = it), true
+        $scope.$watch 'chart.obj.basetype', ~> @chart.basetype = it
+        $scope.$watch 'chart.obj.visualencoding', ~> @chart.visualencoding = it
+        $scope.$watch 'chart.obj.category', ~> @chart.category = it
+        $scope.$watch 'chart.obj.tags', ~> @chart.tags = it
+        $scope.$watch 'chart.obj.library', ~> @chart.library = it
+      toggle: (tab) ->
+        if tab => @tab = tab
+        @toggled = !!!@toggled
+      toggled: false
+      chart: do
+        basetype: null
+        visualencoding: null
+        category: null
+        tags: null
+        library: null
+        inherit: null
+
     $scope.sharePanel = initWrap do
       embed: do
         width: \100%
