@@ -1,0 +1,20 @@
+//- module
++cover-modal("panel.chartName.toggled","panel.chartName.toggle(false)")
+  .panel.panel-default
+    .panel-body(style="min-height:110px")
+      h3(ng-if="!chart.name") {{'Viswork Name'|i18n}}
+      h3(ng-if="chart.name") {{'Rename Viswork'|i18n}}
+      .sep
+      br
+      div(style="width:94%;margin:auto")
+        p(ng-if="!chart.key || !chart.name") {{"Looks like your viswork doesn't have a name yet. Let's give it a name"|i18n}}:
+        p(ng-if="chart.name && chart.key") {{'Give your viswork a new name'|i18n}}:
+        input#chart-name-input.form-control(placeholder="e.g., US 2015 Population",ng-model="panel.chartName.value",
+        ng-keydown="panel.chartName.keyhandler($event)")
+      br
+    .panel-footer.text-right
+      .btn.btn-primary(ng-class="{'disabled':!panel.chartName.value}",ng-click="panel.chartName.action(0)")
+        span &nbsp; OK &nbsp;
+      span &nbsp;
+      .btn.btn-default(ng-click="panel.chartName.action(1)") {{'Cancel'|i18n}}
+

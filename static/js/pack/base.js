@@ -5465,7 +5465,7 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
         zh: "看來你的資料集還沒有取名字，來取個名字吧"
       },
       'Give your dataset a new name': {
-        zh: "為你的資料夾取個名字吧"
+        zh: "為你的資料集取個名字吧"
       },
       'Grid Mode': {
         zh: "資料格模式",
@@ -5498,6 +5498,18 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       },
       'try these predefined tags': {
         zh: "何不試試這些關鍵字"
+      },
+      'Viswork Name': {
+        zh: "視覺化名稱"
+      },
+      'Rename Viswork': {
+        zh: "視覺化重新命名"
+      },
+      "Looks like your viswork doesn't have a name yet. Let's give it a name": {
+        zh: "看來你的視覺化還沒有取名字，來取個名字吧"
+      },
+      'Give your viswork a new name': {
+        zh: "為你的視覺化取個名字吧"
       },
       'Palette': {
         zh: "色盤"
@@ -8523,6 +8535,7 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
       var this$ = this;
       return $scope.$apply(function(){
         var data;
+        console.log(ret);
         data = (ret || []).map(function(it){
           return new dataService.dataset(it, true);
         });
@@ -8790,14 +8803,43 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       });
     }
   };
-  $scope.save = function(locally){
+  eventBus.listen('dataset.save', function(name){
+    if (!$scope.dataset) {
+      $scope.dataset = new dataService.dataset();
+    }
+    if (!$scope.dataset.key || !$scope.dataset.name) {
+      $scope.dataset.name = name;
+    }
+    return $scope.save(false, false, false).then(function(){
+      return $http({
+        url: "/d/dataset/" + $scope.dataset.key + "/simple",
+        method: 'GET'
+      }).success(function(dataset){
+        dataset.fields.map(function(d, i){
+          return $scope.dataset.fields[i].key = d.key;
+        });
+        return eventBus.fire('dataset.saved', $scope.dataset);
+      });
+    })['catch'](function(){
+      plNotify.send('warning', "not dataset owner, dataset won't be updated");
+      eventBus.fire('loading.dimmer.off');
+      console.log($scope.dataset);
+      if ($scope.dataset.key) {
+        return eventBus.fire('dataset.saved', $scope.dataset);
+      }
+    });
+  });
+  $scope.save = function(locally, redirectIfNew, handleFail){
     var promise;
     locally == null && (locally = false);
+    redirectIfNew == null && (redirectIfNew = true);
+    handleFail == null && (handleFail = true);
     if (!$scope.dataset) {
-      return;
+      return Promise.resolve();
     }
     if (!$scope.user.authed()) {
-      return $scope.auth.toggle(true);
+      $scope.auth.toggle(true);
+      return Promise.resolve();
     }
     promise = !$scope.dataset.name
       ? $scope.panel.name.prompt()
@@ -8812,11 +8854,12 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         promise = Promise.resolve();
       } else {
         $scope.$apply(function(){
+          var promise;
           return promise = $scope.parser.csv.read($scope.rawdata, false);
         });
       }
       return promise.then(function(){
-        var data, payload, isCreate;
+        var data, payload, isCreate, promise;
         data = $scope.grid.data;
         if (data.headers.length >= 40) {
           return $scope.$apply(function(){
@@ -8833,7 +8876,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         payload = $scope.grid.data.fieldize();
         $scope.dataset.setFields(payload);
         isCreate = !$scope.dataset.key ? true : false;
-        return $scope.dataset.save().then(function(r){
+        promise = $scope.dataset.save();
+        promise.then(function(r){
+          console.log("(", r, ")", $scope.dataset);
           $scope.$apply(function(){
             return plNotify.send('success', "dataset saved");
           });
@@ -8844,9 +8889,11 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
                 return eventBus.fire('loading.dimmer.off');
               });
             } else {
-              setTimeout(function(){
-                return window.location.href = dataService.link($scope.dataset);
-              }, 1000);
+              if (redirectIfNew) {
+                setTimeout(function(){
+                  return window.location.href = dataService.link($scope.dataset);
+                }, 1000);
+              }
             }
           } else {
             $scope.$apply(function(){
@@ -8857,58 +8904,66 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         })['catch'](function(e){
           return $scope.$apply(function(){
             eventBus.fire('loading.dimmer.off');
-            if (e[2] === 402) {
-              eventBus.fire('quota.widget.on');
-              return plNotify.send('danger', "Failed: Quota exceeded");
-            } else {
-              console.log(e.stack);
-              return plNotify.aux.error.io('save', 'data', e);
+            if (handleFail) {
+              if (e[2] === 402) {
+                eventBus.fire('quota.widget.on');
+                return plNotify.send('danger', "Failed: Quota exceeded");
+              } else {
+                console.log('zzz');
+                console.log(e.stack);
+                return plNotify.aux.error.io('save', 'data', e);
+              }
             }
           });
         });
+        return promise;
       });
     });
   };
   $scope.load = function(_type, key){
-    var worker, this$ = this;
-    eventBus.fire('loading.dimmer.on');
-    $scope.rawdata = "";
-    worker = new Worker('/js/data/worker/parse-dataset.js');
-    worker.onmessage = function(e){
-      var data;
-      data = e.data;
-      $scope.$apply(function(){
-        $scope.grid.data.headers = data.data.headers;
-        $scope.grid.data.rows = data.data.rows;
-        return $scope.grid.data.types = data.data.types;
-      });
-      return $scope.grid.render().then(function(){
+    return new Promise(function(res, rej){
+      var worker, this$ = this;
+      eventBus.fire('loading.dimmer.on');
+      $scope.rawdata = "";
+      worker = new Worker('/js/data/worker/parse-dataset.js');
+      worker.onmessage = function(e){
+        var data;
+        data = e.data;
+        $scope.$apply(function(){
+          $scope.grid.data.headers = data.data.headers;
+          $scope.grid.data.rows = data.data.rows;
+          return $scope.grid.data.types = data.data.types;
+        });
+        return $scope.grid.render().then(function(){
+          return $scope.$apply(function(){
+            $scope.inited = true;
+            $scope.loading = false;
+            eventBus.fire('loading.dimmer.off');
+            console.log($scope.grid.data.fieldize());
+            return res();
+          });
+        });
+      };
+      return dataService.load(_type, key).then(function(ret){
         return $scope.$apply(function(){
+          var dataset;
+          $scope.dataset = dataset = new dataService.dataset(ret);
+          $scope.grid.data.size = JSON.stringify(dataset).length;
+          return worker.postMessage({
+            dataset: dataset
+          });
+        });
+      })['catch'](function(ret){
+        return $scope.$apply(function(){
+          console.error(ret);
+          plNotify.send('error', "failed to load dataset. please try reloading");
+          if (ret[1] === 'forbidden') {
+            window.location.href = '/403.html';
+          }
           $scope.inited = true;
           $scope.loading = false;
           return eventBus.fire('loading.dimmer.off');
         });
-      });
-    };
-    return dataService.load(_type, key).then(function(ret){
-      return $scope.$apply(function(){
-        var dataset;
-        $scope.dataset = dataset = new dataService.dataset(ret);
-        $scope.grid.data.size = JSON.stringify(dataset).length;
-        return worker.postMessage({
-          dataset: dataset
-        });
-      });
-    })['catch'](function(ret){
-      return $scope.$apply(function(){
-        console.error(ret);
-        plNotify.send('error', "failed to load dataset. please try reloading");
-        if (ret[1] === 'forbidden') {
-          window.location.href = '/403.html';
-        }
-        $scope.inited = true;
-        $scope.loading = false;
-        return eventBus.fire('loading.dimmer.off');
       });
     });
   };
@@ -9474,8 +9529,11 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
     name: {
       promise: null,
       focus: function(){
+        var that;
         if (this.toggled) {
-          return document.getElementById('dataset-name-input').focus();
+          if (that = document.getElementById('dataset-name-input')) {
+            return that.focus();
+          }
         }
       },
       keyhandler: function(e){
@@ -9584,6 +9642,29 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
     $scope.grid.data.dimkeys = dimkeys;
     return $scope.grid.render();
   });
+  eventBus.listen('dataset.load', function(key, dimkeys, bind){
+    var k, v;
+    $scope.grid.data.dimkeys = dimkeys;
+    $scope.grid.data.bind = (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = bind) {
+        v = ref$[k];
+        results$.push([k, v]);
+      }
+      return results$;
+    }()).sort(function(a, b){
+      return a[0] - b[0];
+    }).map(function(it){
+      return it[1];
+    });
+    return $scope.load({
+      location: 'server',
+      name: 'dataset'
+    }, key).then(function(){
+      console.log('456', $scope.grid.data.fieldize());
+      return eventBus.fire('dataset.changed', $scope.grid.data.fieldize());
+    });
+  });
   eventBus.listen('dataset.edit', function(dataset, load){
     load == null && (load = true);
     $scope.inited = false;
@@ -9657,7 +9738,7 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
         }
         dim = node.getAttribute('data-dim') || '';
         multi = (node.getAttribute('data-multi') || 'false') === 'true';
-        if (dim && multi) {
+        if (dim && !multi) {
           for (i$ = 0, to$ = this.bind.length; i$ < to$; ++i$) {
             i = i$;
             if (this.bind[i] === dim) {
@@ -9674,6 +9755,9 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       bindFieldSync: function(){
         var root, i$, to$, i, span, results$ = [];
         root = document.querySelector('#dataset-editbox .sheet .sheet-dim > div');
+        if (!root || !root.childNodes) {
+          return;
+        }
         for (i$ = this.headers.length, to$ = root.childNodes.length; i$ < to$; ++i$) {
           i = i$;
           span = root.childNodes[i].querySelector("span");
@@ -9694,7 +9778,6 @@ x$.controller('dataEditCtrl', ['$scope', '$interval', '$timeout', '$http', 'perm
       },
       fieldize: function(){
         var ret, i$, to$, i, j$, to1$, j, ref$, this$ = this;
-        console.log(">>>", this);
         ret = this.headers.map(function(d, i){
           return {
             data: [],
@@ -11213,6 +11296,68 @@ plotdb.chart = {
       results$.push(k);
     }
     return results$;
+  }
+};
+plotdb.chart.config = {
+  update: function(config){
+    var ret, k, v, results$ = [];
+    ret = this.parse(this.preset(config));
+    for (k in ret) {
+      v = ret[k];
+      results$.push(config[k] = v);
+    }
+    return results$;
+  },
+  preset: function(config){
+    var k, ref$, v, p, f, val;
+    for (k in ref$ = config || {}) {
+      v = ref$[k];
+      if (config[v.extend]) {
+        p = config[v.extend];
+      } else if (plotdb.config[v.extend]) {
+        p = plotdb.config[v.extend];
+      } else if (plotdb.config[k]) {
+        p = plotdb.config[k];
+      } else {
+        continue;
+      }
+      for (f in p) {
+        val = p[f];
+        if (!(v[f] != null)) {
+          v[f] = val;
+        }
+      }
+    }
+    return config;
+  },
+  parse: function(config){
+    var ret, k, ref$, v, i$, ref1$, len$, type, e;
+    ret = {};
+    for (k in ref$ = config || {}) {
+      v = ref$[k];
+      if (!(v != null)) {
+        config[k] = {};
+      }
+      if (!(v.value != null)) {
+        v.value = v['default'] || 0;
+      }
+      for (i$ = 0, len$ = (ref1$ = v.type || []).length; i$ < len$; ++i$) {
+        type = ref1$[i$];
+        try {
+          type = plotdb[type.name];
+          if (type.test && type.parse && type.test(v.value)) {
+            v.value = type.parse(v.value);
+            break;
+          }
+        } catch (e$) {
+          e = e$;
+          console.log("chart config: type parsing exception ( " + k + " / " + type + " )");
+          console.log(e.stack + "");
+        }
+      }
+      ret[k] = config[k].value;
+    }
+    return ret;
   }
 };
 function import$(obj, src){

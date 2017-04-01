@@ -8,6 +8,20 @@ mixin cover-modal(condition,toggle,className)
   .cover-modal-inner(ng-cloak,ng-if=condition,class=className)
     block
 
+//- dialog: Sample Usage
+  +dialog("modelName", "additional-className")
+    input(ng-model="modelName.ctrl.value",tabindex="1")
+    input(ng-model="modelName.ctrl.value",tabindex="2")
+    .btn.btn-default(ng-click="modelName.action('done')") OK
+    .btn.btn-default(ng-click="modelName.action('cancel')") Cancel
+//- modelName.ctrl.value will be copied to modelName.ctrl with action('done')
+//- use tabindex to indicate the next input to focus after hiting enter
+mixin Dialog(model,className)
+  div(pldialog,ng-model=model)
+    .cover-modal(ng-cloak,ng-if=model+".ctrl.toggled",ng-click=model+".ctrl.toggle(false)")
+    .cover-modal-inner(ng-cloak,ng-if=model+".ctrl.toggled",class=className)
+      block
+
 mixin selectbox(data,type,scope,config,size)
   div(ng-controller="plSelectController",
   ng-init="init("+data+",'"+type+"',"+scope+"," + JSON.stringify(config || {}) +")")

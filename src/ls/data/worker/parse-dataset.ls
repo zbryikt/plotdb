@@ -5,6 +5,8 @@ importScripts(
 onmessage = (e) ->
   dataset = e.data.dataset
   data = {}
+  data.keys = dataset.fields.map(->it.key)
+  data.datasets = dataset.fields.map(->it.dataset)
   data.headers = dataset.fields.map(->it.name)
   data.rows = []
   collen = dataset.[]fields.length

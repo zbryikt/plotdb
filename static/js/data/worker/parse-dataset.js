@@ -5,6 +5,12 @@ onmessage = function(e){
   var dataset, data, collen, rowlen, ref$, ret, i$, i, j, v, raw;
   dataset = e.data.dataset;
   data = {};
+  data.keys = dataset.fields.map(function(it){
+    return it.key;
+  });
+  data.datasets = dataset.fields.map(function(it){
+    return it.dataset;
+  });
   data.headers = dataset.fields.map(function(it){
     return it.name;
   });

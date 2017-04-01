@@ -5554,6 +5554,68 @@ plotdb.chart = {
     return results$;
   }
 };
+plotdb.chart.config = {
+  update: function(config){
+    var ret, k, v, results$ = [];
+    ret = this.parse(this.preset(config));
+    for (k in ret) {
+      v = ret[k];
+      results$.push(config[k] = v);
+    }
+    return results$;
+  },
+  preset: function(config){
+    var k, ref$, v, p, f, val;
+    for (k in ref$ = config || {}) {
+      v = ref$[k];
+      if (config[v.extend]) {
+        p = config[v.extend];
+      } else if (plotdb.config[v.extend]) {
+        p = plotdb.config[v.extend];
+      } else if (plotdb.config[k]) {
+        p = plotdb.config[k];
+      } else {
+        continue;
+      }
+      for (f in p) {
+        val = p[f];
+        if (!(v[f] != null)) {
+          v[f] = val;
+        }
+      }
+    }
+    return config;
+  },
+  parse: function(config){
+    var ret, k, ref$, v, i$, ref1$, len$, type, e;
+    ret = {};
+    for (k in ref$ = config || {}) {
+      v = ref$[k];
+      if (!(v != null)) {
+        config[k] = {};
+      }
+      if (!(v.value != null)) {
+        v.value = v['default'] || 0;
+      }
+      for (i$ = 0, len$ = (ref1$ = v.type || []).length; i$ < len$; ++i$) {
+        type = ref1$[i$];
+        try {
+          type = plotdb[type.name];
+          if (type.test && type.parse && type.test(v.value)) {
+            v.value = type.parse(v.value);
+            break;
+          }
+        } catch (e$) {
+          e = e$;
+          console.log("chart config: type parsing exception ( " + k + " / " + type + " )");
+          console.log(e.stack + "");
+        }
+      }
+      ret[k] = config[k].value;
+    }
+    return ret;
+  }
+};
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];

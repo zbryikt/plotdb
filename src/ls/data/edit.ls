@@ -45,17 +45,38 @@ angular.module \plotDB
               setTimeout((->$('#dataset-copy-btn').tooltip('hide')), 2000)
             $scope.copy.toggle false
 
-    $scope.save = (locally = false) ->
-      if !$scope.dataset => return
-      if !$scope.user.authed! => return $scope.auth.toggle true
+    eventBus.listen \dataset.save, (name) ->
+      if !$scope.dataset => $scope.dataset = new data-service.dataset!
+      if !$scope.dataset.key or !$scope.dataset.name => $scope.dataset.name = name
+      $scope.save(false, false, false)
+        .then ->
+          $http({
+            url: "/d/dataset/#{$scope.dataset.key}/simple"
+            method: \GET
+          }).success((dataset) ->
+            dataset.fields.map (d,i) ->  $scope.dataset.fields[i].key = d.key
+            eventBus.fire \dataset.saved, $scope.dataset
+          )
+        .catch ->
+          plNotify.send \warning, "not dataset owner, dataset won't be updated"
+          eventBus.fire \loading.dimmer.off
+          console.log $scope.dataset
+          if $scope.dataset.key => eventBus.fire \dataset.saved, $scope.dataset
+
+    $scope.save = (locally = false, redirect-if-new = true, handle-fail = true) ->
+      if !$scope.dataset => return Promise.resolve!
+      if !$scope.user.authed! => 
+        $scope.auth.toggle true
+        return Promise.resolve!
       promise = if !$scope.dataset.name =>
         $scope.panel.name.prompt!
-      else Promise.resolve!
+      else 
+        Promise.resolve!
       <- promise.then _
       $scope.$apply -> eventBus.fire \loading.dimmer.on
       promise = null
       if $scope.grid.toggled => promise = Promise.resolve!
-      else $scope.$apply -> promise := $scope.parser.csv.read($scope.rawdata, false)
+      else $scope.$apply -> promise = $scope.parser.csv.read($scope.rawdata, false)
       <- promise.then _
       data = $scope.grid.data
       if data.headers.length >= 40 => return $scope.$apply ->
@@ -70,15 +91,17 @@ angular.module \plotDB
       payload = $scope.grid.data.fieldize!
       $scope.dataset.set-fields payload #$scope.parse.result
       is-create = if !$scope.dataset.key => true else false
-      $scope.dataset.save!
+      promise = $scope.dataset.save!
+      promise
         .then (r) ->
+          console.log "(", r, ")", $scope.dataset
           $scope.$apply -> plNotify.send \success, "dataset saved"
           if is-create =>
             if $scope.$parent and $scope.$parent.inline-create =>
               $scope.$parent.inline-create $scope.dataset
               $scope.$apply -> eventBus.fire \loading.dimmer.off
             else
-              setTimeout (->
+              if redirect-if-new => setTimeout (->
                 window.location.href = data-service.link $scope.dataset
               ), 1000
           else
@@ -86,13 +109,17 @@ angular.module \plotDB
           eventBus.fire \dataset.saved, $scope.dataset
         .catch (e) -> $scope.$apply ->
           eventBus.fire 'loading.dimmer.off'
-          if e.2 == 402 =>
-            eventBus.fire \quota.widget.on
-            plNotify.send \danger, "Failed: Quota exceeded"
-          else
-            console.log e.stack
-            plNotify.aux.error.io \save, \data, e
-    $scope.load = (_type, key) ->
+          if handle-fail => 
+            if e.2 == 402 =>
+              eventBus.fire \quota.widget.on
+              plNotify.send \danger, "Failed: Quota exceeded"
+            else
+              console.log \zzz
+              console.log e.stack
+              plNotify.aux.error.io \save, \data, e
+      promise
+
+    $scope.load = (_type, key) -> new Promise (res, rej) ->
       eventBus.fire \loading.dimmer.on
       $scope.rawdata = ""
       worker = new Worker \/js/data/worker/parse-dataset.js
@@ -106,6 +133,8 @@ angular.module \plotDB
           $scope.inited = true
           $scope.loading = false
           eventBus.fire \loading.dimmer.off
+          console.log $scope.grid.data.fieldize!
+          res!
       data-service.load _type, key
         .then (ret) ~>
           <- $scope.$apply
@@ -464,7 +493,7 @@ angular.module \plotDB
     $scope.panel = do
       name: do
         promise: null
-        focus: -> if @toggled => document.getElementById(\dataset-name-input).focus!
+        focus: -> if @toggled => if document.getElementById(\dataset-name-input) => that.focus!
         keyhandler: (e) ->
           key = e.keyCode or e.which
           if key == 13 => @action 0
@@ -506,6 +535,14 @@ angular.module \plotDB
       $scope.grid.data.types = plotdb.Types.resolve $scope.grid.data
       $scope.grid.data.dimkeys = dimkeys
       $scope.grid.render!
+    eventBus.listen \dataset.load (key, dimkeys, bind) ->
+      $scope.grid.data.dimkeys = dimkeys
+      $scope.grid.data.bind = [[k,v] for k,v of bind].sort((a,b) -> a.0 - b.0).map(->it.1)
+      $scope.load {location: \server, name: \dataset}, key
+        .then ->
+          console.log \456,$scope.grid.data.fieldize!
+          eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
+
     eventBus.listen \dataset.edit, (dataset, load = true) ->
       $scope.inited = false
       if load and dataset._type.location == \server =>
@@ -551,7 +588,7 @@ angular.module \plotDB
           if node.nodeName.toLowerCase! != \a => return
           dim = node.getAttribute(\data-dim) or ''
           multi = (node.getAttribute(\data-multi) or 'false') == 'true'
-          if dim and multi => for i from 0 til @bind.length =>
+          if dim and !multi => for i from 0 til @bind.length =>
             if @bind[i] == dim => @bind[i] = null
           index = Array.from(node.parentNode.parentNode.parentNode.parentNode.childNodes)
             .indexOf(node.parentNode.parentNode.parentNode)
@@ -561,6 +598,7 @@ angular.module \plotDB
           eventBus.fire \dataset.changed, $scope.grid.data.fieldize!
         bind-field-sync: ->
           root = document.querySelector('#dataset-editbox .sheet .sheet-dim > div')
+          if !root or !root.childNodes => return
           for i from @headers.length til root.childNodes.length =>
             span = root.childNodes[i].querySelector("span")
             span.innerText = "(empty)"
@@ -573,7 +611,6 @@ angular.module \plotDB
             span.className = if @bind[i] => '' else 'grayed'
 
         fieldize: ->
-          console.log ">>>", @
           ret = @headers.map (d,i) ~> { data: [], datatype: @types[i], name: d, bind: @bind[i] }
           for i from 0 til @rows.length =>
             for j from 0 til @headers.length => ret[j].data.push @rows[][i][j]

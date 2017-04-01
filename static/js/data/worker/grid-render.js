@@ -66,7 +66,7 @@ gridRender = function(e){
         var i$, ref$, len$, results$ = [];
         for (i$ = 0, len$ = (ref$ = dimkeys).length; i$ < len$; ++i$) {
           v = ref$[i$];
-          results$.push(("<li><a href='#' data-dim=\"" + v.name + "\" ") + ("data-multiple=\"" + !!v.multiple + "\">" + v.name + "</a></li>"));
+          results$.push(("<li><a href='#' data-dim=\"" + v.name + "\" ") + ("data-multi=\"" + !!v.multiple + "\">" + v.name + "</a></li>"));
         }
         return results$;
       }()).join(""), "<li class='grayed'><a href='#' data-dim=\"\">(empty)</a></li>", "</ul>", "</div>"

@@ -577,7 +577,7 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
         zh: "看來你的資料集還沒有取名字，來取個名字吧"
       },
       'Give your dataset a new name': {
-        zh: "為你的資料夾取個名字吧"
+        zh: "為你的資料集取個名字吧"
       },
       'Grid Mode': {
         zh: "資料格模式",
@@ -610,6 +610,18 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       },
       'try these predefined tags': {
         zh: "何不試試這些關鍵字"
+      },
+      'Viswork Name': {
+        zh: "視覺化名稱"
+      },
+      'Rename Viswork': {
+        zh: "視覺化重新命名"
+      },
+      "Looks like your viswork doesn't have a name yet. Let's give it a name": {
+        zh: "看來你的視覺化還沒有取名字，來取個名字吧"
+      },
+      'Give your viswork a new name': {
+        zh: "為你的視覺化取個名字吧"
       },
       'Palette': {
         zh: "色盤"

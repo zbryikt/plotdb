@@ -13,8 +13,9 @@ plotdb.view = do
     if typeof(key) == \number => req.open \get, "#{@host}/d/chart/#key", true
     else if typeof(key) == \string => req.open \get, key, true
     req.send!
+  # parse base chart object from database
   chart: (chart, {theme, fields, root, data}={}) ->
-    @_ = {handler: {}, _chart: JSON.stringify(chart), fields, root, inited: false}
+    @_ = {handler: {}, _chart: JSON.stringify(chart), fields, root, inited: false, config: null}
     if chart =>
       code = chart.code.content
       if typeof(code) == \string =>
@@ -23,6 +24,7 @@ plotdb.view = do
         @_.chart = chart = eval(code) <<< chart
       else
         @_.chart = chart = code <<< chart
+    @_.config = chart.config # for tracking original config object
     plotdb.chart.update-dimension chart
     plotdb.chart.update-config chart, chart.config
     plotdb.chart.update-assets chart, chart.assets
@@ -115,9 +117,16 @@ plotdb.view.chart.prototype <<< do
       console.error e
     root.setAttribute \class, newClass
     @inited = true
-
-  #auto call update ? check rebindOnChange?
-  config: (config) -> @_.chart.config <<< config
+  config: (n, update = false, rebind) ->
+    chart = @_.chart
+    chart.config <<< n
+    if !update => return
+    [o,b] = [chart.config, @_.config]
+    rebind = if rebind? => rebind else [[k,v] for k,v of n].filter(~> o[k] != v and b[k].rebindOnChange)
+    chart.parse! if rebind
+    chart.resize!
+    chart.bind! if rebind
+    chart.render!
   init: (root) -> @_.chart.init!
   parse: -> @_.chart.parse!
   resize: -> @_.chart.resize!

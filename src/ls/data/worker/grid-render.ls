@@ -40,7 +40,7 @@ grid-render = (e) ->
       """<span class='caret'></span></div>"""
       "<ul class='dropdown-menu'>"
       [ ("""<li><a href='#' data-dim="#{v.name}" """ + 
-      """data-multiple="#{!!v.multiple}">#{v.name}</a></li>"""
+      """data-multi="#{!!v.multiple}">#{v.name}</a></li>"""
       ) for v in dimkeys ].join("")
       """<li class='grayed'><a href='#' data-dim="">(empty)</a></li>"""
       "</ul>"

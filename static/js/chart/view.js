@@ -38,7 +38,8 @@ plotdb.view = {
       _chart: JSON.stringify(chart),
       fields: fields,
       root: root,
-      inited: false
+      inited: false,
+      config: null
     };
     if (chart) {
       code = chart.code.content;
@@ -53,6 +54,7 @@ plotdb.view = {
         this._.chart = chart = import$(code, chart);
       }
     }
+    this._.config = chart.config;
     plotdb.chart.updateDimension(chart);
     plotdb.chart.updateConfig(chart, chart.config);
     plotdb.chart.updateAssets(chart, chart.assets);
@@ -231,8 +233,35 @@ import$(plotdb.view.chart.prototype, {
     root.setAttribute('class', newClass);
     return this.inited = true;
   },
-  config: function(config){
-    return import$(this._.chart.config, config);
+  config: function(n, update, rebind){
+    var chart, ref$, o, b, k, v, this$ = this;
+    update == null && (update = false);
+    chart = this._.chart;
+    import$(chart.config, n);
+    if (!update) {
+      return;
+    }
+    ref$ = [chart.config, this._.config], o = ref$[0], b = ref$[1];
+    rebind = rebind != null
+      ? rebind
+      : (function(){
+        var ref$, results$ = [];
+        for (k in ref$ = n) {
+          v = ref$[k];
+          results$.push([k, v]);
+        }
+        return results$;
+      }()).filter(function(){
+        return o[k] !== v && b[k].rebindOnChange;
+      });
+    if (rebind) {
+      chart.parse();
+    }
+    chart.resize();
+    if (rebind) {
+      chart.bind();
+    }
+    return chart.render();
   },
   init: function(root){
     return this._.chart.init();

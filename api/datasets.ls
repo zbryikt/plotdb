@@ -48,8 +48,11 @@ get-dataset = (req,simple=false) ->
       if !dataset => return aux.reject 404
       if dataset.{}permission.switch != \publish and
       !perm.test(req, dataset.{}permission, dataset.owner, \read) => return aux.reject 403
-      if simple => return resolve dataset
-      io.query "select * from datafields where datafields.dataset = $1 order by key", [dataset.key]
+      promise = if simple =>
+        io.query "select datatype,name,key from datafields where datafields.dataset = $1 order by key", [dataset.key]
+      else =>
+        io.query "select * from datafields where datafields.dataset = $1 order by key", [dataset.key]
+      promise
         .then (r = {}) ->
           dataset.fields = r.[]rows
           resolve dataset
@@ -64,6 +67,13 @@ engine.app.get "/dataset/:id", aux.numid true, (req, res) ->
       res.render 'dataset/index.jade', {dataset: ret, permtype}
       return null
     .catch aux.error-handler res, true
+
+engine.router.api.get "/dataset/:id/simple", aux.numid false, (req, res) ->
+  get-dataset req, true
+    .then (ret) ->
+      if !perm.test(req, ret.{}permission, ret.owner, \admin) => delete ret.permission
+      res.json ret
+    .catch aux.error-handler res
 
 engine.router.api.get "/dataset/:id", aux.numid false, (req, res) ->
   get-dataset req

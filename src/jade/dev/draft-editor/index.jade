@@ -1,0 +1,393 @@
+extends /base.jade
+mixin edfuncClose
+  .pull-right: .closebtn.inner.inverse.lg(ng-click="edfuncSet('')")
+block vars
+  if !chart
+    - var rootid = "chartview"
+    - var title = 'Visualization Editor @ PlotDB'
+    - var description = "Create, share and request visualizations online."
+    - var thumbnail = "https://plotdb.com/assets/img/thumbnail.png"
+    - var thumbtype = "image/png"
+    - var rootpath = "/module"
+    - var url = "https://plotdb.com/"
+  else
+    - var rootid = "chartview"
+    - var title = (chart.name || 'New Chart') + ' / Visualize with PlotDB'
+    - var description = chart.description || 'share your visualization via PlotDB.'
+    - var thumbnail = "https://plotdb.com/s/chart/" + chart.key + ".png"
+    - var thumbtype = "image/png"
+    - var rootpath = "/module"
+    - var url = "https://plotdb.com/chart/" + chart.key
+  - use.stripe = false;
+block head
+  script(src="https://apis.google.com/js/api.js")
+  link(rel="stylesheet",type="text/css",href="/dist/0.1.0/plotdb.min.css")
+  link(rel="stylesheet",type="text/css",href="/assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.css")
+  link(rel="stylesheet",type="text/css",href="/assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.skinFlat.css")
+  script(type="text/javascript",src="/assets/ion-rangeslider/2.1.7/js/ion.rangeSlider.min.js")
+  script(type="text/javascript",src="/lib/plotd3/0.1.0/index.js")
+  script(type="text/javascript",src="/js/dev/editor.js")
+  script(type="text/javascript",src="/js/pack/view.js")
+  include /colorblind.jade
+block body
+  .editor-root(ng-controller="plEditorNew",ng-cloak,style="background:url(/assets/img/transparent.png)"): .inner
+    include /editor/panel.jade
+    include /widget/palette-edit-modal.jade
+    include modal.jade
+    .editor-funclist(ng-init="edfunc='data'")
+      .editor-func(ng-class="{'active':edfunc == 'data'}", ng-click="edfunc = 'data'")
+        i.fa.fa-table
+        span {{'Data'|i18n}}
+      .editor-func(ng-class="{'active':edfunc == 'style'}", ng-click="edfunc = 'style'")
+        i.fa.fa-sliders
+        span {{'Style'|i18n}}
+      .editor-func(ng-class="{'active':edfunc == 'download'}", ng-click="edfunc = 'download'")
+        i.fa.fa-cloud-download
+        span {{'Download'|i18n}}
+      .editor-func(ng-class="{'active':edfunc == 'share'}", ng-click="edfunc = 'share'")
+        i.fa.fa-share-square
+        span {{'Share'|i18n}}
+      .editor-func(ng-class="{'active':edfunc == 'settings'}", ng-click="settingPanel.toggle('permission')")
+        i.fa.fa-cog
+        span {{'Settings'|i18n}}
+      .editor-func(ng-click="save()")
+        i.fa.fa-save
+        span {{'Save'|i18n}}
+    .editor-func-detail(ng-show="edfunc=='data'",style="width:500px"): .inner(ng-controller="dataEditCtrl")
+      +edfuncClose
+      .title {{'Data'|i18n}}
+      include /dataset/widget/modal.jade
+      #editor-datagrid.body(style="padding-left:0;padding-right:0")
+        #dataset-import-dropdown-inline.dropdown.btn-group
+          .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown")
+            span {{'Import'|i18n}}... #[span.caret]
+            p.pull-right
+          ul.dropdown-menu
+            li.dropdown
+              a.toggle-filepick(href="#")
+                input#dataset-edit-csv-file(type="file",
+                askencoding="parser.csv.askencoding",
+                readby="parser.csv.import",encoding="{{parser.csv.encoding}}")
+                span #[i.fa.fa-file-text-o.align16] {{'upload CSV file'|i18n}} ...
+            li: a.toggle-filepick(href="#")
+              input#dataset-edit-xls-file(type="file",readby="parser.xls.read")
+              span #[i.fa.fa-file-excel-o.align16] {{'upload Excel'|i18n}} (.xls, .xlsx)
+            li.divider
+            li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] {{'from Google Sheet'|i18n}}
+            li(ng-click="parser.plotdb.toggle()"): a(href="#") #[i.fa.fa-database.align16] {{'from PlotDB Dataset'|i18n}}
+        #dataset-editbox
+          #dataset-edit-grid.sheet-outer
+            .sheet.clusterize
+              .sheet-dim(ng-click="grid.data.bindField($event)")
+              .sheet-head(data-rowcount="5")
+              .sheet-body-outer
+                .sheet-body.clusterize-scroll
+                  .sheet-cells.clusterize-content
+      .foot
+        .btn.btn-default(ng-click="loadSampleData()") {{'Load Sample Data'|i18n}}
+        .pull-right.btn.btn-default(ng-click="edfuncSet('')") {{'Close'|i18n}}
+
+    .editor-func-detail(ng-show="edfunc=='style'"): .inner
+      +edfuncClose
+      .title {{'Style'|i18n}}
+      .body
+        //-
+        div(ng-repeat="(category,list) in configHash.value",ng-show="!v._bytheme",style="margin-bottom:40px")
+          h3(style="padding-bottom:5px;border-bottom:1px solid #ccc") {{category}}
+          div(style="display:flex;flex-wrap:wrap")
+            div(ng-cloak,ng-repeat="(name,v) in list",
+            ng-show="!v._bytheme",ng-attr-style="margin:0 10px 15px;width:{{v.desc || v.type[0].name == 'EditableChoice' ? '100%' : '40%'}};flex:1 1 auto")
+              span {{v.name || name}}
+              small.grayed(ng-if="v.desc",style="position:relative;top:0;display:block;line-height:1em;margin-bottom:5px") {{v.desc}}
+              .btn-group.btn-block(ng-if="v.type[0].name=='Choice'")
+                .dropdown
+                  .btn.btn-default.dropdown-toggle.btn-block(data-toggle="dropdown")
+                    i.fa.fa-caret-down.pull-right
+                    span {{v.value.name || v.value}}
+                  ul.dropdown-menu
+                    li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice.name || choice}}
+
+              .btn-group.btn-block(ng-if="v.type[0].name=='Boolean'")
+                .btn.btn-default.btn-block(ng-click="v.value=!!!v.value") {{(v.value ?  'Yes' : 'No')|i18n}}
+
+              .input-color(ng-if="v.type[0].name=='Color'")
+                div(ng-attr-style="box-shadow:0 0 1px rgba(0,0,0,0.1);background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:34px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v)") &nbsp;
+              input.irs(ng-ion-slider,ng-if="v.type[0].name=='Range'",ng-model="v.value",config="{type:'double'}")
+              input.irs(ng-ion-slider,ng-if="v.type[0].name=='Number'",ng-model="v.value",config="{min: v.min || 0, max: v.max || 100}")
+              //-input(ng-if="v.type[0].name=='Number'",type="range",ng-model="v.value")
+              //-input.form-control(ng-if="v.type[0].name=='String' || v.type[0].name=='Number' || !v.type[0].name",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value")
+
+              input.form-control(ng-if="v.type[0].name=='String' || !v.type[0].name",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value")
+              .dropdown(ng-if="v.type[0].name=='EditableChoice'",style="position:relative")
+                input.form-control(ng-model="v.value")
+                .btn.btn-default.dropdown-toggle(data-toggle="dropdown",style="position:absolute;top:0;right:0")
+                  i.fa.fa-caret-down.pull-right(style="line-height:20px")
+                  span {{v.value.name || v.value}}
+                ul.dropdown-menu(style="left:auto;right:0")
+                  li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice.name || choice}}
+
+              .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);",style="width:100%")
+                .input-palette(style="display:flex;flex-wrap:wrap")
+                  div(ng-repeat="c in v.value.colors",ng-attr-style="background:{{c.hex}};height:34px;display:inline-block;border-radius:2px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 1px") &nbsp;
+
+        //-.chart-config-group(ng-cloak,ng-repeat="(category,list) in configHash.value",ng-show="!v._bytheme")
+          .chart-config-category {{category}}
+          .chart-config(ng-cloak,ng-repeat="(name,v) in list",ng-show="!v._bytheme")
+            // Otherwise
+            i.fa.fa-question-circle(ng-cloak,ng-show="v.desc")
+            .hint-popup {{v.desc}}
+            .input-group(ng-if="v.type[0].name!='Choice' && v.type[0].name!='Boolean' && v.type[0].name!='Palette' && v.type[0].name!='Color' && v.type[0].name!='Range'")
+              span.input-group-addon: div {{v.name || name}}
+              input.form-control(type="text",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value",style="text-align:center")
+            .btn-group(ng-if="v.type[0].name=='Choice'")
+              span.input-group-addon: div {{v.name || name}}
+              .dropdown
+                .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+                  i.fa.fa-caret-down.pull-right
+                  span {{v.value.name || v.value}}
+                ul.dropdown-menu
+                  li(ng-repeat="choice in v.type[0].values"): a(ng-click="v.value=choice") {{choice.name || choice}}
+            //- Color
+            .btn-group(ng-if="v.type[0].name=='Color'")
+              span.input-group-addon: div {{v.name || name}}
+              .input-color
+                div(ng-attr-style="background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v)") &nbsp;
+            //- Range
+            .input-group.chart-config-range(ng-if="v.type[0].name=='Range'")
+              span.input-group-addon: div {{v.name || name}}
+              div.form-control
+                input.form-control(ng-model="v.value[0]")
+                span to
+                input.form-control(ng-model="v.value[1]")
+            //- Palette
+            .btn-group(ng-if="v.type[0].name=='Palette'",ng-click="paledit.edit(v);")
+              span.input-group-addon: div {{v.name || name}}
+              .input-palette
+                div(ng-repeat="c in v.value.colors",ng-attr-style="background:{{c.hex}};height:30px;display:inline-block;border-radius:2px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 1px") &nbsp;
+            //- Boolean
+            .btn-group(ng-if="v.type[0].name=='Boolean'")
+              span.input-group-addon: div {{v.name || name}}
+              .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
+        .chart-config.chart-config-end(style="background:none")
+      .foot
+        .btn.btn-sm.btn-default.dropdown-toggle.pull-left(data-toggle="dropdown",style="vertical-align:top")
+          span {{'Responsive'|i18n}}... #[span.caret]
+        .btn.btn-default.pull-right(ng-click="edfunc=''") {{'Close'|i18n}}
+
+    .editor-func-detail(ng-show="edfunc=='share'")
+      .inner
+        +edfuncClose
+        .title {{'Share'|i18n}}
+        div(style="padding:20px 20px 0")
+          .btn-group
+            .btn.btn-default(ng-class="{'active':chart.permission.switch=='publish'}",
+            ng-click="chart.permission.switch='publish'") {{'Publish'|i18n}}
+            .btn.btn-default(ng-class="{'active':chart.permission.switch!='publish'}",
+            ng-click="chart.permission.switch='draft'") {{'Draft'|i18n}}
+        hr
+        .body
+          label {{'Publish Link'|i18n}}
+          .input-group
+            input#edit-sharelink.form-control(ng-model="sharePanel.link",
+            readonly,data-clipboard-target="#edit-sharelink")
+            span.input-group-btn
+              #edit-sharelink-btn.btn.btn-default(data-clipboard-target="#edit-sharelink") {{'COPY'|i18n}}
+          br
+          .pull-right: .checkbox(style="margin:0")
+            label #[input(type="checkbox",ng-model="sharePanel.aspectRatio")] #[span {{'Preserve Aspect Ratio'|i18n}}]
+          label {{'Embed Code'|i18n}}
+          .well
+            .input-group.dual(ng-show="sharePanel.aspectRatio")
+              input.form-control.input-sm(ng-model="sharePanel.embed.widthRate")
+              span.input-group-addon &times;
+              input.form-control.input-sm(ng-model="sharePanel.embed.heightRate")
+            .input-group.dual(ng-show="!sharePanel.aspectRatio")
+              input.form-control.input-sm(ng-model="sharePanel.embed.width")
+              span.input-group-addon &times;
+              input.form-control.input-sm(ng-model="sharePanel.embed.height")
+            br
+            .input-group
+              input#edit-embedcode.form-control(ng-model="sharePanel.embedcode",
+              readonly,data-clipboard-target="#edit-embedcode")
+              span.input-group-btn
+                #edit-embedcode-btn.btn.btn-default(data-clipboard-target="#edit-embedcode") {{'COPY'|i18n}}
+          br
+          label {{'Open Graph'|i18n}} #[small.grayed {{'summary in SNS posts'|i18n}}]
+          .sep
+          label {{'Title'|i18n}}
+          input.form-control(ng-model="chart.name",ng-attr-placeholder="{{'title shown in social media'|i18n}}")
+          br
+          label {{'Footer'|i18n}}
+          input.form-control(ng-model="chart.footer",ng-attr-placeholder="{{'e.g., data source'|i18n}}")
+          br
+          label {{'Description'|i18n}}
+          textarea.form-control(ng-model="chart.description",
+          ng-attr-placeholder="{{'summary shown in social media'|i18n}}")
+          br
+      .foot.text-right
+        .btn.btn-default(ng-click="edfunc=''") {{'Close'|i18n}}
+
+    .editor-func-detail(ng-show="edfunc=='download'"): .inner
+      +edfuncClose
+      .title {{'Download'|i18n}}
+      .body
+        label {{'Download As'|i18n}}:
+        ul.list-group
+          li.list-group-item(ng-class="{'active':download.format=='svg'}",
+          ng-click="download.fetch('svg')") SVG #[small.grayed.pull-right {{'for Vector Editing'|i18n}}]
+          li.list-group-item(ng-class="{'active':download.format=='png'}",
+          ng-click="download.fetch('png')") PNG #[small.pull-right.grayed {{'for Raster Editing'|i18n}}]
+          li.list-group-item(ng-class="{'active':download.format=='png-hd'}",
+          ng-click="download.fetch('png-hd')") PNG #[small.grayed ( {{'Hi Res'|i18n}} )]
+          li.list-group-item(ng-class="{'active':download.format=='plotdb'}",
+          ng-click="download.fetch('plotdb')") JS #[small.pull-right.grayed {{'for Developer'|i18n}}]
+        .pull-right
+          .checkbox(style="margin:0"): label #[input(type="checkbox",ng-model="download.customSize")] #[span {{'enable'|i18n}}]
+        label {{'Custom Size'|i18n}}
+        .input-group.dual
+          input.form-control.input-sm(placeholder="width",
+          ng-model="rwdtest.custom.width",ng-disabled="!download.customSize")
+          span.input-group-addon &times;
+          input.form-control.input-sm(placeholder="height",
+          ng-model="rwdtest.custom.height",ng-disabled="!download.customSize")
+        .sep.gap
+        .text-right
+          a.btn.btn-success.loader(ng-attr-download="{{download.filename}}",
+          ng-attr-href="{{download.url}}",
+          ng-class="{'disabled':!download.ready,'loading':download.loading}") {{'Download'|i18n}}
+          span &nbsp;
+          .btn.btn-default(ng-click="edfunc=''") {{'Cancel'|i18n}}
+    #editor-code.editor-func-detail(ng-class="{'active':edfunc=='editor','lg':code.size=='lg'}")
+      .btn.btn-dark(ng-click="code.toggleLarge()")
+        i.fa.fa-long-arrow-right(ng-if="code.size!='lg'")
+        i.fa.fa-long-arrow-left(ng-if="code.size=='lg'")
+      .inner(style="padding-bottom:0")
+        textarea#editor-textarea
+    //-.editor-name
+      .title Stacked Bar Chart
+      .desc a standard bar chart. best used in visualize unordered data when we need accurate comparison or find maximal / minimal value.
+    #editor-canvas.editor-canvas
+      .inner(style="width:100%;height:100%;overflow:hidden;padding-bottom:0")
+        iframe
+    .editor-ctrls
+      .dropup.btn-group
+        .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+          span(ng-show="colorblind.val=='normal'")
+            i.fa.fa-eye-slash.grayed
+            span &nbsp;{{'colorblind'|i18n}} #[span.caret]
+          span(ng-cloak,ng-show="colorblind.val!='normal'")
+            i.fa.fa-eye
+            span &nbsp;{{colorblind.val|i18n}} #[span.caret]
+        ul.dropdown-menu
+          li(ng-class="{'active':colorblind.val=='normal'}")
+            a(href="#",ng-click="colorblind.set('normal')",
+            data-track="ChartEditor,Colorblind,Normal") {{'Normal People'|i18n}}
+          li(ng-class="{'active':colorblind.val=='deuteranopia'}")
+            a(href="#",ng-click="colorblind.set('deuteranopia')",
+            data-track="ChartEditor,Colorblind,Red-Green") {{'Red-Green'|i18n}} #[small.grayed (9%)]
+          li(ng-class="{'active':colorblind.val=='achromatopsia'}")
+            a(href="#",ng-click="colorblind.set('achromatopsia')",
+            data-track="ChartEditor,Colorblind,Monochromasy") {{'Monochromasy'|i18n}} #[small.grayed (0.003%)]
+          li.divider
+          small.grayed(style="margin-left:20px") {{'Advanced Options'|i18n}}
+          li(ng-class="{'active':colorblind.val=='protanopia'}")
+            a(href="#",ng-click="colorblind.set('protanopia')",
+            data-track="ChartEditor,Colorblind,Protanopia") {{'protanopia'|i18n}}
+          li(ng-class="{'active':colorblind.val=='protanomaly'}")
+            a(href="#",ng-click="colorblind.set('protanomaly')",
+            data-track="ChartEditor,Colorblind,Protanomaly") {{'protanomaly'|i18n}}
+          li(ng-class="{'active':colorblind.val=='deuteranopia'}")
+            a(href="#",ng-click="colorblind.set('deuteranopia')",
+            data-track="ChartEditor,Colorblind,Deuteranopia") {{'deuteranopia'|i18n}}
+          li(ng-class="{'active':colorblind.val=='deuteranomaly'}")
+            a(href="#",ng-click="colorblind.set('deuteranomaly')",
+            data-track="ChartEditor,Colorblind,Deuteranomaly") {{'deuteranomaly'|i18n}}
+          li(ng-class="{'active':colorblind.val=='tritanopia'}")
+            a(href="#",ng-click="colorblind.set('tritanopia')",
+            data-track="ChartEditor,Colorblind,Tritanopia") {{'tritanopia'|i18n}}
+          li(ng-class="{'active':colorblind.val=='tritanomaly'}")
+            a(href="#",ng-click="colorblind.set('tritanomaly')",
+            data-track="ChartEditor,Colorblind,Tritanomaly") {{'tritanomaly'|i18n}}
+          li(ng-class="{'active':colorblind.val=='achromatopsia'}")
+            a(href="#",ng-click="colorblind.set('achromatopsia')",
+            data-track="ChartEditor,Colorblind,Achromatopsia") {{'achromatopsia'|i18n}}
+          li(ng-class="{'active':colorblind.val=='achromatomaly'}")
+            a(href="#",ng-click="colorblind.set('achromatomaly')",
+            data-track="ChartEditor,Colorblind,Achromatomaly") {{'achromatomaly'|i18n}}
+
+      span &nbsp;
+      .dropup.btn-group
+        .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
+          span(ng-show="rwdtest.val=='default'")
+            i.fa.fa-desktop.grayed
+            span &nbsp;{{'Canvas Size'|i18n}} #[span.caret]
+          span(ng-cloak,ng-show="rwdtest.val!='default'")
+            i.fa.fa-desktop
+            span &nbsp;{{rwdtest.val|i18n}} #[span.caret]
+        ul.dropdown-menu
+          li(ng-class="{'active':rwdtest.val=='default'}")
+            a(href="#",ng-click="rwdtest.set('default')",
+            data-track="ChartEditor,Responsive,Default") {{'Auto Scale'|i18n}}
+          li(ng-class="{'active':rwdtest.val=='QVGA'}")
+            a(href="#",ng-click="rwdtest.set('QVGA')",
+            data-track="ChartEditor,Responsive,QVGA") QVGA #[small.grayed (240x320)]
+          li(ng-class="{'active':rwdtest.val=='HVGA'}")
+            a(href="#",ng-click="rwdtest.set('HVGA')",
+            data-track="ChartEditor,Responsive,HVGA") HVGA #[small.grayed (320x480)]
+          li(ng-class="{'active':rwdtest.val=='Thumb'}")
+            a(href="#",ng-click="rwdtest.set('Thumb')",
+            data-track="ChartEditor,Responsive,Thumb") {{'Thumb'|i18n}}#[small.grayed (308x229)]
+          li(ng-class="{'active':rwdtest.val=='Custom'}")
+            a(href="#",ng-click="rwdtest.set('Custom')",
+            data-track="ChartEditor,Responsive,Custom")
+              div {{'Custom'|i18n}}
+              input.form-control-inline.input-xs.dimension(ng-model="rwdtest.custom.width",
+              type="text",placeholder="width")
+              span &nbsp;&times;&nbsp;
+              input.form-control-inline.input-xs.dimension(ng-model="rwdtest.custom.height",
+              type="text",placeholder="height")
+
+
+      span &nbsp;
+      .btn.btn-default(ng-click="render(chart)"): i.fa.fa-refresh
+      span &nbsp;
+      span.chart-config
+        div(ng-click="paledit.edit(chart.config.palette);",style="width:200px;display:inline-block;padding:2px;vertical-align:bottom",ng-if="chart.config.palette")
+          span {{'Palette'|i18n}}
+          .input-palette(style="border-radius:2px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.2);")
+            div(ng-repeat="c in chart.config.palette.value.colors",
+            ng-attr-style="background:{{c.hex}};height:30px;display:inline-block;border-radius:0px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 0px") &nbsp;
+        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;",ng-if="chart.config.textFill")
+          span {{'Text Fill'|i18n}}
+          .input-color
+            div(ng-attr-style="background:{{chart.config.textFill.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.3)",ldColorPicker,ng-model="chart.config.textFill.value",config="coloredit.config(chart.config.textFill)") &nbsp
+        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;",ng-if="chart.config.background")
+          span {{'Bk Color'|i18n}}
+          .input-color
+            div(ng-attr-style="background:{{chart.config.background.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.3)",ldColorPicker,ng-model="chart.config.background.value",config="coloredit.config(chart.config.background)") &nbsp
+        .btn.btn-default(style="margin-left:10px;",ng-click="edfuncToggle('style')",ng-class="{'active':edfunc=='style'}"): i.fa.fa-cogs
+
+
+    .editor-panel-tab
+      .icon(ng-class="{'active':edfunc==''}",ng-click="edfunc=''"): i.fa.fa-eye
+      .icon(ng-class="{'active':edfunc=='editor' && edcode=='code'}",ng-click="edfunc='editor';edcode='code'") JS
+      .icon(ng-class="{'active':edfunc=='editor' && edcode=='style'}",ng-click="edfunc='editor';edcode='style'") CSS
+      .icon(ng-class="{'active':edfunc=='editor' && edcode=='doc'}",ng-click="edfunc='editor';edcode='doc'") HTML
+      .icon ASSET
+      .icon
+        .dropdown.btn-group
+          .btn.btn-xs.btn-default.dropdown-toggle(data-toggle="dropdown")
+            span
+              span #[i.fa.fa-adjust] #[span.caret]
+          ul.dropdown-menu
+            li(ng-class="{'active':editortheme.val=='default'}")
+              a(href="#",ng-click="editortheme('default')") #[i.fa.fa-circle(style="color:#eee")]
+            li(ng-class="{'active':editortheme.val=='neat'}")
+              a(href="#",ng-click="editortheme('neat')") #[i.fa.fa-circle(style="color:#ddd")]
+            li(ng-class="{'active':editortheme.val=='monokai'}")
+              a(href="#",ng-click="editortheme('monokai')") #[i.fa.fa-circle(style="color:#ba9")]
+            li(ng-class="{'active':editortheme.val=='rubyblue'}")
+              a(href="#",ng-click="editortheme('rubyblue')") #[i.fa.fa-circle(style="color:#249")]
+            li(ng-class="{'active':editortheme.val=='colorforth'}")
+              a(href="#",ng-click="editortheme('colorforth')") #[i.fa.fa-circle(style="color:#222")]
+

@@ -224,13 +224,15 @@ base = do
       if srcs => for src in srcs
         if !/src\/jade/.exec(src) => continue
         try
+          code = fs.read-file-sync src .toString!
+          if /^\/\/- module ?/.exec(code) => return
           des = src.replace(/src\/jade/, "static").replace(/\.jade/, ".html")
           if newer(des, _src) => continue
           desdir = path.dirname(des)
           if !fs.exists-sync(desdir) or !fs.stat-sync(desdir).is-directory! => mkdir-recurse desdir
           try
             fs.write-file-sync(des, jade.render(
-              (fs.read-file-sync src .toString!),
+              code,
               {filename: src, basedir: path.join(cwd,\src/jade/)} <<< {config: data}
             ))
             logs.push "[BUILD]   #src --> #des"

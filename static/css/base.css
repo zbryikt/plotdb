@@ -1,6 +1,9 @@
 big.xl {
   font-size: 1.5em;
 }
+.block {
+  display: block !important;
+}
 .spc1 {
   height: 0;
 }

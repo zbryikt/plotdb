@@ -6325,7 +6325,7 @@ span.select2-container--default .select2-selection--multiple {
   border-top: 1px solid #ccc;
   z-index: 19;
 }
-.editor-canvas {
+#viscanvas {
   position: absolute;
   top: 40px;
   left: 120px;
@@ -6333,7 +6333,10 @@ span.select2-container--default .select2-selection--multiple {
   bottom: 110px;
   border: 1px dashed #ddd;
 }
-.editor-canvas iframe {
+#viscanvas .inner {
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
+#viscanvas iframe {
   width: 100%;
   height: 100%;
   border: none;
@@ -6341,7 +6344,7 @@ span.select2-container--default .select2-selection--multiple {
 }
 .editor-ctrls {
   position: absolute;
-  bottom: 5%;
+  bottom: 6%;
   height: 50px;
   margin: auto;
   left: 0;

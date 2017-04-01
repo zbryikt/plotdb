@@ -1,3 +1,68 @@
+service (chartService)
+#editor = do
+#  theme: do
+#    value: \default
+#    choices: <[]>
+#    set: ->  
+#  size: do
+#    value: ''
+#    set: -> 
+#  cm: null
+#  update: ->
+#  init: ->
+  
+#chartModal name
+
+#editor ( CodeMirror ) / on change
+#code ( editor size )
+#panel
+#  chart-name
+
+#update-config
+#local
+#_save
+#save
+#bind
+
+dataset
+dataset.saved
+dataset.changed
+
+sharePanel
+editortheme
+
+colorblind
+rwdtest
+
+canvas-resize
+
+#edfunc-set
+#edfunc-toggle
+#last-edcode
+#edcode
+
+library
+
+update-data
+build (codemirror -> chart -> reset )
+#update-code (set code by choice, set code mode )
+
+loadSampleData
+iframe
+framewin
+send-msg
+download
+dispatcher
+window.on message
+
+init ( load code from server )
+reset ( load code into frame )
+settingPanel
+paledit
+coloredit
+config-hash
+
+
 angular.module \plotDB
   ..controller \plEditorNew,
   <[$scope $http $timeout $interval $sce plConfig IOService dataService chartService paletteService themeService plNotify eventBus permService license]> ++ ($scope,$http,$timeout,$interval,$sce,plConfig,IOService,data-service,chart-service,paletteService,themeService,plNotify,eventBus,permService,license) ->
@@ -9,6 +74,31 @@ angular.module \plotDB
       mode: "javascript",
       theme: "default"
     });
+
+    $scope.panel = do
+      chart-name: do
+        promise: null
+        focus: -> #if @toggled => document.getElementById(\chart-name-input).focus!
+        keyhandler: (e) ->
+          key = e.keyCode or e.which
+          if key == 13 => @action 0
+        toggle: (val, name) ->
+          @ <<< {toggled: if val => val else !@toggled}
+          if name? => @value = name
+          @focus!
+        prompt: ->
+          new Promise (res, rej) ~> 
+            @ <<< {promise: {res, rej}, toggled: true}
+            @focus!
+        value: ""
+        action: (idx) ->
+          if idx == 0 =>
+            if !@value => return
+            $scope.chart.name = @value
+          @toggled = false
+          if @promise =>
+            if idx => @promise.rej!
+            else if !idx => @promise.res @value
 
     $scope.update-config = (config, rebind = false) -> 
       payload = (config or $scope.chart.config) #{}
@@ -53,11 +143,34 @@ angular.module \plotDB
             plNotify.aux.error.io \save, @type, err
             console.error "[save #name]", err
 
+    $scope.bind = (dimension, dataset) ->
+      [v for k,v of dimension].map -> it <<< fieldName: [], fields: []
+      dataset.fields.map (f) -> if f.bind => dimension[f.bind].fields.push f
+      [v for k,v of dimension].map -> it.fieldName = it.fields.map -> it.name
+
     $scope.save = ->
       if !$scope.user.authed! => return $scope.auth.toggle true
       if @save.pending => return
-      eventBus.fire \loading.dimmer.on
-      send-msg type: \save
+      promise = if !$scope.chart.name or !$scope.chart.key => $scope.panel.chart-name.prompt! else Promise.resolve!
+      promise
+        .then ->
+          $scope.$apply -> eventBus.fire \loading.dimmer.on
+          $scope.dataset.save!
+        .then (dataset) ->
+          $scope.bind $scope.chart.dimension, dataset
+          send-msg type: \save
+        .catch -> console.log it
+
+    $scope.dataset = do
+      promise: null
+      save: ->
+        new Promise (res, rej) ~>
+          @promise = {res, rej}
+          eventBus.fire \dataset.save, $scope.chart.name
+    eventBus.listen \dataset.saved, (ret) ->
+      if $scope.dataset.promise.res =>
+        that ret
+
     $scope.sharePanel = do
       embed: do
         width: \100%
@@ -103,13 +216,13 @@ angular.module \plotDB
     $scope.sharePanel.init!
 
 
-    $scope.editortheme = ->
-      $scope.editortheme.val = it
-      $scope.editor.setOption \theme, it
-      document.cookie = "editortheme=#it"
-    $scope.editortheme.val = (/editortheme=([^;].+?)(;|$)/.exec(document.cookie) or {}).1
-    if !$scope.editortheme.val => $scope.editortheme.val = \default
-    $scope.editortheme $scope.editortheme.val
+    #$scope.editortheme = ->
+    #  $scope.editortheme.val = it
+    #  $scope.editor.setOption \theme, it
+    #  document.cookie = "editortheme=#it"
+    #$scope.editortheme.val = (/editortheme=([^;].+?)(;|$)/.exec(document.cookie) or {}).1
+    #if !$scope.editortheme.val => $scope.editortheme.val = \default
+    #$scope.editortheme $scope.editortheme.val
     $scope.colorblind = do
       val: \normal
       vals: <[
@@ -281,17 +394,28 @@ angular.module \plotDB
       if payload.type == \save =>
         if payload.payload => $scope.chart.thumbnail = payload.data
         $scope._save!
-      if payload.type == \inited =>
+      /*if payload.type == \inited =>
         $scope.dimension = JSON.parse payload.dimension 
         new-config = JSON.parse payload.config
         [[k,v] for k,v of new-config].map -> it.1.value = $scope.chart.config[it.0].value
         $scope.chart.config = new-config
         $scope.$apply -> $scope.config-hash.update!
         $scope.dimkeys = [{name: k,multiple: v.multiple} for k,v of $scope.dimension]
+      */
       if payload.type == \sample-data =>
-        $scope.data = data = payload.data
-        eventBus.fire \dataset.update.fields, data, $scope.dimkeys
-        $scope.update-data data
+        count = 0
+        dataset-key = 0
+        [[k,v] for k,v of $scope.chart.dimension].map ->
+          if (v.fields.0 or {}).dataset => dataset-key := that
+          count := count + v.fields.length
+        if !count =>
+          $scope.data = data = payload.data
+          eventBus.fire \dataset.update.fields, data, $scope.dimkeys
+          $scope.update-data data
+        else =>
+          bind = {}
+          [[k,v] for k,v of $scope.chart.dimension].map (d) -> d.1.fields.map -> bind[it.key] = d.0
+          eventBus.fire \dataset.load, dataset-key, $scope.dimkeys, bind
       if payload.type == \snapshot => $scope.$apply ->
         {data, format} = payload
         ext = "png"
@@ -470,3 +594,4 @@ angular.module \plotDB
         $scope.update-config $scope.chart.config, ret
       init: -> $scope.$watch 'chart.config', ((n,o) ~> @update(n,o)), true
     $scope.config-hash.init!
+

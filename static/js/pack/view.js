@@ -1079,6 +1079,68 @@ plotdb.chart = {
     return results$;
   }
 };
+plotdb.chart.config = {
+  update: function(config){
+    var ret, k, v, results$ = [];
+    ret = this.parse(this.preset(config));
+    for (k in ret) {
+      v = ret[k];
+      results$.push(config[k] = v);
+    }
+    return results$;
+  },
+  preset: function(config){
+    var k, ref$, v, p, f, val;
+    for (k in ref$ = config || {}) {
+      v = ref$[k];
+      if (config[v.extend]) {
+        p = config[v.extend];
+      } else if (plotdb.config[v.extend]) {
+        p = plotdb.config[v.extend];
+      } else if (plotdb.config[k]) {
+        p = plotdb.config[k];
+      } else {
+        continue;
+      }
+      for (f in p) {
+        val = p[f];
+        if (!(v[f] != null)) {
+          v[f] = val;
+        }
+      }
+    }
+    return config;
+  },
+  parse: function(config){
+    var ret, k, ref$, v, i$, ref1$, len$, type, e;
+    ret = {};
+    for (k in ref$ = config || {}) {
+      v = ref$[k];
+      if (!(v != null)) {
+        config[k] = {};
+      }
+      if (!(v.value != null)) {
+        v.value = v['default'] || 0;
+      }
+      for (i$ = 0, len$ = (ref1$ = v.type || []).length; i$ < len$; ++i$) {
+        type = ref1$[i$];
+        try {
+          type = plotdb[type.name];
+          if (type.test && type.parse && type.test(v.value)) {
+            v.value = type.parse(v.value);
+            break;
+          }
+        } catch (e$) {
+          e = e$;
+          console.log("chart config: type parsing exception ( " + k + " / " + type + " )");
+          console.log(e.stack + "");
+        }
+      }
+      ret[k] = config[k].value;
+    }
+    return ret;
+  }
+};
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
@@ -2051,7 +2113,8 @@ plotdb.view = {
       _chart: JSON.stringify(chart),
       fields: fields,
       root: root,
-      inited: false
+      inited: false,
+      config: null
     };
     if (chart) {
       code = chart.code.content;
@@ -2066,6 +2129,7 @@ plotdb.view = {
         this._.chart = chart = import$(code, chart);
       }
     }
+    this._.config = chart.config;
     plotdb.chart.updateDimension(chart);
     plotdb.chart.updateConfig(chart, chart.config);
     plotdb.chart.updateAssets(chart, chart.assets);
@@ -2244,8 +2308,35 @@ import$(plotdb.view.chart.prototype, {
     root.setAttribute('class', newClass);
     return this.inited = true;
   },
-  config: function(config){
-    return import$(this._.chart.config, config);
+  config: function(n, update, rebind){
+    var chart, ref$, o, b, k, v, this$ = this;
+    update == null && (update = false);
+    chart = this._.chart;
+    import$(chart.config, n);
+    if (!update) {
+      return;
+    }
+    ref$ = [chart.config, this._.config], o = ref$[0], b = ref$[1];
+    rebind = rebind != null
+      ? rebind
+      : (function(){
+        var ref$, results$ = [];
+        for (k in ref$ = n) {
+          v = ref$[k];
+          results$.push([k, v]);
+        }
+        return results$;
+      }()).filter(function(){
+        return o[k] !== v && b[k].rebindOnChange;
+      });
+    if (rebind) {
+      chart.parse();
+    }
+    chart.resize();
+    if (rebind) {
+      chart.bind();
+    }
+    return chart.render();
   },
   init: function(root){
     return this._.chart.init();

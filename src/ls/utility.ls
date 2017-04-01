@@ -208,7 +208,7 @@ angular.module \plotDB
         'Dataset Name': zh: "資料集名稱"
         'Rename Dataset': zh: "為資料集重命名"
         "Looks like your dataset doesn't have a name yet. Let's give it a name": zh: "看來你的資料集還沒有取名字，來取個名字吧"
-        'Give your dataset a new name': zh: "為你的資料夾取個名字吧"
+        'Give your dataset a new name': zh: "為你的資料集取個名字吧"
         'Grid Mode': zh: "資料格模式", en: "Grid"
         'Text Mode': zh: "文字模式", en: "Text"
         'estimated': zh: "估計值"
@@ -223,6 +223,10 @@ angular.module \plotDB
         'try these predefined tags': zh: "何不試試這些關鍵字"
 
         # Chart Editor
+        'Viswork Name': zh: "視覺化名稱"
+        'Rename Viswork': zh: "視覺化重新命名"
+        "Looks like your viswork doesn't have a name yet. Let's give it a name": zh: "看來你的視覺化還沒有取名字，來取個名字吧"
+        'Give your viswork a new name': zh: "為你的視覺化取個名字吧"
         'Palette': zh: "色盤"
         'Bk Color': zh: "背景色"
         'Text Fill': zh: "文字色"

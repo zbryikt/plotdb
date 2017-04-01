@@ -1,6 +1,6 @@
 extends /base.jade
-mixin edfuncClose
-  .pull-right: .closebtn.inner.inverse.lg(ng-click="edfuncSet('')")
+mixin panel-closebtn 
+  .pull-right: .closebtn.inner.inverse.lg(ng-click="panel.set('')")
 block vars
   if !chart
     - var rootid = "chartview"
@@ -26,36 +26,43 @@ block head
   link(rel="stylesheet",type="text/css",href="/assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.skinFlat.css")
   script(type="text/javascript",src="/assets/ion-rangeslider/2.1.7/js/ion.rangeSlider.min.js")
   script(type="text/javascript",src="/lib/plotd3/0.1.0/index.js")
-  script(type="text/javascript",src="/js/dev/editor.js")
+  //-script(type="text/javascript",src="/js/dev/editor.js")
+  script(type="text/javascript",src="/js/dev/editor/main.js")
+  script(type="text/javascript",src="/js/dev/editor/utility.js")
+  script(type="text/javascript",src="/js/dev/sheet/index.js")
+  script(type="text/javascript",src="/js/dev/misc/utility.js")
+  script(type="text/javascript",src="/js/dev/misc/paledit.js")
   script(type="text/javascript",src="/js/pack/view.js")
   include /colorblind.jade
 block body
-  .editor-root(ng-controller="plEditorNew",ng-cloak,style="background:url(/assets/img/transparent.png)"): .inner
+  .editor-root(ng-controller="plChartEditor",ng-cloak,style="background:url(/assets/img/transparent.png)"): .inner
     include /editor/panel.jade
-    include /widget/palette-edit-modal.jade
-    .editor-funclist(ng-init="edfunc='data'")
-      .editor-func(ng-class="{'active':edfunc == 'data'}", ng-click="edfunc = 'data'")
+    include /widget/paledit-modal-ctrl.jade
+    include modal.jade
+    .editor-funclist
+      .editor-func(ng-class="{'active':panel.tab=='data'}", ng-click="panel.set('data')")
         i.fa.fa-table
         span {{'Data'|i18n}}
-      .editor-func(ng-class="{'active':edfunc == 'style'}", ng-click="edfunc = 'style'")
+      .editor-func(ng-class="{'active':panel.tab=='style'}", ng-click="panel.set('style')")
         i.fa.fa-sliders
         span {{'Style'|i18n}}
-      .editor-func(ng-class="{'active':edfunc == 'download'}", ng-click="edfunc = 'download'")
+      .editor-func(ng-class="{'active':panel.tab=='download'}", ng-click="panel.set('download')")
         i.fa.fa-cloud-download
         span {{'Download'|i18n}}
-      .editor-func(ng-class="{'active':edfunc == 'share'}", ng-click="edfunc = 'share'")
+      .editor-func(ng-class="{'active':panel.tab=='share'}", ng-click="panel.set('share')")
         i.fa.fa-share-square
         span {{'Share'|i18n}}
-      .editor-func(ng-class="{'active':edfunc == 'settings'}", ng-click="settingPanel.toggle('permission')")
+      .editor-func(ng-class="{'active':panel.tab=='settings'}", ng-click="settingPanel.toggle('permission')")
         i.fa.fa-cog
         span {{'Settings'|i18n}}
       .editor-func(ng-click="save()")
         i.fa.fa-save
         span {{'Save'|i18n}}
-    .editor-func-detail(ng-show="edfunc=='data'",style="width:500px"): .inner(ng-controller="dataEditCtrl")
-      +edfuncClose
+    //-.editor-func-detail(ng-show="panel.tab=='data'",style="width:500px"): .inner(ng-controller="dataEditCtrl")
+    .editor-func-detail(ng-show="panel.tab=='data'",style="width:500px"): .inner(ng-controller="plSheetEditor")
+      +panel-closebtn
       .title {{'Data'|i18n}}
-      include ../dataset/widget/modal.jade
+      include /dataset/widget/modal.jade
       #editor-datagrid.body(style="padding-left:0;padding-right:0")
         #dataset-import-dropdown-inline.dropdown.btn-group
           .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown")
@@ -83,15 +90,15 @@ block body
                 .sheet-body.clusterize-scroll
                   .sheet-cells.clusterize-content
       .foot
-        .btn.btn-default(ng-click="loadSampleData()") {{'Load Sample Data'|i18n}}
-        .pull-right.btn.btn-default(ng-click="edfuncSet('')") {{'Close'|i18n}}
+        .btn.btn-default(ng-click="chart.data.sample()") {{'Load Sample Data'|i18n}}
+        .pull-right.btn.btn-default(ng-click="panel.set('')") {{'Close'|i18n}}
 
-    .editor-func-detail(ng-show="edfunc=='style'"): .inner
-      +edfuncClose
+    .editor-func-detail(ng-show="panel.tab=='style'"): .inner
+      +panel-closebtn
       .title {{'Style'|i18n}}
       .body
         //-
-        div(ng-repeat="(category,list) in configHash.value",ng-show="!v._bytheme",style="margin-bottom:40px")
+        div(ng-repeat="(category,list) in chart.config.group",ng-show="!v._bytheme",style="margin-bottom:40px")
           h3(style="padding-bottom:5px;border-bottom:1px solid #ccc") {{category}}
           div(style="display:flex;flex-wrap:wrap")
             div(ng-cloak,ng-repeat="(name,v) in list",
@@ -171,11 +178,11 @@ block body
       .foot
         .btn.btn-sm.btn-default.dropdown-toggle.pull-left(data-toggle="dropdown",style="vertical-align:top")
           span {{'Responsive'|i18n}}... #[span.caret]
-        .btn.btn-default.pull-right(ng-click="edfunc=''") {{'Close'|i18n}}
+        .btn.btn-default.pull-right(ng-click="panel.set('')") {{'Close'|i18n}}
 
-    .editor-func-detail(ng-show="edfunc=='share'")
+    .editor-func-detail(ng-show="panel.tab=='share'")
       .inner
-        +edfuncClose
+        +panel-closebtn
         .title {{'Share'|i18n}}
         div(style="padding:20px 20px 0")
           .btn-group
@@ -224,10 +231,10 @@ block body
           ng-attr-placeholder="{{'summary shown in social media'|i18n}}")
           br
       .foot.text-right
-        .btn.btn-default(ng-click="edfunc=''") {{'Close'|i18n}}
+        .btn.btn-default(ng-click="panel.set('')") {{'Close'|i18n}}
 
-    .editor-func-detail(ng-show="edfunc=='download'"): .inner
-      +edfuncClose
+    .editor-func-detail(ng-show="panel.tab=='download'"): .inner
+      +panel-closebtn
       .title {{'Download'|i18n}}
       .body
         label {{'Download As'|i18n}}:
@@ -245,105 +252,82 @@ block body
         label {{'Custom Size'|i18n}}
         .input-group.dual
           input.form-control.input-sm(placeholder="width",
-          ng-model="rwdtest.custom.width",ng-disabled="!download.customSize")
+          ng-model="canvas.dimension.custom.width",ng-disabled="!download.customSize")
           span.input-group-addon &times;
           input.form-control.input-sm(placeholder="height",
-          ng-model="rwdtest.custom.height",ng-disabled="!download.customSize")
+          ng-model="canvas.dimension.custom.height",ng-disabled="!download.customSize")
         .sep.gap
         .text-right
           a.btn.btn-success.loader(ng-attr-download="{{download.filename}}",
           ng-attr-href="{{download.url}}",
           ng-class="{'disabled':!download.ready,'loading':download.loading}") {{'Download'|i18n}}
           span &nbsp;
-          .btn.btn-default(ng-click="edfunc=''") {{'Cancel'|i18n}}
-    #editor-code.editor-func-detail(ng-class="{'active':edfunc=='editor','lg':code.size=='lg'}")
-      .btn.btn-dark(ng-click="code.toggleLarge()")
-        i.fa.fa-long-arrow-right(ng-if="code.size!='lg'")
-        i.fa.fa-long-arrow-left(ng-if="code.size=='lg'")
+          .btn.btn-default(ng-click="panel.set('')") {{'Cancel'|i18n}}
+    #editor-code.editor-func-detail(ng-class="{'active':panel.tab=='editor','lg':editor.size.value=='lg'}")
+      .btn.btn-dark(ng-click="editor.size.set('lg')")
+        i.fa.fa-long-arrow-right(ng-if="editor.size.value!='lg'")
+        i.fa.fa-long-arrow-left(ng-if="editor.size.value=='lg'")
       .inner(style="padding-bottom:0")
-        textarea#editor-textarea
-    //-.editor-name
-      .title Stacked Bar Chart
-      .desc a standard bar chart. best used in visualize unordered data when we need accurate comparison or find maximal / minimal value.
-    #editor-canvas.editor-canvas
+        textarea#editor-textarea(codeeditor,ng-model="editor")
+    #viscanvas(viscanvas,ng-model="canvas")
       .inner(style="width:100%;height:100%;overflow:hidden;padding-bottom:0")
         iframe
     .editor-ctrls
       .dropup.btn-group
         .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
-          span(ng-show="colorblind.val=='normal'")
+          span(ng-show="canvas.colorblind.value=='normal'")
             i.fa.fa-eye-slash.grayed
             span &nbsp;{{'colorblind'|i18n}} #[span.caret]
-          span(ng-cloak,ng-show="colorblind.val!='normal'")
+          span(ng-cloak,ng-show="canvas.colorblind.value!='normal'")
             i.fa.fa-eye
-            span &nbsp;{{colorblind.val|i18n}} #[span.caret]
+            span &nbsp;{{canvas.colorblind.value|i18n}} #[span.caret]
         ul.dropdown-menu
-          li(ng-class="{'active':colorblind.val=='normal'}")
-            a(href="#",ng-click="colorblind.set('normal')",
+          li(ng-class="{'active':canvas.colorblind.value=='normal'}")
+            a(href="#",ng-click="canvas.colorblind.set('normal')",
             data-track="ChartEditor,Colorblind,Normal") {{'Normal People'|i18n}}
-          li(ng-class="{'active':colorblind.val=='deuteranopia'}")
-            a(href="#",ng-click="colorblind.set('deuteranopia')",
+          li(ng-class="{'active':canvas.colorblind.value=='deuteranopia'}")
+            a(href="#",ng-click="canvas.colorblind.set('deuteranopia')",
             data-track="ChartEditor,Colorblind,Red-Green") {{'Red-Green'|i18n}} #[small.grayed (9%)]
-          li(ng-class="{'active':colorblind.val=='achromatopsia'}")
-            a(href="#",ng-click="colorblind.set('achromatopsia')",
+          li(ng-class="{'active':canvas.colorblind.value=='achromatopsia'}")
+            a(href="#",ng-click="canvas.colorblind.set('achromatopsia')",
             data-track="ChartEditor,Colorblind,Monochromasy") {{'Monochromasy'|i18n}} #[small.grayed (0.003%)]
           li.divider
           small.grayed(style="margin-left:20px") {{'Advanced Options'|i18n}}
-          li(ng-class="{'active':colorblind.val=='protanopia'}")
-            a(href="#",ng-click="colorblind.set('protanopia')",
-            data-track="ChartEditor,Colorblind,Protanopia") {{'protanopia'|i18n}}
-          li(ng-class="{'active':colorblind.val=='protanomaly'}")
-            a(href="#",ng-click="colorblind.set('protanomaly')",
-            data-track="ChartEditor,Colorblind,Protanomaly") {{'protanomaly'|i18n}}
-          li(ng-class="{'active':colorblind.val=='deuteranopia'}")
-            a(href="#",ng-click="colorblind.set('deuteranopia')",
-            data-track="ChartEditor,Colorblind,Deuteranopia") {{'deuteranopia'|i18n}}
-          li(ng-class="{'active':colorblind.val=='deuteranomaly'}")
-            a(href="#",ng-click="colorblind.set('deuteranomaly')",
-            data-track="ChartEditor,Colorblind,Deuteranomaly") {{'deuteranomaly'|i18n}}
-          li(ng-class="{'active':colorblind.val=='tritanopia'}")
-            a(href="#",ng-click="colorblind.set('tritanopia')",
-            data-track="ChartEditor,Colorblind,Tritanopia") {{'tritanopia'|i18n}}
-          li(ng-class="{'active':colorblind.val=='tritanomaly'}")
-            a(href="#",ng-click="colorblind.set('tritanomaly')",
-            data-track="ChartEditor,Colorblind,Tritanomaly") {{'tritanomaly'|i18n}}
-          li(ng-class="{'active':colorblind.val=='achromatopsia'}")
-            a(href="#",ng-click="colorblind.set('achromatopsia')",
-            data-track="ChartEditor,Colorblind,Achromatopsia") {{'achromatopsia'|i18n}}
-          li(ng-class="{'active':colorblind.val=='achromatomaly'}")
-            a(href="#",ng-click="colorblind.set('achromatomaly')",
-            data-track="ChartEditor,Colorblind,Achromatomaly") {{'achromatomaly'|i18n}}
+          each type in ['protanopia','protanomaly','deuteranopia','deuteranomaly','tritanopia','tritanomaly','achromatopsia','achromatomaly']
+            li(ng-class="{'active':canvas.colorblind.value=='" + type + "'}")
+              a(href="#",ng-click="canvas.colorblind.set('" + type + "')",
+              data-track="ChartEditor,Colorblind," + type)= "{{'" + type + "'|i18n}}"
 
       span &nbsp;
       .dropup.btn-group
         .btn.btn-default.dropdown-toggle(data-toggle="dropdown")
-          span(ng-show="rwdtest.val=='default'")
+          span(ng-show="canvas.dimension.value=='default'")
             i.fa.fa-desktop.grayed
             span &nbsp;{{'Canvas Size'|i18n}} #[span.caret]
-          span(ng-cloak,ng-show="rwdtest.val!='default'")
+          span(ng-cloak,ng-show="canvas.dimension.value!='default'")
             i.fa.fa-desktop
-            span &nbsp;{{rwdtest.val|i18n}} #[span.caret]
+            span &nbsp;{{canvas.dimension.value|i18n}} #[span.caret]
         ul.dropdown-menu
-          li(ng-class="{'active':rwdtest.val=='default'}")
-            a(href="#",ng-click="rwdtest.set('default')",
+          li(ng-class="{'active':canvas.dimension.value=='default'}")
+            a(href="#",ng-click="canvas.dimension.set('default')",
             data-track="ChartEditor,Responsive,Default") {{'Auto Scale'|i18n}}
-          li(ng-class="{'active':rwdtest.val=='QVGA'}")
-            a(href="#",ng-click="rwdtest.set('QVGA')",
+          li(ng-class="{'active':canvas.dimension.value=='QVGA'}")
+            a(href="#",ng-click="canvas.dimension.set('QVGA')",
             data-track="ChartEditor,Responsive,QVGA") QVGA #[small.grayed (240x320)]
-          li(ng-class="{'active':rwdtest.val=='HVGA'}")
-            a(href="#",ng-click="rwdtest.set('HVGA')",
+          li(ng-class="{'active':canvas.dimension.value=='HVGA'}")
+            a(href="#",ng-click="canvas.dimension.set('HVGA')",
             data-track="ChartEditor,Responsive,HVGA") HVGA #[small.grayed (320x480)]
-          li(ng-class="{'active':rwdtest.val=='Thumb'}")
-            a(href="#",ng-click="rwdtest.set('Thumb')",
+          li(ng-class="{'active':canvas.dimension.value=='Thumb'}")
+            a(href="#",ng-click="canvas.dimension.set('Thumb')",
             data-track="ChartEditor,Responsive,Thumb") {{'Thumb'|i18n}}#[small.grayed (308x229)]
-          li(ng-class="{'active':rwdtest.val=='Custom'}")
-            a(href="#",ng-click="rwdtest.set('Custom')",
+          li(ng-class="{'active':canvas.dimension.value=='Custom'}")
+            a(href="#",ng-click="canvas.dimension.set('Custom')",
             data-track="ChartEditor,Responsive,Custom")
               div {{'Custom'|i18n}}
-              input.form-control-inline.input-xs.dimension(ng-model="rwdtest.custom.width",
+              input.form-control-inline.input-xs.dimension(ng-model="canvas.dimension.custom.width",
               type="text",placeholder="width")
               span &nbsp;&times;&nbsp;
-              input.form-control-inline.input-xs.dimension(ng-model="rwdtest.custom.height",
+              input.form-control-inline.input-xs.dimension(ng-model="canvas.dimension.custom.height",
               type="text",placeholder="height")
 
 
@@ -351,27 +335,30 @@ block body
       .btn.btn-default(ng-click="render(chart)"): i.fa.fa-refresh
       span &nbsp;
       span.chart-config
-        div(ng-click="paledit.edit(chart.config.palette);",style="width:200px;display:inline-block;padding:2px;vertical-align:bottom",ng-if="chart.config.palette")
+        div(ng-click="paledit.edit(chart.config.value.palette);",style="width:200px;display:inline-block;padding:2px;vertical-align:bottom",ng-if="chart.config.value.palette")
           span {{'Palette'|i18n}}
           .input-palette(style="border-radius:2px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.2);")
-            div(ng-repeat="c in chart.config.palette.value.colors",
+            div(ng-repeat="c in chart.config.value.palette.value.colors",
             ng-attr-style="background:{{c.hex}};height:30px;display:inline-block;border-radius:0px;user-select:none;-webkit-user-select:none;flex:1 1 auto;margin:0 0px") &nbsp;
-        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;",ng-if="chart.config.textFill")
+        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;",ng-if="chart.config.value.textFill")
           span {{'Text Fill'|i18n}}
           .input-color
-            div(ng-attr-style="background:{{chart.config.textFill.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.3)",ldColorPicker,ng-model="chart.config.textFill.value",config="coloredit.config(chart.config.textFill)") &nbsp
-        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;",ng-if="chart.config.background")
+            div(ng-attr-style="background:{{chart.config.value.textFill.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.3)",ldColorPicker,ng-model="chart.config.value.textFill.value",config="coloredit.config(chart.config.value.textFill)") &nbsp
+        div(style="width:64px;display:inline-block;padding:2px;vertical-align:bottom;margin-left:10px;",ng-if="chart.config.value.background")
           span {{'Bk Color'|i18n}}
           .input-color
-            div(ng-attr-style="background:{{chart.config.background.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.3)",ldColorPicker,ng-model="chart.config.background.value",config="coloredit.config(chart.config.background)") &nbsp
-        .btn.btn-default(style="margin-left:10px;",ng-click="edfuncToggle('style')",ng-class="{'active':edfunc=='style'}"): i.fa.fa-cogs
+            div(ng-attr-style="background:{{chart.config.value.background.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:30px;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.3)",ldColorPicker,ng-model="chart.config.value.background.value",config="coloredit.config(chart.config.value.background)") &nbsp
+        .btn.btn-default(style="margin-left:10px;",ng-click="panel.set('style')",ng-class="{'active':panel.tab=='style'}"): i.fa.fa-cogs
 
 
     .editor-panel-tab
-      .icon(ng-class="{'active':edfunc==''}",ng-click="edfunc=''"): i.fa.fa-eye
-      .icon(ng-class="{'active':edfunc=='editor' && edcode=='code'}",ng-click="edfunc='editor';edcode='code'") JS
-      .icon(ng-class="{'active':edfunc=='editor' && edcode=='style'}",ng-click="edfunc='editor';edcode='style'") CSS
-      .icon(ng-class="{'active':edfunc=='editor' && edcode=='doc'}",ng-click="edfunc='editor';edcode='doc'") HTML
+      .icon(ng-class="{'active':panel.tab==''}",ng-click="panel.set('')"): i.fa.fa-eye
+      .icon(ng-class="{'active':panel.tab=='editor' && editor.tab.value=='code'}",
+      ng-click="panel.set('editor',true);editor.tab.set('code')") JS
+      .icon(ng-class="{'active':panel.tab=='editor' && editor.tab.value=='style'}",
+      ng-click="panel.set('editor',true);editor.tab.set('style')") CSS
+      .icon(ng-class="{'active':panel.tab=='editor' && editor.tab.value=='doc'}",
+      ng-click="panel.set('editor',true);editor.tab.set('doc')") HTML
       .icon ASSET
       .icon
         .dropdown.btn-group
@@ -379,14 +366,15 @@ block body
             span
               span #[i.fa.fa-adjust] #[span.caret]
           ul.dropdown-menu
-            li(ng-class="{'active':editortheme.val=='default'}")
-              a(href="#",ng-click="editortheme('default')") #[i.fa.fa-circle(style="color:#eee")]
-            li(ng-class="{'active':editortheme.val=='neat'}")
-              a(href="#",ng-click="editortheme('neat')") #[i.fa.fa-circle(style="color:#ddd")]
-            li(ng-class="{'active':editortheme.val=='monokai'}")
-              a(href="#",ng-click="editortheme('monokai')") #[i.fa.fa-circle(style="color:#ba9")]
-            li(ng-class="{'active':editortheme.val=='rubyblue'}")
-              a(href="#",ng-click="editortheme('rubyblue')") #[i.fa.fa-circle(style="color:#249")]
-            li(ng-class="{'active':editortheme.val=='colorforth'}")
-              a(href="#",ng-click="editortheme('colorforth')") #[i.fa.fa-circle(style="color:#222")]
+            li(ng-class="{'active':editor.theme.value=='default'}")
+              a(href="#",ng-click="editor.theme.set('default')") #[i.fa.fa-circle(style="color:#eee")]
+            li(ng-class="{'active':editor.theme.value=='neat'}")
+              a(href="#",ng-click="editor.theme.set('neat')") #[i.fa.fa-circle(style="color:#ddd")]
+            li(ng-class="{'active':editor.theme.value=='monokai'}")
+              a(href="#",ng-click="editor.theme.set('monokai')") #[i.fa.fa-circle(style="color:#ba9")]
+            li(ng-class="{'active':editor.theme.value=='rubyblue'}")
+              a(href="#",ng-click="editor.theme.set('rubyblue')") #[i.fa.fa-circle(style="color:#249")]
+            li(ng-class="{'active':editor.theme.value=='colorforth'}")
+              a(href="#",ng-click="editor.theme.set('colorforth')") #[i.fa.fa-circle(style="color:#222")]
+
 

@@ -199,6 +199,7 @@ angular.module \plotDB
         payload = {} <<< Paging{offset,limit} <<< $scope.q <<< $scope.q-lazy
         IO-service.list-remotely {name: \dataset}, payload
       ), delay, reset).then (ret) -> $scope.$apply ~>
+        console.log ret
         data = (ret or []).map -> new dataService.dataset it, true
         Paging.flex-width data
         $scope.mydatasets = (if reset => [] else $scope.mydatasets) ++ data

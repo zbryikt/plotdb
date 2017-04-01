@@ -388,7 +388,7 @@ Every chart uses different visual encoding, check the `dimension` section in the
 With above code we have 2 dimensions: `value` and `order`. `value` accepts multiple fields with number data type and is required, `order` accepts single field with ordinal data type, and is optional.
 
 
-### config(configObject) #[](api-config)
+### config(configObject, doRender, doRebind) #[](api-config)
 
 Update configurations of this chart. `configObject` is a Javascript object containing configurations to update; for example, to set font family of this chart:
 
@@ -409,12 +409,18 @@ Configurations can be number, string of even object, depending on the design of 
 
 Every chart has different configurations, check the `config` section in the code for a list of the configuration available for your chart.
 
-Be sure to invoke `resize()` and `render()` after updating configurations. If you change a configuration with `rebindOnChange` being true, you should also invoke `bind()` before calling `resize()`:
+Update configuration itself will not trigger rendering. Be sure to invoke `resize()` and `render()` after updating configurations. If you change a configuration with `rebindOnChange` being true, you should also invoke `parse()` and `bind()` before calling `resize()`:
 
     chart.config({...});
+    chart.parse();
     chart.bind();
     chart.resize();
     chart.render();
+
+Yet, `config()` provides two additional parameters for doing this for you; if you set `doRender` to `true`, it will go through the rendering process; set `doRebind` to `true` will then force rebind even there is no configuration updated with `rebindOnChange`:
+
+    chart.config({...}, true);         /* will redraw. rebind according to the configs changed */
+    chart.config({...}, true, true);   /* will force rebind and redraw */
 
 
 ### attach(htmlNode) #[](api-attach)

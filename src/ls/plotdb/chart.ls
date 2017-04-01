@@ -80,7 +80,7 @@ plotdb.chart = do
       file.datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
       ret[file.name] = file
     chart.assets = ret
-  update-config: (chart, config) ->
+  update-config: (chart, config) -> # deprecated: replace with chart.config.update ? 
     for k,v of chart.config =>
       type = (chart.config[k].type or []).map(->it.name)
       if !(config[k]?) => config[k] = v.default
@@ -98,3 +98,35 @@ plotdb.chart = do
     if typeof(code) != \string => chart.code.content = code
     new plotdb.view.chart chart
   list: -> [k for k of plotdb.chart.add.list]
+
+plotdb.chart.config = do
+  # parse config object into {k:v} config
+  update: (config) ->
+    ret = @parse(@preset config)
+    for k,v of ret => config[k] = v
+  # extend config object with extension
+  preset: (config) ->
+    for k,v of (config or {}) =>
+      if config[v.extend] => p = config[v.extend]
+      else if plotdb.config[v.extend] => p = plotdb.config[v.extend]
+      else if plotdb.config[k] => p = plotdb.config[k]
+      else continue
+      for f,val of p => if !(v[f]?) => v[f] = val
+    config
+  # generate {k:v} config from config object
+  parse: (config) ->
+    ret = {}
+    for k,v of (config or {}) =>
+      if !(v?) => config[k] = {}
+      if !(v.value?) => v.value = v.default or 0
+      for type in (v.type or [])=>
+        try
+          type = plotdb[type.name]
+          if type.test and type.parse and type.test(v.value) =>
+            v.value = type.parse v.value
+            break
+        catch e
+          console.log "chart config: type parsing exception ( #k / #type )"
+          console.log "#{e.stack}"
+      ret[k] = config[k].value
+    ret

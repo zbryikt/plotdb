@@ -380,7 +380,7 @@ dimension: {
 
 <p>With above code we have 2 dimensions: <code>value</code> and <code>order</code>. <code>value</code> accepts multiple fields with number data type and is required, <code>order</code> accepts single field with ordinal data type, and is optional.</p>
 
-<h3>config(configObject) <a data-anchor="api-config" data-text="" class="affix-anchor-info"></a><h6 id="api-config" class="affix-anchor"></h6></h3>
+<h3>config(configObject, doRender, doRebind) <a data-anchor="api-config" data-text="" class="affix-anchor-info"></a><h6 id="api-config" class="affix-anchor"></h6></h3>
 
 <p>Update configurations of this chart. <code>configObject</code> is a Javascript object containing configurations to update; for example, to set font family of this chart:</p>
 
@@ -401,12 +401,18 @@ dimension: {
 
 <p>Every chart has different configurations, check the <code>config</code> section in the code for a list of the configuration available for your chart.</p>
 
-<p>Be sure to invoke <code>resize()</code> and <code>render()</code> after updating configurations. If you change a configuration with <code>rebindOnChange</code> being true, you should also invoke <code>bind()</code> before calling <code>resize()</code>:</p>
+<p>Update configuration itself will not trigger rendering. Be sure to invoke <code>resize()</code> and <code>render()</code> after updating configurations. If you change a configuration with <code>rebindOnChange</code> being true, you should also invoke <code>parse()</code> and <code>bind()</code> before calling <code>resize()</code>:</p>
 
 <pre><code>chart.config({...});
+chart.parse();
 chart.bind();
 chart.resize();
 chart.render();</code></pre>
+
+<p>Yet, <code>config()</code> provides two additional parameters for doing this for you; if you set <code>doRender</code> to <code>true</code>, it will go through the rendering process; set <code>doRebind</code> to <code>true</code> will then force rebind even there is no configuration updated with <code>rebindOnChange</code>:</p>
+
+<pre><code>chart.config({...}, true);         /* will redraw. rebind according to the configs changed */
+chart.config({...}, true, true);   /* will force rebind and redraw */</code></pre>
 
 <h3>attach(htmlNode) <a data-anchor="api-attach" data-text="" class="affix-anchor-info"></a><h6 id="api-attach" class="affix-anchor"></h6></h3>
 
@@ -442,7 +448,7 @@ chart.render();</code></pre>
 
 <p><br/></p>
 
-<h2>Discussion <a data-anchor="discussion" data-text="" class="affix-anchor-info"></a><h6 id="discussion" class="affix-anchor"></h6></h2><div id="disqus_thread"></div></div><div class="col-sm-3 scrollspy"><ul id="affix" data-spy="affix" class="nav hidden-xs hidden-sm"><li><a href="#plotdb-renderer-api">Basic &#xbb;</a><ul class="nav subnav"><li><a href="#overview">Overview </a></li><li><a href="#license">License </a></li></ul></li><li><a href="#sample-usage">Sample Usage  &#xbb;</a><ul class="nav subnav"><li><a href="#installation">Installation </a></li><li><a href="#load">Load Viswork </a></li><li><a href="#offline-rendering">Offline Rendering </a></li><li><a href="#customize-data">Customize Data </a></li><li><a href="#configuration">Configuration </a></li><li><a href="#resizing-and-rerendering">Resizing and re-rendering </a></li><li><a href="#reusing-viswork">Reusing Viswork </a></li><li><a href="#viswork-library">Viswork Library </a></li></ul></li><li><a href="#api-reference">API Reference &#xbb;</a><ul class="nav subnav"><li><a href="#api-clone">clone() </a></li><li><a href="#api-data">data(...)</a></li><li><a href="#api-config">config(configObject) </a></li><li><a href="#api-attach">attach(htmlNode) </a></li><li><a href="#api-init">init() </a></li><li><a href="#api-parse">parse() </a></li><li><a href="#api-bind">bind() </a></li><li><a href="#api-resize">resize() </a></li><li><a href="#api-render">render() </a></li><li><a href="#api-destroy">destroy() </a></li></ul></li><li><a href="#discussion">Discussion  &#xbb;</a></li></ul></div></div></div></div><script>$('#affix').affix({ offset: { top: $('#affix').offset().top - 100} });
+<h2>Discussion <a data-anchor="discussion" data-text="" class="affix-anchor-info"></a><h6 id="discussion" class="affix-anchor"></h6></h2><div id="disqus_thread"></div></div><div class="col-sm-3 scrollspy"><ul id="affix" data-spy="affix" class="nav hidden-xs hidden-sm"><li><a href="#plotdb-renderer-api">Basic &#xbb;</a><ul class="nav subnav"><li><a href="#overview">Overview </a></li><li><a href="#license">License </a></li></ul></li><li><a href="#sample-usage">Sample Usage  &#xbb;</a><ul class="nav subnav"><li><a href="#installation">Installation </a></li><li><a href="#load">Load Viswork </a></li><li><a href="#offline-rendering">Offline Rendering </a></li><li><a href="#customize-data">Customize Data </a></li><li><a href="#configuration">Configuration </a></li><li><a href="#resizing-and-rerendering">Resizing and re-rendering </a></li><li><a href="#reusing-viswork">Reusing Viswork </a></li><li><a href="#viswork-library">Viswork Library </a></li></ul></li><li><a href="#api-reference">API Reference &#xbb;</a><ul class="nav subnav"><li><a href="#api-clone">clone() </a></li><li><a href="#api-data">data(...)</a></li><li><a href="#api-config">config(configObject, doRender, doRebind) </a></li><li><a href="#api-attach">attach(htmlNode) </a></li><li><a href="#api-init">init() </a></li><li><a href="#api-parse">parse() </a></li><li><a href="#api-bind">bind() </a></li><li><a href="#api-resize">resize() </a></li><li><a href="#api-render">render() </a></li><li><a href="#api-destroy">destroy() </a></li></ul></li><li><a href="#discussion">Discussion  &#xbb;</a></li></ul></div></div></div></div><script>$('#affix').affix({ offset: { top: $('#affix').offset().top - 100} });
 </script><script>var disqus_config = function () {
 this.page.url = "https://plotdb.com/doc/"; /* TODO */
 this.page.identifier = "/doc/"; /* PAGE IDENTIFIER */
