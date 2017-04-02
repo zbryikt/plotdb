@@ -50,13 +50,15 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         }
       }).then(function(){
         return this$.obj.save()['catch'](function(){
+          eventBus.fire('loading.dimmer.pause');
           return $scope.sheetModal.duplicate.prompt().then(function(){
-            this.obj.key = null;
-            return this.obj.save();
+            fresh = true;
+            this$.obj.key = null;
+            return this$.obj.save();
           });
         });
       }).then(function(r){
-        console.log(r);
+        eventBus.fire('loading.dimmer.continue');
         if (fresh) {
           return new Promise(function(res, rej){
             return $http({
@@ -64,10 +66,12 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
               method: 'GET'
             }).success(function(map){
               map.fields.map(function(d, i){
-                return this$.obj.fields[i].key = d.key;
+                var ref$;
+                return ref$ = this$.obj.fields[i], ref$.dataset = this$.obj.key, ref$.key = d.key, ref$;
               });
               return res();
-            }).error(function(){
+            }).error(function(it){
+              console.log("error:", it);
               return rej();
             });
           });
@@ -75,10 +79,9 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
           return Promise.resolve();
         }
       }).then(function(){
-        console.log('111');
         return eventBus.fire('sheet.dataset.saved', this$.obj);
-      })['catch'](function(){
-        return eventBus.fire('sheet.dataset.save.failed');
+      })['catch'](function(it){
+        return eventBus.fire('sheet.dataset.save.failed', it);
       });
     },
     load: function(key, force){

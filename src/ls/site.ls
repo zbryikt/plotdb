@@ -156,6 +156,12 @@ angular.module \plotDB
     eventBus.listen 'loading.dimmer.on', (it) ->
       $scope.loading.dimmer = true
       $scope.loading.progress = if it? => it else 0
+    eventBus.listen 'loading.dimmer.pause', ->
+      $scope.loading.paused = $scope.loading.dimmer
+      $scope.loading.dimmer = false
+    eventBus.listen 'loading.dimmer.continue', ->
+      $scope.loading.dimmer = $scope.loading.paused if $scope.loading.paused?
+      delete $scope.loading.paused
     eventBus.listen 'loading.dimmer.off', -> $scope.loading.dimmer = false
     eventBus.listen 'loading.dimmer.progress', -> $scope.loading.progress = it
     $scope.scrollto = (sel = null,delay=0) ->

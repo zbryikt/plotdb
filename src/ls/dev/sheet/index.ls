@@ -37,27 +37,30 @@ angular.module \plotDB
               return Promise.reject!
             if !@obj.name => @obj.name = name else Promise.resolve!
           .then ~>
-            @obj.save!catch ->
+            @obj.save!catch ~>
+              eventBus.fire \loading.dimmer.pause
               $scope.sheetModal.duplicate.prompt!
-                .then ->
+                .then ~>
+                  fresh := true
                   @obj.key = null
                   @obj.save!
           .then (r) ~>
-            console.log r
+            eventBus.fire \loading.dimmer.continue
             if fresh =>
               new Promise (res, rej) ~>
                 $http({
                   url: "/d/dataset/#{@obj.key}/simple"
                   method: \GET
                 }).success((map) ~>
-                  map.fields.map (d,i) ~> @obj.fields[i].key = d.key
+                  map.fields.map (d,i) ~> @obj.fields[i] <<< dataset: @obj.key, key: d.key
                   res!
-                ).error(-> rej!)
+                ).error(-> 
+                  console.log "error:", it
+                  rej!)
             else Promise.resolve!
           .then ~>
-            console.log \111
             eventBus.fire \sheet.dataset.saved, @obj
-          .catch ~> eventBus.fire \sheet.dataset.save.failed
+          .catch ~> eventBus.fire \sheet.dataset.save.failed, it
 
       load: (key, force) ->
         if !@obj or @obj.key != key or !force =>

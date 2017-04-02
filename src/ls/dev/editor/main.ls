@@ -196,7 +196,7 @@ angular.module \plotDB
     $scope.dataset = initWrap do
       init: ->
         eventBus.listen \sheet.dataset.saved, ~> @finish \save, it
-        eventBus.listen \sheet.dataset.save.failed, ~> @failed \save
+        eventBus.listen \sheet.dataset.save.failed, ~> @failed \save, it
         eventBus.listen \sheet.dataset.loaded, (payload) ~> @finish \load, payload
         eventBus.listen \sheet.dataset.changed, (v) -> $scope.chart.data.update v
       load: (key, force = false) -> #TODO only load if not loaded. add a force flag
@@ -351,7 +351,6 @@ angular.module \plotDB
       @save.pending = true
       chart = $scope.chart.obj
       chart.config = $scope.chart.config.value
-      console.log chart
       if !$scope.writable and chart.owner != $scope.user.data.key =>
         parent-key = chart.key or null #(if chart._type.location == \server => chart.key else null)
         # could be : <[code document stylesheet assets]>. config
@@ -395,12 +394,11 @@ angular.module \plotDB
         .finally -> 
           $scope.$apply -> eventBus.fire \loading.dimmer.off
         .then (name) ->
-          console.log name
-          if name => $scope.chart.obj.name = name
+          if name => chart.name = name
           $scope.$apply -> eventBus.fire \loading.dimmer.on
-          $scope.dataset.save $scope.chart.obj.name
+          $scope.dataset.save chart.name
         .then (dataset) ~>
-          $scope.bind $scope.chart.dimension, dataset
+          $scope.bind chart.dimension, dataset
           canvas.msg type: \save
         .catch -> console.log it
     dispatcher.register \save, (payload) ->
@@ -413,7 +411,7 @@ angular.module \plotDB
     #####  TEMPORARY CODE #####
 
     $timeout (->
-      plotdb.load 2250, (chart) -> $scope.chart.reset JSON.parse(chart._._chart)
+      plotdb.load 2251, (chart) -> $scope.chart.reset JSON.parse(chart._._chart)
     ), 1000
 
     #####  TEMPORARY CODE #####

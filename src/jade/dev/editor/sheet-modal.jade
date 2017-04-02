@@ -1,8 +1,9 @@
 //- module
 +Dialog("sheetModal.duplicate")
   .panel.panel-default
-    h3 {{'Make A Copy'|i18n}}
-    .sep
+    .panel-body(style="min-height:110px")
+      h3 {{'Make a Copy'|i18n}}
+      .sep
       br
       div(style="width:94%;margin:auto")
         span(ng-if="lang=='en'") This dataset owns to someone else, you have to make a copy before using it. Make a copy now?

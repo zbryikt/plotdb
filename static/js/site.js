@@ -308,6 +308,17 @@ x$.controller('plSite', ['$scope', '$rootScope', '$http', '$interval', 'global',
     $scope.loading.dimmer = true;
     return $scope.loading.progress = it != null ? it : 0;
   });
+  eventBus.listen('loading.dimmer.pause', function(){
+    $scope.loading.paused = $scope.loading.dimmer;
+    return $scope.loading.dimmer = false;
+  });
+  eventBus.listen('loading.dimmer.continue', function(){
+    var ref$, ref1$;
+    if ($scope.loading.paused != null) {
+      $scope.loading.dimmer = $scope.loading.paused;
+    }
+    return ref1$ = (ref$ = $scope.loading).paused, delete ref$.paused, ref1$;
+  });
   eventBus.listen('loading.dimmer.off', function(){
     return $scope.loading.dimmer = false;
   });

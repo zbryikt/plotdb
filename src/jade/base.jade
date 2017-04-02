@@ -47,7 +47,7 @@ html(lang="en")
     include nav.jade
     include auth/panel.jade
     #notifications
-      .notify(ng-repeat="n in notifications",ng-class="'notify-'+n.type",ng-cloak) {{n.message}}
+      .notify.animated.rubberBand(ng-repeat="n in notifications",ng-class="'notify-'+n.type",ng-cloak) {{n.message}}
     #alertbox(ng-cloak,ng-show="alert.toggled"): .ib
       br
       .text-center(ng-cloak) {{alert.msg}}

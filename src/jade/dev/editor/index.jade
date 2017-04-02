@@ -36,7 +36,7 @@ block head
   include /colorblind.jade
 block body
   .editor-root(ng-controller="plChartEditor",ng-cloak,style="background:url(/assets/img/transparent.png)"): .inner
-    include /editor/panel.jade
+    include panel-new.jade
     include /widget/paledit-modal-ctrl.jade
     include modal.jade
     .editor-funclist
@@ -125,7 +125,7 @@ block body
                 .btn.btn-default.btn-block(ng-click="v.value=!!!v.value") {{(v.value ?  'Yes' : 'No')|i18n}}
 
               .input-color(ng-if="v.type[0].name=='Color'")
-                div(ng-attr-style="box-shadow:0 0 1px rgba(0,0,0,0.1);background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:34px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v)") &nbsp;
+                div(ng-attr-style="box-shadow:0 1px 3px 0 rgba(0,0,0,0.2);background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:34px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v)") &nbsp;
               input.irs(ng-ion-slider,ng-if="v.type[0].name=='Range'",ng-value="v.value",config="{type:'double'}")
               input.irs(ng-ion-slider,ng-if="v.type[0].name=='Number'",ng-value="v.value",config="{min: v.min || 0, max: v.max || 100}")
               //-input(ng-if="v.type[0].name=='Number'",type="range",ng-model="v.value")
@@ -194,10 +194,10 @@ block body
         .title {{'Share'|i18n}}
         div(style="padding:20px 20px 0")
           .btn-group
-            .btn.btn-default(ng-class="{'active':chart.permission.switch=='publish'}",
-            ng-click="chart.permission.switch='publish'") {{'Publish'|i18n}}
-            .btn.btn-default(ng-class="{'active':chart.permission.switch!='publish'}",
-            ng-click="chart.permission.switch='draft'") {{'Draft'|i18n}}
+            .btn.btn-default(ng-class="{'active':chart.obj.permission.switch=='publish'}",
+            ng-click="chart.obj.permission.switch='publish'") {{'Publish'|i18n}}
+            .btn.btn-default(ng-class="{'active':chart.obj.permission.switch!='publish'}",
+            ng-click="chart.obj.permission.switch='draft'") {{'Draft'|i18n}}
         hr
         .body
           label {{'Publish Link'|i18n}}

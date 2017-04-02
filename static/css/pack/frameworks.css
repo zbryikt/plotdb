@@ -4471,7 +4471,12 @@ big.xl {
 #notifications {
   position: fixed;
   bottom: 10px;
-  left: 10px;
+  left: 50%;
+  -ms-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+  -o-transform: translateX(-50%);
+  transform: translateX(-50%);
   z-index: 44;
 }
 .notify {

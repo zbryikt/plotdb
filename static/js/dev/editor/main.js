@@ -444,8 +444,8 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       eventBus.listen('sheet.dataset.saved', function(it){
         return this$.finish('save', it);
       });
-      eventBus.listen('sheet.dataset.save.failed', function(){
-        return this$.failed('save');
+      eventBus.listen('sheet.dataset.save.failed', function(it){
+        return this$.failed('save', it);
       });
       eventBus.listen('sheet.dataset.loaded', function(payload){
         return this$.finish('load', payload);
@@ -726,7 +726,6 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     this.save.pending = true;
     chart = $scope.chart.obj;
     chart.config = $scope.chart.config.value;
-    console.log(chart);
     if (!$scope.writable && chart.owner !== $scope.user.data.key) {
       parentKey = chart.key || null;
       chart.key = null;
@@ -792,16 +791,15 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         return eventBus.fire('loading.dimmer.off');
       });
     }).then(function(name){
-      console.log(name);
       if (name) {
-        $scope.chart.obj.name = name;
+        chart.name = name;
       }
       $scope.$apply(function(){
         return eventBus.fire('loading.dimmer.on');
       });
-      return $scope.dataset.save($scope.chart.obj.name);
+      return $scope.dataset.save(chart.name);
     }).then(function(dataset){
-      $scope.bind($scope.chart.dimension, dataset);
+      $scope.bind(chart.dimension, dataset);
       return canvas.msg({
         type: 'save'
       });
@@ -817,7 +815,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
   });
   initWrap.run();
   return $timeout(function(){
-    return plotdb.load(2250, function(chart){
+    return plotdb.load(2251, function(chart){
       return $scope.chart.reset(JSON.parse(chart._._chart));
     });
   }, 1000);
