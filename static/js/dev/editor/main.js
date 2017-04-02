@@ -278,6 +278,9 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           return it.name;
         }
       },
+      clear: function(){
+        return eventBus.fire('sheet.data.clear');
+      },
       sample: function(){
         var this$ = this;
         return $scope.chart.sample().then(function(it){
@@ -438,8 +441,11 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
   $scope.dataset = initWrap({
     init: function(){
       var this$ = this;
-      eventBus.listen('sheet.dataset.saved', function(){
-        return this$.finish('save');
+      eventBus.listen('sheet.dataset.saved', function(it){
+        return this$.finish('save', it);
+      });
+      eventBus.listen('sheet.dataset.save.failed', function(){
+        return this$.failed('save');
       });
       eventBus.listen('sheet.dataset.loaded', function(payload){
         return this$.finish('load', payload);
@@ -456,8 +462,8 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     bind: function(dimkeys, bind){
       return eventBus.fire('sheet.bind', dimkeys, bind);
     },
-    save: function(){
-      eventBus.fire('sheet.dataset.save');
+    save: function(name){
+      eventBus.fire('sheet.dataset.save', name);
       return this.block('save');
     }
   });
@@ -560,12 +566,15 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       $scope.isAdmin = permService.isEnough($scope.permtype, 'admin');
       $scope.$watch('settingPanel.chart', function(cur, old){
         var k, v, results$ = [];
+        if (!$scope.chart.obj) {
+          return;
+        }
         for (k in cur) {
           v = cur[k];
           if (!v && !old[k]) {
             continue;
           }
-          results$.push($scope.chart[k] = v);
+          results$.push($scope.chart.obj[k] = v);
         }
         return results$;
       }, true);
@@ -717,8 +726,9 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     this.save.pending = true;
     chart = $scope.chart.obj;
     chart.config = $scope.chart.config.value;
+    console.log(chart);
     if (!$scope.writable && chart.owner !== $scope.user.data.key) {
-      parentKey = chart._type.location === 'server' ? chart.key : null;
+      parentKey = chart.key || null;
       chart.key = null;
       chart.owner = null;
       chart.inherit = [];
@@ -747,7 +757,9 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       return this$.$apply(function(){
         plNotify.send('success', "saved");
         if (refresh) {
-          return window.location.href = chartService.link(this$.chart);
+          return window.location.href = chartService.link({
+            key: ret
+          });
         }
       });
     })['catch'](function(err){
@@ -763,21 +775,33 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     });
   };
   $scope.save = function(){
-    var chart, promise;
+    var chart, promise, this$ = this;
     chart = $scope.chart.obj;
     if (!$scope.user.authed()) {
-      return $scope.auth.toggle(true);
+      $scope.auth.toggle(true);
+      return Promise.reject();
     }
     if (this.save.pending) {
-      return;
+      return Promise.reject();
     }
-    promise = !chart.name || !chart.key
+    promise = chart.owner !== $scope.user.data.key || !chart.name || !chart.key
       ? $scope.chartModal.name.prompt()
       : Promise.resolve();
-    return promise.then(function(){
+    return promise['finally'](function(){
+      return $scope.$apply(function(){
+        return eventBus.fire('loading.dimmer.off');
+      });
+    }).then(function(name){
+      console.log(name);
+      if (name) {
+        $scope.chart.obj.name = name;
+      }
       $scope.$apply(function(){
         return eventBus.fire('loading.dimmer.on');
       });
+      return $scope.dataset.save($scope.chart.obj.name);
+    }).then(function(dataset){
+      $scope.bind($scope.chart.dimension, dataset);
       return canvas.msg({
         type: 'save'
       });
@@ -787,13 +811,13 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
   };
   dispatcher.register('save', function(payload){
     if (payload.payload) {
-      $scope.chart.thumbnail = payload.data;
+      $scope.chart.obj.thumbnail = payload.data;
     }
     return $scope._save();
   });
   initWrap.run();
   return $timeout(function(){
-    return plotdb.load(2243, function(chart){
+    return plotdb.load(2250, function(chart){
       return $scope.chart.reset(JSON.parse(chart._._chart));
     });
   }, 1000);

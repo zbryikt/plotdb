@@ -504,6 +504,9 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'no transaction record': {
         zh: "沒有交易紀錄"
       },
+      'Current Dataset': {
+        zh: "目前使用的資料集"
+      },
       'File': {
         zh: "檔案"
       },
@@ -1224,27 +1227,53 @@ x$.directive('ngIonSlider', ['$compile'].concat(function($compile){
   return {
     restrict: 'A',
     scope: {
-      model: '=ngModel',
+      model: '=ngValue',
       config: '=config'
     },
     link: function(s, e, a, c){
-      var config, slider;
+      var config, isDouble, slider;
       config = s.config || {};
+      isDouble = config.type === 'double';
+      if (isDouble && !Array.isArray(s.model)) {
+        s.model = [0, 100];
+      }
       s.$watch('config', function(config){
         return slider.update(config);
       });
       s.$watch('model', function(it){
-        if (slider.result.from !== +it) {
-          return slider.update({
-            from: it
-          });
+        if (isDouble) {
+          if (slider.result.from !== it[0]) {
+            slider.update({
+              from: it[0]
+            });
+          }
+          if (slider.result.to !== it[1]) {
+            return slider.update({
+              to: it[1]
+            });
+          }
+        } else {
+          if (slider.result.from !== +it) {
+            return slider.update({
+              from: it
+            });
+          }
         }
       });
       $(e).ionRangeSlider(import$(import$({}, config), {
-        onChange: function(it){
-          if (s.model !== it.from) {
-            return s.model = it.from;
-          }
+        onChange: function(v){
+          return s.$apply(function(){
+            if (isDouble) {
+              if (s.model[0] !== v.from) {
+                s.model[0] = v.from;
+              }
+              if (s.model[1] !== v.to) {
+                return s.model[1] = v.to;
+              }
+            } else if (s.model !== v.from) {
+              return s.model = v.from;
+            }
+          });
         }
       }));
       return slider = $(e).data('ionRangeSlider');

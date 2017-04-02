@@ -7,6 +7,17 @@ x$.service('initWrap', ['$rootScope'].concat(function($rootScope){
     (init.list || (init.list = [])).push(it);
     return import$(it, {
       promise: {},
+      failed: function(name){
+        var payload, rej;
+        name == null && (name = 'default');
+        payload = slice$.call(arguments, 1);
+        if (!this.promise[name]) {
+          return;
+        }
+        rej = this.promise[name].rej;
+        this.promise[name] = null;
+        return rej.apply(null, payload);
+      },
       finish: function(name){
         var payload, res;
         name == null && (name = 'default');
@@ -103,9 +114,7 @@ x$.directive('pldialog', ['$compile'].concat(function($compile){
       };
       s.model.prompt = function(v){
         var this$ = this;
-        s.$apply(function(){
-          return ctrl.toggle(true, v);
-        });
+        ctrl.toggle(true, v);
         return new Promise(function(res, rej){
           return ctrl.promise = {
             res: res,

@@ -184,6 +184,7 @@ angular.module \plotDB
         'no transaction record': zh: "沒有交易紀錄"
 
         # dataset
+        'Current Dataset': zh: "目前使用的資料集"
         'File': zh: "檔案"
         'Import': zh: "匯入"
         'Copy All': zh: "全部複製"
@@ -455,12 +456,23 @@ angular.module \plotDB
   ..directive \ngIonSlider, <[$compile]> ++ ($compile) -> do
     restrict: \A
     scope: do
-      model: \=ngModel
+      model: \=ngValue
       config: \=config
     link: (s,e,a,c) -> 
       config = s.config or {}
+      isDouble = config.type == \double
+      if isDouble and !Array.isArray(s.model) => s.model = [0,100]
       s.$watch 'config', (config) -> slider.update(config)
-      s.$watch 'model', -> if slider.result.from != +it => slider.update({from: it})
+      s.$watch 'model', ->
+        if isDouble =>
+          if slider.result.from != it.0 => slider.update({from: it.0})
+          if slider.result.to != it.1 => slider.update({to: it.1})
+        else
+          if slider.result.from != +it => slider.update({from: it})
       $(e).ionRangeSlider {} <<< config <<< do
-        onChange: -> if s.model != it.from => s.model = it.from
+        onChange: (v) -> s.$apply ->
+          if isDouble =>
+            if s.model.0  != v.from => s.model.0 = v.from
+            if s.model.1  != v.to => s.model.1 = v.to
+          else if s.model != v.from => s.model = v.from
       slider = $(e).data \ionRangeSlider

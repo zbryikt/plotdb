@@ -6438,6 +6438,10 @@ ul.dropdown-menu li:hover .hover-tip {
     margin: 46px 0 -30px;
   }
 }
+.ldColorPicker {
+  width: 337px;
+  height: 180px;
+}
 .ldcp-colors.ldcp-g21 .ldcp-palette .ldcp-color {
   margin: 0 2px 0 0;
 }
@@ -8874,9 +8878,16 @@ textarea#dataset-edit-text {
 }
 #dataset-import-dropdown-inline {
   position: absolute;
-  top: 12px;
+  top: 10px;
   left: 85px;
   z-index: 19;
+}
+#dataset-import-dropdown-inline .btn-sm.dropdown-toggle {
+  margin: 3px 20px 0 0;
+}
+#dataset-import-dropdown-inline > .name {
+  display: inline-block;
+  line-height: 15px;
 }
 .gsheet-files {
   height: 400px;

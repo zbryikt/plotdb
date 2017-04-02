@@ -2,6 +2,7 @@
 # -> sheet.dataset.load          | key, force
 # -> sheet.bind                  | dimkeys, bind
 # <- sheet.dataset.saved         | key
+# <- sheet.dataset.save.failed   |
 # <- sheet.dataset.loaded        | key
 # -> sheet.data.set              | data
 
@@ -9,13 +10,55 @@ angular.module \plotDB
   ..controller \plSheetEditor,
   <[$scope $interval $timeout $http permService dataService eventBus plNotify Paging initWrap]> ++
   ($scope, $interval, $timeout, $http, permService, data-service, eventBus, plNotify, Paging, initWrap) ->
+    $scope.sheetModal = do
+      duplicate: {}
     $scope.dataset = initWrap do
       init: ->
         eventBus.listen \sheet.dataset.load, (key, force) ~>
           @load key .then ~> $scope.parser.plotdb.parse @obj
-        eventBus.listen \sheet.dataset.save, ->
+        eventBus.listen \sheet.dataset.save, (name) ~> @save name
       obj: null
-      save: ->
+      clear: -> @obj = null
+      save: (name = 'Untitled') -> 
+        name = "#name (Dataset)"
+        fresh = if @obj => !!!@obj.key else !!!@obj
+        Promise.resolve!
+          .then ~>
+            if !$scope.user.authed! => 
+              $scope.auth.toggle true
+              return Promise.reject!
+            if fresh =>
+              @obj = new data-service.dataset!
+              @obj.name = name
+            @obj.set-fields $scope.grid.data.fieldize!
+            if @obj.fields.length >= 40 =>
+              alert 'You can have at most 40 columns'
+              @obj = null
+              return Promise.reject!
+            if !@obj.name => @obj.name = name else Promise.resolve!
+          .then ~>
+            @obj.save!catch ->
+              $scope.sheetModal.duplicate.prompt!
+                .then ->
+                  @obj.key = null
+                  @obj.save!
+          .then (r) ~>
+            console.log r
+            if fresh =>
+              new Promise (res, rej) ~>
+                $http({
+                  url: "/d/dataset/#{@obj.key}/simple"
+                  method: \GET
+                }).success((map) ~>
+                  map.fields.map (d,i) ~> @obj.fields[i].key = d.key
+                  res!
+                ).error(-> rej!)
+            else Promise.resolve!
+          .then ~>
+            console.log \111
+            eventBus.fire \sheet.dataset.saved, @obj
+          .catch ~> eventBus.fire \sheet.dataset.save.failed
+
       load: (key, force) ->
         if !@obj or @obj.key != key or !force =>
           data-service.load {location: \server, name: \dataset}, key
@@ -176,7 +219,6 @@ angular.module \plotDB
           @data.rows.map (row) -> row.splice i + 1,1
           @data.types.splice i + 1
           dirty = true
-
         eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
         if dirty => @render {head-only: head-only} .then ->
           if r < 0 =>
@@ -191,6 +233,7 @@ angular.module \plotDB
             ].join(" "))
           if node =>
             node.focus!
+            if head-only => return
             range = document.createRange!
             try
               range.setStart node, 1 # set cursor, offset to text end
@@ -258,8 +301,10 @@ angular.module \plotDB
           if key == 86 and e.metaKey or e.ctrlKey and /\t/.exec(val) => return n.value = ""
           setTimeout (~>
             val = n.value.trim! or n.textContent.trim!
+            val = (n.value.trim! or n.textContent.trim!).replace /\n/g, ''
             cPos = e.target.selectionStart
             col = +n.getAttribute(\col)
+            if key == 13 => key := 40
             if key == 39 and (pPos != cPos or cPos < val.length) => return
             if key == 37 and (pPos != cPos or cPos > 0) => return
             if key == 86 and e.metaKey or e.ctrlKey and /\t/.exec(val) => @paste -1, col, val
@@ -283,30 +328,33 @@ angular.module \plotDB
         head.addEventListener \input, (e) ~>
           key = e.keyCode
           n = e.target
-          val = n.value or n.textContent
+          val = n.value
           col = +n.getAttribute(\col)
           if /\t/.exec(val) => @paste -1, col, val
+          else if /\n/.exec(val) => val = n.value = val.replace /\n/g, ''
 
         content.addEventListener \input, (e) ~>
           key = e.keyCode
           n = e.target
-          val = n.value or n.textContent
+          val = n.value
           row = +n.getAttribute(\row)
           col = +n.getAttribute(\col)
           if /\t/.exec(val) => @paste row, col, val
+          else if /\n/.exec(val) => val = n.value = val.replace /\n/g, ''
 
         content.addEventListener \keydown, (e) ~>
           pPos = e.target.selectionStart
           key = e.keyCode
           n = e.target
-          val = n.value or n.textContent
+          val = n.value
           if key == 86 and e.metaKey or e.ctrlKey and /\t/.exec(val) => return n.value = ""
           setTimeout (~>
-            val = n.value or n.textContent
+            val = (n.value).replace /\n/g, ''
             cPos = e.target.selectionStart
             row = +n.getAttribute(\row)
             col = +n.getAttribute(\col)
             h = col
+            if key == 13 => key := 40
             if key == 39 and (pPos != cPos or cPos < val.length) => return
             if key == 37 and (pPos != cPos or cPos > 0) => return
             else if key >=37 and key <=40 =>
@@ -374,6 +422,10 @@ angular.module \plotDB
 
     $scope.parser.fields = initWrap do
       init: ->
+        eventBus.listen \sheet.data.clear, ->
+          payload = headers: [], rows: [], types: [], keys: [], datasets: [], bind: [],
+          $scope.dataset.clear!
+          $scope.grid.load payload
         eventBus.listen \sheet.data.set, (data) ->
           payload = {}
             ..headers = data.map -> it.name
@@ -446,6 +498,7 @@ angular.module \plotDB
             if verbose => eventBus.fire \loading.dimmer.off
             $scope.loading = false
             eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
+            $scope.dataset.clear!
             res!
         @worker.postMessage {buf}
         #$scope.reset buf.trim! #utf8.decode(buf).trim!
@@ -496,6 +549,7 @@ angular.module \plotDB
                 $scope.$apply ->
                   eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
                   eventBus.fire \loading.dimmer.off
+                  $scope.dataset.clear!
 
         node = (
           document.getElementById(\dataset-import-dropdown) or
@@ -604,6 +658,7 @@ angular.module \plotDB
                   @toggled = false
                   eventBus.fire \loading.dimmer.off
                   eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
+                  $scope.dataset.clear!
             ),
             (-> $scope.$apply ~>
               plNotify.send \danger, "can't load sheet, try again later?"

@@ -1,0 +1,16 @@
+//- module
++Dialog("sheetModal.duplicate")
+  .panel.panel-default
+    h3 {{'Make A Copy'|i18n}}
+    .sep
+      br
+      div(style="width:94%;margin:auto")
+        span(ng-if="lang=='en'") This dataset owns to someone else, you have to make a copy before using it. Make a copy now?
+        span(ng-if="lang=='zh'") 這個資料集是別人的，必須要複製一份才能存檔。那麼、現在就複製一份嗎？
+      br
+    .panel-footer.text-right
+      .btn.btn-primary(ng-click="sheetModal.duplicate.action('done')")
+        span &nbsp; OK &nbsp;
+      span &nbsp;
+      .btn.btn-default(ng-click="sheetModal.duplicate.action('cancel')") {{'Cancel'|i18n}}
+

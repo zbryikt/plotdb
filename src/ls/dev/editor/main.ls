@@ -99,7 +99,8 @@ angular.module \plotDB
       src: null, obj: null
       dimension: {}
       init: ->
-        $scope.$watch 'chart.config.value', ((n,o) ~> @config.parse(n,o)), true
+        $scope.$watch 'chart.config.value', ((n,o) ~>
+          @config.parse(n,o)), true
         dispatcher.register \data.sample, ({data}) ~> @finish \sample, data
       sample: -> canvas.msg type: 'data.get(sample)'; @block \sample
       config: do
@@ -134,7 +135,7 @@ angular.module \plotDB
           [[k,v] for k,v of dimension].map (d) ~> d.1.fields.map ~> if it.key => bindmap[it.key] = d.0
           $scope.dataset.bind dimkeys, bindmap
           $scope.chart.data.update fields
-
+        clear: -> eventBus.fire \sheet.data.clear
         sample: ->
           $scope.chart.sample!then ~> @adopt it, false
         set: (data) ->
@@ -174,7 +175,6 @@ angular.module \plotDB
             canvas.render config: plotdb.chart.config.parse(@config.value)
             $scope.chart.data.adopt data, !!dataset-key
 
-
       library: do
         hash: {}
         load: (list=[]) ->
@@ -195,7 +195,8 @@ angular.module \plotDB
 
     $scope.dataset = initWrap do
       init: ->
-        eventBus.listen \sheet.dataset.saved, ~> @finish \save
+        eventBus.listen \sheet.dataset.saved, ~> @finish \save, it
+        eventBus.listen \sheet.dataset.save.failed, ~> @failed \save
         eventBus.listen \sheet.dataset.loaded, (payload) ~> @finish \load, payload
         eventBus.listen \sheet.dataset.changed, (v) -> $scope.chart.data.update v
       load: (key, force = false) -> #TODO only load if not loaded. add a force flag
@@ -203,9 +204,8 @@ angular.module \plotDB
         @block \load
       bind: (dimkeys, bind) ->
         eventBus.fire \sheet.bind, dimkeys, bind
-      save: ->
-        #TODO permission check
-        eventBus.fire \sheet.dataset.save
+      save: (name) ->
+        eventBus.fire \sheet.dataset.save, name
         @block \save
 
     $scope.download = initWrap do
@@ -269,9 +269,10 @@ angular.module \plotDB
         #$scope.$watch 'chart.permission', $scope.setting-panel.permcheck, true
         #$scope.$watch 'theme.permission', $scope.setting-panel.permcheck, true
         $scope.$watch 'settingPanel.chart', ((cur, old) ~>
+          if !$scope.chart.obj => return
           for k,v of cur =>
             if !v and !old[k] => continue
-            $scope.chart[k] = v
+            $scope.chart.obj[k] = v
         ), true
         $scope.$watch 'chart.obj.inherit', (~> @chart.inherit = it), true
         $scope.$watch 'chart.obj.basetype', ~> @chart.basetype = it
@@ -350,8 +351,9 @@ angular.module \plotDB
       @save.pending = true
       chart = $scope.chart.obj
       chart.config = $scope.chart.config.value
+      console.log chart
       if !$scope.writable and chart.owner != $scope.user.data.key =>
-        parent-key = (if chart._type.location == \server => chart.key else null)
+        parent-key = chart.key or null #(if chart._type.location == \server => chart.key else null)
         # could be : <[code document stylesheet assets]>. config
         chart <<< key: null, owner: null, inherit: <[]>
         if !chart.permission => chart.permission = {switch: \publish, list: []}
@@ -371,7 +373,7 @@ angular.module \plotDB
           chart.data = data
           <~ @$apply
           plNotify.send \success, "saved"
-          if refresh => window.location.href = chart-service.link @chart
+          if refresh => window.location.href = chart-service.link {key: ret}
         .catch (err) ~> @$apply ~>
           if err.2 == 402 =>
             eventBus.fire \quota.widget.on
@@ -382,19 +384,27 @@ angular.module \plotDB
 
     $scope.save = ->
       chart = $scope.chart.obj
-      if !$scope.user.authed! => return $scope.auth.toggle true
-      if @save.pending => return
-      promise = if !chart.name or !chart.key => $scope.chartModal.name.prompt! else Promise.resolve!
+      if !$scope.user.authed! =>
+        $scope.auth.toggle true
+        return Promise.reject!
+      if @save.pending => return Promise.reject!
+      promise = if chart.owner != $scope.user.data.key or !chart.name or !chart.key =>
+        $scope.chartModal.name.prompt!
+      else Promise.resolve!
       promise
-        .then ->
+        .finally -> 
+          $scope.$apply -> eventBus.fire \loading.dimmer.off
+        .then (name) ->
+          console.log name
+          if name => $scope.chart.obj.name = name
           $scope.$apply -> eventBus.fire \loading.dimmer.on
-          #$scope.dataset.save!
-        #.then (dataset) ->
-        #  $scope.bind $scope.chart.dimension, $scope.dataset.obj
+          $scope.dataset.save $scope.chart.obj.name
+        .then (dataset) ~>
+          $scope.bind $scope.chart.dimension, dataset
           canvas.msg type: \save
         .catch -> console.log it
     dispatcher.register \save, (payload) ->
-      if payload.payload => $scope.chart.thumbnail = payload.data
+      if payload.payload => $scope.chart.obj.thumbnail = payload.data
       $scope._save!
 
 
@@ -403,7 +413,7 @@ angular.module \plotDB
     #####  TEMPORARY CODE #####
 
     $timeout (->
-      plotdb.load 2243, (chart) -> $scope.chart.reset JSON.parse(chart._._chart)
+      plotdb.load 2250, (chart) -> $scope.chart.reset JSON.parse(chart._._chart)
     ), 1000
 
     #####  TEMPORARY CODE #####

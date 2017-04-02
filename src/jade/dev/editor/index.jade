@@ -63,11 +63,17 @@ block body
       +panel-closebtn
       .title {{'Data'|i18n}}
       include /dataset/widget/modal.jade
+      include sheet-modal.jade
       #editor-datagrid.body(style="padding-left:0;padding-right:0")
         #dataset-import-dropdown-inline.dropdown.btn-group
           .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown")
             span {{'Import'|i18n}}... #[span.caret]
-            p.pull-right
+          .name(ng-if="dataset.obj.key")
+            div: small.grayed {{'Current Dataset'|i18n}}
+            div
+              a(ng-attr-href="/data/{{dataset.obj.key}}",
+              target="_blank") {{dataset.obj.name}} #[small.grayed ({{dataset.obj.key}})]
+
           ul.dropdown-menu
             li.dropdown
               a.toggle-filepick(href="#")
@@ -91,6 +97,8 @@ block body
                   .sheet-cells.clusterize-content
       .foot
         .btn.btn-default(ng-click="chart.data.sample()") {{'Load Sample Data'|i18n}}
+        span &nbsp;
+        .btn.btn-default(ng-click="chart.data.clear()") {{'Clear'|i18n}}
         .pull-right.btn.btn-default(ng-click="panel.set('')") {{'Close'|i18n}}
 
     .editor-func-detail(ng-show="panel.tab=='style'"): .inner
@@ -118,8 +126,8 @@ block body
 
               .input-color(ng-if="v.type[0].name=='Color'")
                 div(ng-attr-style="box-shadow:0 0 1px rgba(0,0,0,0.1);background:{{v.value}};width:100%;height:100%;display:inline-block;border-radius:2px;margin:0 1px;height:34px;user-select:none;-webkit-user-select:none",ldColorPicker,ng-model="v.value",config="coloredit.config(v)") &nbsp;
-              input.irs(ng-ion-slider,ng-if="v.type[0].name=='Range'",ng-model="v.value",config="{type:'double'}")
-              input.irs(ng-ion-slider,ng-if="v.type[0].name=='Number'",ng-model="v.value",config="{min: v.min || 0, max: v.max || 100}")
+              input.irs(ng-ion-slider,ng-if="v.type[0].name=='Range'",ng-value="v.value",config="{type:'double'}")
+              input.irs(ng-ion-slider,ng-if="v.type[0].name=='Number'",ng-value="v.value",config="{min: v.min || 0, max: v.max || 100}")
               //-input(ng-if="v.type[0].name=='Number'",type="range",ng-model="v.value")
               //-input.form-control(ng-if="v.type[0].name=='String' || v.type[0].name=='Number' || !v.type[0].name",ng-attr-placeholder="{{v.type[0].name}}, e.g: {{v.default}}",ng-model="v.value")
 

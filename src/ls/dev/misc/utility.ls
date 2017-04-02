@@ -3,6 +3,11 @@ angular.module \plotDB
   ..service \initWrap, <[$rootScope]> ++ ($rootScope) ->
     init = -> init.[]list.push it; it <<< do
       promise: {}
+      failed: (name='default', ...payload) ->
+        if !@promise[name] => return
+        rej = @promise[name].rej
+        @promise[name] = null
+        rej.apply null, payload
       finish: (name='default', ...payload) ->
         if !@promise[name] => return
         res = @promise[name].res
@@ -43,6 +48,6 @@ angular.module \plotDB
           if a == 'done' => ctrl.promise.res ctrl.value else ctrl.promise.rej a
           ctrl.promise = null
       s.model.prompt = (v) ->
-        s.$apply -> ctrl.toggle true, v
+        ctrl.toggle true, v
         new Promise (res, rej) ~> ctrl.promise = {res, rej}
       s.model.ctrl.init!
