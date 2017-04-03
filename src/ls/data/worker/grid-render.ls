@@ -13,7 +13,7 @@ grid-render = (e) ->
     rows: (if data.[]rows.length < 100 => 100 else data.rows.[]length + 10)
   headers = [data.headers[i] or '' for i from 0 til len.head]
   w = "#{100/len.head}%"
-  if  len.head > 7 => w = "15%"
+  if  len.head > 5 => w = "20%"
   ths = "<div>" + headers.map((d,i)->
     [
       "<div style='width:#w' col='#i'>"

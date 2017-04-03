@@ -40,8 +40,8 @@ gridRender = function(e){
   }
   headers = res$;
   w = 100 / len.head + "%";
-  if (len.head > 7) {
-    w = "15%";
+  if (len.head > 5) {
+    w = "20%";
   }
   ths = "<div>" + headers.map(function(d, i){
     var that;

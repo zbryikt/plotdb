@@ -2,7 +2,7 @@ angular.module \plotDB
   ..controller \plChartEditor,
   <[$scope $http $timeout plConfig chartService paletteService plNotify eventBus permService initWrap license]> ++ 
    ($scope,$http,$timeout,plConfig,chart-service,paletteService,plNotify,eventBus,permService,initWrap,license) ->
-
+    console.log  document.body.getBoundingClientRect!
     # communication between renderer and editor
     dispatcher = initWrap do
       handlers: {}
@@ -27,14 +27,23 @@ angular.module \plotDB
 
     # ui controller
     $scope.panel = initWrap do
-      init: -> $scope.$watch 'panel.tab', (n,o) -> 
-        if n == o => return
-        if n == \download => $scope.download <<< format: '', ready: false
-        if o == \editor => #$scope.editor.focus!
-        $scope.canvas.resize!
+      init: ->
+        width = document.body.getBoundingClientRect!width
+        if width < 881 =>
+          @size.value <<< dataset: 'full', editor: 'full'
+          @size.doc = 'sm'
+        $scope.$watch 'panel.tab', (n,o) -> 
+          if n == o => return
+          if n == \download => $scope.download <<< format: '', ready: false
+          if o == \editor => #$scope.editor.focus!
+          $scope.canvas.resize!
 
       tab: 'data'
       set: (v,f) -> @tab = if !f and @tab == v => '' else v
+      size: do
+        set: (panel, size) -> @value[panel] = if @value[panel] == size => '' else size
+        value: {}
+        doc: ''
 
 
     # code editor. check directive 'codeeditor' for more methods
@@ -47,9 +56,6 @@ angular.module \plotDB
           @old-value = @value
           @value = it
           if @old-value != @value => $scope.editor.refresh!
-      size: do
-        value: '' # empty or "lg"
-        set: -> @value = if @value == it => '' else it
       change: ->
         if @tab.old-value != @tab.value => return
         if $scope.chart.obj[@tab.value].content == it => return
@@ -86,7 +92,7 @@ angular.module \plotDB
         $timeout (->
           left = Math.max.apply(null, Array.from(document.querySelectorAll '.editor-func-detail')
             .map(->
-              if it.getAttribute(\class).split(' ').indexOf(\lg) >= 0  => return 0
+              if it.getAttribute(\class).split(' ').indexOf(\full) >= 0  => return 0
               it.getBoundingClientRect!width
             )) + 100
           document.querySelector '#viscanvas' .style.left = "#{left}px"

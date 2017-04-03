@@ -3,6 +3,7 @@ var x$;
 x$ = angular.module('plotDB');
 x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'chartService', 'paletteService', 'plNotify', 'eventBus', 'permService', 'initWrap', 'license'].concat(function($scope, $http, $timeout, plConfig, chartService, paletteService, plNotify, eventBus, permService, initWrap, license){
   var dispatcher, canvas;
+  console.log(document.body.getBoundingClientRect());
   dispatcher = initWrap({
     handlers: {},
     register: function(name, handler){
@@ -41,6 +42,14 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
   };
   $scope.panel = initWrap({
     init: function(){
+      var width, ref$;
+      width = document.body.getBoundingClientRect().width;
+      if (width < 881) {
+        ref$ = this.size.value;
+        ref$.dataset = 'full';
+        ref$.editor = 'full';
+        this.size.doc = 'sm';
+      }
       return $scope.$watch('panel.tab', function(n, o){
         var ref$;
         if (n === o) {
@@ -58,6 +67,13 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     tab: 'data',
     set: function(v, f){
       return this.tab = !f && this.tab === v ? '' : v;
+    },
+    size: {
+      set: function(panel, size){
+        return this.value[panel] = this.value[panel] === size ? '' : size;
+      },
+      value: {},
+      doc: ''
     }
   });
   $scope.editor = initWrap({
@@ -72,12 +88,6 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         if (this.oldValue !== this.value) {
           return $scope.editor.refresh();
         }
-      }
-    },
-    size: {
-      value: '',
-      set: function(it){
-        return this.value = this.value === it ? '' : it;
       }
     },
     change: function(it){
@@ -135,7 +145,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       return $timeout(function(){
         var left;
         left = Math.max.apply(null, Array.from(document.querySelectorAll('.editor-func-detail')).map(function(it){
-          if (it.getAttribute('class').split(' ').indexOf('lg') >= 0) {
+          if (it.getAttribute('class').split(' ').indexOf('full') >= 0) {
             return 0;
           }
           return it.getBoundingClientRect().width;

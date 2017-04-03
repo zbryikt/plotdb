@@ -61,11 +61,6 @@ body {
 select[ngselect2] {
   height: 34px;
 }
- {
-  width: 100%;
-  width: 100%;
-  width: 100%;
-}
 big.xl {
   font-size: 1.5em;
 }
@@ -5400,7 +5395,7 @@ textarea#dataset-edit-text {
 .sheet-body-outer {
   width: 100%;
   height: 100%;
-  padding-bottom: 56px;
+  padding-bottom: 88px;
 }
 .sheet-body.clusterize-scroll {
   height: 100%;
@@ -5465,6 +5460,7 @@ textarea#dataset-edit-text {
 .sheet-dim > div > div,
 .sheet-cells > div > div {
   position: relative;
+  max-width: 150px;
   height: 100%;
   display: inline-block;
   overflow: hidden;
@@ -6254,6 +6250,11 @@ span.select2-container--default .select2-selection--multiple {
   height: 100%;
   position: relative;
 }
+@media (max-width: 800px) {
+  .editor-root {
+    padding-top: 46px;
+  }
+}
 .editor-funclist {
   width: 80px;
   height: 100%;
@@ -6422,9 +6423,20 @@ span.select2-container--default .select2-selection--multiple {
   font-size: 18px;
   font-family: consolas, fixed;
 }
+.editor-func-detail.full {
+  width: 100% !important;
+  left: 0;
+  padding-left: 80px;
+}
+#editor-dataset {
+  width: 500px;
+}
+#editor-dataset .inner {
+  position: relative;
+}
 #editor-code {
   position: relative;
-  opacity: 0.1;
+  opacity: 0.01;
   z-index: 0;
   width: 1px;
 }
@@ -6445,28 +6457,25 @@ span.select2-container--default .select2-selection--multiple {
   right: 10px;
   z-index: 10;
 }
-#editor-code.lg.active {
-  width: 100%;
+#editor-code.full.active {
   position: absolute;
-  left: 0;
-  padding-left: 80px;
   background: none;
 }
-#editor-code.lg.active .btn-dark {
+#editor-code.full.active .btn-dark {
   bottom: 40px;
 }
-#editor-code.lg .CodeMirror {
+#editor-code.full .CodeMirror {
   background: rgba(255,255,255,0.9);
 }
-#editor-code.lg .CodeMirror.cm-s-neat {
+#editor-code.full .CodeMirror.cm-s-neat {
   background: #fff;
 }
-#editor-code.lg .CodeMirror.cm-s-monokai {
+#editor-code.full .CodeMirror.cm-s-monokai {
   background: rgba(39,40,34,0.95);
 }
-#editor-code.lg .CodeMirror.cm-s-rubyblue {
+#editor-code.full .CodeMirror.cm-s-rubyblue {
   background: rgba(17,36,53,0.95);
 }
-#editor-code.lg .CodeMirror.cm-s-colorforth {
+#editor-code.full .CodeMirror.cm-s-colorforth {
   background: rgba(0,0,0,0.9);
 }

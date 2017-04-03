@@ -40,6 +40,9 @@ block body
     include /widget/paledit-modal-ctrl.jade
     include modal.jade
     .editor-funclist
+      .editor-func(ng-class="{'active':panel.tab==''}", ng-click="panel.set('')")
+        i.fa.fa-eye
+        span {{'Preview'|i18n}}
       .editor-func(ng-class="{'active':panel.tab=='data'}", ng-click="panel.set('data')")
         i.fa.fa-table
         span {{'Data'|i18n}}
@@ -59,7 +62,8 @@ block body
         i.fa.fa-save
         span {{'Save'|i18n}}
     //-.editor-func-detail(ng-show="panel.tab=='data'",style="width:500px"): .inner(ng-controller="dataEditCtrl")
-    .editor-func-detail(ng-show="panel.tab=='data'",style="width:500px"): .inner(ng-controller="plSheetEditor")
+    #editor-dataset.editor-func-detail(ng-class="{'full':panel.size.doc=='sm' || panel.size.value.dataset=='full'}",
+    ng-show="panel.tab=='data'"): .inner(ng-controller="plSheetEditor")
       +panel-closebtn
       .title {{'Data'|i18n}}
       include /dataset/widget/modal.jade
@@ -71,7 +75,7 @@ block body
           .name(ng-if="dataset.obj.key")
             div: small.grayed {{'Current Dataset'|i18n}}
             div
-              a(ng-attr-href="/data/{{dataset.obj.key}}",
+              a(ng-attr-href="/dataset/{{dataset.obj.key}}",
               target="_blank") {{dataset.obj.name}} #[small.grayed ({{dataset.obj.key}})]
 
           ul.dropdown-menu
@@ -99,9 +103,14 @@ block body
         .btn.btn-default(ng-click="chart.data.sample()") {{'Load Sample Data'|i18n}}
         span &nbsp;
         .btn.btn-default(ng-click="chart.data.clear()") {{'Clear'|i18n}}
-        .pull-right.btn.btn-default(ng-click="panel.set('')") {{'Close'|i18n}}
+        .pull-right
+          .btn.btn-default(ng-if="!panel.size.doc",ng-click="panel.size.set('dataset','full')") 
+            i.fa.fa-long-arrow-right(ng-if="panel.size.value.dataset!='full'")
+            i.fa.fa-long-arrow-left(ng-if="panel.size.value.dataset=='full'")
+          span &nbsp;
+          .btn.btn-default(ng-click="panel.set('')") {{'Close'|i18n}}
 
-    .editor-func-detail(ng-show="panel.tab=='style'"): .inner
+    .editor-func-detail(ng-show="panel.tab=='style'",ng-class="{'full':panel.size.doc=='sm'}"): .inner
       +panel-closebtn
       .title {{'Style'|i18n}}
       .body
@@ -188,7 +197,7 @@ block body
           span {{'Responsive'|i18n}}... #[span.caret]
         .btn.btn-default.pull-right(ng-click="panel.set('')") {{'Close'|i18n}}
 
-    .editor-func-detail(ng-show="panel.tab=='share'")
+    .editor-func-detail(ng-show="panel.tab=='share'",ng-class="{'full':panel.size.doc=='sm'}")
       .inner
         +panel-closebtn
         .title {{'Share'|i18n}}
@@ -241,7 +250,7 @@ block body
       .foot.text-right
         .btn.btn-default(ng-click="panel.set('')") {{'Close'|i18n}}
 
-    .editor-func-detail(ng-show="panel.tab=='download'"): .inner
+    .editor-func-detail(ng-show="panel.tab=='download'",ng-class="{'full':panel.size.doc=='sm'}"): .inner
       +panel-closebtn
       .title {{'Download'|i18n}}
       .body
@@ -271,10 +280,11 @@ block body
           ng-class="{'disabled':!download.ready,'loading':download.loading}") {{'Download'|i18n}}
           span &nbsp;
           .btn.btn-default(ng-click="panel.set('')") {{'Cancel'|i18n}}
-    #editor-code.editor-func-detail(ng-class="{'active':panel.tab=='editor','lg':editor.size.value=='lg'}")
-      .btn.btn-dark(ng-click="editor.size.set('lg')")
-        i.fa.fa-long-arrow-right(ng-if="editor.size.value!='lg'")
-        i.fa.fa-long-arrow-left(ng-if="editor.size.value=='lg'")
+    #editor-code.editor-func-detail(
+    ng-class="{'active':panel.tab=='editor','full':panel.size.value.editor=='full' || panel.size.doc=='sm'}")
+      .btn.btn-dark(ng-if="!panel.size.doc",ng-click="panel.size.set('editor','full')")
+        i.fa.fa-long-arrow-right(ng-if="panel.size.value.editor!='full'")
+        i.fa.fa-long-arrow-left(ng-if="panel.size.value.editor=='full'")
       .inner(style="padding-bottom:0")
         textarea#editor-textarea(codeeditor,ng-model="editor")
     #viscanvas(viscanvas,ng-model="canvas")
