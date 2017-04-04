@@ -165,8 +165,8 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     dimension: {},
     init: function(){
       var this$ = this;
-      $scope.$watch('chart.config.value', function(n, o){
-        return this$.config.parse(n, o);
+      $scope.$watch('chart.config', function(n, o){
+        return this$.config.parse(n.value, o.value);
       }, true);
       return dispatcher.register('data.sample', function(arg$){
         var data;
@@ -316,8 +316,85 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       get: function(){
         return this.data;
       },
+      autobind: function(data, dim){
+        var search, md, df, i$, to$, i, lresult$, k, v, ret, that, results$ = [];
+        search = function(type, target, d){
+          var list, i$, to$, i, ret;
+          d == null && (d = 0);
+          if (!type) {
+            return null;
+          }
+          if (in$(type, target)) {
+            return type;
+          }
+          list = plotdb[type].basetype || [];
+          for (i$ = 0, to$ = list.length; i$ < to$; ++i$) {
+            i = i$;
+            ret = search(list[i].name, target, d + 1);
+            if (ret) {
+              return ret;
+            }
+          }
+        };
+        md = function(type, list){
+          var ret, i$, i;
+          list == null && (list = []);
+          list = list.map(function(it){
+            return it.name || it;
+          });
+          if (!type) {
+            return list[0];
+          }
+          type = type.name || type;
+          if (!list.length) {
+            return type;
+          }
+          ret = search(type, list);
+          if (ret) {
+            return ret;
+          }
+          for (i$ = 0; i$ < list; ++i$) {
+            i = i$;
+            ret = search(list[i], [type]);
+            if (ret) {
+              return ret;
+            }
+          }
+          return null;
+        };
+        df = {};
+        for (i$ = 0, to$ = data.length; i$ < to$; ++i$) {
+          i = i$;
+          lresult$ = [];
+          for (k in dim) {
+            v = dim[k];
+            ret = md(data[i].datatype, v.type.map(fn$));
+            if (ret && (v.multiple || !df[k])) {
+              df[k] = (that = df[k]) ? that + 1 : 1;
+              data[i].bind = k;
+              break;
+            }
+          }
+          results$.push(lresult$);
+        }
+        return results$;
+        function fn$(it){
+          return it.name;
+        }
+      },
       update: function(data){
         var dimension, k, v, i$, to$, i, ref$, key$;
+        if (!data.filter(function(it){
+          return it.bind;
+        }).length) {
+          this.autobind(data, $scope.chart.obj.dimension);
+          if (data.filter(function(it){
+            return it.bind;
+          })) {
+            this.adopt(data, false);
+          }
+          return;
+        }
         this.data = data;
         dimension = $scope.chart.obj.dimension;
         (function(){
@@ -377,10 +454,11 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           }
           return results$;
         }()).map(function(it){
-          return it[1].value = curConfig[it[0]].value;
+          if (curConfig[it[0]]) {
+            return it[1].value = curConfig[it[0]].value;
+          }
         });
         this$.config.value = newConfig;
-        this$.config.categorize();
         this$.dimension = JSON.parse(payload.dimension);
         for (k in ref$ = this$.obj.dimension) {
           v = ref$[k];
@@ -424,6 +502,8 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           config: plotdb.chart.config.parse(this$.config.value)
         });
         return $scope.chart.data.adopt(data, !!datasetKey);
+      })['catch'](function(it){
+        return console.error(it);
       });
     },
     library: {
@@ -880,15 +960,26 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
   });
   initWrap.run();
   return $timeout(function(){
+    var this$ = this;
     if (window.chart) {
-      return $scope.chart.reset(window.chart);
+      return $scope.$apply(function(){
+        return $scope.chart.reset(window.chart);
+      });
     } else {
       return plotdb.load(2251, function(chart){
-        return $scope.chart.reset(JSON.parse(chart._._chart));
+        var this$ = this;
+        return $scope.$apply(function(){
+          return $scope.chart.reset(JSON.parse(chart._._chart));
+        });
       });
     }
   }, 1000);
 }));
+function in$(x, xs){
+  var i = -1, l = xs.length >>> 0;
+  while (++i < l) if (x === xs[i]) return true;
+  return false;
+}
 function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];

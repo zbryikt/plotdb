@@ -8570,7 +8570,6 @@ x$.controller('datasetList', ['$scope', 'IOService', 'dataService', 'Paging', 'p
       var this$ = this;
       return $scope.$apply(function(){
         var data;
-        console.log(ret);
         data = (ret || []).map(function(it){
           return new dataService.dataset(it, true);
         });

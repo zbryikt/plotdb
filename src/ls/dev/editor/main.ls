@@ -107,7 +107,7 @@ angular.module \plotDB
       src: null, obj: null
       dimension: {}
       init: ->
-        $scope.$watch 'chart.config.value', ((n,o) ~> @config.parse(n,o)), true
+        $scope.$watch 'chart.config', ((n,o) ~> @config.parse(n.value,o.value)), true
         dispatcher.register \data.sample, ({data}) ~> @finish \sample, data
       sample: -> canvas.msg type: 'data.get(sample)'; @block \sample
       config: do
@@ -151,7 +151,39 @@ angular.module \plotDB
         sample: -> $scope.chart.sample!then ~> @adopt it, false
         set: (data) -> eventBus.fire \sheet.data.set, data
         get: -> @data
+        autobind: (data, dim) ->
+          search = (type, target, d = 0) ->
+            if !type => return null
+            if type in target => return type
+            list = plotdb[type].basetype or []
+            for i from 0 til list.length =>
+              ret = search list[i].name, target, d + 1
+              if ret => return ret
+          md = (type, list = [])->
+            list = list.map -> it.name or it
+            if !type => return list.0
+            type = type.name or type
+            if !list.length => return type
+            ret = search type, list
+            if ret => return ret
+            for i from 0 til list =>
+              ret = search list[i], [type]
+              if ret => return ret
+            return null
+          df = {}
+          for i from 0 til data.length =>
+            for k,v of dim =>
+              ret = md data[i].datatype, v.type.map -> it.name
+              if ret and (v.multiple or !df[k]) =>
+                df[k] = if df[k] => that + 1 else 1
+                data[i].bind = k
+                break
+
         update: (data) ->
+          if !data.filter(->it.bind).length =>
+            @autobind data, $scope.chart.obj.dimension
+            if data.filter(->it.bind) => @adopt data, false
+            return
           @data = data
           dimension = $scope.chart.obj.dimension
           [v for k,v of dimension].map -> it.fields = []
@@ -162,7 +194,7 @@ angular.module \plotDB
           #TODO check multiple entrance issue for initilization time
           canvas.msg type: \data.update, data: dimension
 
-      reset: (chart) -> 
+      reset: (chart) ->
         dataset-key = null
         Promise.resolve!
           .then ~>
@@ -173,9 +205,8 @@ angular.module \plotDB
           .then (payload) ~>
             new-config = JSON.parse payload.config
             cur-config = @config.value or chart.config or {}
-            [[k,v] for k,v of new-config].map ~> it.1.value = cur-config[it.0].value
+            [[k,v] for k,v of new-config].map ~> if cur-config[it.0] => it.1.value = cur-config[it.0].value
             @config.value = new-config
-            @config.categorize!
             @dimension = JSON.parse payload.dimension
             for k,v of @obj.dimension => if @dimension[k] =>
               @dimension[k] <<< @obj.dimension[k]{fields, fieldName}
@@ -191,6 +222,7 @@ angular.module \plotDB
           .then (data = []) ~>
             canvas.render config: plotdb.chart.config.parse(@config.value)
             $scope.chart.data.adopt data, !!dataset-key
+          .catch -> console.error it
       library: do
         hash: {}
         load: (list=[]) ->
@@ -442,8 +474,8 @@ angular.module \plotDB
     #####  TEMPORARY CODE #####
 
     $timeout (->
-      if window.chart => $scope.chart.reset window.chart
-      else plotdb.load 2251, (chart) -> $scope.chart.reset JSON.parse(chart._._chart)
+      if window.chart => $scope.$apply ~> $scope.chart.reset window.chart
+      else plotdb.load 2251, (chart) -> $scope.$apply ~> $scope.chart.reset JSON.parse(chart._._chart)
     ), 1000
 
     #####  TEMPORARY CODE #####

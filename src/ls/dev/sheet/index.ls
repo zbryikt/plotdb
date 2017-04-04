@@ -255,10 +255,10 @@ angular.module \plotDB
               range.moveStart \character, 1
               range.select!
 
-      empty: ->
+      empty: (render) ->
         @data <<< headers: [], rows: [], types: [], keys: [], datasets: [], bind: []
         @clear = true
-        @render!
+        if render => @render!
       init: ->
         eventBus.listen \sheet.grid.isClear.get ~> eventBus.fire \sheet.grid.isClear, @clear
         eventBus.listen \sheet.grid.load, ~> eventBus.fire \sheet.grid.loaded, @data.fieldize!
@@ -458,6 +458,7 @@ angular.module \plotDB
         if !@worker => @worker = new Worker \/js/data/worker/parse-dataset.js
         @worker.onmessage = ({data: payload}) -> $scope.$apply ->
           if bindmap => payload.data.bind = payload.data.keys.map -> bindmap[it]
+          $scope.grid.empty false
           $scope.grid.load(payload.data, dataset.size).then -> res dataset
         @worker.postMessage {dataset}
 
@@ -504,6 +505,7 @@ angular.module \plotDB
         @worker.onmessage = (e) ~>
           data = e.data.data
           $scope.$apply ~>
+            $scope.grid.empty false
             $scope.grid.data.rows = data.rows
             $scope.grid.data.headers = data.headers
             $scope.grid.data.types = data.types
@@ -556,6 +558,7 @@ angular.module \plotDB
               xls.sheets.list = e.data.data
               eventBus.fire \loading.dimmer.off
             if e.data.type == \sheet =>
+              $scope.grid.empty false
               data = e.data.data
               $scope.grid.data.headers = data.headers
               $scope.grid.data.rows = data.rows
@@ -661,6 +664,7 @@ angular.module \plotDB
             ((ret) ~>
               list = ret.result.values
               list = list.filter(->it.filter(->(it or "").trim!length).length)
+              $scope.grid.empty false
               data = $scope.grid.data
               $scope.$apply ~>
                 data.headers = h = list.0

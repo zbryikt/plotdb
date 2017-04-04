@@ -410,7 +410,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         return it[i];
       }
     },
-    empty: function(){
+    empty: function(render){
       var ref$;
       ref$ = this.data;
       ref$.headers = [];
@@ -420,7 +420,9 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
       ref$.datasets = [];
       ref$.bind = [];
       this.clear = true;
-      return this.render();
+      if (render) {
+        return this.render();
+      }
     },
     init: function(){
       var head, dim, scroll, content, this$ = this;
@@ -781,6 +783,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
                 return bindmap[it];
               });
             }
+            $scope.grid.empty(false);
             return $scope.grid.load(payload.data, dataset.size).then(function(){
               return res(dataset);
             });
@@ -857,6 +860,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
           var data;
           data = e.data.data;
           $scope.$apply(function(){
+            $scope.grid.empty(false);
             $scope.grid.data.rows = data.rows;
             $scope.grid.data.headers = data.headers;
             $scope.grid.data.types = data.types;
@@ -934,6 +938,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
               eventBus.fire('loading.dimmer.off');
             }
             if (e.data.type === 'sheet') {
+              $scope.grid.empty(false);
               data = e.data.data;
               $scope.grid.data.headers = data.headers;
               $scope.grid.data.rows = data.rows;
@@ -1108,6 +1113,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
             return (it || "").trim().length;
           }).length;
         });
+        $scope.grid.empty(false);
         data = $scope.grid.data;
         $scope.$apply(function(){
           var h;
