@@ -26,7 +26,6 @@ block head
   link(rel="stylesheet",type="text/css",href="/assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.skinFlat.css")
   script(type="text/javascript",src="/assets/ion-rangeslider/2.1.7/js/ion.rangeSlider.min.js")
   script(type="text/javascript",src="/lib/plotd3/0.1.0/index.js")
-  //-script(type="text/javascript",src="/js/dev/editor.js")
   script(type="text/javascript",src="/js/dev/editor/main.js")
   script(type="text/javascript",src="/js/dev/editor/utility.js")
   script(type="text/javascript",src="/js/dev/sheet/index.js")
@@ -34,11 +33,18 @@ block head
   script(type="text/javascript",src="/js/dev/misc/paledit.js")
   script(type="text/javascript",src="/js/pack/view.js")
   include /colorblind.jade
+  if chart
+    script.
+      window.chart = !{(JSON.stringify(chart) || "").replace(/<\//g, "<\\/")}
+  if permtype
+    script.
+      window.permtype = !{(JSON.stringify(permtype) || "").replace(/<\//g, "<\\/")};
+
 block body
   .editor-root(ng-controller="plChartEditor",ng-cloak,style="background:url(/assets/img/transparent.png)"): .inner
-    include panel-new.jade
+    include panel/index.jade
     include /widget/paledit-modal-ctrl.jade
-    include modal.jade
+    include modal/chart-name.jade
     .editor-funclist
       .editor-func(ng-class="{'active':panel.tab==''}", ng-click="panel.set('')")
         i.fa.fa-eye
@@ -67,7 +73,7 @@ block body
       +panel-closebtn
       .title {{'Data'|i18n}}
       include /dataset/widget/modal.jade
-      include sheet-modal.jade
+      include modal/sheet-clone.jade
       #editor-datagrid.body(style="padding-left:0;padding-right:0")
         #dataset-import-dropdown-inline.dropdown.btn-group
           .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown")
@@ -238,13 +244,13 @@ block body
           label {{'Open Graph'|i18n}} #[small.grayed {{'summary in SNS posts'|i18n}}]
           .sep
           label {{'Title'|i18n}}
-          input.form-control(ng-model="chart.name",ng-attr-placeholder="{{'title shown in social media'|i18n}}")
+          input.form-control(ng-model="chart.obj.name",ng-attr-placeholder="{{'title shown in social media'|i18n}}")
           br
           label {{'Footer'|i18n}}
-          input.form-control(ng-model="chart.footer",ng-attr-placeholder="{{'e.g., data source'|i18n}}")
+          input.form-control(ng-model="chart.obj.footer",ng-attr-placeholder="{{'e.g., data source'|i18n}}")
           br
           label {{'Description'|i18n}}
-          textarea.form-control(ng-model="chart.description",
+          textarea.form-control(ng-model="chart.obj.description",
           ng-attr-placeholder="{{'summary shown in social media'|i18n}}")
           br
       .foot.text-right
@@ -350,7 +356,7 @@ block body
 
 
       span &nbsp;
-      .btn.btn-default(ng-click="render(chart)"): i.fa.fa-refresh
+      .btn.btn-default(ng-click="chart.reset()"): i.fa.fa-refresh
       span &nbsp;
       span.chart-config
         div(ng-click="paledit.edit(chart.config.value.palette);",style="width:200px;display:inline-block;padding:2px;vertical-align:bottom",ng-if="chart.config.value.palette")

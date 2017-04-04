@@ -1,0 +1,61 @@
+//- module
+label {{'Link'|i18n}}
+small.pull-right(style="margin-top:5px")
+  a(ng-attr-href="{{sharePanel.link}}",ng-class="{'disabled':chart.obj.permission.switch!='publish'}",target="_blank") #[i.fa.fa-external-link] {{'open in new window'|i18n}}
+input.form-control.input-sm(ng-model="sharePanel.link",ng-disabled="chart.obj.permission.switch!='publish'")
+br
+label {{'Embed Code'|i18n}}
+#chart-edit-iframe-config.pull-right
+  span(ng-show="sharePanel.aspectRatio")
+    input.input-sm.form-control(type="text",placeholder="Width",
+    ng-model="sharePanel.embed.widthRate",ng-disabled="chart.obj.permission.switch!='publish'")
+    span &nbsp;: 
+    input.input-sm.form-control(type="text",placeholder="Height",
+    ng-model="sharePanel.embed.heightRate",ng-disabled="chart.obj.permission.switch!='publish'")
+  span(ng-show="!sharePanel.aspectRatio")
+    input.input-sm.form-control(type="text",placeholder="Width",
+    ng-model="sharePanel.embed.width",ng-disabled="chart.obj.permission.switch!='publish'")
+    span &nbsp;&times;&nbsp;
+    input.input-sm.form-control(type="text",placeholder="Height",
+    ng-model="sharePanel.embed.height",ng-disabled="chart.obj.permission.switch!='publish'")
+  .checkbox(ng-class="{'disabled':chart.obj.permission.switch!='publish'}"): label
+    input(type="checkbox",ng-model="sharePanel.aspectRatio",
+    ng-disabled="chart.obj.permission.switch!='publish'")
+    small(style="vertical-align:text-top") {{'Preserve Aspect Ratio'|i18n}}
+textarea.form-control(ng-cloak,disabled,rows="2",
+ng-show="chart.obj.permission.switch!='publish'",placeholder="set public to get embed code")
+textarea#edit-embedcode.form-control(ng-cloak,rows="2",ng-show="chart.obj.permission.switch=='publish'",
+data-clipboard-target="#edit-embedcode",ng-model="sharePanel.embedcode")
+
+br
+label Open Graph #[small.grayed {{'summary shown in SNS like facebook, twitter, etc'|i18n}} ]
+.sep.nogap
+br
+.row
+  .col-sm-6
+    label {{'Title'|i18n}}
+    .pull-right
+      .checkbox(style="margin:0"): label
+        input(type="checkbox",ng-model="chart.obj.metashow")
+        small(style="vertical-align:text-top") {{'Show in Chart'|i18n}}
+    input.form-control.input-sm(placeholder="title shown in social media",ng-model="chart.obj.name")
+    br
+    label {{'Footer'|i18n}}
+    input.form-control.input-sm(placeholder="e.g., data source",ng-model="chart.obj.footer")
+    //-
+      label Share
+      #share-buttons(ng-class="{'disabled':chart.obj.permission.switch!='publish'}")
+        a(ng-attr-href="{{sharePanel.social.facebook}}",target="_blank")
+          i.fa.fa-facebook-square(style="color:#3b5998")
+        a(ng-attr-href="{{sharePanel.social.twitter}}", target="_blank")
+          i.fa.fa-twitter-square(style="color:#00a0dc")
+        a(ng-attr-href="{{sharePanel.social.pinterest}}",target="_blank")
+          i.fa.fa-pinterest-square(style="color:#bd081c")
+        a(ng-attr-href="{{sharePanel.social.linkedin}}", target="_blank")
+          i.fa.fa-linkedin-square(style="color:#00a0dc")
+        a(ng-attr-href="{{sharePanel.social.email}}",target="_blank")
+          i.fa.fa-envelope-square(style="color:#444")
+
+  .col-sm-6
+    label {{'Description'|i18n}}
+    textarea.form-control.input-sm(rows="5",placeholder="summary shown in social media",ng-model="chart.obj.description")

@@ -1,0 +1,9 @@
+//- module
+.panel-lock(ng-hide="isAdmin && (user.data.payment.plan > 1 || (plConfig.mode%2))")
+  div(ng-show="!isAdmin") {{"You don't have permission to change this"|i18n}}
+  div(ng-show="isAdmin")
+    div(style="margin-top: -30px")
+      span {{'Upgrade to enable privacy control'|i18n}}!
+      br
+      br
+      a.btn.btn-primary(href="/pricing/",target="_blank") {{"let's check out the plans"|i18n}}

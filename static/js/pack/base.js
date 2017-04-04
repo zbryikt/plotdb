@@ -4897,6 +4897,12 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       return (ret.db[it] && ret.db[it][$rootScope.lang]) || it;
     },
     db: {
+      'zh': {
+        zh: "中文"
+      },
+      'en': {
+        en: "English"
+      },
       'Color Mapping': {
         zh: "顏色對應"
       },
@@ -12382,8 +12388,9 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
   var service, object, chartService;
   service = {
     sample: sampleChart,
-    link: function(chart){
-      return "/chart/" + chart.key + "/";
+    link: function(chart, version){
+      version == null && (version = "");
+      return "/chart/" + chart.key + "/" + version;
     },
     thumblink: function(chart, full){
       full == null && (full = false);

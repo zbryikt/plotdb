@@ -4,6 +4,9 @@ angular.module \plotDB
     ret = do
       get: -> (ret.db[it] and ret.db[it][$rootScope.lang]) or it
       db: do
+        # Language
+        'zh': zh: "中文"
+        'en': en: "English"
         # Palette
         'Color Mapping': zh: "顏色對應"
         'or load from': zh: "或從這裡挑選"

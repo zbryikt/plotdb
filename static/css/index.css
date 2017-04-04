@@ -61,6 +61,11 @@ body {
 select[ngselect2] {
   height: 34px;
 }
+ {
+  width: 100%;
+  width: 100%;
+  width: 100%;
+}
 big.xl {
   font-size: 1.5em;
 }
@@ -3172,7 +3177,7 @@ small.hint {
   -o-transition: padding 0.5s ease-in-out;
   transition: padding 0.5s ease-in-out;
 }
-#nav-top nav.navbar-default .navbar-nav > li > div {
+#nav-top nav.navbar-default .navbar-nav > li > .icon {
   padding-top: 17px;
   padding-bottom: 17px;
   -ms-transition: padding 0.5s ease-in-out;
@@ -3399,8 +3404,8 @@ small.hint {
   }
 }
 @media (min-width: 800px) {
-  #nav-top ul.nav.navbar-nav li a i.fa,
-  #nav-top ul.nav.navbar-nav li a img {
+  #nav-top ul.nav.navbar-nav.pull-left li a i.fa,
+  #nav-top ul.nav.navbar-nav.pull-left li a img {
     display: none;
   }
 }
@@ -3421,7 +3426,8 @@ small.hint {
   background: #222;
   border-bottom: 1px solid #000;
 }
-#nav-top nav.navbar-default  .navbar-nav > li > a {
+#nav-top nav.navbar-default  .navbar-nav > li > a,
+#nav-top nav.navbar-default  .navbar-nav > li > .btn {
   color: #eee;
 }
 #nav-top.dim {
@@ -5468,11 +5474,6 @@ textarea#dataset-edit-text {
   padding: 0 4px;
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
-}
-.sheet-head > div > div:last-child,
-.sheet-dim > div > div:last-child,
-.sheet-cells > div > div:last-child {
-  border-right: none;
 }
 .sheet-cells > div:last-child {
   border-bottom: 1px solid #ccc;

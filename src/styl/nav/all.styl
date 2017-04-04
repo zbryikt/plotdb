@@ -38,7 +38,7 @@
     padding-top: 20px
     padding-bottom: 20px
     transition(padding 0.5s ease-in-out)
-  .navbar-nav > li > div
+  .navbar-nav > li > .icon
     padding-top: 17px
     padding-bottom: 17px
     transition(padding 0.5s ease-in-out)
@@ -215,7 +215,7 @@
     display: none
 
 @media (min-width: 800px)
-  #nav-top ul.nav.navbar-nav li a
+  #nav-top ul.nav.navbar-nav.pull-left li a
     i.fa, img
       display: none
 
@@ -232,8 +232,9 @@
   color: #eee
   background: #222
   border-bottom: 1px solid #000
-#nav-top nav.navbar-default  .navbar-nav > li > a
-  color: #eee
+#nav-top nav.navbar-default  .navbar-nav > li
+  & > a, & > .btn
+    color: #eee
 
 #nav-top.dim
   background: rgba(0,0,0,0.8)

@@ -1,21 +1,32 @@
 # eventBus host <-> plSheet
-# -> sheet.dataset.load          | key, force
+# -> sheet.dataset.load          | key, bindmap, force
+# -> sheet.dataset.parse         | key, bindmap, force
 # -> sheet.bind                  | dimkeys, bind
 # <- sheet.dataset.saved         | key
 # <- sheet.dataset.save.failed   |
 # <- sheet.dataset.loaded        | key
+# <- sheet.dataset.parsed        | key
 # -> sheet.data.set              | data
+# -> sheet.grid.isClear.get      |
+# <- sheet.grid.isClear
+# -> sheet.grid.load
+# <- sheet.grid.loaded           | data
 
 angular.module \plotDB
   ..controller \plSheetEditor,
   <[$scope $interval $timeout $http permService dataService eventBus plNotify Paging initWrap]> ++
   ($scope, $interval, $timeout, $http, permService, data-service, eventBus, plNotify, Paging, initWrap) ->
+    initWrap = initWrap!
     $scope.sheetModal = do
       duplicate: {}
     $scope.dataset = initWrap do
       init: ->
-        eventBus.listen \sheet.dataset.load, (key, force) ~>
-          @load key .then ~> $scope.parser.plotdb.parse @obj
+        eventBus.listen \sheet.dataset.load, (key, bindmap, force) ~>
+          @load key, force .then ~> eventBus.fire \sheet.dataset.loaded, key
+        eventBus.listen \sheet.dataset.parse, (key, bindmap, force) ~>
+          @load key, force
+            .then ~> $scope.parser.plotdb.parse @obj, bindmap
+            .then (dataset) ~> eventBus.fire \sheet.dataset.parsed, dataset
         eventBus.listen \sheet.dataset.save, (name) ~> @save name
       obj: null
       clear: -> @obj = null
@@ -54,9 +65,7 @@ angular.module \plotDB
                 }).success((map) ~>
                   map.fields.map (d,i) ~> @obj.fields[i] <<< dataset: @obj.key, key: d.key
                   res!
-                ).error(-> 
-                  console.log "error:", it
-                  rej!)
+                ).error(-> console.log "error:", it rej!)
             else Promise.resolve!
           .then ~>
             eventBus.fire \sheet.dataset.saved, @obj
@@ -98,6 +107,7 @@ angular.module \plotDB
           eventBus.fire \loading.dimmer.off
         @convert-worker.postMessage @data{headers, rows, types}
 
+      clear: true
       worker: null
       data: do
         rows: []
@@ -167,7 +177,6 @@ angular.module \plotDB
           @worker.onmessage = (e) ~>
             [trs, ths, dimnode] = [e.data.trs, e.data.ths, e.data.dim]
             update trs, ths, dimnode
-
           if head-only =>
             @worker.postMessage {
               headers: @data.headers,
@@ -223,7 +232,8 @@ angular.module \plotDB
           @data.types.splice i + 1
           dirty = true
         eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
-        if dirty => @render {head-only: head-only} .then ->
+        if dirty => @render {head-only: head-only} .then ~>
+          @clear = false
           if r < 0 =>
             node = document.querySelector(
               '#dataset-editbox .sheet-head > div >' + " div:nth-of-type(#{c + 1}) > textarea:first-child"
@@ -236,22 +246,22 @@ angular.module \plotDB
             ].join(" "))
           if node =>
             node.focus!
-            if head-only => return
-            range = document.createRange!
-            try
-              range.setStart node, 1 # set cursor, offset to text end
-            catch
-              range.setStart node, 0
-            range.collapse true
-            sel = window.getSelection!
-            sel.removeAllRanges!
-            sel.addRange range
+            if node.setSelectionRange =>
+              node.setSelectionRange 1,1
+            else
+              range = node.createTextRange!
+              range.collapse true
+              range.moveEnd \character, 1
+              range.moveStart \character, 1
+              range.select!
 
       empty: ->
-        @data.headers = []
-        @data.rows = []
+        @data <<< headers: [], rows: [], types: [], keys: [], datasets: [], bind: []
+        @clear = true
         @render!
       init: ->
+        eventBus.listen \sheet.grid.isClear.get ~> eventBus.fire \sheet.grid.isClear, @clear
+        eventBus.listen \sheet.grid.load, ~> eventBus.fire \sheet.grid.loaded, @data.fieldize!
         eventBus.listen \sheet.bind, (dimkeys, bindmap) ~>
           @data <<< dimkeys: dimkeys, bindmap: bindmap
           @render!
@@ -351,8 +361,9 @@ angular.module \plotDB
           n = e.target
           val = n.value
           if key == 86 and e.metaKey or e.ctrlKey and /\t/.exec(val) => return n.value = ""
-          setTimeout (~>
-            val = (n.value).replace /\n/g, ''
+          if n => setTimeout (~>
+            if !n.getAttribute(\col)? => return # click on non-cell element
+            val = (n.value or '').replace /\n/g, ''
             cPos = e.target.selectionStart
             row = +n.getAttribute(\row)
             col = +n.getAttribute(\col)
@@ -398,7 +409,8 @@ angular.module \plotDB
           data.rows[][r + row][c + col] = ret[r][c]
         for i from col til col + w =>
           data.types[i] = plotdb.Types.resolve [data.rows[j][i] for j from 0 til data.rows.length]
-        $scope.grid.render!then ->
+        $scope.grid.render!then ~>
+          @clear = false
           eventBus.fire \loading.dimmer.off
           eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
       load: (data, size = 0) ->
@@ -407,8 +419,9 @@ angular.module \plotDB
         if @data.bindmap =>
           @data.bind = @data.keys.map(~>@data.bindmap[it] or null)
           @data.bindmap = null
+        @render!then ~>
+          @clear = false
           eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
-        @render!then -> eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
 
 
     $scope.parser = do
@@ -426,14 +439,13 @@ angular.module \plotDB
     $scope.parser.fields = initWrap do
       init: ->
         eventBus.listen \sheet.data.clear, ->
-          payload = headers: [], rows: [], types: [], keys: [], datasets: [], bind: [],
           $scope.dataset.clear!
-          $scope.grid.load payload
+          $scope.grid.empty!
         eventBus.listen \sheet.data.set, (data) ->
           payload = {}
             ..headers = data.map -> it.name
             ..rows = data.0.data.map (d,i) -> data.map (e,j) -> e.data[i]
-            ..types = data.map -> \Number
+            ..types = data.map -> it.datatype or \Number
             ..keys = data.map -> 0
             ..datasets = data.map -> 0
             ..bind = data.map -> it.bind
@@ -442,10 +454,11 @@ angular.module \plotDB
     $scope.parser.plotdb = do
       toggled: false, worker: null
       toggle: (v) -> @toggled = (if v? => v else !!!@toggled)
-      parse: (dataset) -> new Promise (res, rej) ~>
+      parse: (dataset, bindmap = null) -> new Promise (res, rej) ~>
         if !@worker => @worker = new Worker \/js/data/worker/parse-dataset.js
-        @worker.onmessage = (e) -> $scope.$apply ->
-          $scope.grid.load(e.data.data, dataset.size).then -> res!
+        @worker.onmessage = ({data: payload}) -> $scope.$apply ->
+          if bindmap => payload.data.bind = payload.data.keys.map -> bindmap[it]
+          $scope.grid.load(payload.data, dataset.size).then -> res dataset
         @worker.postMessage {dataset}
 
       load: (dataset) ->

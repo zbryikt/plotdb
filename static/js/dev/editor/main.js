@@ -3,7 +3,7 @@ var x$;
 x$ = angular.module('plotDB');
 x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'chartService', 'paletteService', 'plNotify', 'eventBus', 'permService', 'initWrap', 'license'].concat(function($scope, $http, $timeout, plConfig, chartService, paletteService, plNotify, eventBus, permService, initWrap, license){
   var dispatcher, canvas;
-  console.log(document.body.getBoundingClientRect());
+  initWrap = initWrap();
   dispatcher = initWrap({
     handlers: {},
     register: function(name, handler){
@@ -50,7 +50,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         ref$.editor = 'full';
         this.size.doc = 'sm';
       }
-      return $scope.$watch('panel.tab', function(n, o){
+      $scope.$watch('panel.tab', function(n, o){
         var ref$;
         if (n === o) {
           return;
@@ -63,6 +63,9 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         if (o === 'editor') {}
         return $scope.canvas.resize();
       });
+      return $scope.$watch('panel.size.value', function(){
+        return $scope.canvas.resize();
+      }, true);
     },
     tab: 'data',
     set: function(v, f){
@@ -223,42 +226,8 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       }
     },
     data: {
-      adopt: function(data, bykey){
-        var dimension, fields, k, v, dimkeys, res$, bindmap, this$ = this;
-        bykey == null && (bykey = true);
-        dimension = $scope.chart.dimension;
-        fields = data.fields || data;
-        if (!bykey) {
-          for (k in dimension) {
-            v = dimension[k];
-            v.fields = [];
-            v.fieldName = [];
-          }
-          fields.map(function(it){
-            if (it.bind && dimension[it.bind]) {
-              return dimension[it.bind].fields.push(it);
-            }
-          });
-          $scope.chart.data.set(fields);
-        } else {
-          for (k in dimension) {
-            v = dimension[k];
-            v.fields = v.fields.map(fn$).filter(fn1$);
-          }
-        }
-        for (k in dimension) {
-          v = dimension[k];
-          v.fieldName = v.fields.map(fn2$);
-        }
-        res$ = [];
-        for (k in dimension) {
-          v = dimension[k];
-          res$.push({
-            name: k,
-            multiple: !!v.multiple
-          });
-        }
-        dimkeys = res$;
+      bindmap: function(dimension){
+        var bindmap, k, v, this$ = this;
         bindmap = {};
         (function(){
           var ref$, results$ = [];
@@ -274,8 +243,49 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
             }
           });
         });
-        $scope.dataset.bind(dimkeys, bindmap);
-        return $scope.chart.data.update(fields);
+        return bindmap;
+      },
+      adopt: function(data, bykey){
+        var dimension, fields, bindmap, k, v, dimkeys, res$, this$ = this;
+        bykey == null && (bykey = true);
+        dimension = $scope.chart.dimension;
+        fields = data.fields || data;
+        bindmap = null;
+        if (!bykey) {
+          for (k in dimension) {
+            v = dimension[k];
+            v.fields = [];
+            v.fieldName = [];
+          }
+          fields.map(function(it){
+            if (it.bind && dimension[it.bind]) {
+              return dimension[it.bind].fields.push(it);
+            }
+          });
+          this.set(fields);
+        } else {
+          for (k in dimension) {
+            v = dimension[k];
+            v.fields = v.fields.map(fn$).filter(fn1$);
+            v.fields.map(fn2$);
+          }
+          bindmap = this.bindmap(dimension);
+        }
+        for (k in dimension) {
+          v = dimension[k];
+          v.fieldName = v.fields.map(fn3$);
+        }
+        res$ = [];
+        for (k in dimension) {
+          v = dimension[k];
+          res$.push({
+            name: k,
+            multiple: !!v.multiple
+          });
+        }
+        dimkeys = res$;
+        $scope.dataset.bind(dimkeys, null);
+        return this.update(fields);
         function fn$(f){
           return fields.filter(function(it){
             return it.key === f.key;
@@ -285,6 +295,9 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           return it;
         }
         function fn2$(it){
+          return it.bind = k;
+        }
+        function fn3$(it){
           return it.name;
         }
       },
@@ -300,8 +313,12 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       set: function(data){
         return eventBus.fire('sheet.data.set', data);
       },
+      get: function(){
+        return this.data;
+      },
       update: function(data){
         var dimension, k, v, i$, to$, i, ref$, key$;
+        this.data = data;
         dimension = $scope.chart.obj.dimension;
         (function(){
           var ref$, results$ = [];
@@ -374,25 +391,32 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           }
         }
         this$.obj.dimension = this$.dimension;
-        datasetKey = (function(){
-          var ref$, results$ = [];
-          for (k in ref$ = this.dimension) {
-            v = ref$[k];
-            results$.push({
-              k: k,
-              v: v
-            });
+        return $scope.dataset.grid.isClear();
+      }).then(function(v){
+        var k;
+        if (v) {
+          datasetKey = (function(){
+            var ref$, results$ = [];
+            for (k in ref$ = this.dimension) {
+              v = ref$[k];
+              results$.push({
+                k: k,
+                v: v
+              });
+            }
+            return results$;
+          }.call(this$)).map(function(arg$){
+            var k, v;
+            k = arg$.k, v = arg$.v;
+            return (v.fields[0] || {}).dataset;
+          })[0];
+          if (datasetKey) {
+            return $scope.dataset.parse(datasetKey, this$.data.bindmap(this$.obj.dimension));
+          } else {
+            return this$.sample();
           }
-          return results$;
-        }.call(this$)).map(function(arg$){
-          var k, v;
-          k = arg$.k, v = arg$.v;
-          return (v.fields[0] || {}).dataset;
-        })[0];
-        if (datasetKey) {
-          return $scope.dataset.load(datasetKey);
         } else {
-          return this$.sample();
+          return $scope.dataset.grid.load();
         }
       }).then(function(data){
         data == null && (data = []);
@@ -460,14 +484,26 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       eventBus.listen('sheet.dataset.loaded', function(payload){
         return this$.finish('load', payload);
       });
+      eventBus.listen('sheet.dataset.parsed', function(payload){
+        return this$.finish('parse', payload);
+      });
       return eventBus.listen('sheet.dataset.changed', function(v){
         return $scope.chart.data.update(v);
       });
     },
-    load: function(key, force){
+    load: function(key, bindmap, force){
+      var ret;
       force == null && (force = false);
-      eventBus.fire('sheet.dataset.load', key, force);
-      return this.block('load');
+      ret = this.block('load');
+      eventBus.fire('sheet.dataset.load', key, bindmap, force);
+      return ret;
+    },
+    parse: function(key, bindmap, force){
+      var ret;
+      force == null && (force = false);
+      ret = this.block('parse');
+      eventBus.fire('sheet.dataset.parse', key, bindmap, force);
+      return ret;
     },
     bind: function(dimkeys, bind){
       return eventBus.fire('sheet.bind', dimkeys, bind);
@@ -475,7 +511,30 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     save: function(name){
       eventBus.fire('sheet.dataset.save', name);
       return this.block('save');
-    }
+    },
+    grid: initWrap({
+      init: function(){
+        var this$ = this;
+        eventBus.listen('sheet.grid.isClear', function(v){
+          return this$.finish('isClear', v);
+        });
+        return eventBus.listen('sheet.grid.loaded', function(data){
+          return this$.finish('load', data);
+        });
+      },
+      load: function(){
+        var ret;
+        ret = this.block('load');
+        eventBus.fire('sheet.grid.load');
+        return ret;
+      },
+      isClear: function(){
+        var ret;
+        ret = this.block('isClear');
+        eventBus.fire('sheet.grid.isClear.get');
+        return ret;
+      }
+    })
   });
   $scope.download = initWrap({
     loading: false,
@@ -768,7 +827,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         if (refresh) {
           return window.location.href = chartService.link({
             key: ret
-          });
+          }, 'v2');
         }
       });
     })['catch'](function(err){
@@ -796,11 +855,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     promise = chart.owner !== $scope.user.data.key || !chart.name || !chart.key
       ? $scope.chartModal.name.prompt()
       : Promise.resolve();
-    return promise['finally'](function(){
-      return $scope.$apply(function(){
-        return eventBus.fire('loading.dimmer.off');
-      });
-    }).then(function(name){
+    return promise.then(function(name){
       if (name) {
         chart.name = name;
       }
@@ -825,9 +880,13 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
   });
   initWrap.run();
   return $timeout(function(){
-    return plotdb.load(2251, function(chart){
-      return $scope.chart.reset(JSON.parse(chart._._chart));
-    });
+    if (window.chart) {
+      return $scope.chart.reset(window.chart);
+    } else {
+      return plotdb.load(2251, function(chart){
+        return $scope.chart.reset(JSON.parse(chart._._chart));
+      });
+    }
   }, 1000);
 }));
 function import$(obj, src){

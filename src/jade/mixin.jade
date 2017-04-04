@@ -1,3 +1,4 @@
+//- module
 mixin SaveFork
   span(ng-cloak,ng-show="writable") {{'Save'|i18n}}
   span(ng-cloak,ng-show="!writable") {{'Fork-Save'|i18n}}
@@ -71,7 +72,7 @@ mixin selectbox(data,type,scope,config,size)
           a(ng-if="portal.config.create",ng-click="create()") {{'create one with this name'|i18n}}
         .select-hint.grayed(ng-show="portal.needchar<=0 && portal.end && !portal.loading && portal.options.length") {{"that's all"|i18n}} :)
 
-
+//- v1
 mixin searchable
   .perm-item(style="padding: 10px 0")
     label {{'Searchable?'|i18n}}

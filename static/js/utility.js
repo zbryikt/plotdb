@@ -9,6 +9,12 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       return (ret.db[it] && ret.db[it][$rootScope.lang]) || it;
     },
     db: {
+      'zh': {
+        zh: "中文"
+      },
+      'en': {
+        en: "English"
+      },
       'Color Mapping': {
         zh: "顏色對應"
       },

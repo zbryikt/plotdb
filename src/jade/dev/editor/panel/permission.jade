@@ -1,0 +1,52 @@
+//- module
+mixin permDropdown(baseObj)
+  .btn.btn-default.btn-sm.dropdown-toggle(data-toggle="dropdown")
+    span(ng-show=baseObj + ".perm=='admin'") {{'act as owner'|i18n}}
+    span(ng-show=baseObj + ".perm=='write'") {{'can edit'|i18n}}
+    span(ng-show=baseObj + ".perm=='comment'") {{'can comment'|i18n}}
+    span(ng-show=baseObj + ".perm=='fork'") {{'can fork'|i18n}}
+    span(ng-show=baseObj + ".perm=='read'") {{'can read'|i18n}}
+    span &nbsp;
+    span.caret
+  ul.dropdown-menu
+    li(ng-class="{'active':" + baseObj + ".perm=='admin'}",ng-click= baseObj + ".perm='admin'"): a {{'act as owner'|i18n}}
+    li(ng-class="{'active':" + baseObj + ".perm=='write'}",ng-click= baseObj + ".perm='write'"): a {{'can edit'|i18n}}
+    li(ng-class="{'active':" + baseObj + ".perm=='comment'}",ng-click= baseObj + ".perm='comment'"): a {{'can comment'|i18n}}
+    li(ng-class="{'active':" + baseObj + ".perm=='fork'}",ng-click= baseObj + ".perm='fork'"): a {{'can fork'|i18n}}
+    li(ng-class="{'active':" + baseObj + ".perm=='read'}",ng-click= baseObj + ".perm='read'"): a {{'can read'|i18n}}
+mixin permPanel(type)
+  .perm-panel
+    label {{'Add new permission'|i18n}}
+    .input-group.long
+      //-(ng-class="{'long':permEdit.list.length>0,'sm':permEdit.list.length==0}")
+      +selectbox("permEdit.list",type)
+      //-div: select.form-control.input-sm(ngselect2,ng-data="permEdit.list",ng-detail="permEdit.detail",
+         type="entity",multiple="multiple")
+      .input-group-btn
+        +permDropdown("permEdit")
+        .btn.btn-default.btn-sm(ng-click="addMember()") {{'Add'|i18n}}
+    .btn.btn-link(ng-click="addToken()"): small #[i.fa.fa-link] {{'generate shareable link'|i18n}}
+    .btn.btn-link.pull-right(ng-class="{'disabled':hasGlobal}",ng-click="addGlobal()"): small #[i.fa.fa-users] {{'add everyone'|i18n}}
+    //-hr(style="margin:4px auto 6px")
+    .sep.light
+    br
+    label(style="margin-bottom:0") {{'permissions are given to'|i18n}}:
+    .sep.light
+    .perm-list
+      .perm-item(ng-show="!perm.list.length")
+        .grayed {{'no custom configuration'|i18n}}...
+      .perm-item(ng-cloak,ng-repeat="perm in perm.list")
+        .avatar(ng-if="perm.type=='chart'",ng-attr-style="background-image:url(/s/chart/{{perm.target || 0}}.png)")
+        .avatar(ng-if="perm.type!='chart'",ng-attr-style="background-image:url(/s/avatar/{{perm.avatar || 0}}.jpg)")
+        .info
+          .name
+            span {{perm.displayname}}
+            small(ng-cloak): a(ng-show="perm.type=='token'",ng-attr-href="?token={{perm.target}}",target="_blank") #[i.fa.fa-link] {{'edit link'|i18n}}
+            span  &nbsp; 
+            small(ng-cloak,ng-show="viewUrl"): a(ng-show="perm.type=='token'",ng-attr-href="{{viewUrl}}?token={{perm.target}}",target="_blank") #[i.fa.fa-link] {{'shareble link'|i18n}}
+          .type
+            span {{perm.type|i18n}} 
+            span / id: {{perm.target}}
+        .btn.btn-text.pull-right(ng-click="removeMember(perm)") &times;
+        .dropdown.pull-right
+          +permDropdown("perm")

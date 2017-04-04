@@ -5,8 +5,9 @@ x$.service('chartService', ['$rootScope', '$http', 'plConfig', 'sampleChart', 'I
   var service, object, chartService;
   service = {
     sample: sampleChart,
-    link: function(chart){
-      return "/chart/" + chart.key + "/";
+    link: function(chart, version){
+      version == null && (version = "");
+      return "/chart/" + chart.key + "/" + version;
     },
     thumblink: function(chart, full){
       full == null && (full = false);

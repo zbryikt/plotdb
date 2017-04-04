@@ -1,20 +1,21 @@
 angular.module \plotDB
   # initWrap: helper to initialize and build promise object
   ..service \initWrap, <[$rootScope]> ++ ($rootScope) ->
-    init = -> init.[]list.push it; it <<< do
-      promise: {}
-      failed: (name='default', ...payload) ->
-        if !@promise[name] => return
-        rej = @promise[name].rej
-        @promise[name] = null
-        rej.apply null, payload
-      finish: (name='default', ...payload) ->
-        if !@promise[name] => return
-        res = @promise[name].res
-        @promise[name] = null
-        res.apply null, payload
-      block: (name='default')-> new Promise (res, rej) ~> @promise[name] = {res, rej}
-    init <<< run: -> init.[]list.map -> it.init!
+    _ = ->
+      init = -> init[]list.push it; it <<< do
+        promise: {}
+        failed: (name='default', ...payload) ->
+          if !@promise[name] => return
+          rej = @promise[name].rej
+          @promise[name] = null
+          rej.apply null, payload
+        finish: (name='default', ...payload) ->
+          if !@promise[name] => return
+          res = @promise[name].res
+          @promise[name] = null
+          res.apply null, payload
+        block: (name='default')-> new Promise (res, rej) ~> @promise[name] = {res, rej}
+      init <<< run: -> @[]list.map -> it.init!
 
   ..directive \pldialog, <[$compile]> ++ ($compile) -> do
     restrict: \A

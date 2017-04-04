@@ -1,3 +1,4 @@
+//- module
 #nav-top
   nav.navbar.navbar-default(role="navigation")
     .container-fluid
@@ -5,7 +6,7 @@
         a.navbar-brand(href="/")
           img(src="/assets/img/plotdb.png",style="height:100%")
       div(ng-cloak)
-        ul.nav.navbar-nav
+        ul.nav.navbar-nav.pull-left
           li#nav-chart.dropdown
             a.dropdown-toggle(href="#",data-toggle="dropdown")
               i.fa.fa-bar-chart
@@ -56,13 +57,18 @@
             span: small Request a Chart
           //-li#nav-theme: a(href="/doc/"): small Dev Guide
           //-li#nav-localdata: a(href="/",ng-cloak) {{dataService.local.size|size}}, {{dataService.local.rows}} Rows
+          li#nav-lang.dropdown
+            a(data-toggle="dropdown") #[i.fa.fa-globe] {{lang|i18n}}#[span.caret]
+            ul.dropdown-menu
+              li(ng-click="setLang('zh')",ng-class="{'active':lang=='zh'}"): a(href="#") 中文
+              li(ng-click="setLang('en')",ng-class="{'active':lang=='en'}"): a(href="#") English
           li#nav-pricing: a(href="/pricing/") {{'Pricing'|i18n}}
           li(ng-cloak,ng-show="!user.data"): a#nav-login(href="#",ng-click="auth.show = !!!auth.show")
             i.fa.fa-sign-in
             | &nbsp; 
             span {{'LOGIN / SIGNUP'|i18n}}
           li#nav-profile.dropdown(ng-cloak,ng-show="user.data")
-            .btn(data-toggle="dropdown")
+            .btn.icon(data-toggle="dropdown")
               //-span {{user.data.displayname}}
               .avatar(ng-attr-style="background-image:url(/s/avatar/{{user.data.avatar || '0'}}.jpg)")
               span.caret

@@ -2,8 +2,8 @@ angular.module \plotDB
   ..controller \plChartEditor,
   <[$scope $http $timeout plConfig chartService paletteService plNotify eventBus permService initWrap license]> ++ 
    ($scope,$http,$timeout,plConfig,chart-service,paletteService,plNotify,eventBus,permService,initWrap,license) ->
-    console.log  document.body.getBoundingClientRect!
     # communication between renderer and editor
+    initWrap = initWrap!
     dispatcher = initWrap do
       handlers: {}
       register: (name, handler) -> @handlers[][name].push(handler)
@@ -37,11 +37,13 @@ angular.module \plotDB
           if n == \download => $scope.download <<< format: '', ready: false
           if o == \editor => #$scope.editor.focus!
           $scope.canvas.resize!
+        $scope.$watch 'panel.size.value', (->  $scope.canvas.resize!), true
 
       tab: 'data'
       set: (v,f) -> @tab = if !f and @tab == v => '' else v
       size: do
-        set: (panel, size) -> @value[panel] = if @value[panel] == size => '' else size
+        set: (panel, size) ->
+          @value[panel] = if @value[panel] == size => '' else size
         value: {}
         doc: ''
 
@@ -105,8 +107,7 @@ angular.module \plotDB
       src: null, obj: null
       dimension: {}
       init: ->
-        $scope.$watch 'chart.config.value', ((n,o) ~>
-          @config.parse(n,o)), true
+        $scope.$watch 'chart.config.value', ((n,o) ~> @config.parse(n,o)), true
         dispatcher.register \data.sample, ({data}) ~> @finish \sample, data
       sample: -> canvas.msg type: 'data.get(sample)'; @block \sample
       config: do
@@ -125,28 +126,33 @@ angular.module \plotDB
           @categorize n,o
         update: (rebind = false) -> canvas.msg {type: \config.set, config: (@value or {}), rebind}
       data: do
+        bindmap: (dimension) ->
+          bindmap = {}
+          [[k,v] for k,v of dimension].map (d) ~> d.1.fields.map ~> if it.key => bindmap[it.key] = d.0
+          bindmap
         adopt: (data, bykey = true) ->
           dimension = $scope.chart.dimension
           fields = data.fields or data
+          bindmap = null
           if !bykey =>
             for k,v of dimension => v <<< fields: [], fieldName: []
             fields.map ~> if it.bind and dimension[it.bind] => dimension[it.bind].fields.push it
-            $scope.chart.data.set fields
+            @set fields
           else
             for k,v of dimension =>
               v.fields = v.fields.map((f) -> fields.filter(->it.key == f.key).0).filter(->it)
+              v.fields.map -> it.bind = k
+            bindmap = @bindmap dimension
           for k,v of dimension => v.fieldName = v.fields.map -> it.name
           dimkeys = [{name: k, multiple: !!v.multiple} for k,v of dimension]
-          bindmap = {}
-          [[k,v] for k,v of dimension].map (d) ~> d.1.fields.map ~> if it.key => bindmap[it.key] = d.0
-          $scope.dataset.bind dimkeys, bindmap
-          $scope.chart.data.update fields
+          $scope.dataset.bind dimkeys, null #bindmap
+          @update fields
         clear: -> eventBus.fire \sheet.data.clear
-        sample: ->
-          $scope.chart.sample!then ~> @adopt it, false
-        set: (data) ->
-          eventBus.fire \sheet.data.set, data
+        sample: -> $scope.chart.sample!then ~> @adopt it, false
+        set: (data) -> eventBus.fire \sheet.data.set, data
+        get: -> @data
         update: (data) ->
+          @data = data
           dimension = $scope.chart.obj.dimension
           [v for k,v of dimension].map -> it.fields = []
           for i from 0 til data.length =>
@@ -174,13 +180,17 @@ angular.module \plotDB
             for k,v of @obj.dimension => if @dimension[k] =>
               @dimension[k] <<< @obj.dimension[k]{fields, fieldName}
             @obj.dimension = @dimension
-            dataset-key := [{k,v} for k,v of @dimension].map(({k,v})-> (v.fields.0 or {}).dataset).0
-            if dataset-key => $scope.dataset.load dataset-key
-            else @sample!
+            $scope.dataset.grid.isClear!
+          .then (v) ~>
+            if v => 
+              dataset-key := [{k,v} for k,v of @dimension].map(({k,v})-> (v.fields.0 or {}).dataset).0
+              if dataset-key => $scope.dataset.parse dataset-key, @data.bindmap(@obj.dimension)
+              else @sample!
+            else =>
+              $scope.dataset.grid.load!
           .then (data = []) ~>
             canvas.render config: plotdb.chart.config.parse(@config.value)
             $scope.chart.data.adopt data, !!dataset-key
-
       library: do
         hash: {}
         load: (list=[]) ->
@@ -204,15 +214,32 @@ angular.module \plotDB
         eventBus.listen \sheet.dataset.saved, ~> @finish \save, it
         eventBus.listen \sheet.dataset.save.failed, ~> @failed \save, it
         eventBus.listen \sheet.dataset.loaded, (payload) ~> @finish \load, payload
+        eventBus.listen \sheet.dataset.parsed, (payload) ~> @finish \parse, payload
         eventBus.listen \sheet.dataset.changed, (v) -> $scope.chart.data.update v
-      load: (key, force = false) -> #TODO only load if not loaded. add a force flag
-        eventBus.fire \sheet.dataset.load, key, force
-        @block \load
-      bind: (dimkeys, bind) ->
-        eventBus.fire \sheet.bind, dimkeys, bind
+      load: (key, bindmap, force = false) ->
+        ret = @block \load
+        eventBus.fire \sheet.dataset.load, key, bindmap, force
+        ret
+      parse: (key, bindmap, force = false) ->
+        ret = @block \parse
+        eventBus.fire \sheet.dataset.parse, key, bindmap, force
+        ret
+      bind: (dimkeys, bind) -> eventBus.fire \sheet.bind, dimkeys, bind
       save: (name) ->
         eventBus.fire \sheet.dataset.save, name
         @block \save
+      grid: initWrap do
+        init: ->
+          eventBus.listen \sheet.grid.isClear, (v) ~> @finish \isClear, v
+          eventBus.listen \sheet.grid.loaded, (data) ~> @finish \load, data
+        load: ->
+          ret = @block \load
+          eventBus.fire \sheet.grid.load
+          ret
+        isClear: ->
+          ret = @block \isClear
+          eventBus.fire \sheet.grid.isClear.get
+          ret
 
     $scope.download = initWrap do
       loading: false, data: null
@@ -378,7 +405,7 @@ angular.module \plotDB
           chart.data = data
           <~ @$apply
           plNotify.send \success, "saved"
-          if refresh => window.location.href = chart-service.link {key: ret}
+          if refresh => window.location.href = chart-service.link {key: ret}, \v2
         .catch (err) ~> @$apply ~>
           if err.2 == 402 =>
             eventBus.fire \quota.widget.on
@@ -397,8 +424,6 @@ angular.module \plotDB
         $scope.chartModal.name.prompt!
       else Promise.resolve!
       promise
-        .finally -> 
-          $scope.$apply -> eventBus.fire \loading.dimmer.off
         .then (name) ->
           if name => chart.name = name
           $scope.$apply -> eventBus.fire \loading.dimmer.on
@@ -417,7 +442,8 @@ angular.module \plotDB
     #####  TEMPORARY CODE #####
 
     $timeout (->
-      plotdb.load 2251, (chart) -> $scope.chart.reset JSON.parse(chart._._chart)
+      if window.chart => $scope.chart.reset window.chart
+      else plotdb.load 2251, (chart) -> $scope.chart.reset JSON.parse(chart._._chart)
     ), 1000
 
     #####  TEMPORARY CODE #####

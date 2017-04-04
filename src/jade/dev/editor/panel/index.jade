@@ -1,3 +1,4 @@
+//- module
 include /mixin.jade
 mixin publish
   .perm-item(style="padding: 10px 0")
@@ -31,17 +32,31 @@ mixin publish
           a(href="#") #[i.fa.fa-book] {{'License'|i18n}}
 
       div(ng-show="settingPanel.tab=='permission'",style="position:relative")
-        include /widget/panel-lock.jade
+        include lock.jade
         div
-          +searchable()
+          .perm-item(style="padding: 10px 0")
+            label {{'Searchable?'|i18n}}
+            br
+            .btn-group
+              .btn.btn-default.btn-sm(ng-class="{'active':chart.obj.searchable}",ng-click="chart.obj.searchable=true")
+                i.fa.fa-check.text-success
+                span  On
+              .btn.btn-default.btn-sm(ng-class="{'active':!chart.obj.searchable}",ng-click="chart.obj.searchable=false")
+                i.fa.fa-check.text-success
+                span  Off
+            .pull-right.btn.btn-text.btn-sm(
+            ng-show="chart.obj.searchable") {{'shown in search result'|i18n}}
+            .pull-right.btn.btn-text.btn-sm(
+            ng-show="!chart.obj.searchable") {{'hidden from search result'|i18n}}
+
           .sep
           div(ng-controller="permEdit",ng-init="setPerm(chart.obj.permission)")
-            include /widget/permission.jade
+            include permission.jade
             +permPanel('entity')
       div(ng-show="settingPanel.tab=='publish'")
         +publish()
         .sep
-        include /widget/publish.jade
+        include publish.jade
       div(ng-show="settingPanel.tab=='chartinfo'")
         .well
           h3(style="margin:0")
@@ -51,13 +66,13 @@ mixin publish
                 | &nbsp; by&nbsp;
                 a(href="/user/" + chart.owner)= chart.ownername
           small.grayed {{'increase visibility by providing more information for your chart'|i18n}}.
-        include /widget/chartinfo.jade
+        include chartinfo.jade
       div(ng-show="settingPanel.tab=='library'")
         .well
           h3(style="margin:0") {{'Library'|i18n}}
           small.grayed(ng-if="lang=='en'") pick libraries you want to use from this dropdown box
           small.grayed(ng-if="lang=='zh'") 透過下拉式選單挑選想要使用的圖表函式庫吧
-        include /widget/library.jade
+        include library.jade
         .sep
         label {{'Inherit Content from Source Chart'|i18n}}
         select.form-control(multiple,ngselect2,ng-data="settingPanel.chart.inherit")

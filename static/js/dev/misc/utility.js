@@ -2,50 +2,53 @@
 var x$, slice$ = [].slice;
 x$ = angular.module('plotDB');
 x$.service('initWrap', ['$rootScope'].concat(function($rootScope){
-  var init;
-  init = function(it){
-    (init.list || (init.list = [])).push(it);
-    return import$(it, {
-      promise: {},
-      failed: function(name){
-        var payload, rej;
-        name == null && (name = 'default');
-        payload = slice$.call(arguments, 1);
-        if (!this.promise[name]) {
-          return;
+  var _;
+  return _ = function(){
+    var init;
+    init = function(it){
+      (init.list || (init.list = [])).push(it);
+      return import$(it, {
+        promise: {},
+        failed: function(name){
+          var payload, rej;
+          name == null && (name = 'default');
+          payload = slice$.call(arguments, 1);
+          if (!this.promise[name]) {
+            return;
+          }
+          rej = this.promise[name].rej;
+          this.promise[name] = null;
+          return rej.apply(null, payload);
+        },
+        finish: function(name){
+          var payload, res;
+          name == null && (name = 'default');
+          payload = slice$.call(arguments, 1);
+          if (!this.promise[name]) {
+            return;
+          }
+          res = this.promise[name].res;
+          this.promise[name] = null;
+          return res.apply(null, payload);
+        },
+        block: function(name){
+          var this$ = this;
+          name == null && (name = 'default');
+          return new Promise(function(res, rej){
+            return this$.promise[name] = {
+              res: res,
+              rej: rej
+            };
+          });
         }
-        rej = this.promise[name].rej;
-        this.promise[name] = null;
-        return rej.apply(null, payload);
-      },
-      finish: function(name){
-        var payload, res;
-        name == null && (name = 'default');
-        payload = slice$.call(arguments, 1);
-        if (!this.promise[name]) {
-          return;
-        }
-        res = this.promise[name].res;
-        this.promise[name] = null;
-        return res.apply(null, payload);
-      },
-      block: function(name){
-        var this$ = this;
-        name == null && (name = 'default');
-        return new Promise(function(res, rej){
-          return this$.promise[name] = {
-            res: res,
-            rej: rej
-          };
-        });
-      }
-    });
+      });
+    };
+    return init.run = function(){
+      return (this.list || (this.list = [])).map(function(it){
+        return it.init();
+      });
+    }, init;
   };
-  return init.run = function(){
-    return (init.list || (init.list = [])).map(function(it){
-      return it.init();
-    });
-  }, init;
 }));
 x$.directive('pldialog', ['$compile'].concat(function($compile){
   return {

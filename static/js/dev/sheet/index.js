@@ -2,15 +2,23 @@
 var x$;
 x$ = angular.module('plotDB');
 x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'permService', 'dataService', 'eventBus', 'plNotify', 'Paging', 'initWrap'].concat(function($scope, $interval, $timeout, $http, permService, dataService, eventBus, plNotify, Paging, initWrap){
+  initWrap = initWrap();
   $scope.sheetModal = {
     duplicate: {}
   };
   $scope.dataset = initWrap({
     init: function(){
       var this$ = this;
-      eventBus.listen('sheet.dataset.load', function(key, force){
-        return this$.load(key).then(function(){
-          return $scope.parser.plotdb.parse(this$.obj);
+      eventBus.listen('sheet.dataset.load', function(key, bindmap, force){
+        return this$.load(key, force).then(function(){
+          return eventBus.fire('sheet.dataset.loaded', key);
+        });
+      });
+      eventBus.listen('sheet.dataset.parse', function(key, bindmap, force){
+        return this$.load(key, force).then(function(){
+          return $scope.parser.plotdb.parse(this$.obj, bindmap);
+        }).then(function(dataset){
+          return eventBus.fire('sheet.dataset.parsed', dataset);
         });
       });
       return eventBus.listen('sheet.dataset.save', function(name){
@@ -71,8 +79,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
               });
               return res();
             }).error(function(it){
-              console.log("error:", it);
-              return rej();
+              return console.log("error:", it(rej()));
             });
           });
         } else {
@@ -152,6 +159,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         types: ref$.types
       });
     },
+    clear: true,
     worker: null,
     data: {
       rows: [],
@@ -292,7 +300,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
       });
     },
     update: function(r, c, val, headOnly){
-      var dirty, i$, i, ref$, j, that, valtype;
+      var dirty, i$, i, ref$, j, that, valtype, this$ = this;
       headOnly == null && (headOnly = true);
       dirty = false;
       if (c >= this.data.headers.length && val) {
@@ -366,7 +374,8 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         return this.render({
           headOnly: headOnly
         }).then(function(){
-          var node, range, e, sel;
+          var node, range;
+          this$.clear = false;
           if (r < 0) {
             node = document.querySelector('#dataset-editbox .sheet-head > div >' + (" div:nth-of-type(" + (c + 1) + ") > textarea:first-child"));
           } else {
@@ -374,20 +383,15 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
           }
           if (node) {
             node.focus();
-            if (headOnly) {
-              return;
+            if (node.setSelectionRange) {
+              return node.setSelectionRange(1, 1);
+            } else {
+              range = node.createTextRange();
+              range.collapse(true);
+              range.moveEnd('character', 1);
+              range.moveStart('character', 1);
+              return range.select();
             }
-            range = document.createRange();
-            try {
-              range.setStart(node, 1);
-            } catch (e$) {
-              e = e$;
-              range.setStart(node, 0);
-            }
-            range.collapse(true);
-            sel = window.getSelection();
-            sel.removeAllRanges();
-            return sel.addRange(range);
           }
         });
       }
@@ -407,12 +411,25 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
       }
     },
     empty: function(){
-      this.data.headers = [];
-      this.data.rows = [];
+      var ref$;
+      ref$ = this.data;
+      ref$.headers = [];
+      ref$.rows = [];
+      ref$.types = [];
+      ref$.keys = [];
+      ref$.datasets = [];
+      ref$.bind = [];
+      this.clear = true;
       return this.render();
     },
     init: function(){
       var head, dim, scroll, content, this$ = this;
+      eventBus.listen('sheet.grid.isClear.get', function(){
+        return eventBus.fire('sheet.grid.isClear', this$.clear);
+      });
+      eventBus.listen('sheet.grid.load', function(){
+        return eventBus.fire('sheet.grid.loaded', this$.data.fieldize());
+      });
       eventBus.listen('sheet.bind', function(dimkeys, bindmap){
         var ref$;
         ref$ = this$.data;
@@ -560,39 +577,44 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         if (key === 86 && e.metaKey || e.ctrlKey && /\t/.exec(val)) {
           return n.value = "";
         }
-        return setTimeout(function(){
-          var val, cPos, row, col, h, v, node, that;
-          val = n.value.replace(/\n/g, '');
-          cPos = e.target.selectionStart;
-          row = +n.getAttribute('row');
-          col = +n.getAttribute('col');
-          h = col;
-          if (key === 13) {
-            key = 40;
-          }
-          if (key === 39 && (pPos !== cPos || cPos < val.length)) {
-            return;
-          }
-          if (key === 37 && (pPos !== cPos || cPos > 0)) {} else if (key >= 37 && key <= 40) {
-            v = [[-1, 0], [0, -1], [1, 0], [0, 1]][key - 37];
-            if (row === 0 && v[1] < 0) {
-              node = head.querySelector([".sheet-head > div >", "div:nth-of-type(" + (col + 1) + ") > textarea:first-child"].join(" "));
+        if (n) {
+          return setTimeout(function(){
+            var val, cPos, row, col, h, v, node, that;
+            if (n.getAttribute('col') == null) {
+              return;
+            }
+            val = (n.value || '').replace(/\n/g, '');
+            cPos = e.target.selectionStart;
+            row = +n.getAttribute('row');
+            col = +n.getAttribute('col');
+            h = col;
+            if (key === 13) {
+              key = 40;
+            }
+            if (key === 39 && (pPos !== cPos || cPos < val.length)) {
+              return;
+            }
+            if (key === 37 && (pPos !== cPos || cPos > 0)) {} else if (key >= 37 && key <= 40) {
+              v = [[-1, 0], [0, -1], [1, 0], [0, 1]][key - 37];
+              if (row === 0 && v[1] < 0) {
+                node = head.querySelector([".sheet-head > div >", "div:nth-of-type(" + (col + 1) + ") > textarea:first-child"].join(" "));
+              } else {
+                node = content.querySelector([".sheet-cells >", "div:nth-of-type(" + (row + 1 + v[1]) + ") >", "div:nth-of-type(" + (col + 1 + v[0]) + ") textarea"].join(" "));
+              }
+              if (that = node) {
+                return that.focus();
+              }
             } else {
-              node = content.querySelector([".sheet-cells >", "div:nth-of-type(" + (row + 1 + v[1]) + ") >", "div:nth-of-type(" + (col + 1 + v[0]) + ") textarea"].join(" "));
+              return $scope.$apply(function(){
+                return this$.update(row, h, val);
+              });
             }
-            if (that = node) {
-              return that.focus();
-            }
-          } else {
-            return $scope.$apply(function(){
-              return this$.update(row, h, val);
-            });
-          }
-        }, 0);
+          }, 0);
+        }
       });
     },
     paste: function(row, col, val){
-      var head, data, ret, w, h, curRowSize, curColSize, newRowSize, newColSize, i$, i, r, j$, c, ref$, key$, to$, j;
+      var head, data, ret, w, h, curRowSize, curColSize, newRowSize, newColSize, i$, i, r, j$, c, ref$, key$, to$, j, this$ = this;
       head = null;
       eventBus.fire('loading.dimmer.on');
       data = $scope.grid.data;
@@ -649,6 +671,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         data.types[i] = plotdb.Types.resolve((fn$()));
       }
       return $scope.grid.render().then(function(){
+        this$.clear = false;
         eventBus.fire('loading.dimmer.off');
         return eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());
       });
@@ -676,9 +699,9 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
           return this$.data.bindmap[it] || null;
         });
         this.data.bindmap = null;
-        eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());
       }
       return this.render().then(function(){
+        this$.clear = false;
         return eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());
       });
     }
@@ -704,17 +727,8 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
   $scope.parser.fields = initWrap({
     init: function(){
       eventBus.listen('sheet.data.clear', function(){
-        var payload;
-        payload = {
-          headers: [],
-          rows: [],
-          types: [],
-          keys: [],
-          datasets: [],
-          bind: []
-        };
         $scope.dataset.clear();
-        return $scope.grid.load(payload);
+        return $scope.grid.empty();
       });
       return eventBus.listen('sheet.data.set', function(data){
         var x$, payload;
@@ -727,8 +741,8 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
             return e.data[i];
           });
         });
-        x$.types = data.map(function(){
-          return 'Number';
+        x$.types = data.map(function(it){
+          return it.datatype || 'Number';
         });
         x$.keys = data.map(function(){
           return 0;
@@ -751,16 +765,24 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         ? v
         : !this.toggled;
     },
-    parse: function(dataset){
+    parse: function(dataset, bindmap){
       var this$ = this;
+      bindmap == null && (bindmap = null);
       return new Promise(function(res, rej){
         if (!this$.worker) {
           this$.worker = new Worker('/js/data/worker/parse-dataset.js');
         }
-        this$.worker.onmessage = function(e){
+        this$.worker.onmessage = function(arg$){
+          var payload;
+          payload = arg$.data;
           return $scope.$apply(function(){
-            return $scope.grid.load(e.data.data, dataset.size).then(function(){
-              return res();
+            if (bindmap) {
+              payload.data.bind = payload.data.keys.map(function(it){
+                return bindmap[it];
+              });
+            }
+            return $scope.grid.load(payload.data, dataset.size).then(function(){
+              return res(dataset);
             });
           });
         };
