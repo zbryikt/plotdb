@@ -5,6 +5,24 @@
         <[
           /css/render/pdb.css
         ]>
+      editor:
+        <[
+          /assets/bootstrap/3.3.7/css/bootstrap.min.css
+          /assets/fontawesome/4.6.1/css/font-awesome.min.css
+          /assets/ldcolorpicker/0.1.1/ldcp.css
+          /assets/select2/4.0.1/css/select2.min.css
+          /assets/codemirror/5.10/lib/codemirror.css
+          /assets/codemirror/5.10/theme/neat.css
+          /assets/codemirror/5.10/theme/monokai.css
+          /assets/codemirror/5.10/theme/rubyblue.css
+          /assets/codemirror/5.10/theme/colorforth.css
+          /assets/clusterize/0.16.1/clusterize.css
+          /assets/animate.css/3.5.1/index.css
+          /assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.css
+          /assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.skinFlat.css
+          /dist/0.1.0/plotdb.min.css
+          /css/index.css
+        ]>
       frameworks:
         <[
           /assets/bootstrap/3.3.7/css/bootstrap.min.css
@@ -24,6 +42,16 @@
           /css/index.css
         ]>
     js: do
+      editor:
+        <[
+          /assets/ion-rangeslider/2.1.7/js/ion.rangeSlider.min.js
+          /js/chart/view.js
+          /js/dev/editor/main.js
+          /js/dev/editor/utility.js
+          /js/dev/sheet/index.js
+          /js/dev/misc/utility.js
+          /js/dev/misc/paledit.js
+        ]>
       render:
         <[
           /js/sched.js

@@ -1,6 +1,29 @@
 big.xl {
   font-size: 1.5em;
 }
+.float-hint {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  -ms-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+  -o-transform: translateX(-50%);
+  transform: translateX(-50%);
+  background: #ffa;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  padding: 5px 10px;
+  z-index: 44;
+}
+.float-hint a {
+  cursor: pointer;
+}
+.text-overflow {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
 .block {
   display: block !important;
 }
@@ -19,7 +42,7 @@ big.xl {
   -webkit-transform: translateX(-50%);
   -o-transform: translateX(-50%);
   transform: translateX(-50%);
-  z-index: 44;
+  z-index: 45;
 }
 .notify {
   border-radius: 2px;
@@ -1273,12 +1296,12 @@ width: 100%;
 .loader.floating {
   position: absolute;
   left: 50%;
-  z-index: 45;
+  z-index: 46;
 }
 .loader.fixed.scrolling {
   position: fixed;
   left: 50%;
-  z-index: 45;
+  z-index: 46;
   bottom: 20px;
 }
 .loader.floating.lg,

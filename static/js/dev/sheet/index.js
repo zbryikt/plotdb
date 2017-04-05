@@ -745,7 +745,9 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         x$.headers = data.map(function(it){
           return it.name;
         });
-        x$.rows = data[0].data.map(function(d, i){
+        x$.rows = (data[0] || {
+          data: []
+        }).data.map(function(d, i){
           return data.map(function(e, j){
             return e.data[i];
           });

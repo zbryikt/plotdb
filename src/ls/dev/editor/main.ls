@@ -118,10 +118,15 @@ angular.module \plotDB
         $scope.$watch 'editor.size.value', ~> @resize!
         dispatcher.register \inited, (payload) ~> @finish \load, payload
         dispatcher.register \rendered, ~> @finish \render
-
+        $http do
+          url: \/dev/editor/render.html
+          method: \GET
+        .success (d) ~> 
+          @url = URL.createObjectURL new Blob [d], {type: \text/html}
+        
       # chart: base object stored in database
       load: (chart) ->
-        @canvas.iframe.src = "/dev/editor/render.html"
+        @canvas.iframe.src = if @url => that else  "/dev/editor/render.html"
         @canvas.iframe.onload = ~>
           $scope.chart.library.load chart.library .then (library) ~>
             @msg {
@@ -152,7 +157,9 @@ angular.module \plotDB
       src: null, obj: null
       dimension: {}
       init: ->
-        $scope.$watch 'chart.config', ((n,o) ~> @config.parse(n.value,o.value)), true
+        $scope.$watch 'chart.config', ((n,o) ~>
+          if angular.toJson(n.value) == angular.toJson(o.value) => return
+          @config.parse(n.value,o.value)), true
         dispatcher.register \data.sample, ({data}) ~> @finish \sample, data
       sample: -> canvas.msg type: 'data.get(sample)'; @block \sample
       config: do
@@ -231,7 +238,7 @@ angular.module \plotDB
                 break
 
         update: (data) ->
-          if !data.filter(->it.bind).length =>
+          if data.length and !data.filter(->it.bind).length =>
             @autobind data, $scope.chart.obj.dimension
             if data.filter(->it.bind) => @adopt data, false
             return
@@ -260,6 +267,7 @@ angular.module \plotDB
             @config.value = new-config
             @config.categorize!
             @dimension = JSON.parse payload.dimension
+            if ![k for k of @dimension].length and chart => $scope.panel.tab = \style
             for k,v of @obj.dimension => if @dimension[k] =>
               @dimension[k] <<< @obj.dimension[k]{fields, fieldName}
             @obj.dimension = @dimension
@@ -490,15 +498,15 @@ angular.module \plotDB
           data := chart.data # prevent data to be sent
           chart.data = null
           new chart-service.chart(chart).save!
-        .finally ~>
-          @save.pending = false
-          eventBus.fire \loading.dimmer.off
+        .finally ~> @save.pending = false
         .then (ret) ~>
           chart.data = data
           <~ @$apply
           plNotify.send \success, "saved"
           if refresh => window.location.href = chart-service.link {key: ret}, \v2
+          else eventBus.fire \loading.dimmer.off
         .catch (err) ~> @$apply ~>
+          eventBus.fire \loading.dimmer.off
           if err.2 == 402 =>
             eventBus.fire \quota.widget.on
             plNotify.send \danger, "Failed: Quota exceeded"

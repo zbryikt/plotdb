@@ -4,6 +4,19 @@
 big.xl
   font-size: 1.5em
 
+.float-hint
+  position: fixed
+  top: 70px
+  left: 50%
+  transform: translateX(-50%)
+  background: #ffa
+  border-radius: 3px
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3)
+  padding: 5px 10px
+  z-index: index(order, 'float-hint')
+  a
+    cursor: pointer
+
 .text-overflow
   text-overflow: ellipsis
   overflow: hidden

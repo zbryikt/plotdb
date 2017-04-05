@@ -254,7 +254,7 @@ engine.router.api.delete "/chart/:id", aux.numid false, (req, res) ~>
 engine.app.get \/chart/, (req, res) ->
   return res.render 'view/chart/index.jade', {chart: {}}
 
-engine.app.get \/chart/:id/v2, aux.numid true, (req, res) ->
+editor = (req, res) ->
   get-chart req, req.params.id
     .then ({chart,permission}) ->
       permtype = perm.caltype req, permission, chart.owner
@@ -265,7 +265,10 @@ engine.app.get \/chart/:id/v2, aux.numid true, (req, res) ->
       return null
     .catch aux.error-handler res, true
 
-engine.app.get \/chart/:id, aux.numid true, (req, res) ->
+engine.app.get \/chart/:id/v2, aux.numid true, editor
+engine.app.get \/chart/:id/, aux.numid true, editor
+
+engine.app.get \/chart/:id/v1, aux.numid true, (req, res) ->
   get-chart req, req.params.id
     .then ({chart,permission}) ->
       permtype = perm.caltype req, permission, chart.owner

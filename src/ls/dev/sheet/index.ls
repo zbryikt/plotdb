@@ -445,7 +445,7 @@ angular.module \plotDB
         eventBus.listen \sheet.data.set, (data) ->
           payload = {}
             ..headers = data.map -> it.name
-            ..rows = data.0.data.map (d,i) -> data.map (e,j) -> e.data[i]
+            ..rows = (data.0 or {data: []}).data.map (d,i) -> data.map (e,j) -> e.data[i]
             ..types = data.map -> it.datatype or \Number
             ..keys = data.map -> 0
             ..datasets = data.map -> 0

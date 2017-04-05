@@ -221,13 +221,21 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       dispatcher.register('inited', function(payload){
         return this$.finish('load', payload);
       });
-      return dispatcher.register('rendered', function(){
+      dispatcher.register('rendered', function(){
         return this$.finish('render');
+      });
+      return $http({
+        url: '/dev/editor/render.html',
+        method: 'GET'
+      }).success(function(d){
+        return this$.url = URL.createObjectURL(new Blob([d], {
+          type: 'text/html'
+        }));
       });
     },
     load: function(chart){
-      var this$ = this;
-      this.canvas.iframe.src = "/dev/editor/render.html";
+      var that, this$ = this;
+      this.canvas.iframe.src = (that = this.url) ? that : "/dev/editor/render.html";
       this.canvas.iframe.onload = function(){
         return $scope.chart.library.load(chart.library).then(function(library){
           return this$.msg({
@@ -269,6 +277,9 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     init: function(){
       var this$ = this;
       $scope.$watch('chart.config', function(n, o){
+        if (angular.toJson(n.value) === angular.toJson(o.value)) {
+          return;
+        }
         return this$.config.parse(n.value, o.value);
       }, true);
       return dispatcher.register('data.sample', function(arg$){
@@ -499,7 +510,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       },
       update: function(data){
         var dimension, k, v, i$, to$, i, ref$, key$;
-        if (!data.filter(function(it){
+        if (data.length && !data.filter(function(it){
           return it.bind;
         }).length) {
           this.autobind(data, $scope.chart.obj.dimension);
@@ -576,6 +587,15 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         this$.config.value = newConfig;
         this$.config.categorize();
         this$.dimension = JSON.parse(payload.dimension);
+        if (!(function(){
+          var results$ = [];
+          for (k in this.dimension) {
+            results$.push(k);
+          }
+          return results$;
+        }.call(this$)).length && chart) {
+          $scope.panel.tab = 'style';
+        }
         for (k in ref$ = this$.obj.dimension) {
           v = ref$[k];
           if (this$.dimension[k]) {
@@ -1031,8 +1051,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       chart.data = null;
       return new chartService.chart(chart).save();
     })['finally'](function(){
-      this$.save.pending = false;
-      return eventBus.fire('loading.dimmer.off');
+      return this$.save.pending = false;
     }).then(function(ret){
       chart.data = data;
       return this$.$apply(function(){
@@ -1041,10 +1060,13 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           return window.location.href = chartService.link({
             key: ret
           }, 'v2');
+        } else {
+          return eventBus.fire('loading.dimmer.off');
         }
       });
     })['catch'](function(err){
       return this$.$apply(function(){
+        eventBus.fire('loading.dimmer.off');
         if (err[2] === 402) {
           eventBus.fire('quota.widget.on');
           return plNotify.send('danger', "Failed: Quota exceeded");

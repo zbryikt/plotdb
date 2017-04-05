@@ -21,17 +21,24 @@ block vars
   - use.stripe = false;
 block head
   script(src="https://apis.google.com/js/api.js")
-  link(rel="stylesheet",type="text/css",href="/dist/0.1.0/plotdb.min.css")
-  link(rel="stylesheet",type="text/css",href="/assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.css")
-  link(rel="stylesheet",type="text/css",href="/assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.skinFlat.css")
-  script(type="text/javascript",src="/assets/ion-rangeslider/2.1.7/js/ion.rangeSlider.min.js")
-  script(type="text/javascript",src="/lib/plotd3/0.1.0/index.js")
-  script(type="text/javascript",src="/js/dev/editor/main.js")
-  script(type="text/javascript",src="/js/dev/editor/utility.js")
-  script(type="text/javascript",src="/js/dev/sheet/index.js")
-  script(type="text/javascript",src="/js/dev/misc/utility.js")
-  script(type="text/javascript",src="/js/dev/misc/paledit.js")
-  script(type="text/javascript",src="/js/pack/view.js")
+
+  link(rel="stylesheet",type="text/css",href="/css/pack/editor.css?" + version)
+  //-
+    link(rel="stylesheet",type="text/css",href="/dist/0.1.0/plotdb.min.css")
+    link(rel="stylesheet",type="text/css",href="/assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.css")
+    link(rel="stylesheet",type="text/css",href="/assets/ion-rangeslider/2.1.7/css/ion.rangeSlider.skinFlat.css")
+  if false
+    script(src="/js/pack/editor.js?" + version)
+  else
+    script(type="text/javascript",src="/assets/ion-rangeslider/2.1.7/js/ion.rangeSlider.min.js")
+    script(type="text/javascript",src="/lib/plotd3/0.1.0/index.js")
+    script(type="text/javascript",src="/js/dev/editor/main.js")
+    script(type="text/javascript",src="/js/dev/editor/utility.js")
+    script(type="text/javascript",src="/js/dev/sheet/index.js")
+    script(type="text/javascript",src="/js/dev/misc/utility.js")
+    script(type="text/javascript",src="/js/dev/misc/paledit.js")
+    script(type="text/javascript",src="/js/pack/view.js")
+
   include /colorblind.jade
   if chart
     script.
@@ -42,6 +49,10 @@ block head
 
 block body
   .editor-root(ng-controller="plChartEditor",ng-cloak,style="background:url(/assets/img/transparent.png)"): .inner
+    .float-hint(ng-cloak,ng-if="!hint.hide")
+      span(ng-if="lang=='en'") Want to use the earlier version editor? #[a(href="v1/") click here]
+      span(ng-if="lang=='zh'") 習慣舊的編輯器嗎？ #[a(href="v1/") 點此前往]
+      span.clickable(ng-click="hint.hide = true") &nbsp; &times;
     include panel/index.jade
     include /widget/paledit-modal-ctrl.jade
     include modal/chart-name.jade

@@ -11151,7 +11151,8 @@ plotdb.chart = {
       }
       return results$;
     }()).map(function(d){
-      d[1].fields.map(function(it){
+      var ref$;
+      ((ref$ = d[1]).fields || (ref$.fields = [])).map(function(it){
         return it.bind = d[0];
       });
       return d[1].fields;

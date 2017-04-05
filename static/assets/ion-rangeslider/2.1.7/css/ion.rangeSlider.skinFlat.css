@@ -12,7 +12,7 @@
 .irs-bar,
 .irs-bar-edge,
 .irs-slider {
-    background: url(../img/sprite-skin-flat.png) repeat-x;
+    background: url(/assets/ion-rangeslider/2.1.7/img/sprite-skin-flat.png) repeat-x;
 }
 
 .irs {

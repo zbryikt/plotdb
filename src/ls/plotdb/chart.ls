@@ -10,7 +10,7 @@ plotdb.chart = do
     render: ->
   fields-from-dimension: (dimension) ->
     [[k,v] for k,v of dimension].map((d)->
-      d.1.fields.map -> it.bind = d.0
+      d.1.[]fields.map -> it.bind = d.0
       d.1.fields
     ).reduce(((a,b) -> a ++ b), [])
   data-from-dimension: (dimension) ->
