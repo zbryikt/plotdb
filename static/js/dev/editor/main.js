@@ -37,6 +37,13 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       return document.fireEvent("onclick", event);
     }
   });
+  dispatcher.register('keydown', function(arg$){
+    var e;
+    e = arg$.event;
+    if ((e.metaKey || e.altKey) && (e.keyCode === 13 || e.which === 13)) {
+      return $scope.panel['switch']();
+    }
+  });
   $scope.chartModal = {
     name: {}
   };
@@ -131,7 +138,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
   });
   $scope.panel = initWrap({
     init: function(){
-      var width, ref$;
+      var width, ref$, this$ = this;
       width = document.body.getBoundingClientRect().width;
       if (width < 881) {
         ref$ = this.size.value;
@@ -149,9 +156,19 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         if (o === 'editor') {}
         return $scope.canvas.resize();
       });
-      return $scope.$watch('panel.size.value', function(){
+      $scope.$watch('panel.size.value', function(){
         return $scope.canvas.resize();
       }, true);
+      return document.body.addEventListener('keydown', function(e){
+        return $scope.$apply(function(){
+          if ((e.metaKey || e.altKey) && (e.keyCode === 13 || e.which === 13)) {
+            return this$['switch']();
+          }
+        });
+      });
+    },
+    'switch': function(){
+      return this.set(this.tab !== 'editor' ? 'editor' : '', true);
     },
     tab: 'data',
     set: function(v, f){

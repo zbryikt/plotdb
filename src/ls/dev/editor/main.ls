@@ -21,6 +21,9 @@ angular.module \plotDB
         event = document.createEventObject!
         event.synthetic = true
         document.fireEvent("onclick", event)
+    # fire keydown from within iframe
+    dispatcher.register \keydown, ({event: e}) ->
+      if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) => $scope.panel.switch!
 
     # modals. check directive 'chartModal' for more methods
     $scope.chartModal = name: {}
@@ -78,7 +81,9 @@ angular.module \plotDB
           if o == \editor => #$scope.editor.focus!
           $scope.canvas.resize!
         $scope.$watch 'panel.size.value', (->  $scope.canvas.resize!), true
-
+        document.body.addEventListener \keydown, (e) ~> $scope.$apply ~>
+          if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) => @switch!
+      switch: -> @set (if @tab != \editor => \editor else ''), true
       tab: 'data'
       set: (v,f) -> @tab = if !f and @tab == v => '' else v
       size: do

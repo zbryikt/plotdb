@@ -229,12 +229,18 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         });
         for (i$ = 0, to$ = this.rows.length; i$ < to$; ++i$) {
           i = i$;
+          if (!this.rows[i].filter(fn$).length) {
+            continue;
+          }
           for (j$ = 0, to1$ = this.headers.length; j$ < to1$; ++j$) {
             j = j$;
             ret[j].data.push(((ref$ = this.rows)[i] || (ref$[i] = []))[j]);
           }
         }
         return ret;
+        function fn$(it){
+          return it;
+        }
       }
     },
     render: function(obj){
@@ -731,7 +737,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
     init: function(){
       eventBus.listen('sheet.data.clear', function(){
         $scope.dataset.clear();
-        return $scope.grid.empty();
+        return $scope.grid.empty(true);
       });
       return eventBus.listen('sheet.data.set', function(data){
         var x$, payload;

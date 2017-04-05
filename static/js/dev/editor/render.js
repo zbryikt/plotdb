@@ -14,6 +14,13 @@ window.addEventListener('click', function(){
     type: 'click'
   });
 });
+window.addEventListener('keydown', function(e){
+  var ref$;
+  return sendMsg({
+    type: 'keydown',
+    event: (ref$ = {}, ref$.keyCode = e.keyCode, ref$.altKey = e.altKey, ref$.metaKey = e.metaKey, ref$.ctrlKey = e.ctrlKey, ref$.key = e.key, ref$.shiftKey = e.shiftKey, ref$.which = e.which, ref$)
+  });
+});
 dispatcher = {
   handlers: {},
   register: function(name, handler){

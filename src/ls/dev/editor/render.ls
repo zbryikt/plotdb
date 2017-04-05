@@ -23,6 +23,10 @@ store = do
 # bubbling up click outside renderer. for ColorPicker
 window.addEventListener \click, -> send-msg {type: \click}
 
+# bubbling up keydown outside renderer. for panel switching
+window.addEventListener \keydown, (e) ->
+  send-msg type: \keydown, event: {} <<< e{keyCode, altKey, metaKey, ctrlKey, key, shiftKey, which}
+
 dispatcher = do
   handlers: {}
   register: (name, handler) -> @handlers[][name].push(handler)

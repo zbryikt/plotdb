@@ -148,6 +148,7 @@ angular.module \plotDB
             data: [], datatype: @types[i], name: d, bind: @bind[i]
             key: @keys[i], dataset: @datasets[i]
           for i from 0 til @rows.length =>
+            if !@rows[i].filter(->it).length => continue
             for j from 0 til @headers.length => ret[j].data.push @rows[][i][j]
           return ret
 
@@ -440,7 +441,7 @@ angular.module \plotDB
       init: ->
         eventBus.listen \sheet.data.clear, ->
           $scope.dataset.clear!
-          $scope.grid.empty!
+          $scope.grid.empty true
         eventBus.listen \sheet.data.set, (data) ->
           payload = {}
             ..headers = data.map -> it.name
