@@ -40,6 +40,95 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
   $scope.chartModal = {
     name: {}
   };
+  $scope.chartModal.assets = initWrap({
+    init: function(){},
+    measure: function(){
+      var ref$;
+      return ((ref$ = $scope.chart.obj).assets || (ref$.assets = [])).size = $scope.chart.obj.assets.map(function(it){
+        return it.content.length;
+      }).reduce(function(a, b){
+        return a + b;
+      }, 0);
+    },
+    download: {
+      url: null,
+      name: null
+    },
+    remove: function(f){
+      var assets, idx;
+      assets = $scope.chart.obj.assets || [];
+      idx = assets.indexOf(f);
+      assets.splice(idx, 1);
+      return $scope.chart.reset();
+    },
+    add: function(f){
+      var assets;
+      assets = $scope.chart.obj.assets || [];
+      return assets.push(f);
+    },
+    preview: function(file){
+      var datauri;
+      this.node = document.querySelector('#assets-preview iframe');
+      this.download.url = URL.createObjectURL(new Blob([file.content], {
+        type: file.type
+      }));
+      this.download.name = file.name;
+      this.preview.toggled = true;
+      datauri = ["data:", file.type, ";charset=utf-8;base64,", file.content].join("");
+      return this.node.src = datauri;
+    },
+    read: function(list){
+      var this$ = this;
+      return new Promise(function(res, rej){
+        var deny, i$, to$, i, item, name, that, type, result, idx, content, size, ref$;
+        deny = [];
+        for (i$ = 0, to$ = list.length; i$ < to$; ++i$) {
+          i = i$;
+          item = list[i];
+          name = (that = /([^/]+\.?[^/.]*)$/.exec(item.file.name)) ? that[1] : 'unnamed';
+          type = item.file.type;
+          result = item.result;
+          idx = result.indexOf(';');
+          content = result.substring(idx + 8);
+          size = ((ref$ = $scope.chart.obj).assets || (ref$.assets = [])).map(fn$).reduce(fn1$, 0) + content.length;
+          if (size > 3000000) {
+            deny.push(name);
+            continue;
+          }
+          $scope.chartModal.assets.add({
+            name: name,
+            type: type,
+            content: content
+          });
+        }
+        if (deny.length) {
+          return plNotify.alert("Following assets exceed the size limit 3MB, and won't be uploaded: " + deny.join(','));
+        }
+        function fn$(it){
+          return (it.content || "").length;
+        }
+        function fn1$(a, b){
+          return a + b;
+        }
+      });
+    },
+    handle: function(files){
+      var file;
+      return Promise.all((function(){
+        var i$, ref$, len$, results$ = [];
+        for (i$ = 0, len$ = (ref$ = files).length; i$ < len$; ++i$) {
+          file = ref$[i$];
+          results$.push(this.read(file));
+        }
+        return results$;
+      }.call(this))).then(function(){
+        return $scope.renderAsync();
+      })['catch'](function(it){
+        return console.log(it);
+      });
+    },
+    node: null
+  });
   $scope.panel = initWrap({
     init: function(){
       var width, ref$;
@@ -51,14 +140,11 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         this.size.doc = 'sm';
       }
       $scope.$watch('panel.tab', function(n, o){
-        var ref$;
         if (n === o) {
           return;
         }
         if (n === 'download') {
-          ref$ = $scope.download;
-          ref$.format = '';
-          ref$.ready = false;
+          $scope.download.clear();
         }
         if (o === 'editor') {}
         return $scope.canvas.resize();
@@ -223,6 +309,14 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           config: this.value || {},
           rebind: rebind
         });
+      },
+      reset: function(){
+        var k, ref$, v;
+        for (k in ref$ = this.value) {
+          v = ref$[k];
+          v.value = v['default'] || v.value;
+        }
+        return $scope.chart.reset();
       }
     },
     data: {
@@ -620,6 +714,20 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     loading: false,
     data: null,
     init: function(){
+      var this$ = this;
+      $scope.$watch('canvas.dimension.custom', function(n, o){
+        if (this$.format && JSON.stringify(n) !== JSON.stringify(o)) {
+          this$.loading = true;
+          this$.data = null;
+          this$.ready = false;
+          return $timeout(function(){
+            return this$.fetch(this$.format);
+          }, 1000);
+        }
+      }, true);
+      $scope.$watch('canvas.dimension.value', function(n, o){
+        return this$.customSize = n === 'Custom';
+      });
       $scope.$watch('download.customSize', function(n, o){
         if (n !== o) {
           return canvas.dimension.set(n ? 'Custom' : 'default');
@@ -660,12 +768,15 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         });
       });
     },
+    clear: function(){
+      return this.loading = false, this.data = null, this.ready = false, this.format = '', this;
+    },
     fetch: function(format){
       var data, size, url;
       format == null && (format = 'svg');
       this.format = format;
       this.loading = true;
-      this.data = false;
+      this.data = null;
       this.ready = false;
       this.format = format;
       this.loading = true;

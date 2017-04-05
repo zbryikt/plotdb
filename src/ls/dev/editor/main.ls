@@ -24,6 +24,46 @@ angular.module \plotDB
 
     # modals. check directive 'chartModal' for more methods
     $scope.chartModal = name: {}
+    $scope.chartModal.assets = initWrap do
+      init: ->
+      measure: ->
+        $scope.chart.obj.[]assets.size = $scope.chart.obj.assets.map(-> it.content.length ).reduce(((a,b)->a+b),0)
+      download: url: null, name: null
+      remove: (f) -> 
+        assets = $scope.chart.obj.assets or []
+        idx = assets.indexOf f
+        assets.splice idx, 1
+        $scope.chart.reset!
+      add: (f) ->
+        assets = $scope.chart.obj.assets or []
+        assets.push f
+      preview: (file) ->
+        @node = document.querySelector('#assets-preview iframe')
+        @download.url = URL.createObjectURL(new Blob [file.content], {type: file.type})
+        @download.name = file.name
+        @preview.toggled = true
+        datauri = [ "data:", file.type, ";charset=utf-8;base64,", file.content ].join("")
+        @node.src = datauri
+      read: (list) -> new Promise (res, rej) ~>
+        deny = []
+        for i from 0 til list.length =>
+          item = list[i]
+          name = if /([^/]+\.?[^/.]*)$/.exec(item.file.name) => that.1 else \unnamed
+          type = item.file.type
+          result = item.result
+          idx = result.indexOf(\;)
+          content = result.substring(idx + 8)
+          size = $scope.chart.obj.[]assets.map(->(it.content or "").length).reduce(((a,b)->a+b),0) + content.length
+          if size > 3000000 =>
+            deny.push name
+            continue
+          $scope.chartModal.assets.add {name, type, content}
+        if deny.length => plNotify.alert "Following assets exceed the size limit 3MB, and won't be uploaded: #{deny.join(\,)}"
+      handle: (files) ->
+        Promise.all [@read(file) for file in files]
+          .then -> $scope.render-async!
+          .catch -> console.log it
+      node: null
 
     # ui controller
     $scope.panel = initWrap do
@@ -34,7 +74,7 @@ angular.module \plotDB
           @size.doc = 'sm'
         $scope.$watch 'panel.tab', (n,o) -> 
           if n == o => return
-          if n == \download => $scope.download <<< format: '', ready: false
+          if n == \download => $scope.download.clear!
           if o == \editor => #$scope.editor.focus!
           $scope.canvas.resize!
         $scope.$watch 'panel.size.value', (->  $scope.canvas.resize!), true
@@ -125,6 +165,9 @@ angular.module \plotDB
           @update rebind
           @categorize n,o
         update: (rebind = false) -> canvas.msg {type: \config.set, config: (@value or {}), rebind}
+        reset: ->
+          for k,v of @value => v.value = v.default or v.value
+          $scope.chart.reset!
       data: do
         bindmap: (dimension) ->
           bindmap = {}
@@ -276,7 +319,13 @@ angular.module \plotDB
     $scope.download = initWrap do
       loading: false, data: null
       init: ->
-        $scope.$watch 'download.customSize', (n,o) ->
+        $scope.$watch 'canvas.dimension.custom', ((n,o) ~>
+          if @format and JSON.stringify(n) != JSON.stringify(o) =>
+            @ <<< loading: true, data: null, ready: false
+            $timeout (~> @fetch @format), 1000 #quick hack for waiting canvas resized
+        ), true
+        $scope.$watch 'canvas.dimension.value', (n,o) ~> @customSize = (n == \Custom)
+        $scope.$watch 'download.customSize', (n,o) ~>
           if n != o => canvas.dimension.set if n => \Custom else \default
         dispatcher.register \snapshot, (payload) ->
           {data, format} = payload
@@ -301,8 +350,9 @@ angular.module \plotDB
             size: size
             filename: "#{$scope.chart.obj.name}.#{ext}"
 
+      clear: -> @ <<< loading: false, data: null, ready: false, format: ''
       fetch: (format = \svg) ->
-        @ <<< {format, loading: true, data: false, ready: false}
+        @ <<< {format, loading: true, data: null, ready: false}
         @format = format
         @loading = true
         if format == \plotdb =>
@@ -399,6 +449,7 @@ angular.module \plotDB
           @embedcode = embedcode-generator!
         $scope.$watch 'sharePanel.link', ~>
           @embedcode = embedcode-generator!
+
 
     $scope.local = do
       get: -> new Promise (res, rej) ~>

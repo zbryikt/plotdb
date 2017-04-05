@@ -620,6 +620,9 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       'try these predefined tags': {
         zh: "何不試試這些關鍵字"
       },
+      'Reset Config': {
+        zh: "還原預設值"
+      },
       'Viswork Name': {
         zh: "視覺化名稱"
       },
@@ -1195,7 +1198,8 @@ x$.directive('readby', ['$compile'].concat(function($compile){
     scope: {
       readby: '&readby',
       encoding: '@encoding',
-      askencoding: '&askencoding'
+      askencoding: '&askencoding',
+      multiple: '@multiple'
     },
     link: function(s, e, a, c){
       var handler, askencoding;
@@ -1204,18 +1208,55 @@ x$.directive('readby', ['$compile'].concat(function($compile){
       return e.bind('change', function(event){
         var reader;
         reader = function(){
-          var fr;
-          fr = new FileReader();
-          fr.onload = function(){
-            s.$apply(function(){
-              return handler(fr.result, event.target.files[0]);
+          var files, loadfile, promises, fr;
+          files = event.target.files;
+          if (!files.length) {
+            return;
+          }
+          if (a.multiple) {
+            loadfile = function(f){
+              return new Promise(function(res, rej){
+                var fr;
+                fr = new FileReader();
+                fr.onload = function(){
+                  return res({
+                    result: fr.result,
+                    file: f
+                  });
+                };
+                if (a.asdataurl) {
+                  return fr.readAsDataURL(f);
+                } else if (s.encoding) {
+                  return fr.readAsText(f, s.encoding);
+                } else {
+                  return fr.readAsBinaryString(f);
+                }
+              });
+            };
+            promises = Array.from(files).map(function(it){
+              return loadfile(it);
             });
-            return e.val("");
-          };
-          if (s.encoding) {
-            return fr.readAsText(event.target.files[0], s.encoding);
+            return Promise.all(promises).then(function(ret){
+              s.$apply(function(){
+                return handler(ret);
+              });
+              return e.val("");
+            });
           } else {
-            return fr.readAsBinaryString(event.target.files[0]);
+            fr = new FileReader();
+            fr.onload = function(){
+              s.$apply(function(){
+                return handler(fr.result, files[0]);
+              });
+              return e.val("");
+            };
+            if (a.asdataurl) {
+              return fr.readAsDataURL(f);
+            } else if (s.encoding) {
+              return fr.readAsText(files[0], s.encoding);
+            } else {
+              return fr.readAsBinaryString(files[0]);
+            }
           }
         };
         return s.$apply(function(){

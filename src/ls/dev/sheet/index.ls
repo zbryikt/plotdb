@@ -71,9 +71,9 @@ angular.module \plotDB
             eventBus.fire \sheet.dataset.saved, @obj
           .catch ~> eventBus.fire \sheet.dataset.save.failed, it
 
-      load: (key, force) ->
+      load: (key, force, location=\server) ->
         if !@obj or @obj.key != key or !force =>
-          data-service.load {location: \server, name: \dataset}, key
+          data-service.load {location: location, name: \dataset}, key
             .then (ret) ~>
               @obj = dataset = new data-service.dataset ret
               eventBus.fire \sheet.dataset.loaded, @obj
@@ -465,7 +465,7 @@ angular.module \plotDB
       load: (dataset) ->
         eventBus.fire \loading.dimmer.on, 1
         $scope.parser.progress 3000
-        $scope.dataset.load(dataset.key,true)
+        $scope.dataset.load(dataset.key,true,dataset._type.location)
           .finally ~>
             @toggle false
             eventBus.fire \loading.dimmer.off

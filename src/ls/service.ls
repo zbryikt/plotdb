@@ -18,7 +18,7 @@ angular.module \plotDB
         (if $(container).0 => that else window).addEventListener \scroll, (v)  ->
           if container => c = $(container).0
           if beacon => b = $(beacon).0
-          if !c or !b => return
+          if !c and !b => return
           scrolltop = if c => c.scrollTop
           else if document.body.scrollTop => that
           else document.querySelector(\html).scrollTop

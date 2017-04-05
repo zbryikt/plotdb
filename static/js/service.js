@@ -46,7 +46,7 @@ x$.service('Paging', ['$rootScope', '$timeout'].concat(function($rootScope, $tim
         if (beacon) {
           b = $(beacon)[0];
         }
-        if (!c || !b) {
+        if (!c && !b) {
           return;
         }
         scrolltop = c

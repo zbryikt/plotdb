@@ -80,7 +80,7 @@ block body
             span {{'Import'|i18n}}... #[span.caret]
           .name(ng-if="dataset.obj.key")
             div: small.grayed {{'Current Dataset'|i18n}}
-            div
+            div.text-overflow(style="max-width:250px")
               a(ng-attr-href="/dataset/{{dataset.obj.key}}",
               target="_blank") {{dataset.obj.name}} #[small.grayed ({{dataset.obj.key}})]
 
@@ -199,7 +199,8 @@ block body
               .btn.btn-default(ng-click="v.value=!!!v.value") {{v.value}}
         .chart-config.chart-config-end(style="background:none")
       .foot
-        .btn.btn-sm.btn-default.dropdown-toggle.pull-left(data-toggle="dropdown",style="vertical-align:top")
+        .btn.btn-default.pull-left(ng-click="chart.config.reset()") {{'Reset Config'|i18n}}
+        //-.btn.btn-sm.btn-default.dropdown-toggle.pull-left(data-toggle="dropdown",style="vertical-align:top")
           span {{'Responsive'|i18n}}... #[span.caret]
         .btn.btn-default.pull-right(ng-click="panel.set('')") {{'Close'|i18n}}
 
@@ -215,6 +216,7 @@ block body
             ng-click="chart.obj.permission.switch='draft'") {{'Draft'|i18n}}
         hr
         .body
+          a.pull-right(ng-attr-href="{{sharePanel.link}}",target="_blank") {{'open in new window'|i18n}}
           label {{'Publish Link'|i18n}}
           .input-group
             input#edit-sharelink.form-control(ng-model="sharePanel.link",
@@ -281,9 +283,9 @@ block body
           ng-model="canvas.dimension.custom.height",ng-disabled="!download.customSize")
         .sep.gap
         .text-right
-          a.btn.btn-success.loader(ng-attr-download="{{download.filename}}",
+          a.btn.btn-success.loader(ng-click="download.clear()",ng-attr-download="{{download.filename}}",
           ng-attr-href="{{download.url}}",
-          ng-class="{'disabled':!download.ready,'loading':download.loading}") {{'Download'|i18n}}
+          ng-class="{'disabled':!download.ready,'loading':download.loading,'animated infinite tada':download.ready}") {{'Download'|i18n}}
           span &nbsp;
           .btn.btn-default(ng-click="panel.set('')") {{'Cancel'|i18n}}
     #editor-code.editor-func-detail(
@@ -293,6 +295,9 @@ block body
         i.fa.fa-long-arrow-left(ng-if="panel.size.value.editor=='full'")
       .inner(style="padding-bottom:0")
         textarea#editor-textarea(codeeditor,ng-model="editor")
+    include modal/assets.jade
+
+
     #viscanvas(viscanvas,ng-model="canvas")
       .inner(style="width:100%;height:100%;overflow:hidden;padding-bottom:0")
         iframe
@@ -383,7 +388,7 @@ block body
       ng-click="panel.set('editor',true);editor.tab.set('style')") CSS
       .icon(ng-class="{'active':panel.tab=='editor' && editor.tab.value=='doc'}",
       ng-click="panel.set('editor',true);editor.tab.set('doc')") HTML
-      .icon ASSET
+      .icon(ng-click="chartModal.assets.ctrl.toggle()") ASSET
       .icon
         .dropdown.btn-group
           .btn.btn-xs.btn-default.dropdown-toggle(data-toggle="dropdown")

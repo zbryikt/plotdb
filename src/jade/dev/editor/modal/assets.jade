@@ -1,0 +1,22 @@
+//- module
++Dialog("chartModal.assets")
+  .panel.panel-default
+    .panel-body
+      h3 {{'Assets'|i18n}}
+      .sep.gap
+      .assets(ng-cloak,ng-class="{'active':chartModal.assets.toggled}")
+        .file.uploader
+          span {{'Upload'|i18n}} ...
+          input(type="file",readby="chartModal.assets.read",multiple,asdataurl="true")
+        .file(ng-repeat="f in chart.obj.assets",ng-click="chartModal.assets.preview(f)")
+          .title
+            span {{f.name}}
+            i.fa.fa-trash.pull-right.clickable(ng-click="chartModal.assets.remove(f);$event.stopPropagation()")
+          .type #[i {{f.type}}] #[small.pull-right {{(f.content || "").length|size}}]
+  #assets-preview(ng-show="chartModal.assets.preview.toggled")
+    iframe.preview(style="width:70%;height:90%")
+    .ctrl(style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);")
+      .btn.btn-default(ng-click="chartModal.assets.preview.toggled=false") #[i.fa.fa-close] {{'Close'|i18n}}
+      a.btn.btn-default(ng-attr-download="{{chartModal.assets.download.name}}",
+      ng-attr-href="{{chartModal.assets.download.url}}") #[i.fa.fa-download] {{'Download'|i18n}}
+

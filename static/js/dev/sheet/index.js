@@ -91,11 +91,12 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         return eventBus.fire('sheet.dataset.save.failed', it);
       });
     },
-    load: function(key, force){
+    load: function(key, force, location){
       var this$ = this;
+      location == null && (location = 'server');
       if (!this.obj || this.obj.key !== key || !force) {
         return dataService.load({
-          location: 'server',
+          location: location,
           name: 'dataset'
         }, key).then(function(ret){
           var dataset;
@@ -798,7 +799,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
       var this$ = this;
       eventBus.fire('loading.dimmer.on', 1);
       $scope.parser.progress(3000);
-      return $scope.dataset.load(dataset.key, true)['finally'](function(){
+      return $scope.dataset.load(dataset.key, true, dataset._type.location)['finally'](function(){
         this$.toggle(false);
         return eventBus.fire('loading.dimmer.off');
       }).then(function(it){

@@ -4459,6 +4459,11 @@ select[ngselect2] {
 big.xl {
   font-size: 1.5em;
 }
+.text-overflow {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
 .block {
   display: block !important;
 }
@@ -7195,6 +7200,12 @@ small.hint {
 .ldColorPicker.bubble {
   z-index: 34;
 }
+.assets {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
 .file {
   position: relative;
   margin: 5px;
@@ -7204,7 +7215,9 @@ small.hint {
   box-shadow: 0 2px 2px rgba(0,0,0,0.3);
   background: #fff;
   display: inline-block;
-  width: 160px;
+  width: 240px;
+  -webkit-flex: 1 1 240px;
+  flex: 1 1 240px;
   height: 57px;
   vertical-align: middle;
 }
@@ -7227,6 +7240,7 @@ small.hint {
   cursor: pointer;
 }
 .file .title {
+  padding-right: 30px;
   font-weight: bold;
   font-size: 1.1em;
   border-bottom: 1px solid #ddd;
@@ -7234,6 +7248,10 @@ small.hint {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+.file .title .fa-trash {
+  position: absolute;
+  right: 10px;
 }
 .file .type {
   color: #999;
@@ -7274,6 +7292,36 @@ small.hint {
   width: 100%;
   height: 100%;
   border: none;
+}
+#assets-preview .preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  background: #fff;
+}
+@media (max-width: 881px) {
+  #assets-preview .preview {
+    width: 90%;
+  }
+}
+@media (max-width: 480px) {
+  #assets-preview .preview {
+    width: 100%;
+  }
+}
+#assets-preview .ctrl {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  -ms-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+  -o-transform: translateX(-50%);
+  transform: translateX(-50%);
 }
 #share-buttons i.fa {
   margin: 0 10px;

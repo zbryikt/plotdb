@@ -227,6 +227,7 @@ angular.module \plotDB
         'try these predefined tags': zh: "何不試試這些關鍵字"
 
         # Chart Editor
+        'Reset Config': zh: "還原預設值"
         'Viswork Name': zh: "視覺化名稱"
         'Rename Viswork': zh: "視覺化重新命名"
         "Looks like your viswork doesn't have a name yet. Let's give it a name": zh: "看來你的視覺化還沒有取名字，來取個名字吧"
@@ -441,17 +442,35 @@ angular.module \plotDB
         readby: \&readby
         encoding: \@encoding
         askencoding: \&askencoding
+        multiple: \@multiple
       link: (s,e,a,c) ->
         handler = s.readby!
         askencoding = s.askencoding!
         e.bind \change, (event) ->
           reader = ->
-            fr = new FileReader!
-            fr.onload = ->
-              s.$apply -> handler fr.result, event.target.files.0
-              e.val("")
-            if s.encoding => fr.readAsText event.target.files.0, s.encoding
-            else fr.readAsBinaryString event.target.files.0
+            files = event.target.files
+            if !files.length => return
+            if a.multiple =>
+              loadfile = (f) -> new Promise (res, rej) ->
+                fr = new FileReader!
+                fr.onload = ->
+                  res {result: fr.result, file: f}
+                if a.asdataurl => fr.readAsDataURL f
+                else if s.encoding => fr.readAsText f, s.encoding
+                else fr.readAsBinaryString f
+              promises = Array.from(files).map -> loadfile it
+              Promise.all promises .then (ret) -> 
+                s.$apply -> handler ret
+                e.val("")
+            else =>
+              fr = new FileReader!
+              fr.onload = ->
+                s.$apply -> handler fr.result, files.0
+                e.val("")
+              if a.asdataurl => fr.readAsDataURL f
+              else if s.encoding => fr.readAsText files.0, s.encoding
+              else fr.readAsBinaryString files.0
+
           s.$apply ->
             if askencoding => askencoding reader
             else reader!
