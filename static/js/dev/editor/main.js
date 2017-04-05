@@ -321,11 +321,15 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       },
       update: function(rebind){
         rebind == null && (rebind = false);
-        return canvas.msg({
-          type: 'config.set',
-          config: this.value || {},
-          rebind: rebind
-        });
+        if (rebind) {
+          return $scope.chart.reset();
+        } else {
+          return canvas.msg({
+            type: 'config.set',
+            config: this.value || {},
+            rebind: rebind
+          });
+        }
       },
       reset: function(){
         var k, ref$, v;
@@ -570,6 +574,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           }
         });
         this$.config.value = newConfig;
+        this$.config.categorize();
         this$.dimension = JSON.parse(payload.dimension);
         for (k in ref$ = this$.obj.dimension) {
           v = ref$[k];
@@ -609,10 +614,10 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         }
       }).then(function(data){
         data == null && (data = []);
-        canvas.render({
+        $scope.chart.data.adopt(data, !!datasetKey);
+        return canvas.render({
           config: plotdb.chart.config.parse(this$.config.value)
-        });
-        return $scope.chart.data.adopt(data, !!datasetKey);
+        }, this$.obj.dimension);
       })['catch'](function(it){
         return console.error(it);
       });

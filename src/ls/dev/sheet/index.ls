@@ -503,20 +503,21 @@ angular.module \plotDB
         sec = buf.length * 1.3 / 1000
         $scope.parser.progress sec
         if !@worker => @worker = new Worker \/js/data/worker/csv.js
-        @worker.onmessage = (e) ~>
+        @worker.onmessage = (e) ~> $scope.$apply ~>
           data = e.data.data
-          $scope.$apply ~>
-            $scope.grid.empty false
-            $scope.grid.data.rows = data.rows
-            $scope.grid.data.headers = data.headers
-            $scope.grid.data.types = data.types
-            $scope.grid.data.size = buf.length
-          $scope.grid.render!then ~> $scope.$apply ~>
+          $scope.grid.empty false
+          #$scope.$apply ~>
+          #  $scope.grid.empty false
+          #  $scope.grid.data.rows = data.rows
+          #  $scope.grid.data.headers = data.headers
+          #  $scope.grid.data.types = data.types
+          #  $scope.grid.data.size = buf.length
+          $scope.grid.load data, buf.length .then ~>
             @toggle false
             @buf = null
             if verbose => eventBus.fire \loading.dimmer.off
             $scope.loading = false
-            eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
+            #eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
             $scope.dataset.clear!
             res!
         @worker.postMessage {buf}
@@ -561,15 +562,13 @@ angular.module \plotDB
             if e.data.type == \sheet =>
               $scope.grid.empty false
               data = e.data.data
-              $scope.grid.data.headers = data.headers
-              $scope.grid.data.rows = data.rows
-              $scope.grid.data.types = data.types
-              $scope.grid.data.size = buf.length
-              $scope.grid.render!then -> # 1.3
-                $scope.$apply ->
-                  eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
-                  eventBus.fire \loading.dimmer.off
-                  $scope.dataset.clear!
+              #$scope.grid.data.headers = data.headers
+              #$scope.grid.data.rows = data.rows
+              #$scope.grid.data.types = data.types
+              #$scope.grid.data.size = buf.length
+              $scope.grid.load data, buf.length .then ->
+                eventBus.fire \loading.dimmer.off
+                $scope.dataset.clear!
 
         node = (
           document.getElementById(\dataset-import-dropdown) or
@@ -665,8 +664,18 @@ angular.module \plotDB
             ((ret) ~>
               list = ret.result.values
               list = list.filter(->it.filter(->(it or "").trim!length).length)
+              head = list.splice(0,1).0
               $scope.grid.empty false
-              data = $scope.grid.data
+              #data = $scope.grid.data
+              data = {}
+              data <<< headers: head, rows: list, types: plotdb.Types.resolve data
+              size = (ret.body or "").length
+              $scope.grid.load data, size .then ~>
+                @toggled = false
+                eventBus.fire \loading.dimmer.off
+                $scope.dataset.clear!
+
+              /*
               $scope.$apply ~>
                 data.headers = h = list.0
                 list.splice 0,1
@@ -680,6 +689,7 @@ angular.module \plotDB
                   eventBus.fire \loading.dimmer.off
                   eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
                   $scope.dataset.clear!
+              */
             ),
             (-> $scope.$apply ~>
               plNotify.send \danger, "can't load sheet, try again later?"

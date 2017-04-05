@@ -169,7 +169,10 @@ angular.module \plotDB
             .filter(->it).length)
           @update rebind
           @categorize n,o
-        update: (rebind = false) -> canvas.msg {type: \config.set, config: (@value or {}), rebind}
+        update: (rebind = false) ->
+          #TODO rebind should be supported without reset. it's chart that need to be patched.
+          if rebind => $scope.chart.reset!
+          else canvas.msg {type: \config.set, config: (@value or {}), rebind}
         reset: ->
           for k,v of @value => v.value = v.default or v.value
           $scope.chart.reset!
@@ -255,6 +258,7 @@ angular.module \plotDB
             cur-config = @config.value or chart.config or {}
             [[k,v] for k,v of new-config].map ~> if cur-config[it.0] => it.1.value = cur-config[it.0].value
             @config.value = new-config
+            @config.categorize!
             @dimension = JSON.parse payload.dimension
             for k,v of @obj.dimension => if @dimension[k] =>
               @dimension[k] <<< @obj.dimension[k]{fields, fieldName}
@@ -268,8 +272,8 @@ angular.module \plotDB
             else =>
               $scope.dataset.grid.load!
           .then (data = []) ~>
-            canvas.render config: plotdb.chart.config.parse(@config.value)
             $scope.chart.data.adopt data, !!dataset-key
+            canvas.render config: plotdb.chart.config.parse(@config.value), @obj.dimension
           .catch -> console.error it
       library: do
         hash: {}

@@ -864,24 +864,17 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
           this$.worker = new Worker('/js/data/worker/csv.js');
         }
         this$.worker.onmessage = function(e){
-          var data;
-          data = e.data.data;
-          $scope.$apply(function(){
+          return $scope.$apply(function(){
+            var data;
+            data = e.data.data;
             $scope.grid.empty(false);
-            $scope.grid.data.rows = data.rows;
-            $scope.grid.data.headers = data.headers;
-            $scope.grid.data.types = data.types;
-            return $scope.grid.data.size = buf.length;
-          });
-          return $scope.grid.render().then(function(){
-            return $scope.$apply(function(){
+            return $scope.grid.load(data, buf.length).then(function(){
               this$.toggle(false);
               this$.buf = null;
               if (verbose) {
                 eventBus.fire('loading.dimmer.off');
               }
               $scope.loading = false;
-              eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());
               $scope.dataset.clear();
               return res();
             });
@@ -947,16 +940,9 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
             if (e.data.type === 'sheet') {
               $scope.grid.empty(false);
               data = e.data.data;
-              $scope.grid.data.headers = data.headers;
-              $scope.grid.data.rows = data.rows;
-              $scope.grid.data.types = data.types;
-              $scope.grid.data.size = buf.length;
-              return $scope.grid.render().then(function(){
-                return $scope.$apply(function(){
-                  eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());
-                  eventBus.fire('loading.dimmer.off');
-                  return $scope.dataset.clear();
-                });
+              return $scope.grid.load(data, buf.length).then(function(){
+                eventBus.fire('loading.dimmer.off');
+                return $scope.dataset.clear();
               });
             }
           });
@@ -1113,30 +1099,24 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
           range: this$.sheets.title + "!A:ZZ"
         });
       }).then(function(ret){
-        var list, data;
+        var list, head, data, size;
         list = ret.result.values;
         list = list.filter(function(it){
           return it.filter(function(it){
             return (it || "").trim().length;
           }).length;
         });
+        head = list.splice(0, 1)[0];
         $scope.grid.empty(false);
-        data = $scope.grid.data;
-        $scope.$apply(function(){
-          var h;
-          data.headers = h = list[0];
-          list.splice(0, 1);
-          data.rows = list;
-          data.types = plotdb.Types.resolve(data);
-          return data.size = (ret.body || "").length;
-        });
-        return $scope.grid.render().then(function(){
-          return $scope.$apply(function(){
-            this$.toggled = false;
-            eventBus.fire('loading.dimmer.off');
-            eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());
-            return $scope.dataset.clear();
-          });
+        data = {};
+        data.headers = head;
+        data.rows = list;
+        data.types = plotdb.Types.resolve(data);
+        size = (ret.body || "").length;
+        return $scope.grid.load(data, size).then(function(){
+          this$.toggled = false;
+          eventBus.fire('loading.dimmer.off');
+          return $scope.dataset.clear();
         });
       }, function(){
         var this$ = this;
