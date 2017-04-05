@@ -512,7 +512,7 @@ angular.module \plotDB
           #  $scope.grid.data.headers = data.headers
           #  $scope.grid.data.types = data.types
           #  $scope.grid.data.size = buf.length
-          $scope.grid.load data, buf.length .then ~>
+          $scope.grid.load data, buf.length .then ~> $scope.$apply ~>
             @toggle false
             @buf = null
             if verbose => eventBus.fire \loading.dimmer.off

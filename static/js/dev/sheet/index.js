@@ -869,14 +869,16 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
             data = e.data.data;
             $scope.grid.empty(false);
             return $scope.grid.load(data, buf.length).then(function(){
-              this$.toggle(false);
-              this$.buf = null;
-              if (verbose) {
-                eventBus.fire('loading.dimmer.off');
-              }
-              $scope.loading = false;
-              $scope.dataset.clear();
-              return res();
+              return $scope.$apply(function(){
+                this$.toggle(false);
+                this$.buf = null;
+                if (verbose) {
+                  eventBus.fire('loading.dimmer.off');
+                }
+                $scope.loading = false;
+                $scope.dataset.clear();
+                return res();
+              });
             });
           });
         };

@@ -255,7 +255,7 @@ angular.module \plotDB
             canvas.load(@obj)
           .then (payload) ~>
             new-config = JSON.parse payload.config
-            cur-config = @config.value or chart.config or {}
+            cur-config = @config.value or (chart or {}).config or @obj.config or {}
             [[k,v] for k,v of new-config].map ~> if cur-config[it.0] => it.1.value = cur-config[it.0].value
             @config.value = new-config
             @config.categorize!

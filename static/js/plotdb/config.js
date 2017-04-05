@@ -467,6 +467,39 @@ plotdb.config = {
     'default': '1',
     category: "Dot"
   },
+  aggregateShow: {
+    name: "Show Aggregated Bubbles",
+    desc: "After aggregating, show the result bubble ? ",
+    type: [plotdb.Boolean],
+    'default': true,
+    category: "Aggregate",
+    rebindOnChange: true
+  },
+  aggregateThreshold: {
+    name: "Merge Small Bubbles",
+    desc: "Merge small bubbles into one bubble with its value this percent of total values",
+    type: [plotdb.Number],
+    category: "Aggregate",
+    min: 0,
+    max: 100,
+    rebindOnChange: true
+  },
+  aggregateMethod: {
+    name: "Aggregate Method for Small Bubbles",
+    desc: "How to aggregate small bubbles' values? You can choose 'Sum' or 'Average'",
+    type: [plotdb.Choice(["Sum", "Average"])],
+    category: "Aggregate",
+    'default': "Sum",
+    rebindOnChange: true
+  },
+  aggregateName: {
+    name: "Label for Aggregated Bubble",
+    desc: "this name will be shown as the label of bubble.",
+    type: [plotdb.String],
+    'default': "Other",
+    rebindOnChange: true,
+    category: "Aggregate"
+  },
   unit: {
     name: "Unit",
     type: [plotdb.String],

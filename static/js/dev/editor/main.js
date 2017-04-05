@@ -560,7 +560,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       }).then(function(payload){
         var newConfig, curConfig, k, v, ref$, ref1$, ref2$;
         newConfig = JSON.parse(payload.config);
-        curConfig = this$.config.value || chart.config || {};
+        curConfig = this$.config.value || (chart || {}).config || this$.obj.config || {};
         (function(){
           var ref$, results$ = [];
           for (k in ref$ = newConfig) {

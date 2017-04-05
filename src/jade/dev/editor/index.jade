@@ -346,6 +346,12 @@ block body
           li(ng-class="{'active':canvas.dimension.value=='HVGA'}")
             a(href="#",ng-click="canvas.dimension.set('HVGA')",
             data-track="ChartEditor,Responsive,HVGA") HVGA #[small.grayed (320x480)]
+          li(ng-class="{'active':canvas.dimension.value=='Full HD'}")
+            a(href="#",ng-click="canvas.dimension.set('FullHD')",
+            data-track="ChartEditor,Responsive,FullHD") {{'Full HD'|i18n}}#[small.grayed (1920x1080)]
+          li(ng-class="{'active':canvas.dimension.value=='4K'}")
+            a(href="#",ng-click="canvas.dimension.set('4K')",
+            data-track="ChartEditor,Responsive,FullHD") {{'4K'|i18n}}#[small.grayed (3840x2160)]
           li(ng-class="{'active':canvas.dimension.value=='Thumb'}")
             a(href="#",ng-click="canvas.dimension.set('Thumb')",
             data-track="ChartEditor,Responsive,Thumb") {{'Thumb'|i18n}}#[small.grayed (308x229)]

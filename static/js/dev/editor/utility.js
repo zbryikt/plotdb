@@ -29,12 +29,14 @@ x$.directive('viscanvas', ['$compile', 'plConfig'].concat(function($compile, plC
       };
       s.model.dimension = {
         value: 'default',
-        choices: ['default', 'QVGA', 'HVGA', 'Thumb', 'Custom'],
+        choices: ['default', 'QVGA', 'HVGA', 'FullHD', 'Thumb', 'Custom', '4K'],
         map: {
           'default': [0, 0],
           QVGA: [240, 320],
           HVGA: [320, 480],
-          Thumb: [308, 229]
+          Thumb: [308, 229],
+          FullHD: [1920, 1080],
+          "4K": [3840, 2160]
         },
         custom: {
           width: 640,
@@ -68,9 +70,8 @@ x$.directive('viscanvas', ['$compile', 'plConfig'].concat(function($compile, plC
             } else {
               ref$ = this.map[this.value], w = ref$[0], h = ref$[1];
             }
-            ref$ = canvas.style;
-            ref$.marginTop = (height - h) / 2 + "px";
-            ref$.marginLeft = (width - w) / 2 + "px";
+            canvas.style.marginTop = (height > h ? (height - h) / 2 : 0) + "px";
+            canvas.style.marginLeft = (width > w ? (width - w) / 2 : 0) + "px";
             ref$ = [w, h].map(function(it){
               return it + "px";
             }), w = ref$[0], h = ref$[1];

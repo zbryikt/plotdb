@@ -20,12 +20,14 @@ angular.module \plotDB
 
       s.model.dimension = do
         value: \default
-        choices: <[default QVGA HVGA Thumb Custom]>
+        choices: <[default QVGA HVGA FullHD Thumb Custom 4K]>
         map: do
           default: [0,0]
           QVGA: [240, 320]
           HVGA: [320, 480]
           Thumb: [308, 229]
+          FullHD: [1920,1080]
+          "4K": [3840,2160]
         custom: width: 640, height: 480
         init: -> s.$watch 'model.dimension.custom', (~> @set!), true
         set: ->
@@ -39,7 +41,8 @@ angular.module \plotDB
           else
             if @value == \Custom => [w,h] = [@custom.width, @custom.height]
             else [w,h] = @map[@value]
-            canvas.style <<< marginTop: ((height - h)/2) + "px", marginLeft: ((width - w)/2) + "px"
+            canvas.style.marginTop  = "#{if height > h => (height - h)/2 else 0}px"
+            canvas.style.marginLeft = "#{if width > w => (width - w)/2 else 0}px"
             [w,h] = [w,h].map(->"#{it}px")
           canvas.style <<< width: w, height: h
       s.model.dimension.init!
