@@ -231,8 +231,14 @@ block body
             ng-click="chart.obj.permission.switch='publish'") {{'Publish'|i18n}}
             .btn.btn-default(ng-class="{'active':chart.obj.permission.switch!='publish'}",
             ng-click="chart.obj.permission.switch='draft'") {{'Draft'|i18n}}
-        hr
+        .sep.nogap(style="margin-top:20px")
         .body
+          //-.mask(style="width:100%;height:100%;background:rgba(0,0,0,0.2);z-index:999;position:absolute")
+            div(style="text-align:center")
+              span(ng-if="lang=='en'") You have to save before sharing the link
+              span(ng-if="lang=='zh'") 請先存檔、我們才能做分享連結給您喔！
+              br
+              .btn.btn-default.btn-lg #[i.fa.fa-save] {{'Save'|i18n}}
           a.pull-right(ng-attr-href="{{sharePanel.link}}",target="_blank") {{'open in new window'|i18n}}
           label {{'Publish Link'|i18n}}
           .input-group
