@@ -33,7 +33,7 @@ grid-render = (e) ->
   data.rows = [data.rows[i] or ['' for j from 0 til rlen.head] for i from 0 til rlen.rows]
   trs = []
   dim = "<div>" + headers.map((d,j)->
-    displayname = (dimkeys.filter(->it.name == bind[j]).0 or {displayname: "x" +bind[j]}).displayname
+    displayname = (dimkeys.filter(->it.name == bind[j]).0 or {displayname: bind[j]}).displayname
     [
       "<div class='dropdown' col='#j' style='width:#w'>"
       """<div class='dropdown-toggle' data-toggle='dropdown'>"""

@@ -64,7 +64,7 @@ gridRender = function(e){
     displayname = (dimkeys.filter(function(it){
       return it.name === bind[j];
     })[0] || {
-      displayname: "x" + bind[j]
+      displayname: bind[j]
     }).displayname;
     return [
       "<div class='dropdown' col='" + j + "' style='width:" + w + "'>", "<div class='dropdown-toggle' data-toggle='dropdown'>", "<span>" + (displayname || '<span class="grayed">(empty)</span>') + "</span>", "<span class='caret'></span></div>", "<ul class='dropdown-menu'>", (function(){
