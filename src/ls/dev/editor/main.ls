@@ -265,7 +265,7 @@ angular.module \plotDB
             cur-config = @config.value or (chart or {}).config or @obj.config or {}
             [[k,v] for k,v of new-config].map ~> if cur-config[it.0] => it.1.value = cur-config[it.0].value
             @config.value = new-config
-            @config.categorize!
+            @config.categorize @config.value
             @dimension = JSON.parse payload.dimension
             if ![k for k of @dimension].length and chart => $scope.panel.tab = \style
             for k,v of @obj.dimension => if @dimension[k] =>

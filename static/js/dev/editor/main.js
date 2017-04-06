@@ -585,7 +585,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           }
         });
         this$.config.value = newConfig;
-        this$.config.categorize();
+        this$.config.categorize(this$.config.value);
         this$.dimension = JSON.parse(payload.dimension);
         if (!(function(){
           var results$ = [];
