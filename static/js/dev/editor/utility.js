@@ -49,7 +49,7 @@ x$.directive('viscanvas', ['$compile', 'plConfig'].concat(function($compile, plC
           }, true);
         },
         set: function(it){
-          var canvas, ref$, width, height, w, h;
+          var canvas, ref$, width, height, w, h, v;
           if (!in$(it, this.choices)) {
             it = this.value;
           }
@@ -72,11 +72,25 @@ x$.directive('viscanvas', ['$compile', 'plConfig'].concat(function($compile, plC
             }
             canvas.style.marginTop = (height > h ? (height - h) / 2 : 0) + "px";
             canvas.style.marginLeft = (width > w ? (width - w) / 2 : 0) + "px";
+            v = {
+              w: w,
+              h: h
+            };
             ref$ = [w, h].map(function(it){
               return it + "px";
             }), w = ref$[0], h = ref$[1];
           }
-          return ref$ = canvas.style, ref$.width = w, ref$.height = h, ref$;
+          ref$ = canvas.style;
+          ref$.width = w;
+          ref$.height = h;
+          if (v != null) {
+            if (height < v.h) {
+              e[0].scrollTop = v.h / 2;
+            }
+            if (width < v.w) {
+              return e[0].scrollLeft = v.w / 2;
+            }
+          }
         }
       };
       return s.model.dimension.init();

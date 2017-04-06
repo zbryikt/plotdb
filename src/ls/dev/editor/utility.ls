@@ -43,8 +43,12 @@ angular.module \plotDB
             else [w,h] = @map[@value]
             canvas.style.marginTop  = "#{if height > h => (height - h)/2 else 0}px"
             canvas.style.marginLeft = "#{if width > w => (width - w)/2 else 0}px"
+            v = {w,h}
             [w,h] = [w,h].map(->"#{it}px")
           canvas.style <<< width: w, height: h
+          if v? =>
+            if height < v.h => e.0.scrollTop = v.h/2
+            if width < v.w => e.0.scrollLeft = v.w/2
       s.model.dimension.init!
 
 
