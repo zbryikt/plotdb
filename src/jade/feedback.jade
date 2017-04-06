@@ -1,11 +1,12 @@
 include /mixin.jade
-#user-feedback(ng-click="gfbt=!!!gfbt")
+#user-feedback(ng-click="gfbt.toggle()")
   i.fa.fa-commenting
   span(ng-cloak) {{'send feedback'|i18n}}
-+cover-modal("gfbt","gfbt=false")
++cover-modal("gfbt.toggled","gfbt.toggle(false)")
   .panel.panel-default
-    .panel-body(style="height:500px;overflow-y:scroll")
+    .panel-body(style="height:90%;overflow-y:scroll")
+      .closebtn.inner.inverse.lg(ng-click="gfbt.toggle(false)")
       .fb-comments(data-href="http://plotdb.com/feedback/",data-width="100%",data-numposts="5",data-colorscheme="light")
     .panel-footer.text-right
-      .btn.btn-default(ng-click="gfbt=false") {{'Close'|i18n}}
+      .btn.btn-default(ng-click="gfbt.toggle(false)") {{'Close'|i18n}}
 

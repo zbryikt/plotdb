@@ -14009,6 +14009,14 @@ x$.controller('plSite', ['$scope', '$rootScope', '$http', '$interval', 'global',
     $scope.lang = 'en';
   }
   $rootScope.lang = $scope.lang;
+  $scope.gfbt = {
+    toggle: function(it){
+      var that;
+      return this.toggled = (that = it) != null
+        ? that
+        : !this.toggled;
+    }
+  };
   $scope.setLang = function(it){
     $rootScope.lang = $scope.lang = window.lang = it;
     document.cookie = "lang=" + it;

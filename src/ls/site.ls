@@ -85,6 +85,7 @@ angular.module \plotDB
     $scope.lang = (/lang=([^;].+?)(;|$)/.exec(document.cookie) or {}).1
     if !$scope.lang => $scope.lang = \en
     $rootScope.lang = $scope.lang
+    $scope.gfbt = toggle: -> @toggled = if it? => that else !!!@toggled
     $scope.set-lang = ->
       $rootScope.lang = $scope.lang = window.lang = it
       document.cookie = "lang=#it"
