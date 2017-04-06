@@ -6450,6 +6450,9 @@ ul.dropdown-menu li a.toggle-filepick input {
   z-index: 3;
   font-size: 13px;
 }
+.hover-tip a {
+  color: #73baf7;
+}
 .hover-tip:before {
   width: 10px;
   height: 10px;
@@ -6465,6 +6468,12 @@ ul.dropdown-menu li a.toggle-filepick input {
   -webkit-transform: rotate(45deg);
   -o-transform: rotate(45deg);
   transform: rotate(45deg);
+}
+.hover-tip.right:before {
+  top: 50%;
+  left: 2px;
+  margin-top: -5px;
+  margin-left: -5px;
 }
 .hover-tip.bottom {
   top: 100%;
@@ -10086,6 +10095,9 @@ textarea#dataset-edit-text {
 .sheet.clusterize {
   height: 100%;
 }
+.sheet-dim {
+  background: #ffd;
+}
 .sheet-head,
 .sheet-dim {
   border: 1px solid #ccc;
@@ -10148,6 +10160,18 @@ textarea#dataset-edit-text {
 .sheet-dim .dropdown {
   vertical-align: top;
   cursor: pointer;
+}
+.sheet-dim .dropdown-menu a {
+  font-weight: 800;
+}
+.sheet-dim .dropdown-menu small {
+  font-weight: 200;
+  display: block;
+}
+.sheet-dim .dropdown-menu i.fa {
+  font-size: 0.8em;
+  margin-top: 0.5em;
+  float: right;
 }
 .sheet-dim > div {
   height: 27px;
@@ -11129,6 +11153,18 @@ span.select2-container--default .select2-selection--multiple {
 }
 #editor-dataset .inner {
   position: relative;
+}
+#editor-dataset .hover-tip {
+  left: 100%;
+  right: auto;
+  top: 37px;
+  -ms-transform: translateX(0%);
+  -moz-transform: translateX(0%);
+  -webkit-transform: translateX(0%);
+  -o-transform: translateX(0%);
+  transform: translateX(0%);
+  margin-left: 10px;
+  width: 180px;
 }
 #editor-code {
   position: relative;

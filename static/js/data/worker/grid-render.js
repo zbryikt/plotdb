@@ -60,16 +60,21 @@ gridRender = function(e){
   data.rows = res$;
   trs = [];
   dim = "<div>" + headers.map(function(d, j){
-    var v;
+    var displayname, v;
+    displayname = (dimkeys.filter(function(it){
+      return it.name === bind[j];
+    })[0] || {
+      displayname: "x" + bind[j]
+    }).displayname;
     return [
-      "<div class='dropdown' col='" + j + "' style='width:" + w + "'>", "<div class='dropdown-toggle' data-toggle='dropdown'>", "<span>" + (bind[j] || '<span class="grayed">(empty)</span>') + "</span>", "<span class='caret'></span></div>", "<ul class='dropdown-menu'>", (function(){
+      "<div class='dropdown' col='" + j + "' style='width:" + w + "'>", "<div class='dropdown-toggle' data-toggle='dropdown'>", "<span>" + (displayname || '<span class="grayed">(empty)</span>') + "</span>", "<span class='caret'></span></div>", "<ul class='dropdown-menu'>", (function(){
         var i$, ref$, len$, results$ = [];
         for (i$ = 0, len$ = (ref$ = dimkeys).length; i$ < len$; ++i$) {
           v = ref$[i$];
-          results$.push(("<li><a href='#' data-dim=\"" + v.name + "\" ") + ("data-multi=\"" + !!v.multiple + "\">" + v.name + "</a></li>"));
+          results$.push(("<li><a href='#' data-dim=\"" + v.name + "\" ") + ("data-multi=\"" + !!v.multiple + "\">") + ("<i class='grayed fa fa-" + (v.multiple ? 'clone' : 'square-o') + "'></i>") + (v.displayname + "") + ("<small>" + v.desc + "</small>") + "</a></li>");
         }
         return results$;
-      }()).join(""), "<li class='grayed'><a href='#' data-dim=\"\">(empty)</a></li>", "</ul>", "</div>"
+      }()).join(""), "<li class='divider'></li>", "<li class='grayed'><a href='#' data-dim=\"\">(empty)", "<small>remove from binding</small>", "</a></li>", "</ul>", "</div>"
     ].join("");
   }).join("") + "</div>";
   for (i$ = 0, to$ = len.rows; i$ < to$; ++i$) {

@@ -525,6 +525,8 @@ ul.dropdown-menu li a.toggle-filepick
   text-align: center
   z-index: index(order, 'hover-tip')
   font-size: 13px
+  a
+    color: #73baf7
   &:before
     width: 10px
     height: 10px
@@ -536,6 +538,12 @@ ul.dropdown-menu li a.toggle-filepick
     display: block
     content: " "
     transform(rotate(45deg))
+.hover-tip.right
+  &:before
+    top: 50%
+    left: 2px
+    margin-top: -5px
+    margin-left: -5px
 .hover-tip.bottom
   top: 100%
   margin-top: 14px

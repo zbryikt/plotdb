@@ -33,16 +33,24 @@ grid-render = (e) ->
   data.rows = [data.rows[i] or ['' for j from 0 til rlen.head] for i from 0 til rlen.rows]
   trs = []
   dim = "<div>" + headers.map((d,j)->
+    displayname = (dimkeys.filter(->it.name == bind[j]).0 or {displayname: "x" +bind[j]}).displayname
     [
       "<div class='dropdown' col='#j' style='width:#w'>"
       """<div class='dropdown-toggle' data-toggle='dropdown'>"""
-      """<span>#{bind[j] or '<span class="grayed">(empty)</span>'}</span>"""
+      """<span>#{displayname or '<span class="grayed">(empty)</span>'}</span>"""
       """<span class='caret'></span></div>"""
       "<ul class='dropdown-menu'>"
       [ ("""<li><a href='#' data-dim="#{v.name}" """ + 
-      """data-multi="#{!!v.multiple}">#{v.name}</a></li>"""
+      """data-multi="#{!!v.multiple}">""" +
+      """<i class='grayed fa fa-#{if v.multiple => 'clone' else 'square-o'}'></i>""" +
+      """#{v.displayname}""" + 
+      """<small>#{v.desc}</small>""" + 
+      """</a></li>"""
       ) for v in dimkeys ].join("")
-      """<li class='grayed'><a href='#' data-dim="">(empty)</a></li>"""
+      """<li class='divider'></li>"""
+      """<li class='grayed'><a href='#' data-dim="">(empty)"""
+      """<small>remove from binding</small>"""
+      """</a></li>"""
       "</ul>"
       "</div>"
     ].join("")

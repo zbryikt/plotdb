@@ -49,10 +49,10 @@ block head
 
 block body
   .editor-root(ng-controller="plChartEditor",ng-cloak,style="background:url(/assets/img/transparent.png)"): .inner
-    .float-hint(ng-cloak,ng-if="!hint.hide")
+    .float-hint(ng-cloak,ng-if="!hint.hide.oldeditor",style="top:105px;right:30px;left:auto;transform:translateX(0)")
       span(ng-if="lang=='en'") Want to use the earlier version editor? #[a(href="v1/") click here]
       span(ng-if="lang=='zh'") 習慣舊的編輯器嗎？ #[a(href="v1/") 點此前往]
-      span.clickable(ng-click="hint.hide = true") &nbsp; &times;
+      span.clickable(ng-click="hint.hide.oldeditor = true") &nbsp; &times;
     include panel/index.jade
     include /widget/paledit-modal-ctrl.jade
     include modal/chart-name.jade
@@ -80,52 +80,58 @@ block body
         span {{'Save'|i18n}}
     //-.editor-func-detail(ng-show="panel.tab=='data'",style="width:500px"): .inner(ng-controller="dataEditCtrl")
     #editor-dataset.editor-func-detail(ng-class="{'full':panel.size.doc=='sm' || panel.size.value.dataset=='full'}",
-    ng-show="panel.tab=='data'"): .inner(ng-controller="plSheetEditor")
-      +panel-closebtn
-      .title {{'Data'|i18n}}
-      include /dataset/widget/modal.jade
-      include modal/sheet-clone.jade
-      #editor-datagrid.body(style="padding-left:0;padding-right:0")
-        #dataset-import-dropdown-inline.dropdown.btn-group
-          .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown")
-            span {{'Import'|i18n}}... #[span.caret]
-          .name(ng-if="dataset.obj.key")
-            div: small.grayed {{'Current Dataset'|i18n}}
-            div.text-overflow(style="max-width:250px")
-              a(ng-attr-href="/dataset/{{dataset.obj.key}}",
-              target="_blank") {{dataset.obj.name}} #[small.grayed ({{dataset.obj.key}})]
+    ng-show="panel.tab=='data'")
+      .hover-tip.right(ng-if="!hint.hide.bind")
+        span(ng-if="lang=='en'") {{'your can bind data to chart through these dropmenu'|i18n}}
+        span(ng-if="lang=='zh'") {{'您可以透過這個下拉選單將資料連結到圖表喔！'|i18n}}
+        .sep.nogap
+        a(href="#",ng-click="hint.hide.bind=true") {{'OK I GOT IT'|i18n}} &times;
+      .inner(ng-controller="plSheetEditor")
+        +panel-closebtn
+        .title {{'Data'|i18n}}
+        include /dataset/widget/modal.jade
+        include modal/sheet-clone.jade
+        #editor-datagrid.body(style="padding-left:0;padding-right:0")
+          #dataset-import-dropdown-inline.dropdown.btn-group
+            .btn.btn-sm.btn-default.dropdown-toggle(data-toggle="dropdown")
+              span {{'Import'|i18n}}... #[span.caret]
+            .name(ng-if="dataset.obj.key")
+              div: small.grayed {{'Current Dataset'|i18n}}
+              div.text-overflow(style="max-width:250px")
+                a(ng-attr-href="/dataset/{{dataset.obj.key}}",
+                target="_blank") {{dataset.obj.name}} #[small.grayed ({{dataset.obj.key}})]
 
-          ul.dropdown-menu
-            li.dropdown
-              a.toggle-filepick(href="#")
-                input#dataset-edit-csv-file(type="file",
-                askencoding="parser.csv.askencoding",
-                readby="parser.csv.import",encoding="{{parser.csv.encoding}}")
-                span #[i.fa.fa-file-text-o.align16] {{'upload CSV file'|i18n}} ...
-            li: a.toggle-filepick(href="#")
-              input#dataset-edit-xls-file(type="file",readby="parser.xls.read")
-              span #[i.fa.fa-file-excel-o.align16] {{'upload Excel'|i18n}} (.xls, .xlsx)
-            li.divider
-            li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] {{'from Google Sheet'|i18n}}
-            li(ng-click="parser.plotdb.toggle()"): a(href="#") #[i.fa.fa-database.align16] {{'from PlotDB Dataset'|i18n}}
-        #dataset-editbox
-          #dataset-edit-grid.sheet-outer
-            .sheet.clusterize
-              .sheet-dim(ng-click="grid.data.bindField($event)")
-              .sheet-head(data-rowcount="5")
-              .sheet-body-outer
-                .sheet-body.clusterize-scroll
-                  .sheet-cells.clusterize-content
-      .foot
-        .btn.btn-default(ng-click="chart.data.sample()") {{'Load Sample Data'|i18n}}
-        span &nbsp;
-        .btn.btn-default(ng-click="chart.data.clear()") {{'Clear'|i18n}}
-        .pull-right
-          .btn.btn-default(ng-if="!panel.size.doc",ng-click="panel.size.set('dataset','full')") 
-            i.fa.fa-long-arrow-right(ng-if="panel.size.value.dataset!='full'")
-            i.fa.fa-long-arrow-left(ng-if="panel.size.value.dataset=='full'")
+            ul.dropdown-menu
+              li.dropdown
+                a.toggle-filepick(href="#")
+                  input#dataset-edit-csv-file(type="file",
+                  askencoding="parser.csv.askencoding",
+                  readby="parser.csv.import",encoding="{{parser.csv.encoding}}")
+                  span #[i.fa.fa-file-text-o.align16] {{'upload CSV file'|i18n}} ...
+              li: a.toggle-filepick(href="#")
+                input#dataset-edit-xls-file(type="file",readby="parser.xls.read")
+                span #[i.fa.fa-file-excel-o.align16] {{'upload Excel'|i18n}} (.xls, .xlsx)
+              li.divider
+              li(ng-click="parser.gsheet.toggle()"): a(href="#") #[i.fa.fa-table.align16] {{'from Google Sheet'|i18n}}
+              li(ng-click="parser.plotdb.toggle()"): a(href="#") #[i.fa.fa-database.align16] {{'from PlotDB Dataset'|i18n}}
+          #dataset-editbox
+            #dataset-edit-grid.sheet-outer
+              .sheet.clusterize
+                .sheet-dim(ng-click="grid.data.bindField($event)")
+                .sheet-head(data-rowcount="5")
+                .sheet-body-outer
+                  .sheet-body.clusterize-scroll
+                    .sheet-cells.clusterize-content
+        .foot
+          .btn.btn-default(ng-click="chart.data.sample()") {{'Load Sample Data'|i18n}}
           span &nbsp;
-          .btn.btn-default(ng-click="panel.set('')") {{'Close'|i18n}}
+          .btn.btn-default(ng-click="chart.data.clear()") {{'Clear'|i18n}}
+          .pull-right
+            .btn.btn-default(ng-if="!panel.size.doc",ng-click="panel.size.set('dataset','full')") 
+              i.fa.fa-long-arrow-right(ng-if="panel.size.value.dataset!='full'")
+              i.fa.fa-long-arrow-left(ng-if="panel.size.value.dataset=='full'")
+            span &nbsp;
+            .btn.btn-default(ng-click="panel.set('')") {{'Close'|i18n}}
 
     .editor-func-detail(ng-show="panel.tab=='style'",ng-class="{'full':panel.size.doc=='sm'}"): .inner
       +panel-closebtn

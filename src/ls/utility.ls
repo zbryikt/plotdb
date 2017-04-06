@@ -24,6 +24,7 @@ angular.module \plotDB
         'Upgrade to enable privacy control': zh: "想要私人圖表嗎？現在就升級方案吧"
         "let's check out the plans": zh: "那麼、方案長什麼樣子呢？"
         # new editor
+        'Clear': zh: "清除資料"
         'Canvas Size': zh: "尺寸"
         'Data': zh: "資料"
         'Styles': zh: "樣式"

@@ -54,6 +54,9 @@ x$.service('i18n', ['$rootScope'].concat(function($rootScope){
       "let's check out the plans": {
         zh: "那麼、方案長什麼樣子呢？"
       },
+      'Clear': {
+        zh: "清除資料"
+      },
       'Canvas Size': {
         zh: "尺寸"
       },

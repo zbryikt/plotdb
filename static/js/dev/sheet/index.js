@@ -170,8 +170,16 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
       dimkeys: [],
       clusterizer: null,
       bindField: function(e){
-        var node, dim, multi, i$, to$, i, index, root;
+        var node, i$, i, dim, multi, to$, index, root;
         node = e.target || e.srcElement;
+        for (i$ = 0; i$ < 3; ++i$) {
+          i = i$;
+          if (node.nodeName.toLowerCase() !== 'a') {
+            node = node.parentNode;
+          } else {
+            break;
+          }
+        }
         if (node.nodeName.toLowerCase() !== 'a') {
           return;
         }
@@ -192,7 +200,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         return eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());
       },
       bindFieldSync: function(){
-        var root, i$, to$, i, span, results$ = [];
+        var root, i$, to$, i, span, displayname, results$ = [], this$ = this;
         root = document.querySelector('#dataset-editbox .sheet .sheet-dim > div');
         if (!root || !root.childNodes) {
           return;
@@ -209,11 +217,17 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
           if (!root.childNodes[i]) {
             continue;
           }
+          displayname = (this.dimkeys.filter(fn$)[0] || {
+            displayname: this.bind[i]
+          }).displayname;
           span = root.childNodes[i].querySelector("span");
-          span.innerText = this.bind[i] || "(empty)";
+          span.innerText = displayname || "(empty)";
           results$.push(span.className = this.bind[i] ? '' : 'grayed');
         }
         return results$;
+        function fn$(it){
+          return it.name === this$.bind[i];
+        }
       },
       fieldize: function(){
         var ret, i$, to$, i, j$, to1$, j, ref$, this$ = this;

@@ -44,6 +44,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       return $scope.panel['switch']();
     }
   });
+  $scope.hint.hide = {};
   $scope.chartModal = {
     name: {}
   };
@@ -406,6 +407,8 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           v = dimension[k];
           res$.push({
             name: k,
+            displayname: v.name || k,
+            desc: v.desc,
             multiple: !!v.multiple
           });
         }

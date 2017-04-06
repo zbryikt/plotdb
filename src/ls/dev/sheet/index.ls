@@ -118,6 +118,9 @@ angular.module \plotDB
         clusterizer: null
         bind-field: (e)->
           node = e.target or e.srcElement
+          for i from 0 til 3 => 
+            if node.nodeName.toLowerCase! != \a => node = node.parentNode
+            else break
           if node.nodeName.toLowerCase! != \a => return
           dim = node.getAttribute(\data-dim) or ''
           multi = (node.getAttribute(\data-multi) or 'false') == 'true'
@@ -139,8 +142,9 @@ angular.module \plotDB
             @bind[i] = null
           for i from 0 til @headers.length =>
             if !root.childNodes[i] => continue
+            displayname = (@dimkeys.filter(~>it.name == @bind[i]).0 or {displayname: @bind[i]}).displayname
             span = root.childNodes[i].querySelector("span")
-            span.innerText = @bind[i] or "(empty)"
+            span.innerText = displayname or "(empty)"
             span.className = if @bind[i] => '' else 'grayed'
 
         fieldize: ->

@@ -25,6 +25,8 @@ angular.module \plotDB
     dispatcher.register \keydown, ({event: e}) ->
       if (e.metaKey or e.altKey) and (e.keyCode==13 or e.which==13) => $scope.panel.switch!
 
+    # hints
+    $scope.hint.hide = {}
     # modals. check directive 'chartModal' for more methods
     $scope.chartModal = name: {}
     $scope.chartModal.assets = initWrap do
@@ -202,7 +204,7 @@ angular.module \plotDB
               v.fields.map -> it.bind = k
             bindmap = @bindmap dimension
           for k,v of dimension => v.fieldName = v.fields.map -> it.name
-          dimkeys = [{name: k, multiple: !!v.multiple} for k,v of dimension]
+          dimkeys = [{name: k, displayname: v.name or k, desc: v.desc, multiple: !!v.multiple} for k,v of dimension]
           $scope.dataset.bind dimkeys, null #bindmap
           @update fields
         clear: -> eventBus.fire \sheet.data.clear
