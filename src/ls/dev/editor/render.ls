@@ -13,7 +13,8 @@
 # -> render           - {data, config}
 # <- rendered
 
-plotdb-domain = "http://localhost/"
+plotdb-domain = plConfig.urlschema + "" + plConfig.domain
+
 send-msg = (msg) -> window.parent.postMessage msg, plotdb-domain 
 store = do
   base: null    # base object from database
