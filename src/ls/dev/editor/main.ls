@@ -163,6 +163,21 @@ angular.module \plotDB
           if angular.toJson(n.value) == angular.toJson(o.value) => return
           @config.parse(n.value,o.value)), true
         dispatcher.register \data.sample, ({data}) ~> @finish \sample, data
+      animate: do
+        toggle: (v) ->
+          @toggled = if v? => v else !!!@toggled
+          if @toggled and !@running =>
+            @running = true
+            @tick!
+        running: false
+        last: 0
+        tick: (time) ->
+          if time - @last > 2000 and @toggled =>
+            @last = time
+            $scope.chart.sample!then ~>
+              $scope.chart.data.adopt it, false
+              requestAnimationFrame(-> $scope.chart.animate.tick it)
+          else requestAnimationFrame(-> $scope.chart.animate.tick it)
       sample: -> canvas.msg type: 'data.get(sample)'; @block \sample
       config: do
         value: null

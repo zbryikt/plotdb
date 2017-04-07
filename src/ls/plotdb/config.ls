@@ -170,6 +170,20 @@ plotdb.config = do
     default: 500
     desc: "Animation Duration, in millisecond (e.g., 500)"
     category: "Animation"
+    i18n: zh: name: "動畫長度", desc: "用來設定動畫長度，以千分之一秒為單位"
+
+  animationTiming: do
+    name: "Animation Timing"
+    type: [plotdb.Choice(<[
+      linear
+      quad quad-in quad-out quad-in-out
+      elastic elastic-in elastic-out elastic-in-out
+      bounce bounce-in bounce-out bounce-in-out
+    ]>)]
+    default: \linear
+    desc: "timing function, which controls animation acceleration"
+    i18n: zh: name: "轉場效果", desc: "用來設定動畫的速度變化模式"
+    category: "Animation"
 
   ### Layout
 
@@ -260,7 +274,7 @@ plotdb.config = do
 
   lineSmoothing: do
     name: "Line Smoothing"
-    default: "linear"
+    default: "cardinal"
     type: [plotdb.Choice(<[
       linear step step-before step-after basis bundle cardinal monotone
     ]>)]

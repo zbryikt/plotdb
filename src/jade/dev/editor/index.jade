@@ -423,7 +423,10 @@ block body
       ng-click="panel.set('editor',true);editor.tab.set('style')") CSS
       .icon(ng-class="{'active':panel.tab=='editor' && editor.tab.value=='doc'}",
       ng-click="panel.set('editor',true);editor.tab.set('doc')") HTML
+
       .icon(ng-click="chartModal.assets.ctrl.toggle()") ASSET
+      .icon(ng-class="{'active':chart.animate.toggled}",
+      ng-click="chart.animate.toggle()",style="width:32px"): i.fa.fa-forward
       .icon
         .dropdown.btn-group
           .btn.btn-xs.btn-default.dropdown-toggle(data-toggle="dropdown")

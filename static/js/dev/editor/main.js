@@ -289,6 +289,35 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         return this$.finish('sample', data);
       });
     },
+    animate: {
+      toggle: function(v){
+        this.toggled = v != null
+          ? v
+          : !this.toggled;
+        if (this.toggled && !this.running) {
+          this.running = true;
+          return this.tick();
+        }
+      },
+      running: false,
+      last: 0,
+      tick: function(time){
+        var this$ = this;
+        if (time - this.last > 2000 && this.toggled) {
+          this.last = time;
+          return $scope.chart.sample().then(function(it){
+            $scope.chart.data.adopt(it, false);
+            return requestAnimationFrame(function(it){
+              return $scope.chart.animate.tick(it);
+            });
+          });
+        } else {
+          return requestAnimationFrame(function(it){
+            return $scope.chart.animate.tick(it);
+          });
+        }
+      }
+    },
     sample: function(){
       canvas.msg({
         type: 'data.get(sample)'

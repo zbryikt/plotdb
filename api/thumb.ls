@@ -15,4 +15,4 @@ module.exports = do
     [imgtype, thumb] = dethumb data
     if imgtype != \image/png or !thumb => return
     if data.key => fs-extra.mkdirs "static/s/#type", ->
-      fs.write-file "static/s/#{type}/#{data.key}.png", thumb
+      fs.write-file "static/s/#{type}/#{data.key}.png", thumb, (->)
