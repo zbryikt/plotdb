@@ -123,12 +123,16 @@ angular.module \plotDB
             else break
           if node.nodeName.toLowerCase! != \a => return
           dim = node.getAttribute(\data-dim) or ''
+          action = node.getAttribute(\data-action) or 'bind'
           multi = (node.getAttribute(\data-multi) or 'false') == 'true'
-          if dim and !multi => for i from 0 til @bind.length =>
-            if @bind[i] == dim => @bind[i] = null
-          index = Array.from(node.parentNode.parentNode.parentNode.parentNode.childNodes)
-            .indexOf(node.parentNode.parentNode.parentNode)
-          @bind[index] = dim or null
+          if action == \clearall =>
+            for i from 0 til @bind.length => @bind[i] = null
+          else
+            if dim and !multi => for i from 0 til @bind.length =>
+              if @bind[i] == dim => @bind[i] = null
+            index = Array.from(node.parentNode.parentNode.parentNode.parentNode.childNodes)
+              .indexOf(node.parentNode.parentNode.parentNode)
+            @bind[index] = dim or null
           root = node.parentNode.parentNode.parentNode.parentNode
           @bind-field-sync!
           eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!

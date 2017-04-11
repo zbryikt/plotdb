@@ -170,7 +170,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
       dimkeys: [],
       clusterizer: null,
       bindField: function(e){
-        var node, i$, i, dim, multi, to$, index, root;
+        var node, i$, i, dim, action, multi, to$, index, root;
         node = e.target || e.srcElement;
         for (i$ = 0; i$ < 3; ++i$) {
           i = i$;
@@ -184,17 +184,25 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
           return;
         }
         dim = node.getAttribute('data-dim') || '';
+        action = node.getAttribute('data-action') || 'bind';
         multi = (node.getAttribute('data-multi') || 'false') === 'true';
-        if (dim && !multi) {
+        if (action === 'clearall') {
           for (i$ = 0, to$ = this.bind.length; i$ < to$; ++i$) {
             i = i$;
-            if (this.bind[i] === dim) {
-              this.bind[i] = null;
+            this.bind[i] = null;
+          }
+        } else {
+          if (dim && !multi) {
+            for (i$ = 0, to$ = this.bind.length; i$ < to$; ++i$) {
+              i = i$;
+              if (this.bind[i] === dim) {
+                this.bind[i] = null;
+              }
             }
           }
+          index = Array.from(node.parentNode.parentNode.parentNode.parentNode.childNodes).indexOf(node.parentNode.parentNode.parentNode);
+          this.bind[index] = dim || null;
         }
-        index = Array.from(node.parentNode.parentNode.parentNode.parentNode.childNodes).indexOf(node.parentNode.parentNode.parentNode);
-        this.bind[index] = dim || null;
         root = node.parentNode.parentNode.parentNode.parentNode;
         this.bindFieldSync();
         return eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());

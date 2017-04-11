@@ -257,7 +257,9 @@ angular.module \plotDB
                 break
 
         update: (data) ->
-          if data.length and !data.filter(->it.bind).length =>
+          autobind = if $scope.dataset.bindcheck => true else false
+          $scope.dataset.bindcheck = false
+          if data.length and !data.filter(->it.bind).length and autobind =>
             @autobind data, $scope.chart.obj.dimension
             if data.filter(->it.bind) => @adopt data, false
             return
@@ -293,7 +295,7 @@ angular.module \plotDB
             $scope.dataset.grid.isClear!
           .then (v) ~>
             if v => 
-              dataset-key := [{k,v} for k,v of @dimension].map(({k,v})-> (v.fields.0 or {}).dataset).0
+              dataset-key := [{k,v} for k,v of @dimension].map(({k,v})-> (v.[]fields.0 or {}).dataset).0
               if dataset-key => $scope.dataset.parse dataset-key, @data.bindmap(@obj.dimension)
               else @sample!
             else =>
@@ -321,10 +323,13 @@ angular.module \plotDB
             ret
 
     $scope.dataset = initWrap do
+      bindcheck: false
       init: ->
         eventBus.listen \sheet.dataset.saved, ~> @finish \save, it
         eventBus.listen \sheet.dataset.save.failed, ~> @failed \save, it
-        eventBus.listen \sheet.dataset.loaded, (payload) ~> @finish \load, payload
+        eventBus.listen \sheet.dataset.loaded, (payload) ~>
+          @bindcheck = true
+          @finish \load, payload
         eventBus.listen \sheet.dataset.parsed, (payload) ~> @finish \parse, payload
         eventBus.listen \sheet.dataset.changed, (v) -> $scope.chart.data.update v
       load: (key, bindmap, force = false) ->

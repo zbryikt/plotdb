@@ -51,6 +51,9 @@ grid-render = (e) ->
       """<li class='grayed'><a href='#' data-dim="">(empty)"""
       """<small>remove from binding</small>"""
       """</a></li>"""
+      """<li class='grayed'><a href='#' data-dim="" data-action="clearall">clear all"""
+      """<small>clear all bindings</small>"""
+      """</a></li>"""
       "</ul>"
       "</div>"
     ].join("")

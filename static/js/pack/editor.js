@@ -990,10 +990,12 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         }
       },
       update: function(data){
-        var dimension, k, v, i$, to$, i, ref$, key$;
+        var autobind, dimension, k, v, i$, to$, i, ref$, key$;
+        autobind = $scope.dataset.bindcheck ? true : false;
+        $scope.dataset.bindcheck = false;
         if (data.length && !data.filter(function(it){
           return it.bind;
-        }).length) {
+        }).length && autobind) {
           this.autobind(data, $scope.chart.obj.dimension);
           if (data.filter(function(it){
             return it.bind;
@@ -1103,7 +1105,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           }.call(this$)).map(function(arg$){
             var k, v;
             k = arg$.k, v = arg$.v;
-            return (v.fields[0] || {}).dataset;
+            return ((v.fields || (v.fields = []))[0] || {}).dataset;
           })[0];
           if (datasetKey) {
             return $scope.dataset.parse(datasetKey, this$.data.bindmap(this$.obj.dimension));
@@ -1170,6 +1172,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     }
   });
   $scope.dataset = initWrap({
+    bindcheck: false,
     init: function(){
       var this$ = this;
       eventBus.listen('sheet.dataset.saved', function(it){
@@ -1179,6 +1182,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         return this$.failed('save', it);
       });
       eventBus.listen('sheet.dataset.loaded', function(payload){
+        this$.bindcheck = true;
         return this$.finish('load', payload);
       });
       eventBus.listen('sheet.dataset.parsed', function(payload){
@@ -1946,7 +1950,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
       dimkeys: [],
       clusterizer: null,
       bindField: function(e){
-        var node, i$, i, dim, multi, to$, index, root;
+        var node, i$, i, dim, action, multi, to$, index, root;
         node = e.target || e.srcElement;
         for (i$ = 0; i$ < 3; ++i$) {
           i = i$;
@@ -1960,17 +1964,25 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
           return;
         }
         dim = node.getAttribute('data-dim') || '';
+        action = node.getAttribute('data-action') || 'bind';
         multi = (node.getAttribute('data-multi') || 'false') === 'true';
-        if (dim && !multi) {
+        if (action === 'clearall') {
           for (i$ = 0, to$ = this.bind.length; i$ < to$; ++i$) {
             i = i$;
-            if (this.bind[i] === dim) {
-              this.bind[i] = null;
+            this.bind[i] = null;
+          }
+        } else {
+          if (dim && !multi) {
+            for (i$ = 0, to$ = this.bind.length; i$ < to$; ++i$) {
+              i = i$;
+              if (this.bind[i] === dim) {
+                this.bind[i] = null;
+              }
             }
           }
+          index = Array.from(node.parentNode.parentNode.parentNode.parentNode.childNodes).indexOf(node.parentNode.parentNode.parentNode);
+          this.bind[index] = dim || null;
         }
-        index = Array.from(node.parentNode.parentNode.parentNode.parentNode.childNodes).indexOf(node.parentNode.parentNode.parentNode);
-        this.bind[index] = dim || null;
         root = node.parentNode.parentNode.parentNode.parentNode;
         this.bindFieldSync();
         return eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());

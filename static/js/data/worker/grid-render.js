@@ -74,7 +74,7 @@ gridRender = function(e){
           results$.push(("<li><a href='#' data-dim=\"" + v.name + "\" ") + ("data-multi=\"" + !!v.multiple + "\">") + ("<i class='grayed fa fa-" + (v.multiple ? 'clone' : 'square-o') + "'></i>") + (v.displayname + "") + ("<small>" + v.desc + "</small>") + "</a></li>");
         }
         return results$;
-      }()).join(""), "<li class='divider'></li>", "<li class='grayed'><a href='#' data-dim=\"\">(empty)", "<small>remove from binding</small>", "</a></li>", "</ul>", "</div>"
+      }()).join(""), "<li class='divider'></li>", "<li class='grayed'><a href='#' data-dim=\"\">(empty)", "<small>remove from binding</small>", "</a></li>", "<li class='grayed'><a href='#' data-dim=\"\" data-action=\"clearall\">clear all", "<small>clear all bindings</small>", "</a></li>", "</ul>", "</div>"
     ].join("");
   }).join("") + "</div>";
   for (i$ = 0, to$ = len.rows; i$ < to$; ++i$) {

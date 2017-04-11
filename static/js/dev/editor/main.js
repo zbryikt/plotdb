@@ -544,10 +544,12 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         }
       },
       update: function(data){
-        var dimension, k, v, i$, to$, i, ref$, key$;
+        var autobind, dimension, k, v, i$, to$, i, ref$, key$;
+        autobind = $scope.dataset.bindcheck ? true : false;
+        $scope.dataset.bindcheck = false;
         if (data.length && !data.filter(function(it){
           return it.bind;
-        }).length) {
+        }).length && autobind) {
           this.autobind(data, $scope.chart.obj.dimension);
           if (data.filter(function(it){
             return it.bind;
@@ -657,7 +659,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           }.call(this$)).map(function(arg$){
             var k, v;
             k = arg$.k, v = arg$.v;
-            return (v.fields[0] || {}).dataset;
+            return ((v.fields || (v.fields = []))[0] || {}).dataset;
           })[0];
           if (datasetKey) {
             return $scope.dataset.parse(datasetKey, this$.data.bindmap(this$.obj.dimension));
@@ -724,6 +726,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     }
   });
   $scope.dataset = initWrap({
+    bindcheck: false,
     init: function(){
       var this$ = this;
       eventBus.listen('sheet.dataset.saved', function(it){
@@ -733,6 +736,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         return this$.failed('save', it);
       });
       eventBus.listen('sheet.dataset.loaded', function(payload){
+        this$.bindcheck = true;
         return this$.finish('load', payload);
       });
       eventBus.listen('sheet.dataset.parsed', function(payload){
