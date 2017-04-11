@@ -823,7 +823,9 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         var k, ref$, v;
         for (k in ref$ = this.value) {
           v = ref$[k];
-          v.value = v['default'] || v.value;
+          v.value = v['default'] != null
+            ? v['default']
+            : v.value;
         }
         return $scope.chart.reset();
       }

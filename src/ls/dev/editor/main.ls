@@ -200,7 +200,7 @@ angular.module \plotDB
           if rebind => $scope.chart.reset!
           else canvas.msg {type: \config.set, config: (@value or {}), rebind}
         reset: ->
-          for k,v of @value => v.value = v.default or v.value
+          for k,v of @value => v.value = if v.default? => v.default else v.value
           $scope.chart.reset!
       data: do
         bindmap: (dimension) ->
