@@ -4,10 +4,15 @@ mixin SaveFork
   span(ng-cloak,ng-show="!writable") {{'Fork-Save'|i18n}}
 mixin margin-break
   .margin-break &nbsp;
-mixin cover-modal(condition,toggle,className)
-  .cover-modal(ng-cloak,ng-if=condition,ng-click=toggle)
-  .cover-modal-inner(ng-cloak,ng-if=condition,class=className)
-    block
+mixin cover-modal(condition,toggle,className,useif)
+  if useif
+    .cover-modal(ng-cloak,ng-if=condition,ng-click=toggle)
+    .cover-modal-inner(ng-cloak,ng-if=condition,class=className)
+      block
+  else
+    .cover-modal(ng-cloak,ng-show=condition,ng-click=toggle)
+    .cover-modal-inner(ng-cloak,ng-show=condition,class=className)
+      block
 
 //- dialog: Sample Usage
   +dialog("modelName", "additional-className")

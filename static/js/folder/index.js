@@ -60,6 +60,7 @@ x$.controller('folderEdit', ['$scope', '$http', 'folderService', 'plNotify', 'ev
   });
   return $scope.save = function(){
     var create, folder;
+    console.log(">", $scope.name);
     eventBus.fire('loading.dimmer.on');
     create = false;
     folder = $scope.folder;

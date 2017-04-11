@@ -647,6 +647,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       if (this.tab.oldValue !== this.tab.value) {
         return;
       }
+      this.tab.oldValue = this.tab.value;
       if ($scope.chart.obj[this.tab.value].content === it) {
         return;
       }

@@ -107,6 +107,7 @@ angular.module \plotDB
           if @old-value != @value => $scope.editor.refresh!
       change: ->
         if @tab.old-value != @tab.value => return
+        @tab.old-value = @tab.value
         if $scope.chart.obj[@tab.value].content == it => return
         $scope.chart.obj[@tab.value].content = it
         $scope.chart.reset!

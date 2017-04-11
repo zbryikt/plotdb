@@ -34,6 +34,7 @@ angular.module \plotDB
       $scope.prepare folder
       $scope.edit.toggle true, \description
     $scope.save = ->
+      console.log ">", $scope.name
       eventBus.fire \loading.dimmer.on
       create = false
       folder = $scope.folder

@@ -2,7 +2,7 @@ include /mixin.jade
 #user-feedback(ng-click="gfbt.toggle()")
   i.fa.fa-commenting
   span(ng-cloak) {{'send feedback'|i18n}}
-+cover-modal("gfbt.toggled","gfbt.toggle(false)")
++cover-modal("gfbt.toggled","gfbt.toggle(false)","centered")
   .panel.panel-default
     .panel-body(style="height:90%;overflow-y:scroll")
       .closebtn.inner.inverse.lg(ng-click="gfbt.toggle(false)")
