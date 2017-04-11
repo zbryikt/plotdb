@@ -398,7 +398,7 @@ angular.module \plotDB
             ready: true
             url: url
             size: size
-            filename: "#{$scope.chart.name}.json"
+            filename: "#{$scope.chart.obj.name}.json"
         else => canvas.msg {type: \snapshot, format: format}
     
     $scope.paledit = edit: (v) -> eventBus.fire \paledit.edit, v

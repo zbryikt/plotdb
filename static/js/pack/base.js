@@ -15479,13 +15479,12 @@ x$.controller('folderList', ['$scope', '$http', 'IOService', 'folderService', 'P
     folder = new folderService.folder({
       key: folder.key || folder
     });
-    console.log(folder);
     return folder.load().then(function(folder){
       return $scope.$apply(function(){
         return $scope.activeFolder = folder;
       });
     })['catch'](function(){
-      return console.log('erro');
+      return console.log('error');
     });
   };
   $scope['delete'] = function(folder){

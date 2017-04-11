@@ -99,8 +99,7 @@ angular.module \plotDB
           else
             plNotify.send \error, "failed to add; try later?"
 
-    eventBus.listen \folder-chooser-prechoose, (key) ->
-      console.log \123
+    eventBus.listen \folder-chooser-prechoose, (key) -> console.log \123
 
     eventBus.listen \add-to-collection, (item) ->
       ret = /hint\.addCollection\.(\d+)/.exec window.location.hash
@@ -185,10 +184,9 @@ angular.module \plotDB
     $scope.goto = (folder) -> window.location.href = "/collection/#{folder.key}"
     $scope.open = (folder) ->
       folder = new folderService.folder({key: folder.key or folder})
-      console.log folder
       folder.load!
         .then (folder) -> $scope.$apply -> $scope.active-folder = folder
-        .catch -> console.log \erro
+        .catch -> console.log \error
 
     $scope.delete = (folder) ->
       eventBus.fire \loading.dimmer.on

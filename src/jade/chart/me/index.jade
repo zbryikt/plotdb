@@ -5,10 +5,10 @@ block vars
 block head
 block body
   .spc1
-  .page-header: .inner
+  .page-header(ng-cloak): .inner
     .title {{'My Charts'|i18n}}
     .desc share your chart with others by publishing them.
-  #root.narrow.with-header.charts-sm
+  #root.narrow.with-header.charts-sm(ng-cloak)
     div(ng-controller="userChartList"): div(ng-controller="chartList")
       div(style="height:52px")
       #chart-filter.scroll-stick(data-top="75")

@@ -1311,7 +1311,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
           ready: true,
           url: url,
           size: size,
-          filename: $scope.chart.name + ".json"
+          filename: $scope.chart.obj.name + ".json"
         });
       } else {
         return canvas.msg({

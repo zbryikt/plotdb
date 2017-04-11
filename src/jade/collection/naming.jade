@@ -5,7 +5,7 @@ div(ng-controller="folderEdit")
       .panel-body(style="height:135px;min-height:135px")
         label(ng-show="!folder.key") {{'Create Folder'|i18n}}
         label(ng-show="folder.key") {{'Rename Folder'|i18n}}
-        input.form-control(placeholder="folder name", value="unnamed folder",ng-model="name")
+        input.form-control(placeholder="folder name", value="unnamed folder",ng-model="$parent.name")
         br
         .btn-group.pull-right
           .btn.btn-default(ng-if="!folder.key", ng-click="save()") {{'Create'|i18n}}
@@ -15,7 +15,7 @@ div(ng-controller="folderEdit")
     .panel.panel-default(style="width:500px;margin:auto")
       .panel-body(style="height:165px;min-height:135px")
         label {{'Collection Description'|i18n}}
-        textarea.form-control(cols="4",ng-attr-placeholder="{{'write something about this collection'|i18n}}...", value="",ng-model="description")
+        textarea.form-control(cols="4",ng-attr-placeholder="{{'write something about this collection'|i18n}}...", value="",ng-model="$parent.description")
         br
         .btn-group.pull-right
           .btn.btn-default(ng-click="save()") {{'Save'|i18n}}
