@@ -13,7 +13,7 @@ engine.router.api.post \/pay/change, (req, res) ->
 engine.app.get \/me/billing/, (req, res) ->
   if !req.user => return aux.r403 res, "", true
   payload = {}
-  payload <<< {} <<< req.user.payment{plan, period, expiredate}
+  payload <<< {} <<< req.user.{}payment{plan, period, expiredate}
   io.query "select * from paymenthistory where owner = $1", [req.user.key]
     .then (r={}) ->
       payload.history = r.[]rows
