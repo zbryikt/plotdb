@@ -325,6 +325,7 @@ angular.module \plotDB
     $scope.dataset = initWrap do
       bindcheck: false
       init: ->
+        eventBus.listen \data.rebind, ~> @bindcheck = true
         eventBus.listen \sheet.dataset.saved, ~> @finish \save, it
         eventBus.listen \sheet.dataset.save.failed, ~> @failed \save, it
         eventBus.listen \sheet.dataset.loaded, (payload) ~>

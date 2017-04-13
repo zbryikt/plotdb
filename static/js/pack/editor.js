@@ -1175,6 +1175,9 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     bindcheck: false,
     init: function(){
       var this$ = this;
+      eventBus.listen('data.rebind', function(){
+        return this$.bindcheck = true;
+      });
       eventBus.listen('sheet.dataset.saved', function(it){
         return this$.finish('save', it);
       });
@@ -2513,6 +2516,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
       }
       return this.render().then(function(){
         this$.clear = false;
+        eventBus.fire('data.rebind', true);
         return eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());
       });
     }

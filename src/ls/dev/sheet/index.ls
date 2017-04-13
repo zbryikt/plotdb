@@ -430,6 +430,7 @@ angular.module \plotDB
           @data.bindmap = null
         @render!then ~>
           @clear = false
+          eventBus.fire \data.rebind, true
           eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
 
 

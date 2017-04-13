@@ -733,6 +733,7 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
       }
       return this.render().then(function(){
         this$.clear = false;
+        eventBus.fire('data.rebind', true);
         return eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());
       });
     }

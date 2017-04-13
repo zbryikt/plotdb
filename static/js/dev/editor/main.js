@@ -729,6 +729,9 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
     bindcheck: false,
     init: function(){
       var this$ = this;
+      eventBus.listen('data.rebind', function(){
+        return this$.bindcheck = true;
+      });
       eventBus.listen('sheet.dataset.saved', function(it){
         return this$.finish('save', it);
       });
