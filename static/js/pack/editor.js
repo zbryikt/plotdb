@@ -639,8 +639,9 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
         this.oldValue = this.value;
         this.value = it;
         if (this.oldValue !== this.value) {
-          return $scope.editor.refresh();
+          $scope.editor.refresh();
         }
+        return document.cookie = "editor.theme=" + this.value;
       }
     },
     change: function(it){

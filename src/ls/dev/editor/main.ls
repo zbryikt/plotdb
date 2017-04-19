@@ -98,6 +98,11 @@ angular.module \plotDB
     # code editor. check directive 'codeeditor' for more methods
     $scope.editor = initWrap do
       init: ->
+        #  document.cookie = "editortheme=#it"
+        #$scope.editortheme.val = (/editortheme=([^;].+?)(;|$)/.exec(document.cookie) or {}).1
+        #$scope.editortheme.val = (/editortheme=([^;].+?)(;|$)/.exec(document.cookie) or {}).1
+        #if !$scope.editortheme.val => $scope.editortheme.val = \default
+        #$scope.editortheme $scope.editortheme.val
       tab: do
         value: 'code', old-value: 'code'
         choices: <[code style doc]>
@@ -105,6 +110,7 @@ angular.module \plotDB
           @old-value = @value
           @value = it
           if @old-value != @value => $scope.editor.refresh!
+          document.cookie = "editor.theme=#{@value}"
       change: ->
         if @tab.old-value != @tab.value =>
           @tab.old-value = @tab.value
