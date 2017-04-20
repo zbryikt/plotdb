@@ -4,6 +4,14 @@ angular.module \plotDB
     ret = do
       get: -> (ret.db[it] and ret.db[it][$rootScope.lang]) or it
       db: do
+        # Team
+        'Add Member': zh: "加入成員"
+        'Add Chart': zh: "加入圖表"
+        'add': zh: "加入"
+        'You can only add charts that are owned by you': zh: "只有圖表的擁有者才能把圖表加進來喔！"
+        'or Create from Scratch': zh: "或從頭打造一個"
+        'Members': zh: "成員"
+        'Charts': zh: "圖表"
         # Language
         'zh': zh: "中文"
         'en': en: "English"

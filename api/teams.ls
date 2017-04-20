@@ -208,7 +208,7 @@ team-permission = (req, res, level = \admin, fetch-all = false) ->
     .then (r={})->
       team = r.[]rows.0
       if !team => return aux.reject 404
-      if !perm.test(req, team.{}permission, team.owner, \admin) => return aux.reject 403
+      if !perm.test(req, team.{}permission, team.owner, level) => return aux.reject 403
       bluebird.resolve team
 
 engine.router.api.post(\/team/:tid/avatar/,

@@ -1,6 +1,9 @@
 big.xl {
   font-size: 1.5em;
 }
+.once {
+  animation-iteration-count: 1 !important;
+}
 .float-hint {
   position: fixed;
   top: 70px;

@@ -12,7 +12,7 @@ block body
   .spc1
   include /widget/folderChooser.jade
   +folder-panel
-  .team-page(ng-controller="teamBase"): div(ng-controller="teamEdit")
+  .team-page(ng-controller="teamBase",ng-cloak): div(ng-controller="teamEdit")
     #team-header.page-header(style="height: 200px;border-bottom:10px solid #ed1d78"): .inner
       .avatar.xxl.pull-left(style="background-image:url(/s/avatar/" + (team.avatar || 0) + ".jpg);margin-right:30px;box-shadow:0 0 6px 1px rgba(0,0,0,0.5);border-radius:5px")
       div(style="padding-top:30px;text-shadow:#000 0 0 2px,#000 0 0 2px,#000 0 0 2px,#000 0 0 2px;color:#fff")
@@ -37,8 +37,8 @@ block body
           .container-fluid
             div
               ul.nav.navbar-nav
-                li(ng-class="{'active':teamtab=='member'}",ng-click="teamtab='member'"): a(href="#") Members #[small.grayed(ng-cloak) ({{(members.length || 0)}})]
-                li(ng-class="{'active':teamtab=='chart'}",ng-click="teamtab='chart'"): a(href="#") Charts #[small.grayed(ng-cloak) ({{charts.length || 0}})]
+                li(ng-class="{'active':teamtab=='member'}",ng-click="teamtab='member'"): a(href="#") {{'Members'|i18n}} #[small.grayed(ng-cloak) ({{(members.length || 0)}})]
+                li(ng-class="{'active':teamtab=='chart'}",ng-click="teamtab='chart'"): a(href="#") {{'Charts'|i18n}} #[small.grayed(ng-cloak) ({{charts.length || 0}})]
                 //-li(ng-class="{'active':teamtab=='dataset'}",ng-click="teamtab='dataset'"): a(href="#") Datasets #[small.grayed ({{datasets.length || 0}})]
                 //-li(ng-class="{'active':teamtab=='theme'}",ng-click="teamtab='theme'"): a(href="#") Themes #[small.grayed ({{themes.length || 0}})]
               //- add back once we have time to implement keyword search in team
@@ -60,11 +60,11 @@ block body
             .panel-body
               .row
                 .col-sm-12
-                  label Add Members
+                  label {{'Add Member'|i18n}}
                   .input-group.text-left
                     +selectbox("newMembers","user",null,{size: "lg"})
                     .input-group-btn
-                      .btn.btn-default.btn-lg(ng-click="addMembers("+team.key+")") Add Chart
+                      .btn.btn-default.btn-lg(ng-click="addMembers("+team.key+")") {{'Add Member'|i18n}}
 
         .members(style="min-height:300px")
           //-if userPermission[0] >= 5
@@ -116,15 +116,17 @@ block body
             .panel-body
               .row
                 .col-sm-9
-                  label Add Charts #[small.grayed * You can only add charts that are owned by you]
+                  label
+                    span {{'Add Chart'|i18n}}
+                    small.grayed * {{'You can only add charts that are owned by you'|i18n}}
                   .input-group.text-left
                     +selectbox("newCharts",type="chart","owner",{size: "lg"})
                     .input-group-btn
-                      .btn.btn-default.btn-lg(ng-click="addCharts("+team.key+")") Add Chart
+                      .btn.btn-default.btn-lg(ng-click="addCharts("+team.key+")") {{'Add Chart'|i18n}}
                 .col-sm-3
                   label &nbsp;
                   .btn.btn-default.btn-lg.btn-block(
-                  ng-click="newChart(" + team.key + ")") ... or Create from Scratch
+                  ng-click="newChart(" + team.key + ")") ... {{'or Create from Scratch'|i18n}}
         .charts
           .chart(ng-repeat="chart in charts",ng-attr-style="display:inline-block;flex:1 1")
             if userPermission[1] == "admin"
@@ -193,12 +195,12 @@ block body
         br
         if userPermission[0] >= 5
           .text-left(style="width:600px;margin:auto")
-            label Add members
+            label {{'Add Member'|i18n}}
             .input-group.long
               +selectbox("newMembers","user")
               //-div: select.form-control(multiple="multiple",ngselect4,ng-data="newMembers",type="user")
               .input-group-btn
-                .btn.btn-default(ng-click="addMembers("+team.key+")") #[i.fa.fa-plus] add
+                .btn.btn-default(ng-click="addMembers("+team.key+")") #[i.fa.fa-plus] {{'加入'|i18n}}
         br
         br
         .sep.gap
