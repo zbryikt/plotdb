@@ -50,7 +50,7 @@ mixin publish
             ng-show="!chart.obj.searchable") {{'hidden from search result'|i18n}}
 
           .sep
-          div(ng-controller="permEdit",ng-init="setPerm(chart.obj.permission)")
+          div(ng-controller="permEdit",ng-init="setPerm('chart.obj.permission')")
             include permission.jade
             +permPanel('entity')
       div(ng-show="settingPanel.tab=='publish'")
