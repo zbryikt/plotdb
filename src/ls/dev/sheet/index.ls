@@ -205,12 +205,15 @@ angular.module \plotDB
             }
 
       update: (r,c,val, head-only = true) ->
+        set-cursor = false
         dirty = false
         if c >= @data.headers.length and val =>
           for i from @data.headers.length to c => @data.headers[i] = ''
           head-only = false
+          set-cursor = true
         if r >= @data.rows.length =>
           for i from @data.rows.length to r => @data.rows[i] = []
+          set-cursor = true
         if r == -1 =>
           if !@data.headers[c] and !val => return
           @data.headers[c] = val
@@ -241,7 +244,12 @@ angular.module \plotDB
           @data.types.splice i + 1
           dirty = true
         eventBus.fire \sheet.dataset.changed, $scope.grid.data.fieldize!
+
+        scroll = document.querySelector '#dataset-editbox .sheet .clusterize-scroll'
+        last-scroll-left = scroll.scrollLeft
+
         if dirty => @render {head-only: head-only} .then ~>
+          scroll.scrollLeft = if set-cursor and r < 0 => 999999999 else last-scroll-left
           @clear = false
           if r < 0 =>
             node = document.querySelector(
@@ -255,6 +263,7 @@ angular.module \plotDB
             ].join(" "))
           if node =>
             node.focus!
+            if !set-cursor => return
             if node.setSelectionRange =>
               node.setSelectionRange 1,1
             else

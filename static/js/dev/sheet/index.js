@@ -329,8 +329,9 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
       });
     },
     update: function(r, c, val, headOnly){
-      var dirty, i$, i, ref$, j, that, valtype, this$ = this;
+      var setCursor, dirty, i$, i, ref$, j, that, valtype, scroll, lastScrollLeft, this$ = this;
       headOnly == null && (headOnly = true);
+      setCursor = false;
       dirty = false;
       if (c >= this.data.headers.length && val) {
         for (i$ = this.data.headers.length; i$ <= c; ++i$) {
@@ -338,12 +339,14 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
           this.data.headers[i] = '';
         }
         headOnly = false;
+        setCursor = true;
       }
       if (r >= this.data.rows.length) {
         for (i$ = this.data.rows.length; i$ <= r; ++i$) {
           i = i$;
           this.data.rows[i] = [];
         }
+        setCursor = true;
       }
       if (r === -1) {
         if (!this.data.headers[c] && !val) {
@@ -399,11 +402,14 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
         dirty = true;
       }
       eventBus.fire('sheet.dataset.changed', $scope.grid.data.fieldize());
+      scroll = document.querySelector('#dataset-editbox .sheet .clusterize-scroll');
+      lastScrollLeft = scroll.scrollLeft;
       if (dirty) {
         return this.render({
           headOnly: headOnly
         }).then(function(){
           var node, range;
+          scroll.scrollLeft = setCursor && r < 0 ? 999999999 : lastScrollLeft;
           this$.clear = false;
           if (r < 0) {
             node = document.querySelector('#dataset-editbox .sheet-head > div >' + (" div:nth-of-type(" + (c + 1) + ") > textarea:first-child"));
@@ -412,6 +418,9 @@ x$.controller('plSheetEditor', ['$scope', '$interval', '$timeout', '$http', 'per
           }
           if (node) {
             node.focus();
+            if (!setCursor) {
+              return;
+            }
             if (node.setSelectionRange) {
               return node.setSelectionRange(1, 1);
             } else {
