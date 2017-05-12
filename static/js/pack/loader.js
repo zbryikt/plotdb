@@ -1060,17 +1060,28 @@ plotdb.chart = {
     return ((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name] = json;
   },
   get: function(name){
-    var chart, ref$, code;
+    var chart, ref$, func, k, v, code;
     chart = ((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name];
     if (!chart) {
       return null;
     }
-    code = chart.code.content;
-    chart = JSON.parse(JSON.stringify(chart));
-    if (typeof code !== 'string') {
-      chart.code.content = code;
+    func = {};
+    for (k in ref$ = chart.code.content) {
+      v = ref$[k];
+      if (typeof v === typeof fn$) {
+        func[k] = v;
+      }
     }
-    return new plotdb.view.chart(chart);
+    code = JSON.parse(JSON.stringify(chart.code.content));
+    for (k in func) {
+      v = func[k];
+      code[k] = v;
+    }
+    chart = JSON.parse(JSON.stringify(chart));
+    return new plotdb.view.chart(chart, {
+      code: code
+    });
+    function fn$(){}
   },
   list: function(){
     var k, results$ = [];
@@ -2160,7 +2171,7 @@ plotdb.view = {
     var ref$, theme, fields, root, data, code, eventbus;
     ref$ = arg$ != null
       ? arg$
-      : {}, theme = ref$.theme, fields = ref$.fields, root = ref$.root, data = ref$.data;
+      : {}, theme = ref$.theme, fields = ref$.fields, root = ref$.root, data = ref$.data, code = ref$.code;
     this._ = {
       handler: {},
       _chart: JSON.stringify(chart),
@@ -2170,7 +2181,9 @@ plotdb.view = {
       config: null
     };
     if (chart) {
-      code = chart.code.content;
+      if (!code) {
+        code = chart.code.content;
+      }
       if (typeof code === 'string') {
         if (code[0] === '{') {
           code = "(function() { return " + code + "; })();";
@@ -2180,6 +2193,7 @@ plotdb.view = {
         this._.chart = chart = import$(eval(code), chart);
       } else {
         this._.chart = chart = import$(code, chart);
+        this._.code = code;
       }
     }
     this._.config = chart.config;
@@ -2415,7 +2429,8 @@ import$(plotdb.view.chart.prototype, {
     var ref$;
     return new plotdb.view.chart(JSON.parse(this._._chart), {
       theme: (ref$ = this._).theme,
-      fields: ref$.fields
+      fields: ref$.fields,
+      code: ref$.code
     });
   },
   on: function(event, cb){

@@ -93,10 +93,13 @@ plotdb.chart = do
   get: (name) ->
     chart = plotdb.chart.add.{}list[name]
     if !chart => return null
-    code = chart.code.content
+    func = {}
+    for k,v of chart.code.content => if typeof(v) == typeof(->) => func[k] = v
+    code = JSON.parse(JSON.stringify(chart.code.content))
+    for k,v of func => code[k] = v
     chart = JSON.parse(JSON.stringify(chart))
-    if typeof(code) != \string => chart.code.content = code
-    new plotdb.view.chart chart
+    #if typeof(code) != \string => chart.code.content = code
+    new plotdb.view.chart chart, {code}
   list: -> [k for k of plotdb.chart.add.list]
 
 plotdb.chart.config = do

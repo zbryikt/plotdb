@@ -110,7 +110,7 @@ plotdb.view = {
     var ref$, theme, fields, root, data, code, eventbus;
     ref$ = arg$ != null
       ? arg$
-      : {}, theme = ref$.theme, fields = ref$.fields, root = ref$.root, data = ref$.data;
+      : {}, theme = ref$.theme, fields = ref$.fields, root = ref$.root, data = ref$.data, code = ref$.code;
     this._ = {
       handler: {},
       _chart: JSON.stringify(chart),
@@ -120,7 +120,9 @@ plotdb.view = {
       config: null
     };
     if (chart) {
-      code = chart.code.content;
+      if (!code) {
+        code = chart.code.content;
+      }
       if (typeof code === 'string') {
         if (code[0] === '{') {
           code = "(function() { return " + code + "; })();";
@@ -130,6 +132,7 @@ plotdb.view = {
         this._.chart = chart = import$(eval(code), chart);
       } else {
         this._.chart = chart = import$(code, chart);
+        this._.code = code;
       }
     }
     this._.config = chart.config;
@@ -365,7 +368,8 @@ import$(plotdb.view.chart.prototype, {
     var ref$;
     return new plotdb.view.chart(JSON.parse(this._._chart), {
       theme: (ref$ = this._).theme,
-      fields: ref$.fields
+      fields: ref$.fields,
+      code: ref$.code
     });
   },
   on: function(event, cb){

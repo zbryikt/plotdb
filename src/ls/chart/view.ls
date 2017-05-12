@@ -14,16 +14,17 @@ plotdb.view = do
     else if typeof(key) == \string => req.open \get, key, true
     req.send!
   # parse base chart object from database
-  chart: (chart, {theme, fields, root, data}={}) ->
+  chart: (chart, {theme, fields, root, data, code}={}) ->
     @_ = {handler: {}, _chart: JSON.stringify(chart), fields, root, inited: false, config: null}
     if chart =>
-      code = chart.code.content
+      if !code => code = chart.code.content
       if typeof(code) == \string =>
         if code.0 == \{ => code = "(function() { return #code; })();"
         else code = "(function() { #code; return module.exports; })();"
         @_.chart = chart = eval(code) <<< chart
       else
         @_.chart = chart = code <<< chart
+        @_.code = code
     @_.config = chart.config # for tracking original config object
     plotdb.chart.update-dimension chart
     plotdb.chart.update-config chart, chart.config
@@ -134,7 +135,7 @@ plotdb.view.chart.prototype <<< do
   render: -> @_.chart.render!
   destroy: -> if @_.chart.destroy => @_.chart.destroy!
   clone: ->
-    new plotdb.view.chart(JSON.parse(@_._chart), @_{theme, fields})
+    new plotdb.view.chart(JSON.parse(@_._chart), @_{theme, fields, code})
   on: (event, cb) -> @_.handler[][event].push cb
   theme: (theme) -> @_.theme = eval(theme.code.content) <<< theme
   refresh: ->
