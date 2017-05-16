@@ -319,6 +319,8 @@ block body
           .btn.btn-default(ng-click="panel.set('')") {{'Cancel'|i18n}}
     #editor-code.editor-func-detail(
     ng-class="{'active':panel.tab=='editor','full':panel.size.value.editor=='full' || panel.size.doc=='sm'}")
+      .btn.btn-dark(style="right:55px")
+        i.fa.fa-close(ng-click="panel.tab=''")
       .btn.btn-dark(ng-if="!panel.size.doc",ng-click="panel.size.set('editor','full')")
         i.fa.fa-long-arrow-right(ng-if="panel.size.value.editor!='full'")
         i.fa.fa-long-arrow-left(ng-if="panel.size.value.editor=='full'")
