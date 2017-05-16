@@ -1134,15 +1134,28 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       ? $scope.chartModal.name.prompt()
       : Promise.resolve();
     return promise.then(function(name){
+      var k;
       if (name) {
         chart.name = name;
       }
       $scope.$apply(function(){
         return eventBus.fire('loading.dimmer.on');
       });
-      return $scope.dataset.save(chart.name);
+      if (!(function(){
+        var results$ = [];
+        for (k in $scope.chart.dimension) {
+          results$.push(k);
+        }
+        return results$;
+      }()).length && $scope.chart.obj) {
+        return Promise.resolve();
+      } else {
+        return $scope.dataset.save(chart.name);
+      }
     }).then(function(dataset){
-      $scope.bind(chart.dimension, dataset);
+      if (dataset) {
+        $scope.bind(chart.dimension, dataset);
+      }
       return canvas.msg({
         type: 'save'
       });

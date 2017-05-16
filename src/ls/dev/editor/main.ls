@@ -558,9 +558,10 @@ angular.module \plotDB
         .then (name) ->
           if name => chart.name = name
           $scope.$apply -> eventBus.fire \loading.dimmer.on
-          $scope.dataset.save chart.name
+          if ![k for k of $scope.chart.dimension].length and $scope.chart.obj => return Promise.resolve!
+          else $scope.dataset.save chart.name
         .then (dataset) ~>
-          $scope.bind chart.dimension, dataset
+          if dataset => $scope.bind chart.dimension, dataset
           canvas.msg type: \save
         .catch -> console.log it
     dispatcher.register \save, (payload) ->
