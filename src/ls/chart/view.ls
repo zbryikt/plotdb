@@ -135,7 +135,12 @@ plotdb.view.chart.prototype <<< do
   render: -> @_.chart.render!
   destroy: -> if @_.chart.destroy => @_.chart.destroy!
   clone: ->
-    new plotdb.view.chart(JSON.parse(@_._chart), @_{theme, fields, code})
+    code = null
+    # to create a new code object yet keep all functions available
+    if @_.code and typeof(@_.code) == \object =>
+      code = {}
+      for k,v of @_.code => if typeof(v) == typeof(->) => code[k] = v
+    new plotdb.view.chart(JSON.parse(@_._chart), {} <<< @_{theme, fields} <<< {code})
   on: (event, cb) -> @_.handler[][event].push cb
   theme: (theme) -> @_.theme = eval(theme.code.content) <<< theme
   refresh: ->

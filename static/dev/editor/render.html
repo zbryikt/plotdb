@@ -197,10 +197,16 @@ plotdb.Numstring = {
   level: 6,
   basetype: [plotdb.Order],
   test: function(it){
+    if (typeof it === 'object' && it.type === 'Numstring') {
+      return true;
+    }
     return /\d+/.exec(it + "");
   },
   parse: function(it){
     var numbers, num, i$, to$, j;
+    if (typeof it === 'object' && it.type === 'Numstring') {
+      return it;
+    }
     numbers = [];
     num = it.split
       ? it.split(/\.?[^0-9.]+/g)
@@ -211,14 +217,11 @@ plotdb.Numstring = {
         numbers.push(parseFloat(num[j]));
       }
     }
-    return {
+    return new plotdb.Numstring.object({
       raw: it,
       numbers: numbers,
-      len: numbers.length,
-      toString: function(){
-        return this.raw;
-      }
-    };
+      len: numbers.length
+    });
   },
   order: {
     Ascending: function(a, b){
@@ -245,7 +248,15 @@ plotdb.Numstring = {
     index: function(it){
       return it.numbers[0];
     }
+  },
+  object: function(arg$){
+    var raw, numbers, len;
+    raw = arg$.raw, numbers = arg$.numbers, len = arg$.len;
+    return this.raw = raw + "", this.numbers = numbers, this.len = len, this.type = "Numstring", this;
   }
+};
+plotdb.Numstring.object.prototype.toString = function(){
+  return this.raw;
 };
 plotdb.Number = {
   name: 'Number',
@@ -2456,12 +2467,19 @@ import$(plotdb.view.chart.prototype, {
     }
   },
   clone: function(){
-    var ref$;
-    return new plotdb.view.chart(JSON.parse(this._._chart), {
-      theme: (ref$ = this._).theme,
-      fields: ref$.fields,
-      code: ref$.code
-    });
+    var code, k, ref$, v, ref1$, ref2$;
+    code = null;
+    if (this._.code && typeof this._.code === 'object') {
+      code = {};
+      for (k in ref$ = this._.code) {
+        v = ref$[k];
+        if (typeof v === typeof fn$) {
+          code[k] = v;
+        }
+      }
+    }
+    return new plotdb.view.chart(JSON.parse(this._._chart), (ref$ = (ref2$ = {}, ref2$.theme = (ref1$ = this._).theme, ref2$.fields = ref1$.fields, ref2$), ref$.code = code, ref$));
+    function fn$(){}
   },
   on: function(event, cb){
     var ref$;

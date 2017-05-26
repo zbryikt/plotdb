@@ -4642,10 +4642,16 @@ plotdb.Numstring = {
   level: 6,
   basetype: [plotdb.Order],
   test: function(it){
+    if (typeof it === 'object' && it.type === 'Numstring') {
+      return true;
+    }
     return /\d+/.exec(it + "");
   },
   parse: function(it){
     var numbers, num, i$, to$, j;
+    if (typeof it === 'object' && it.type === 'Numstring') {
+      return it;
+    }
     numbers = [];
     num = it.split
       ? it.split(/\.?[^0-9.]+/g)
@@ -4656,14 +4662,11 @@ plotdb.Numstring = {
         numbers.push(parseFloat(num[j]));
       }
     }
-    return {
+    return new plotdb.Numstring.object({
       raw: it,
       numbers: numbers,
-      len: numbers.length,
-      toString: function(){
-        return this.raw;
-      }
-    };
+      len: numbers.length
+    });
   },
   order: {
     Ascending: function(a, b){
@@ -4690,7 +4693,15 @@ plotdb.Numstring = {
     index: function(it){
       return it.numbers[0];
     }
+  },
+  object: function(arg$){
+    var raw, numbers, len;
+    raw = arg$.raw, numbers = arg$.numbers, len = arg$.len;
+    return this.raw = raw + "", this.numbers = numbers, this.len = len, this.type = "Numstring", this;
   }
+};
+plotdb.Numstring.object.prototype.toString = function(){
+  return this.raw;
 };
 plotdb.Number = {
   name: 'Number',

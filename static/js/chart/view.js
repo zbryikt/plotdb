@@ -287,12 +287,19 @@ import$(plotdb.view.chart.prototype, {
     }
   },
   clone: function(){
-    var ref$;
-    return new plotdb.view.chart(JSON.parse(this._._chart), {
-      theme: (ref$ = this._).theme,
-      fields: ref$.fields,
-      code: ref$.code
-    });
+    var code, k, ref$, v, ref1$, ref2$;
+    code = null;
+    if (this._.code && typeof this._.code === 'object') {
+      code = {};
+      for (k in ref$ = this._.code) {
+        v = ref$[k];
+        if (typeof v === typeof fn$) {
+          code[k] = v;
+        }
+      }
+    }
+    return new plotdb.view.chart(JSON.parse(this._._chart), (ref$ = (ref2$ = {}, ref2$.theme = (ref1$ = this._).theme, ref2$.fields = ref1$.fields, ref2$), ref$.code = code, ref$));
+    function fn$(){}
   },
   on: function(event, cb){
     var ref$;

@@ -83,12 +83,15 @@ plotdb.Bit = do
 plotdb.Numstring = do
   name: \Numstring, default: "", level: 6
   basetype: [plotdb.Order]
-  test: ->/\d+/.exec("#it")
+  test: ->
+    if typeof(it) == \object and it.type == \Numstring => return true
+    /\d+/.exec("#it")
   parse: ->
+    if typeof(it) == \object and it.type == \Numstring => return it
     numbers = []
     num = if it.split => it.split(/\.?[^0-9.]+/g) else [it]
     for j from 0 til num.length => if num[j] => numbers.push parseFloat(num[j])
-    return {raw: it, numbers, len: numbers.length, toString: -> @raw}
+    return new plotdb.Numstring.object({raw: it, numbers, len: numbers.length})
   order: do
     Ascending: (a,b) ->
       if !a => return if !b => 0 else -1
@@ -100,6 +103,8 @@ plotdb.Numstring = do
       return a.len - b.len
     Descending: (a,b) -> plotdb.Numstring.order.Ascending b,a
     index: -> it.numbers.0
+  object: ({raw, numbers, len}) -> @ <<< {raw: "#raw", numbers, len, type: "Numstring"}
+plotdb.Numstring.object.prototype.toString = -> @raw
 
 plotdb.Number = do
   name: \Number, default: 0, level: 8
