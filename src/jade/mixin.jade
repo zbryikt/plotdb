@@ -93,3 +93,7 @@ mixin searchable
     ng-show="target().searchable") {{'shown in search result'|i18n}}
     .pull-right.btn.btn-text.btn-sm(
     ng-show="!target().searchable") {{'hidden from search result'|i18n}}
+
+mixin nbr(count)
+  - for (var i = 0; i < count; i++)
+    br
