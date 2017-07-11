@@ -31,6 +31,7 @@ content-security-policy = [
     www.google-analytics.com
     fonts.googleapis.com
     a.disquscdn.com
+    watchout.tw
   ]>
   <[img-src
     'self'
