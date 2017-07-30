@@ -1101,8 +1101,23 @@ plotdb.chart = {
     return ((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name] = json;
   },
   get: function(name){
-    var chart, ref$, func, k, v, code;
+    var chart, ref$, k, v, func, code;
     chart = ((ref$ = plotdb.chart.add).list || (ref$.list = {}))[name];
+    if (!chart && typeof name === 'number') {
+      chart = (function(){
+        var ref$, ref1$, results$ = [];
+        for (k in ref$ = (ref1$ = plotdb.chart.add).list || (ref1$.list = {})) {
+          v = ref$[k];
+          results$.push({
+            k: k,
+            v: v
+          });
+        }
+        return results$;
+      }()).filter(function(){
+        return v.key === name;
+      })[0];
+    }
     if (!chart) {
       return null;
     }

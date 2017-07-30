@@ -92,6 +92,8 @@ plotdb.chart = do
   add: (name, json) -> plotdb.chart.add.{}list[name] = json
   get: (name) ->
     chart = plotdb.chart.add.{}list[name]
+    if !chart and typeof(name) == \number =>
+      chart = [{k,v} for k,v of plotdb.chart.add.{}list].filter(->v.key == name).0
     if !chart => return null
     func = {}
     for k,v of chart.code.content => if typeof(v) == typeof(->) => func[k] = v

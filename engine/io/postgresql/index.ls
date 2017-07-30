@@ -1,5 +1,7 @@
 require! <[pg bluebird crypto ./aux]>
 
+pg.defaults.poolSize = 30
+
 ret = (config) ->
   @config = config
   @authio = do
