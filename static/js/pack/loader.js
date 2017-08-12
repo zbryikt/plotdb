@@ -167,6 +167,9 @@ plotdb.Numstring = {
   level: 6,
   basetype: [plotdb.Order],
   test: function(it){
+    if (!it) {
+      return false;
+    }
     if (typeof it === 'object' && it.type === 'Numstring') {
       return true;
     }
@@ -174,7 +177,10 @@ plotdb.Numstring = {
   },
   parse: function(it){
     var numbers, num, i$, to$, j;
-    if (typeof it === 'object' && it.type === 'Numstring') {
+    if (!it) {
+      return null;
+    }
+    if (it && typeof it === 'object' && it.type === 'Numstring') {
       return it;
     }
     numbers = [];
@@ -273,6 +279,9 @@ plotdb.Date = {
   },
   parse: function(it){
     var twdate, d, ret;
+    if (!it) {
+      return null;
+    }
     if (typeof it === 'object' && it.type === 'Date') {
       return it;
     }
