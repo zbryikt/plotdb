@@ -6920,7 +6920,9 @@ $(document).ready(function(){
       });
       allsvg = document.querySelectorAll('#container svg');
       if (allsvg.length > 1) {
-        list = Array.from(allsvg).map(function(it){
+        list = Array.from(allsvg).filter(function(it){
+          return it;
+        }).map(function(it){
           var box;
           box = it.getBoundingClientRect();
           return [it.cloneNode(true), (box.right - box.left) * (box.bottom - box.top), it];

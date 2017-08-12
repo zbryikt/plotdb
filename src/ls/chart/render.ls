@@ -145,7 +145,7 @@ snapshot = (type='snapshot') ->
     #save the first svg #TODO save all?
     allsvg = document.querySelectorAll('#container svg')
     if allsvg.length > 1 =>
-      list = Array.from(allsvg).map ->
+      list = Array.from(allsvg).filter(->it).map ->
         box = it.getBoundingClientRect!
         [it.cloneNode(true), (box.right - box.left) * (box.bottom - box.top), it]
       list.sort (a,b) -> b.1 - a.1
