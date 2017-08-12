@@ -50,6 +50,7 @@ content-security-policy = [
   ]>
   <[frame-src
     'self'
+    plotdb.io
     data:
     blob:
     *.facebook.com
