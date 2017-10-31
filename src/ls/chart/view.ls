@@ -57,7 +57,7 @@ plotdb.view.chart.prototype <<< do
 
   attach: (root) ->
     if typeof(root) == \string => root = document.querySelector(root)
-    @_.root = root
+    @_.root = oroot = root
     {chart, theme} = @_.{chart,theme}
     root.setAttribute("class", ((root.getAttribute("class") or "")
       .split(" ").filter(->it!=\pdb-root) ++ <[pdb-root]>).join(" "))
@@ -106,7 +106,7 @@ plotdb.view.chart.prototype <<< do
         if chart.render => chart.render!
       ), 10
     plotdb.util.trackResizeEvent root, (-> resize!)
-    newClass = (root.getAttribute(\class) or "").split(' ').filter(->it!='loading').join(" ").trim!
+    newClass = (oroot.getAttribute(\class) or "").split(' ').filter(->it!='loading').join(" ").trim!
     try
       if chart.init => chart.init!
       if chart.parse => chart.parse!
@@ -116,7 +116,7 @@ plotdb.view.chart.prototype <<< do
     catch e
       newClass += ' error'
       console.error e
-    root.setAttribute \class, newClass
+    oroot.setAttribute \class, newClass
     @inited = true
   config: (n, update = false, rebind) ->
     chart = @_.chart

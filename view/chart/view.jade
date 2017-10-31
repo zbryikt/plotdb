@@ -34,8 +34,8 @@ block foot
     //-mychart.loadlib();
     mychart.attach(document.getElementById("wrapper"));
     var config = mychart.config();
-    if(config.background) document.body.style.background = config.background;
-    if(config.textFill) document.body.style.color = config.textFill;
+    if(config && config.background) document.body.style.background = config.background;
+    if(config && config.textFill) document.body.style.color = config.textFill;
   script(type="text/javascript").
     function fullscreen() {
       if (document.fullscreenEnabled || document.webkitFullscreenEnabled ||
