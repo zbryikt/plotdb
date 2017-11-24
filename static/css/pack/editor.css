@@ -4686,6 +4686,9 @@ body {
   height: 14px;
   margin: 30px 0 0 -100px;
 }
+.dropdown-backdrop {
+  position: static !important;
+}
 select[ngselect2] {
   height: 34px;
 }
