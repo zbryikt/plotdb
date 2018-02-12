@@ -58,6 +58,9 @@ plotdb.view = {
       }
     }
     this._.config = chart.config;
+    if (!chart.dimension && ((ref$ = chart.code || (chart.code = {})).content || (ref$.content = {})).dimension) {
+      chart.dimension = chart.code.content.dimension;
+    }
     plotdb.chart.updateDimension(chart);
     plotdb.chart.updateConfig(chart, chart.config);
     plotdb.chart.updateAssets(chart, chart.assets);
@@ -134,11 +137,11 @@ import$(plotdb.view.chart.prototype, {
     return libs = this._.chart.library || [];
   },
   attach: function(root){
-    var ref$, chart, theme, head, foot, iroot, iiroot, margin, marginVertical, resize, newClass, e;
+    var oroot, ref$, chart, theme, head, foot, iroot, iiroot, margin, marginVertical, resize, newClass, e;
     if (typeof root === 'string') {
       root = document.querySelector(root);
     }
-    this._.root = root;
+    this._.root = oroot = root;
     ref$ = {
       chart: (ref$ = this._).chart,
       theme: ref$.theme
@@ -209,7 +212,7 @@ import$(plotdb.view.chart.prototype, {
     plotdb.util.trackResizeEvent(root, function(){
       return resize();
     });
-    newClass = (root.getAttribute('class') || "").split(' ').filter(function(it){
+    newClass = (oroot.getAttribute('class') || "").split(' ').filter(function(it){
       return it !== 'loading';
     }).join(" ").trim();
     try {
@@ -233,7 +236,7 @@ import$(plotdb.view.chart.prototype, {
       newClass += ' error';
       console.error(e);
     }
-    root.setAttribute('class', newClass);
+    oroot.setAttribute('class', newClass);
     return this.inited = true;
   },
   config: function(n, update, rebind){

@@ -26,6 +26,7 @@ plotdb.view = do
         @_.chart = chart = code <<< chart
         @_.code = code
     @_.config = chart.config # for tracking original config object
+    if !chart.dimension and chart.{}code.{}content.dimension => chart.dimension = chart.code.content.dimension
     plotdb.chart.update-dimension chart
     plotdb.chart.update-config chart, chart.config
     plotdb.chart.update-assets chart, chart.assets
