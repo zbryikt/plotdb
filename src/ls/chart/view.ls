@@ -21,6 +21,8 @@ plotdb.view = do
       if typeof(code) == \string =>
         if code.0 == \{ => code = "(function() { return #code; })();"
         else code = "(function() { #code; return module.exports; })();"
+        # delete null dimension so it wont overwrite the dimension from code
+        if !chart.dimension => delete chart.dimension
         @_.chart = chart = eval(code) <<< chart
       else
         @_.chart = chart = code <<< chart

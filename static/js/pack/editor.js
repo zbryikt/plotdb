@@ -129,6 +129,9 @@ plotdb.view = {
         } else {
           code = "(function() { " + code + "; return module.exports; })();";
         }
+        if (!chart.dimension) {
+          delete chart.dimension;
+        }
         this._.chart = chart = import$(eval(code), chart);
       } else {
         this._.chart = chart = import$(code, chart);
