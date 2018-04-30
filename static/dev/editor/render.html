@@ -2906,7 +2906,26 @@ function import$(obj, src){
 var plotdbDomain, sendMsg, store, dispatcher, x$, loadlib, properEval, saveLocal, snapshot;
 plotdbDomain = plConfig.urlschema + "" + plConfig.domain;
 sendMsg = function(msg){
-  return window.parent.postMessage(msg, plotdbDomain);
+  var e, i$, ref$, len$, item, k, ref1$, v;
+  try {
+    return window.parent.postMessage(msg, plotdbDomain);
+  } catch (e$) {
+    e = e$;
+    if (msg.data) {
+      for (i$ = 0, len$ = (ref$ = msg.data).length; i$ < len$; ++i$) {
+        item = ref$[i$];
+        if (item.data) {
+          for (k in ref1$ = item.data) {
+            v = ref1$[k];
+            if (typeof v === 'function') {
+              delete item.data[k];
+            }
+          }
+        }
+      }
+      return window.parent.postMessage(msg, plotdbDomain);
+    }
+  }
 };
 store = {
   base: null,

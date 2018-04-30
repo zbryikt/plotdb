@@ -15,7 +15,17 @@
 
 plotdb-domain = plConfig.urlschema + "" + plConfig.domain
 
-send-msg = (msg) -> window.parent.postMessage msg, plotdb-domain 
+send-msg = (msg) ->
+  # workaround:
+  #   if chart use sample data, it might contain functions from helper.
+  #   if post failed due to 'cant clone function', try deleting functions from helper and try again
+  try
+    window.parent.postMessage msg, plotdb-domain
+  catch e
+    if msg.data =>
+      for item in msg.data => if item.data =>
+        for k,v of item.data => if typeof(v) == \function => delete item.data[k]
+      window.parent.postMessage msg, plotdb-domain
 store = do
   base: null    # base object from database
   chart: null   # created from plotdb.view.chart 
