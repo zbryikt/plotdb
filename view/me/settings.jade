@@ -13,8 +13,14 @@ block body
           label
             | UID
             small {{'Your Unique ID'|i18n}}
-        .col-sm-9
+        .col-sm-6
           input.form-control(value="{{profile.key}}",disabled)
+        .col-sm-3(ng-if="profile.username == 'tkirby@gmail.com'")
+          .input-group
+            input.form-control(ng-model="su.id")
+            .input-group-btn
+              .btn.btn-default(ng-click="su()") Su
+
       .row
         .col-sm-3
           label

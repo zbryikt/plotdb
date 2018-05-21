@@ -169,3 +169,13 @@ engine.router.api.post(\/me/avatar,
         return null
       .catch aux.error-handler res
 )
+
+engine.router.api.put \/me/su/:id, (req, res) ->
+  if !req.user or req.user.username != \tkirby@gmail.com => return aux.r403 res
+  io.query "select * from users where key = $1", [+req.params.id]
+    .then (r={})->
+      if !r.rows or !r.rows.0 => return aux.reject 404
+      req.user <<< r.rows.0
+      req.logIn r.rows.0, -> res.send!
+      return null
+    .catch aux.error-handler res

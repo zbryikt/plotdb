@@ -78,7 +78,7 @@ x$.controller('profile', ['$scope', '$http', 'global', 'plNotify', 'dataService'
       return fr.readAsArrayBuffer(node.files[0]);
     }
   };
-  return $scope.update = function(){
+  $scope.update = function(){
     return $http({
       url: "/d/user/" + $scope.profile.key,
       method: 'PUT',
@@ -87,6 +87,15 @@ x$.controller('profile', ['$scope', '$http', 'global', 'plNotify', 'dataService'
       return plNotify.send('success', "Profile updated.");
     }).error(function(d){
       return plNotify.send('danger', "Failed: " + d.msg);
+    });
+  };
+  return $scope.su = function(){
+    console.log($scope.su.id);
+    return $http({
+      url: "/d/me/su/" + $scope.su.id,
+      method: 'PUT'
+    }).then(function(){
+      return window.location.reload();
     });
   };
 }));

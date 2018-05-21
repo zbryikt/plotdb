@@ -68,3 +68,10 @@ angular.module \plotDB
         plNotify.send \success, "Profile updated."
       .error (d) ->
         plNotify.send \danger, "Failed: #{d.msg}"
+
+    $scope.su = ->
+      console.log $scope.su.id
+      $http do
+        url: "/d/me/su/#{$scope.su.id}"
+        method: \PUT
+      .then -> window.location.reload!
