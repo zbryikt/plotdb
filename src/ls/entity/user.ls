@@ -45,7 +45,7 @@ angular.module \plotDB
     $(\#search-user-team).select2 select2-base-config <<< do
        placeholder: "search by user, team name or email address..."
        ajax: do
-         url: "http://localhost/d/user/?team=true"
+         url: "/d/user/?team=true"
          dataType: "json"
          delay: 250
          data: (params) ->
@@ -84,7 +84,7 @@ angular.module \plotDB
     $(\#search-user).select2 select2-base-config <<< do
        placeholder: "search by user name or email address..."
        ajax: do
-         url: "http://localhost/d/user/"
+         url: "/d/user/"
          dataType: "json"
          delay: 250
          data: (params) ->

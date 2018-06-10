@@ -1,4 +1,4 @@
-plotdb-domain = "http://localhost/"
+plotdb-domain = if (/plotdb/.exec(window.location.href)) => "https://plotdb.com/" else "http://localhost/"
 send-msg = (msg) -> window.parent.postMessage msg, plotdb-domain 
 
 # bubbling up click outside renderer. for ColorPicker
