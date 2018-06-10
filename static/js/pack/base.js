@@ -13445,7 +13445,7 @@ x$.controller('userSelection', ['$scope', '$http', 'plNotify', 'teamService'].co
   $('#search-user-team').select2(import$(select2BaseConfig, {
     placeholder: "search by user, team name or email address...",
     ajax: {
-      url: "http://localhost/d/user/?team=true",
+      url: "/d/user/?team=true",
       dataType: "json",
       delay: 250,
       data: function(params){
@@ -13493,7 +13493,7 @@ x$.controller('userSelection', ['$scope', '$http', 'plNotify', 'teamService'].co
   return $('#search-user').select2(import$(select2BaseConfig, {
     placeholder: "search by user name or email address...",
     ajax: {
-      url: "http://localhost/d/user/",
+      url: "/d/user/",
       dataType: "json",
       delay: 250,
       data: function(params){
