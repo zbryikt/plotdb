@@ -148,7 +148,6 @@ backend = do
         get-user profile.emails.0.value, null, false, profile, done
     )
 
-    console.log "#{config.urlschema}#{config.domain}/u/auth/facebook/callback"
     passport.use new passport-facebook.Strategy(
       do
         clientID: config.facebook.clientID
