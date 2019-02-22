@@ -11,17 +11,23 @@ block body
   div(ng-cloak)
     div(ng-if="lang=='en'")
       .spc1
-      .page-header.simple: .inner
-        .title Suggestion and Contact
-        .desc your help makes plotdb a better place
+      br
+      br
+      br
+
       #root.narrow.with-header.simple
-        p Hey! Our goal is to build the world's best visualization service, which is not possible without your help. Before we have a better feedback channel, let's discuss with email at first!
-        p Please mail your suggestion to following address:
+        h1 Contact
+        p For any suggestion or question, please contact
         blockquote tkirby@plotdb.com
-        p thanks for your interest in PlotDB :)
         br
-        p Kirby
-        p founder of PlotDB
+        h3 Questions about Payment 
+        p PlotDB Ltd. is the service provider for following websites:
+        ul
+          li #[a(href="https://loading.io/") loading.io] - Online Service for Making Your Own Animated Icons 
+          li #[a(href="https://makebackground.io") makebackground.io] - Live Background / Wallpaper Generation Service
+          li #[a(href="https://maketext.io") maketext.io] - SVG Cool Text Effect Service
+        p When you make payments in above sites, you'll see things like "PlotDB Ltd. Taipei City" in your bill. If you are not sure about the payment, just contact us directly and we are glad to help.
+
     div(ng-if="lang=='zh'")
       .spc1
       .page-header.simple: .inner

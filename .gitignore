@@ -1,5 +1,6 @@
 db
 node_modules/
+n_m_old
 .*
 secret.ls
 static/s/
