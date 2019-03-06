@@ -44,7 +44,7 @@
     "nodemailer-smtp-transport": ">=0.1.12",
     "passport": ">=0.2.1",
     "passport-facebook": ">=1.0.3",
-    "passport-google-oauth2": "^0.1.6",
+    "passport-google-oauth20": "=1.0.0",
     "passport-local": ">=1.0.0",
     "pg": "=4.5.5",
     "read-chunk": "=1.0.1",
