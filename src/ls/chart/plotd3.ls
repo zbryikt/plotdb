@@ -106,7 +106,7 @@ plotd3.html.popup = (root, sel, cb, store = {handler: {}}) ->
     x = x - pbox.width / 2 - rbox.left
     y = y + 30 - rbox.top
     if y > rbox.height - pbox.height - 50 => y = y - pbox.height - 40
-    if  y < 0 => y = 0
+    if y < 0 => y = d3.event.clientY + 10
     if x < 10 => x = 10
     if x > + rbox.width - pbox.width - 10 => x = rbox.width - pbox.width - 10
     popup.style {top: "#{y}px", left: "#{x}px"}
