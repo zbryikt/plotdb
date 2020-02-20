@@ -866,7 +866,7 @@ x$.controller('plChartEditor', ['$scope', '$http', '$timeout', 'plConfig', 'char
       this.format = format;
       this.loading = true;
       if (format === 'plotdb') {
-        data = JSON.stringify($scope.chart);
+        data = JSON.stringify($scope.chart.obj);
         size = data.length;
         url = URL.createObjectURL(new Blob([data], {
           type: 'application/json'

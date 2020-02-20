@@ -221,6 +221,9 @@ plotd3.html.popup = function(root, sel, cb, store){
     if (y > rbox.height - pbox.height - 50) {
       y = y - pbox.height - 40;
     }
+    if (y < 0) {
+      y = d3.event.clientY + 10;
+    }
     if (x < 10) {
       x = 10;
     }
