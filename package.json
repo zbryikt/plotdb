@@ -36,7 +36,7 @@
     "jstransformer-markdown": "zbryikt/jstransformer-markdown",
     "markdown": "zbryikt/markdown-js",
     "moment": "=2.14.1",
-    "mongodb": "=2.0.33",
+    "mongodb": "=3.1.13",
     "node-minify": "^2.0.3",
     "node-zip": "=1.1.1",
     "nodemailer": ">=2.7.0",
