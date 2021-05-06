@@ -49,7 +49,7 @@
     "pg": "=4.5.5",
     "read-chunk": "=1.0.1",
     "require-reload": "=0.2.2",
-    "sanitize-html": "=1.11.4",
+    "sanitize-html": "=2.3.2",
     "sharp": "^0.16.0",
     "stripe": "=4.9.0",
     "stylus": "=0.50.0",
