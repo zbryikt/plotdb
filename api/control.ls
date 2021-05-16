@@ -20,12 +20,14 @@ update-size = (req, user, delta) -> new bluebird (res, rej) ->
       size := ((user.datasize or 0) + delta) >? 0
       io.query "update users set datasize = $1 where users.key=$2", [size, key]
     .then ->
+      /*
       io.query "select key,detail from sessions where (detail #>> '{passport,user,key}')::numeric = $1", [key]
     .then (r={})->
       ret = r.[]rows.0
       if !ret => return aux.reject null
       ret.{}detail.{}passport.{}user.datasize = size
       io.query "update sessions set (detail) = ($2) where key = $1", [ret.key, ret.detail]
+      */
     .then ->
       if !req.user or req.user.key != key => return res!
       req.user.datasize = size
