@@ -51,6 +51,7 @@ content-security-policy = [
   <[frame-src
     'self'
     plotdb.io
+    plotdb.local
     data:
     blob:
     *.facebook.com
@@ -59,7 +60,7 @@ content-security-policy = [
     disqus.com
   ]>
   <[connect-src
-    'self' data: blob: plotdb.com links.services.disqus.com *.tappayapis.com
+    'self' data: blob: plotdb.com plotdb.local links.services.disqus.com *.tappayapis.com
   ]>
 ]
 
@@ -137,7 +138,7 @@ backend = do
       do
         clientID: config.google.clientID
         clientSecret: config.google.clientSecret
-        callbackURL: "/u/auth/google/callback"
+        callbackURL: "https://plotdb.com/u/auth/google/callback"
         passReqToCallback: true
         userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo'
         profileFields: ['id', 'displayName', 'link', 'emails']
