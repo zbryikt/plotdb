@@ -35,7 +35,7 @@
     "jsonwebtoken": "=7.1.9",
     "jstransformer-markdown": "zbryikt/jstransformer-markdown",
     "markdown": "zbryikt/markdown-js",
-    "moment": "=2.14.1",
+    "moment": "=2.29.2",
     "mongodb": "=2.0.33",
     "node-minify": "^2.0.3",
     "node-zip": "=1.1.1",
