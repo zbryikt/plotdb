@@ -31,7 +31,7 @@
     "helmet": "=2.1.2",
     "image-type": "=2.0.2",
     "jade": ">=0.27.6",
-    "jsdom": "=9.11.0",
+    "jsdom": "=16.5.0",
     "jsonwebtoken": "=7.1.9",
     "jstransformer-markdown": "zbryikt/jstransformer-markdown",
     "markdown": "zbryikt/markdown-js",
